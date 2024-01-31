@@ -1,0 +1,10 @@
+{
+    "id":"manageProfileCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/uiTools/img/silk/user_edit.png",
+        "label": "@apaf.page.profile.title",
+        "stylesheet": "/resources/css/apafCard.css"
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "id":"itemSelectionList",
+    "version": "1.0.0",
+    "type": "SelectionList",
+    "configuration": {
+    	"header": {
+    		"title": "@apaf.page.fragments.selection.title",
+    		"showFilter": true
+    	},
+    	"datasource": {
+            "type": "managed",
+            "manager": "fragmentManager"
+        },
+        "renderer": {
+        	"type": "FieldItemRenderer",
+        	"processor": "'<span><img src=\"/uiTools/img/silk/script.png\">&nbsp;'+@.name+'</span><span class=\"badge bg-secondary rounded-pill\">'+@.type+'</span>'"
+        },
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "name",
+        	"ascending": false
+        }
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "id":"profileMenu",
+    "version": "1.0.0",
+    "type": "VerticalMenu",
+    "configuration": {
+    	"expandsTo": "workArea",
+    	"items": [
+    		{
+    			"id": "userData",
+    			"label": "@apaf.profile.vertical.menu.user"
+    		},
+    		{
+    			"id": "preferences",
+    			"label": "@apaf.profile.vertical.menu.preferences",
+    			"active": false
+    		}
+    	]
+    }
+}

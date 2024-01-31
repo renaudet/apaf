@@ -1,0 +1,24 @@
+{
+    "id":"itemSelectionList",
+    "version": "1.0.0",
+    "type": "SelectionList",
+    "configuration": {
+    	"header": {
+    		"title": "@apaf.page.users.selection.title",
+    		"showFilter": true
+    	},
+    	"datasource": {
+            "type": "managed",
+            "manager": "userManager"
+        },
+        "renderer": {
+        	"type": "FieldItemRenderer",
+        	"processor": "'<span><img src=\"/uiTools/img/silk/user.png\">&nbsp;'+(@.isAdmin?'<b>':'')+(@.lastname+' '+@.firstname)+(@.isAdmin?'</b>':'')+'</span><span class=\"badge bg-primary rounded-pill\">'+@.login+'</span>'"
+        },
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "login",
+        	"ascending": false
+        }
+    }
+}

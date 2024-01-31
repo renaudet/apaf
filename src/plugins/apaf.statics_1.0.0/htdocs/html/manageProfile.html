@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="All-Purpose-Application-Framework ManageProfile Page">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2024 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link rel="icon" type="image/png" href="/resources/img/apaf-logo.png?version=1.0"/>
+		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<title>All Purpose Application Framework</title>
+	</head>
+	<body>
+		<div id="navBar" class="npaUi" data-ref="menu"></div>
+		<div id="card" class="npaUi" data-config="/resources/json/manageProfileCardConfig.json">
+			<div id="verticalMenu" class="npaUi" data-config="/resources/json/profileMenuConfig.json">
+				<div id="form" class="npaUi" data-config="/resources/json/profileEditForm.json" data-menu-ref="userData"></div>
+				<div id="blank" data-menu-ref="preferences">TBD</div>
+			</div>
+		</div>
+		<div id="notifier" class="npaUi" data-ref="notifier"></div>
+		<script src="/js/jquery-3.6.3.min.js"></script>
+		<script src="/js/bootstrap.bundle.min.js"></script>
+		<script src="/js/md5.js"></script>
+		<script src="/uiTools/js/npaUiCore.js"></script>
+		<script src="/resources/js/utils/apafUtils.js"></script>
+		<script src="/resources/js/manageProfile.js"></script>
+	</body>
+</html>

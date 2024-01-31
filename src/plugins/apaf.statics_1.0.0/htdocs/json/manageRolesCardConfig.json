@@ -1,0 +1,10 @@
+{
+    "id":"manageRolesCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/resources/img/apaf-security.png",
+        "label": "@apaf.page.roles.title",
+        "stylesheet": "/resources/css/apafCard.css"
+    }
+}

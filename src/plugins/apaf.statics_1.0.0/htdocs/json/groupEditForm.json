@@ -1,0 +1,46 @@
+{
+    "id":"editForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.groups.form.title",
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.group.name",
+    			"required": true,
+    			"size": 4
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.group.description",
+    			"size": 9
+    		},
+    		{
+    			"name": "roles",
+    			"label": "@apaf.group.roles",
+    			"type": "reference",
+    			"multiple": true,
+    			"required": false,
+    			"rows": 10,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "roleManager"
+		        },
+		        "renderer": {
+		        	"title": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "'<img src=\"/uiTools/img/silk/lock.png\">&nbsp;'+@.name"
+		        	}
+		        }
+    		}
+    	]
+    }
+}

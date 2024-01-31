@@ -1,0 +1,230 @@
+{
+  "id": "apaf.dev",
+  "name": "Development model handler for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.dev.logger",
+  		"dir": "apaf.dev"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.dev.router",
+  		"path": "/apaf-dev"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.dev.datatype.fragment",
+  		"datatype": {
+  			"id": "fragment",
+  			"name": "Fragment",
+  			"database": "apaf_fragments",
+  			"fields": [
+	    		{
+	    			"name": "name",
+	    			"label": "@apaf.fragment.name",
+	    			"required": true,
+	    			"size": 6
+	    		},
+	    		{
+	    			"name": "version",
+	    			"label": "@apaf.fragment.version",
+	    			"required": true,
+	    			"size": 2
+	    		},
+	    		{
+	    			"name": "description",
+	    			"label": "@apaf.fragment.description",
+	    			"required": false,
+	    			"size": 8
+	    		},
+	    		{
+	    			"name": "type",
+	    			"label": "@apaf.fragment.type",
+	    			"required": true,
+	    			"type": "select",
+	    			"size": 4,
+	    			"values": ["snippet","library","servlet"]
+	    		},
+	    		{
+	    			"name": "source",
+	    			"label": "@apaf.fragment.source",
+	    			"type": "javascript"
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "apaf.menu.provider",
+  		"id": "apaf.dev.menu",
+  		"securityRole": "developer",
+  		"menu": {
+			"id": "development",
+			"label": "@apaf.menu.dev.label",
+			"items": []
+		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.dev.menu.fragments",
+  		"menu": "development",
+  		"securityRole": "developer",
+  		"item": {
+			"id": "manageFragments",
+    		"label": "@apaf.menu.dev.fragments.label",
+    		"actionId": "redirect",
+    		"uri": "/resources/html/manageFragments.html",
+    		"icon": "/resources/img/apaf-fragments.png"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.query.fragment.handler",
+  		"router": "apaf.dev.router",
+  		"method": "POST",
+  		"schema": "/fragment/query",
+  		"handler": "queryFragmentHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.create.fragment.handler",
+  		"router": "apaf.dev.router",
+  		"method": "POST",
+  		"schema": "/fragment",
+  		"handler": "createFragmentHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.update.fragment.handler",
+  		"router": "apaf.dev.router",
+  		"method": "PUT",
+  		"schema": "/fragment",
+  		"handler": "updateFragmentHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.delete.fragment.handler",
+  		"router": "apaf.dev.router",
+  		"method": "DELETE",
+  		"schema": "/fragment/:id",
+  		"handler": "deleteFragmentHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.find.fragment.handler",
+  		"router": "apaf.dev.router",
+  		"method": "GET",
+  		"schema": "/fragment/:id",
+  		"handler": "findFragmentHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.dev.datatype.application",
+  		"datatype": {
+  			"id": "application",
+  			"name": "Application",
+  			"database": "apaf_applications",
+  			"fields": [
+	    		{
+	    			"name": "name",
+	    			"label": "@apaf.application.name",
+	    			"required": true,
+	    			"size": 6
+	    		},
+	    		{
+	    			"name": "version",
+	    			"label": "@apaf.application.version",
+	    			"required": true,
+	    			"size": 2
+	    		},
+	    		{
+	    			"name": "description",
+	    			"label": "@apaf.application.description",
+	    			"required": false,
+	    			"size": 10
+	    		},
+	    		{
+	    			"name": "published",
+	    			"label": "@apaf.application.published",
+	    			"type": "switch"
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.dev.menu.applications",
+  		"menu": "development",
+  		"securityRole": "developer",
+  		"item": {
+			"id": "manageApplications",
+    		"label": "@apaf.menu.dev.applications.label",
+    		"actionId": "redirect",
+    		"uri": "/resources/html/manageApplications.html",
+    		"icon": "/resources/img/apaf-applications.png"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.query.application.handler",
+  		"router": "apaf.dev.router",
+  		"method": "POST",
+  		"schema": "/application/query",
+  		"handler": "queryApplicationHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.create.application.handler",
+  		"router": "apaf.dev.router",
+  		"method": "POST",
+  		"schema": "/application",
+  		"handler": "createApplicationHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.update.application.handler",
+  		"router": "apaf.dev.router",
+  		"method": "PUT",
+  		"schema": "/application",
+  		"handler": "updateApplicationHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.delete.application.handler",
+  		"router": "apaf.dev.router",
+  		"method": "DELETE",
+  		"schema": "/application/:id",
+  		"handler": "deleteApplicationHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.find.application.handler",
+  		"router": "apaf.dev.router",
+  		"method": "GET",
+  		"schema": "/application/:id",
+  		"handler": "findApplicationHandler",
+  		"securityRole": ""
+  	}
+  ],
+  "provides": [
+  ]
+}

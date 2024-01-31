@@ -1,0 +1,398 @@
+{
+  "id": "apaf.admin",
+  "name": "Admin model handler for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.admin.logger",
+  		"dir": "apaf.admin"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.admin.router",
+  		"path": "/apaf-admin"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.checkSession.handler",
+  		"router": "apaf.admin.router",
+  		"method": "GET",
+  		"schema": "/session",
+  		"handler": "checkSessionHandler"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.admin.datatype.user",
+  		"datatype": {
+  			"id": "user",
+  			"name": "User",
+  			"database": "apaf_users",
+  			"fields": [
+	    		{
+	    			"name": "domain",
+	    			"label": "@apaf.user.domain",
+	    			"required": true,
+	    			"type": "select",
+	    			"size": 4,
+	    			"values": ["local"]
+	    		},
+	    		{
+	    			"name": "login",
+	    			"label": "@apaf.user.login",
+	    			"required": true,
+	    			"size": 4,
+	    			"help": "@apaf.user.login.help"
+	    		},
+	    		{
+	    			"name": "password",
+	    			"label": "@apaf.user.password",
+	    			"type": "password",
+	    			"required": true,
+	    			"minimumLength": 6,
+	    			"size": 4
+	    		},
+	    		{
+	    			"name": "lastname",
+	    			"label": "@apaf.user.lastname",
+	    			"required": true,
+	    			"size": 6
+	    		},
+	    		{
+	    			"name": "firstname",
+	    			"label": "@apaf.user.firstname",
+	    			"size": 6
+	    		},
+	    		{
+	    			"name": "mail",
+	    			"label": "@apaf.user.mail",
+	    			"size": 8
+	    		},
+	    		{
+	    			"name": "isAdmin",
+	    			"label": "@apaf.user.isadmin",
+	    			"type": "check",
+	    			"help": "@apaf.user.isadmin.help"
+	    		},
+	    		{
+	    			"name": "groups",
+	    			"label": "@apaf.user.groups",
+	    			"type": "reference",
+	    			"multiple": true,
+	    			"required": false,
+	    			"rows": 10,
+			    	"datatype": "group",
+			        "renderer": {
+			        	"title": {
+				        	"type": "FieldItemRenderer",
+				        	"processor": "@.description"
+			        	},
+			        	"value": {
+				        	"type": "FieldItemRenderer",
+				        	"processor": "'<img src=\"/uiTools/img/silk/group.png\">&nbsp;'+@.name"
+			        	}
+			        }
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "apaf.menu.provider",
+  		"id": "apaf.admin.menu",
+  		"securityRole": "administrator",
+  		"menu": {
+			"id": "administration",
+			"label": "@apaf.menu.admin.label",
+			"items": []
+		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.admin.menu.users",
+  		"menu": "administration",
+  		"securityRole": "administrator",
+  		"item": {
+			"id": "manageUsers",
+    		"label": "@apaf.menu.admin.user.label",
+    		"actionId": "redirect",
+    		"uri": "/resources/html/manageUsers.html",
+    		"icon": "/resources/img/apaf-users.png"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.query.user.handler",
+  		"router": "apaf.admin.router",
+  		"method": "POST",
+  		"schema": "/user/query",
+  		"handler": "queryUserHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.create.user.handler",
+  		"router": "apaf.admin.router",
+  		"method": "POST",
+  		"schema": "/user",
+  		"handler": "createUserHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.update.user.handler",
+  		"router": "apaf.admin.router",
+  		"method": "PUT",
+  		"schema": "/user",
+  		"handler": "updateUserHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.delete.user.handler",
+  		"router": "apaf.admin.router",
+  		"method": "DELETE",
+  		"schema": "/user/:id",
+  		"handler": "deleteUserHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.find.user.handler",
+  		"router": "apaf.admin.router",
+  		"method": "GET",
+  		"schema": "/user/:id",
+  		"handler": "findUserHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.admin.datatype.group",
+  		"datatype": {
+  			"id": "group",
+  			"name": "Group",
+  			"database": "apaf_groups",
+  			"fields": [
+	    		{
+	    			"name": "name",
+	    			"label": "@apaf.group.name",
+	    			"required": true,
+	    			"size": 6
+	    		},
+	    		{
+	    			"name": "description",
+	    			"label": "@apaf.group.description",
+	    			"size": 9
+	    		},
+	    		{
+	    			"name": "roles",
+	    			"label": "@apaf.group.roles",
+	    			"type": "reference",
+	    			"multiple": true,
+	    			"required": false,
+	    			"rows": 10,
+			    	"datatype": "role",
+			        "renderer": {
+			        	"title": {
+				        	"type": "FieldItemRenderer",
+				        	"processor": "@.description"
+			        	},
+			        	"value": {
+				        	"type": "FieldItemRenderer",
+				        	"processor": "'<img src=\"/uiTools/img/silk/lock.png\">&nbsp;'+@.name"
+			        	}
+			        }
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.admin.menu.groups",
+  		"menu": "administration",
+  		"securityRole": "administrator",
+  		"item": {
+			"id": "manageGroups",
+    		"label": "@apaf.menu.admin.group.label",
+    		"actionId": "redirect",
+    		"uri": "/resources/html/manageGroups.html",
+    		"icon": "/resources/img/apaf-groups.png"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.query.group.handler",
+  		"router": "apaf.admin.router",
+  		"method": "POST",
+  		"schema": "/group/query",
+  		"handler": "queryGroupHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.create.group.handler",
+  		"router": "apaf.admin.router",
+  		"method": "POST",
+  		"schema": "/group",
+  		"handler": "createGroupHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.update.group.handler",
+  		"router": "apaf.admin.router",
+  		"method": "PUT",
+  		"schema": "/group",
+  		"handler": "updateGroupHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.delete.group.handler",
+  		"router": "apaf.admin.router",
+  		"method": "DELETE",
+  		"schema": "/group/:id",
+  		"handler": "deleteGroupHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.find.group.handler",
+  		"router": "apaf.admin.router",
+  		"method": "GET",
+  		"schema": "/group/:id",
+  		"handler": "findGroupHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.admin.datatype.role",
+  		"datatype": {
+  			"id": "role",
+  			"name": "SecurityRole",
+  			"database": "apaf_roles",
+  			"fields": [
+	    		{
+	    			"name": "name",
+	    			"label": "@apaf.role.name",
+	    			"required": true,
+	    			"size": 5
+	    		},
+	    		{
+	    			"name": "description",
+	    			"label": "@apaf.role.description",
+	    			"size": 9
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.admin.menu.roles",
+  		"menu": "administration",
+  		"securityRole": "administrator",
+  		"item": {
+			"id": "manageRoles",
+    		"label": "@apaf.menu.admin.role.label",
+    		"actionId": "redirect",
+    		"uri": "/resources/html/manageRoles.html",
+    		"icon": "/resources/img/apaf-security.png"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.query.role.handler",
+  		"router": "apaf.admin.router",
+  		"method": "POST",
+  		"schema": "/role/query",
+  		"handler": "queryRoleHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.create.role.handler",
+  		"router": "apaf.admin.router",
+  		"method": "POST",
+  		"schema": "/role",
+  		"handler": "createRoleHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.update.role.handler",
+  		"router": "apaf.admin.router",
+  		"method": "PUT",
+  		"schema": "/role",
+  		"handler": "updateRoleHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.delete.role.handler",
+  		"router": "apaf.admin.router",
+  		"method": "DELETE",
+  		"schema": "/role/:id",
+  		"handler": "deleteRoleHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.find.role.handler",
+  		"router": "apaf.admin.router",
+  		"method": "GET",
+  		"schema": "/role/:id",
+  		"handler": "findRoleHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.admin.menu.separator",
+  		"menu": "administration",
+  		"securityRole": "",
+  		"item": {
+			"type": "separator"
+		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.admin.menu.profile",
+  		"menu": "helpMenuPlaceholder",
+  		"securityRole": "",
+  		"item": {
+			"id": "manageProfile",
+    		"label": "@apaf.menu.admin.profile.label",
+    		"actionId": "redirect",
+    		"icon": "/uiTools/img/silk/user_edit.png",
+    		"uri": "/resources/html/manageProfile.html"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.read.user.handler",
+  		"router": "apaf.admin.router",
+  		"method": "GET",
+  		"schema": "/profile",
+  		"handler": "getProfileHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.update.profile.handler",
+  		"router": "apaf.admin.router",
+  		"method": "PUT",
+  		"schema": "/profile",
+  		"handler": "updateProfileHandler",
+  		"securityRole": ""
+  	}
+  ],
+  "provides": [
+  ]
+}

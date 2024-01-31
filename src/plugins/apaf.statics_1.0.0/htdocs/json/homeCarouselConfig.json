@@ -1,0 +1,17 @@
+{
+    "id":"homeCarousel",
+    "version": "1.0.0",
+    "type": "Carousel",
+    "configuration": {
+    	"expandsTo": "workArea",
+        "slides": [
+        	{
+        		"id": "slide1",
+        		"active": true
+        	},
+        	{
+        		"id": "slide2"
+        	}
+        ]
+    }
+}

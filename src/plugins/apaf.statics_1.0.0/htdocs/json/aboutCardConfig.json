@@ -1,0 +1,10 @@
+{
+    "id":"aboutCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/uiTools/img/silk/help.png",
+        "label": "@apaf.page.about.title",
+        "stylesheet": "/resources/css/apafCard.css"
+    }
+}

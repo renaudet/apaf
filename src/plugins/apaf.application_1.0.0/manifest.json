@@ -1,0 +1,50 @@
+{
+  "id": "apaf.application",
+  "name": "The All Purpose Application Framework",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.application.logger",
+  		"dir": "apaf.application"
+  	},
+  	{
+  		"point": "npa.core.application",
+  		"id": "apaf.application.application",
+  		"name": "apaf"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.application.router",
+  		"path": "/apaf"
+  	},
+  	{
+  		"point": "npa.http.home",
+  		"id": "apaf.application.home",
+  		"application": "apaf",
+  		"uri": "/resources/html/home.html"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.locale.provider.en",
+  		"path": "i18n/apaf_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.locale.provider.fr",
+  		"path": "i18n/apaf_fr-FR.locale",
+  		"locale": "fr-FR"
+  	}
+  ],
+  "provides": [
+  ]
+}

@@ -1,0 +1,10 @@
+{
+    "id":"manageFragmentsCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/resources/img/apaf-fragments.png",
+        "label": "@apaf.page.fragments.title",
+        "stylesheet": "/resources/css/apafCard.css"
+    }
+}

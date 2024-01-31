@@ -1,0 +1,10 @@
+{
+    "id":"manageApplicationsCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/resources/img/apaf-applications.png",
+        "label": "@apaf.page.applications.title",
+        "stylesheet": "/resources/css/apafCard.css"
+    }
+}

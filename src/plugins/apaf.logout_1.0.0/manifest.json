@@ -1,0 +1,35 @@
+{
+  "id": "apaf.logout",
+  "name": "Session logout handler for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.logout.logger",
+  		"dir": "apaf.logout"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.logout.router",
+  		"path": "/apaf-logout"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.logout.logout.handler",
+  		"router": "apaf.logout.router",
+  		"method": "GET",
+  		"schema": "/",
+  		"handler": "logoutHandler"
+  	}
+  ],
+  "provides": [
+  ]
+}

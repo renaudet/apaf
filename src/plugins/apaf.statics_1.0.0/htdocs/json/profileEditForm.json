@@ -1,0 +1,51 @@
+{
+    "id":"profileEditForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.profile.form.title",
+    	"class": "form-frame-noborder",
+    	"fields": [
+    		{
+    			"name": "lastname",
+    			"label": "@apaf.user.lastname",
+    			"required": true,
+    			"size": 5
+    		},
+    		{
+    			"name": "firstname",
+    			"label": "@apaf.user.firstname",
+    			"size": 5
+    		},
+    		{
+    			"name": "mail",
+    			"label": "@apaf.user.mail",
+    			"size": 6
+    		},
+    		{
+    			"name": "password",
+    			"label": "@apaf.user.password",
+    			"type": "password",
+    			"minimumLength": 6,
+    			"size": 4,
+    			"help": "@apaf.profile.password.help"
+    		},
+    		{
+    			"name": "passwordConfirm",
+    			"label": "@apaf.user.password.check",
+    			"type": "passwordCheck",
+    			"checkField": "password",
+    			"required_": true,
+    			"minimumLength": 6,
+    			"size": 4
+    		},
+    		{
+    			"name": "saveBtn",
+    			"type": "button",
+    			"buttonType": "primary",
+    			"label": "@apaf.profile.button.save",
+    			"actionId": "save"
+    		}
+    	]
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "id":"manageGroupsCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/resources/img/apaf-groups.png",
+        "label": "@apaf.page.groups.title",
+        "stylesheet": "/resources/css/apafCard.css"
+    }
+}

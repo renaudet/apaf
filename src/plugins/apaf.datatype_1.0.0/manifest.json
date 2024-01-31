@@ -1,0 +1,36 @@
+{
+  "id": "apaf.datatype",
+  "name": "APAF Datatype handler",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.couchdb.adapter","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.datatype.logger",
+  		"dir": "apaf.datatype"
+  	},
+  	{
+  		"point": "npa.couchdb.adapter.datasource",
+  		"id": "apaf.datatype.datasource",
+  		"reference": "apaf_datatypes",
+  		"hostname": "127.0.0.1",
+  		"port": "5984",
+  		"dbname": "apaf_datatypes",
+  		"maxPageSize": 500,
+  		"environment": {
+  			"hostname": "APAF_COUCH_DB_HOST",
+	  		"port": "APAF_COUCH_DB_PORT",
+	  		"username": "APAF_COUCH_DB_USER",
+	  		"password": "APAF_COUCH_DB_USER_PASSWD"
+  		}
+  	}
+  ],
+  "provides": [
+  	{"id": "apaf.datatype.base.datatype"}
+  ]
+}

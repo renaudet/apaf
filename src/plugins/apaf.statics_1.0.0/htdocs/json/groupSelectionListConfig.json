@@ -1,0 +1,24 @@
+{
+    "id":"itemSelectionList",
+    "version": "1.0.0",
+    "type": "SelectionList",
+    "configuration": {
+    	"header": {
+    		"title": "@apaf.page.groups.selection.title",
+    		"showFilter": true
+    	},
+    	"datasource": {
+            "type": "managed",
+            "manager": "groupManager"
+        },
+        "renderer": {
+        	"type": "FieldItemRenderer",
+        	"processor": "'<span><img src=\"/uiTools/img/silk/group.png\">&nbsp;'+@.name+'</span>'"
+        },
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "name",
+        	"ascending": false
+        }
+    }
+}

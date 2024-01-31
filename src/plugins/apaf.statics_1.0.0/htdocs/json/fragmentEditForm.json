@@ -1,0 +1,45 @@
+{
+    "id":"editForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.fragments.form.title",
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.fragment.name",
+    			"required": true,
+    			"size": 6
+    		},
+    		{
+    			"name": "version",
+    			"label": "@apaf.fragment.version",
+    			"required": true,
+    			"size": 2
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.fragment.description",
+    			"required": false,
+    			"size": 10
+    		},
+    		{
+    			"name": "type",
+    			"label": "@apaf.fragment.type",
+    			"required": true,
+    			"type": "select",
+    			"size": 3,
+    			"values": ["snippet","library","servlet"]
+    		},
+    		{
+    			"name": "source",
+    			"label": "@apaf.fragment.source",
+    			"type": "javascript",
+    			"height": 600
+    		}
+    	]
+    }
+}

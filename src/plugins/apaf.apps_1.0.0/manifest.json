@@ -1,0 +1,58 @@
+{
+  "id": "apaf.apps",
+  "name": "Development model handler for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.apps.logger",
+  		"dir": "apaf.apps"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.apps.router",
+  		"path": "/apaf-apps"
+  	},
+  	{
+  		"point": "apaf.menu.provider",
+  		"id": "apaf.apps.menu",
+  		"securityRole": "operator",
+  		"menu": {
+			"id": "apps",
+			"label": "@apaf.menu.apps.label",
+			"items": []
+		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.apps.menu.placeholder",
+  		"menu": "apps",
+  		"securityRole": "operator",
+  		"item": {
+			"id": "appsPlaceholder",
+    		"type": "dynamic",
+    		"uri": "/apaf-apps/menu"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.apps.get.applications.menu.handler",
+  		"router": "apaf.apps.router",
+  		"method": "GET",
+  		"schema": "/menu",
+  		"handler": "generateAppsMenuHandler",
+  		"securityRole": ""
+  	}
+  ],
+  "provides": [
+  ]
+}

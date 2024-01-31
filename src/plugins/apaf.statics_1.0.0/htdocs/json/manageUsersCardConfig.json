@@ -1,0 +1,10 @@
+{
+    "id":"manageUsersCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/resources/img/apaf-users.png",
+        "label": "@apaf.page.users.title",
+        "stylesheet": "/resources/css/apafCard.css"
+    }
+}

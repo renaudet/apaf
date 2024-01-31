@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="NPA Container for Podman" default="build">
+    <target name="init">
+    	<property name="export.dir" value="G:/NPA/export"/>
+    	<property name="target.host" value="192.168.2.116"/>
+    	<property name="target.host.user" value="pi"/>
+    	<property name="target.host.password" value="raspberry4me"/>
+    	<property name="target.dir" value="/home/pi/podman/build"/>
+    </target>
+	
+	<target name="export" depends="init" description="Export resources on a single directory">
+	    <copy todir="${export.dir}/apaf">
+	      <fileset dir="./src">
+  		    <include name="**/*.*"/>
+		    <exclude name="**/CVS/*"/>
+	      </fileset>
+	    </copy>
+	</target>
+	
+	<target name="publish" depends="init" description="Publish resources on the target host">
+		<scp todir="${target.host.user}@${target.host}:${target.dir}" password="${target.host.password}" trust="true">
+	      	<fileset dir="${export.dir}">
+	      		<include name="**/*"/>
+	      	</fileset>
+	    </scp>
+	</target>
+	
+	<target name="build" depends="export,publish" description="Publish resources and build the container on the target Podman instance">
+	</target>
+</project>

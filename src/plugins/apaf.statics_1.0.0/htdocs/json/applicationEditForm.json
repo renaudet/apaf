@@ -1,0 +1,58 @@
+{
+    "id":"editForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.applications.form.title",
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.application.name",
+    			"required": true,
+    			"size": 6
+    		},
+    		{
+    			"name": "version",
+    			"label": "@apaf.application.version",
+    			"required": true,
+    			"size": 2
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.application.description",
+    			"required": false,
+    			"size": 10
+    		},
+    		{
+    			"name": "published",
+    			"label": "@apaf.application.published",
+    			"type": "switch"
+    		},
+    		{
+    			"name": "fragments",
+    			"label": "@apaf.application.fragments",
+    			"type": "reference",
+    			"multiple": true,
+    			"required": false,
+    			"rows": 10,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "fragmentManager"
+		        },
+		        "renderer": {
+		        	"title": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "'<img src=\"/uiTools/img/silk/script.png\">&nbsp;'+@.name+'&nbsp;<small><small>('+@.version+')</small></small>'"
+		        	}
+		        }
+    		}
+    	]
+    }
+}

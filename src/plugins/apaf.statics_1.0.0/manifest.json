@@ -1,0 +1,18 @@
+{
+  "id": "apaf.statics",
+  "name": "Static resources for APAF",
+  "version": "1.0.0",
+  "requires": [
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.statics.htdocs",
+  		"path": "/resources",
+  		"localDir": "htdocs"
+  	}
+  ],
+  "provides": [
+  ]
+}

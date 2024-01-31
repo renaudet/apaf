@@ -1,0 +1,24 @@
+{
+    "id":"editForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.roles.form.title",
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.role.name",
+    			"required": true,
+    			"size": 4
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.role.description",
+    			"size": 9
+    		}
+    	]
+    }
+}

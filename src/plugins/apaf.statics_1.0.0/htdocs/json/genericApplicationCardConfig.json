@@ -1,0 +1,10 @@
+{
+    "id":"genericApplicationsCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/uiTools/img/silk/application_form.png",
+        "label": "#applicationName",
+        "stylesheet": "/resources/css/apafCard.css"
+    }
+} 

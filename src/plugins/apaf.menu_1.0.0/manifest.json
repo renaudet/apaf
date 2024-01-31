@@ -1,0 +1,36 @@
+{
+  "id": "apaf.menu",
+  "name": "Global menu handler for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.menu.logger",
+  		"dir": "apaf.menu"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.menu.router",
+  		"path": "/apaf-menu"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.menu.getMenu.handler",
+  		"router": "apaf.menu.router",
+  		"method": "GET",
+  		"schema": "/global",
+  		"handler": "getGlobalMenuHandler"
+  	}
+  ],
+  "provides": [
+  	{"id": "apaf.menu.provider"},
+  	{"id": "apaf.menu.item.provider"}
+  ]
+}
