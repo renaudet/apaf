@@ -83,7 +83,7 @@ plugin.registerDatatype = function(datatype){
 	}else{
 		if(typeof this.cacheById[datatype.id]!='undefined'){
 			this.error('duplicated Datatype ID detected: '+datatype.id);
-		this.trace('<-registerDatatype()');
+			this.trace('<-registerDatatype()');
 		}else{
 			this.cacheByName[datatype.name] = datatype;
 			this.cacheById[datatype.id] = datatype;

@@ -258,6 +258,48 @@
 		    	}
 		    }
 		},
+		"datatypeDataManager": {
+		    "id":"datatypeManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+		    	"query": {
+		    		"type": "local",
+		    		"uri": "/apaf-datatype/datatype/query",
+		    		"payload": {"selector": {}},
+		    		"method": "POST",
+		            "adapter": "@.data"
+		    	},
+		    	"create": {
+		    		"type": "local",
+		    		"uri": "/apaf-datatype/datatype",
+		    		"method": "POST",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"update": {
+		    		"type": "local",
+		    		"uri": "/apaf-datatype/datatype",
+		    		"method": "PUT",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"delete": {
+		    		"type": "local",
+		    		"uri": "/apaf-datatype/datatype/@.id",
+		    		"method": "DELETE",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	},
+		    	"findByPrimaryKey": {
+		    		"type": "local",
+		    		"uri": "/apaf-datatype/datatype/@.id",
+		    		"method": "GET",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	}
+		    }
+		},
 		"editingToolbar": {
 		    "id":"editingToolbar",
 		    "version": "1.0.0",

@@ -223,6 +223,25 @@
   		"schema": "/application/:id",
   		"handler": "findApplicationHandler",
   		"securityRole": ""
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.dev.menu.separator",
+  		"menu": "development",
+  		"securityRole": "",
+  		"item": {
+			"type": "separator"
+		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.dev.menu.placeholder",
+  		"menu": "development",
+  		"securityRole": "",
+  		"item": {
+			"type": "placeholder",
+			"id": "developmentMenuPlaceholder"
+		}
   	}
   ],
   "provides": [

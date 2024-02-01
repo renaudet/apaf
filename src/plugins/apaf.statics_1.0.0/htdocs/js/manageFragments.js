@@ -26,6 +26,12 @@ initializeUi = function(){
 	});
 }
 
+updateVersion = function(record){
+	if(record.id){
+		record.version = increaseVersionNumber(record.version);
+	}
+}
+
 initNewRecord = function(){
 	let selectList = npaUi.getComponent(ITEM_SELECTION_LIST_ID);
 	selectList.select(-1);
@@ -66,12 +72,6 @@ saveRecord = function(){
 			}else
 				showError(errorMsg.message?errorMsg.message:errorMsg);
 		});
-	}
-}
-
-updateVersion = function(record){
-	if(record.id){
-		record.version = increaseVersionNumber(record.version);
 	}
 }
 

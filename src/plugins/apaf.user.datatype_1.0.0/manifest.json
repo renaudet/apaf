@@ -1,0 +1,133 @@
+{
+  "id": "apaf.user.datatype",
+  "name": "APAF Datatype handler",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.dev","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.user.datatype.logger",
+  		"dir": "apaf.user.datatype"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.user.datatype.router",
+  		"path": "/apaf-datatype"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.user.datatype.datatype",
+  		"datatype": {
+  			"id": "datatype",
+  			"name": "User Datatype",
+  			"database": "apaf_datatypes",
+  			"fields": [
+	    		{
+	    			"name": "name",
+	    			"label": "@apaf.user.datatype.name",
+	    			"required": true,
+	    			"size": 3,
+	    			"help": "@apaf.user.datatype.name.help"
+	    		},
+	    		{
+	    			"name": "label",
+	    			"label": "@apaf.user.datatype.label",
+	    			"required": true,
+	    			"size": 3,
+	    			"help": "@apaf.user.datatype.label.help"
+	    		},
+	    		{
+	    			"name": "description",
+	    			"label": "@apaf.user.datatype.description",
+	    			"required": false,
+	    			"size": 4
+	    		},
+	    		{
+	    			"name": "persistent",
+	    			"label": "@apaf.user.datatype.persistent",
+	    			"type": "check",
+	    			"help": "@apaf.user.datatype.persistent.help"
+	    		},
+	    		{
+	    			"name": "database",
+	    			"label": "@apaf.user.datatype.database",
+	    			"required": false,
+	    			"size": 4,
+	    			"help": "@apaf.user.datatype.database.help",
+	    			"constraint": ""
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.user.datatype.menu.datatype",
+  		"menu": "developmentMenuPlaceholder",
+  		"securityRole": "",
+  		"item": {
+			"id": "manageDatatypes",
+    		"label": "@apaf.menu.user.datatype.label",
+    		"actionId": "redirect",
+    		"icon_": "/uiTools/img/silk/table.png",
+    		"icon": "/resources/img/apaf-datatypes.png",
+    		"uri": "/resources/html/manageDatatypes.html"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.datatype.query.user.datatype.handler",
+  		"router": "apaf.user.datatype.router",
+  		"method": "POST",
+  		"schema": "/datatype/query",
+  		"handler": "queryDatatypeHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.datatype.create.user.datatype.handler",
+  		"router": "apaf.user.datatype.router",
+  		"method": "POST",
+  		"schema": "/datatype",
+  		"handler": "createDatatypeHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.datatype.update.user.datatype.handler",
+  		"router": "apaf.user.datatype.router",
+  		"method": "PUT",
+  		"schema": "/datatype",
+  		"handler": "updateDatatypeHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.datatype.delete.user.datatype.handler",
+  		"router": "apaf.user.datatype.router",
+  		"method": "DELETE",
+  		"schema": "/datatype/:id",
+  		"handler": "deleteDatatypeHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.datatype.find.user.datatype.handler",
+  		"router": "apaf.user.datatype.router",
+  		"method": "GET",
+  		"schema": "/datatype/:id",
+  		"handler": "findDatatypeHandler",
+  		"securityRole": ""
+  	}
+  ],
+  "provides": [
+  ]
+}

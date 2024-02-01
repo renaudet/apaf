@@ -1,5 +1,5 @@
 /*
- * manageApplications.js - main javascript resource for the APAF Application Manage Applications Page
+ * manageDatatypes.js - main javascript resource for the APAF Application Manage Datatypes Page
  * Copyright 2024 Nicolas Renaudet - All rights reserved
  */
  
@@ -7,7 +7,7 @@ const GLOBAL_CONFIGURATION_FILE = '/resources/json/globalApafConfig.json';
 const EDIT_FORM_ID = 'editForm';
 const JSON_EDITOR_ID = 'jsonEditor';
 const ITEM_SELECTION_LIST_ID = 'itemSelectionList';
-const DATA_MANAGER_ID = 'applicationManager';
+const DATA_MANAGER_ID = 'datatypeManager';
 const EDITING_TOOLBAR_ID = 'editingToolbar';
 
 $(document).ready(function(){
@@ -35,14 +35,16 @@ updateVersion = function(record){
 initNewRecord = function(){
 	let selectList = npaUi.getComponent(ITEM_SELECTION_LIST_ID);
 	selectList.select(-1);
-	let application = {};
-	application.name = 'NewApplication';
-	application.version = '1.0.0';
-	application.description = 'some description here';
-	application.published = false;
-	application.fragments = [];
+	let datatype = {};
+	datatype.name = 'newDatatype';
+	//datatype.version = '1.0.0';
+	datatype.label = 'New Datatype';
+	datatype.description = 'Some description here';
+	datatype.persistent = false;
+	datatype.database = '';
+	datatype.fields = [];
 	let form = npaUi.getComponent(EDIT_FORM_ID);
-	form.setData(application);
+	form.setData(datatype);
 	form.setEditMode(true);
 }
 
@@ -50,7 +52,7 @@ saveRecord = function(){
 	let form = npaUi.getComponent(EDIT_FORM_ID);
 	if(form.isValid()){
 		let updatedRecord = form.getData();
-		updateVersion(updatedRecord);
+		//updateVersion(updatedRecord);
 		let dataManager = npaUi.getComponent(DATA_MANAGER_ID);
 		dataManager.update(updatedRecord).then(function(data){
 			let editor = npaUi.getComponent(JSON_EDITOR_ID);
@@ -79,7 +81,7 @@ saveJson = function(){
 	let editor = npaUi.getComponent(JSON_EDITOR_ID);
 	try{	
 		let updatedRecord = JSON.parse(editor.getText());
-		updateVersion(updatedRecord);
+		//updateVersion(updatedRecord);
 		let dataManager = npaUi.getComponent(DATA_MANAGER_ID);
 		dataManager.update(updatedRecord).then(function(data){
 			editor.setText(JSON.stringify(data,null,'\t'));
@@ -107,7 +109,7 @@ saveJson = function(){
 deleteRecord = function(){
 	let form = npaUi.getComponent(EDIT_FORM_ID);
 	let currentRecord = form.getData();
-	if(confirm(npaUi.getLocalizedString('@apaf.page.applications.delete.confirm',[currentRecord.name]))){
+	if(confirm(npaUi.getLocalizedString('@apaf.page.datatypes.delete.confirm',[currentRecord.name]))){
 		let dataManager = npaUi.getComponent(DATA_MANAGER_ID);
 		dataManager.delete(currentRecord).then(function(data){
 			let editor = npaUi.getComponent(JSON_EDITOR_ID);
@@ -121,7 +123,7 @@ deleteRecord = function(){
 			toolbar.setEnabled('edit',false);
 			toolbar.setEnabled('save',false);
 			toolbar.setEnabled('delete',false);
-			flash('@apaf.page.applications.delete.flash');
+			flash('@apaf.page.datatypes.delete.flash');
 		}).onError(function(errorMsg){
 			if(errorMsg.httpStatus==404){
 				showError('@apaf.error.http.not.found');

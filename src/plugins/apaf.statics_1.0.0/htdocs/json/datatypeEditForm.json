@@ -1,0 +1,47 @@
+{
+    "id":"editForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.datatypes.form.title",
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.user.datatype.name",
+    			"required": true,
+    			"size": 3,
+    			"help": "@apaf.user.datatype.name.help"
+    		},
+    		{
+    			"name": "label",
+    			"label": "@apaf.user.datatype.label",
+    			"required": true,
+    			"size": 3,
+    			"help": "@apaf.user.datatype.label.help"
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.user.datatype.description",
+    			"required": false,
+    			"size": 4
+    		},
+    		{
+    			"name": "persistent",
+    			"label": "@apaf.user.datatype.persistent",
+    			"type": "check",
+    			"help": "@apaf.user.datatype.persistent.help"
+    		},
+    		{
+    			"name": "database",
+    			"label": "@apaf.user.datatype.database",
+    			"required": false,
+    			"size": 4,
+    			"help": "@apaf.user.datatype.database.help",
+    			"constraint": "if(!@.persistent){#.val('');#.setEditMode(false);}else{#.val('mybase');#.setEditMode(true);}"
+    		}
+    	]
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "id":"datatypeFieldsTable",
+    "version": "1.0.0",
+    "type": "Datatable",
+    "configuration": {
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"contentAdapter": "@.fields",
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "name",
+        	"ascending": true
+        },
+        "maxHeight": 300,
+        "columns": [
+            {
+                "label": "Name",
+                "field": "name"
+            },
+            {
+                "label": "Label",
+                "field": "label"
+            },
+            {
+                "label": "Type",
+                "field": "type",
+                "renderer": "typeof @.type=='undefined'?'text':@.type"
+            },
+            {
+                "label": "Actions",
+                "type": "rowActions",
+                "actions": [
+                    {
+                        "label": "@datatype.fields.table.column.edit.label",
+                        "actionId": "edit",
+                        "icon": "/uiTools/img/silk/brick_edit.png"
+                    },
+                    {
+                        "label": "@datatype.fields.table.column.delete.label",
+                        "actionId": "delete",
+                        "icon": "/uiTools/img/silk/brick_delete.png"
+                    }
+                ]
+            }
+        ]
+    }
+}

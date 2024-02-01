@@ -1,0 +1,10 @@
+{
+    "id":"manageUserDatatypesCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/resources/img/apaf-datatypes.png",
+        "label": "@apaf.page.datatypes.title",
+        "stylesheet": "/resources/css/apafCard.css"
+    }
+}
