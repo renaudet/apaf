@@ -41,6 +41,14 @@ A typical environment should define the following environment variables:
 * **APAF_COUCH_DB_USER_PASSWD** (required if CouchDB is secured)
 * **NODE_PATH** (required) should point to the node_modules folder of the Node-Plugin-Architecture base installation
 
+Other usefull environment variables for APAF:
+
+* **APPLICATION** (optional) the NPA application to start - defaults to the NPA `test` application
+* **LOG_DIR** (optional) the location for log files - defaults to './'
+* **LOG_LEVEL** (optional) the initial logging level - defaults to 'info' - one of 'info', 'fine' and 'finest'
+* **PORT** (optional) the HTTP server listening port - defaults to 9080
+* **ENV_NAME** (optional) a name for the process that makes it easier to retrieve
+
 A typical command-line may be:
 
 ```bash
@@ -49,11 +57,11 @@ $>node app.js --application apaf --logs ./logs --level info --port 9090 --name "
 
 where:
 
-* **application** (required) the NPA application to start - here 'apaf'
-* **logs** (optional) the location for log files - defaults to './'
-* **level** (optional) the initial logging level - defaults to 'info' - one of 'info', 'fine' and 'finest'
-* **port** (optional) the HTTP server listening port - defaults to 9080
-* **name** (optional) a name for the process that makes it easier to retrieve
+* **application** (optional) the NPA application to start - here 'apaf' - same as setting the `APPLICATION` environment variable
+* **logs** (optional) the location for log files - defaults to './' - same as setting the `LOG_DIR` environment variable
+* **level** (optional) the initial logging level - defaults to 'info' - one of 'info', 'fine' and 'finest' - same as setting the `LOG_LEVEL` environment variable
+* **port** (optional) the HTTP server listening port - defaults to 9080 - same as setting the `PORT` environment variable
+* **name** (optional) a name for the process that makes it easier to retrieve - same as setting the `ENV_NAME` environment variable
 
 ## Databases
 
@@ -65,3 +73,27 @@ Upon successfull startup, APAF will create the following CouchDB databases:
 * apaf_datatypes: defines User-designed datatypes that may be used in custom databases, forms...
 * apaf_fragments: defines the fragments of code used to assemble APAF applications
 * apaf_applications: defines APAF User-defined applications - published ones will appear on the Applications menu
+
+## Getting Started
+
+Once the server is started, the APAF frontend may be accessed using the default URL `http://localhost:<apaf-port>`
+
+You will have to login first using the `admin` user. The default password may be found in the `apaf.login`'s plugin.
+
+### Administering your APAF Server
+
+Once logged in as the `admin` user, the very first things to do are:
+
+* change the admin user's password by using the Help / Manage Profile menu
+* create some Users Groups using the Administration / Manage Groups menu
+* associate built-in Security Roles to these Groups
+* create some Users and associate them with those newly-created Groups
+
+**Notice** that the `admin` user is a full priviledges user the same way as a `root` user on an Unix Operating System. Hence it is a best practice to create a regular User for working session with APAF.
+
+## Built-in Security Roles
+
+The following built-in Security Roles are used by APAF to protect important features at server-level. A User must be associated to a required Security Role in order to be granted access to a protected API.
+
+* administrator: required role for all administrative tasks such as creating/updating/deleting a User, a Group or a custom Security Role
+* developer: required role for all development tasks such as creating/updating/deleting Code Fragments, APAF Applications or custom Datatypes
