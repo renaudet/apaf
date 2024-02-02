@@ -82,16 +82,19 @@ You will have to login first using the `admin` user. The default password may be
 
 ![The APAF Login Screen](https://github.com/renaudet/apaf/blob/main/screenshots/loginPage.png?raw=true)
 
+![The APAF Default Home Page](https://github.com/renaudet/apaf/blob/main/screenshots/homePage.png?raw=true)
+
 ### Administering your APAF Server
 
 Once logged in as the `admin` user, the very first things to do are:
 
-* change the admin user's password by using the Help / Manage Profile menu
-* create some Users Groups using the Administration / Manage Groups menu
-* associate built-in Security Roles to these Groups
-* create some Users and associate them with those newly-created Groups
+- [ ] change the admin user's password by using the Help / Manage Profile menu
+- [ ] create some Users Groups using the Administration / Manage Groups menu
+- [ ] associate built-in Security Roles to these Groups
+- [ ] create some Users and associate them with those newly-created Groups
 
-**Notice** that the `admin` user is a full priviledges user the same way as a `root` user on an Unix Operating System. Hence it is a best practice to create a regular User for working session with APAF.
+> [!CAUTION]
+> Notice that the `admin` user is a full priviledges user the same way as a `root` user on an Unix Operating System. Hence it is a best practice to create a regular User for working session with APAF.
 
 ## Built-in Security Roles
 
@@ -99,3 +102,9 @@ The following built-in Security Roles are used by APAF to protect important feat
 
 * administrator: required role for all administrative tasks such as creating/updating/deleting a User, a Group or a custom Security Role
 * developer: required role for all development tasks such as creating/updating/deleting Code Fragments, APAF Applications or custom Datatypes
+
+![The APAF Security Roles Management Screen](https://github.com/renaudet/apaf/blob/main/screenshots/rolesPage.png?raw=true)
+
+![The APAF Groups Management Screen](https://github.com/renaudet/apaf/blob/main/screenshots/groupsPage.png?raw=true)
+
+![The APAF Users Management Screen](https://github.com/renaudet/apaf/blob/main/screenshots/usersPage.png?raw=true)
