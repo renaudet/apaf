@@ -32,12 +32,12 @@
                 "actions": [
                     {
                         "label": "@datatype.fields.table.column.edit.label",
-                        "actionId": "edit",
+                        "actionId": "editField",
                         "icon": "/uiTools/img/silk/brick_edit.png"
                     },
                     {
                         "label": "@datatype.fields.table.column.delete.label",
-                        "actionId": "delete",
+                        "actionId": "deleteField",
                         "icon": "/uiTools/img/silk/brick_delete.png"
                     }
                 ]

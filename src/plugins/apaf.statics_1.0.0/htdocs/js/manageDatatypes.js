@@ -5,10 +5,15 @@
  
 const GLOBAL_CONFIGURATION_FILE = '/resources/json/globalApafConfig.json';
 const EDIT_FORM_ID = 'editForm';
+const FIELD_EDIT_FORM_ID = 'fieldEditForm';
 const JSON_EDITOR_ID = 'jsonEditor';
 const ITEM_SELECTION_LIST_ID = 'itemSelectionList';
 const DATA_MANAGER_ID = 'datatypeManager';
 const EDITING_TOOLBAR_ID = 'editingToolbar';
+const DIALOG_ID = 'simpleDialog';
+const DATATABLE_ID = 'datatypeFieldsTable';
+
+var dialogNotOpenYet = true;
 
 $(document).ready(function(){
 	checkSessionStatus(initializeUi);
@@ -21,6 +26,8 @@ initializeUi = function(){
 			npaUi.on('save',saveRecord);
 			npaUi.on('delete',deleteRecord);
 			npaUi.on('saveJson',saveJson);
+			npaUi.on('addField',addDatatypeField);
+			npaUi.on('editField',editDatatypeField);
 			npaUi.render();
 		});
 	});
@@ -131,4 +138,43 @@ deleteRecord = function(){
 				showError(errorMsg.message?errorMsg.message:errorMsg);
 		});
 	}
+}
+
+addDatatypeField = function(){
+	let dialog = npaUi.getComponent(DIALOG_ID);
+	let fieldEditForm = npaUi.getComponent(FIELD_EDIT_FORM_ID);
+	let newField = {};
+	newField.name = 'aField';
+	newField.label = 'A Field';
+	newField.type = 'text';
+	newField.isIdField = true;
+	fieldEditForm.setData(newField);
+	if(dialogNotOpenYet){
+		dialog.setTitle('@apaf.page.datatypes.dialog.title');
+	}
+	fieldEditForm.setEditMode(true);
+	dialog.onClose(function(){
+		let form = npaUi.getComponent(EDIT_FORM_ID);
+		let datatype = form.getData();
+		datatype.fields.push(fieldEditForm.getData());
+		let datatable = npaUi.getComponent(DATATABLE_ID);
+		datatable.refresh();
+	});
+	dialog.open();
+}
+
+editDatatypeField = function(event){
+	let dialog = npaUi.getComponent(DIALOG_ID);
+	let fieldEditForm = npaUi.getComponent(FIELD_EDIT_FORM_ID);
+	fieldEditForm.setEditMode(true);
+	if(dialogNotOpenYet){
+		dialogNotOpenYet = false;
+		dialog.setTitle('@apaf.page.datatypes.dialog.title');
+	}
+	dialog.onClose(function(){
+		Object.assign(event.item,fieldEditForm.getData());
+		let datatable = npaUi.getComponent(DATATABLE_ID);
+		datatable.refresh();
+	});
+	dialog.open();
 }

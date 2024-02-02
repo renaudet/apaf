@@ -1,0 +1,88 @@
+{
+    "id":"fieldEditForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.datatypes.field.form.title",
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "datatypeFieldsTable",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.user.datatype.field.name.label",
+    			"required": true,
+    			"size": 4
+    		},
+    		{
+    			"name": "label",
+    			"label": "@apaf.user.datatype.field.label.label",
+    			"required": true,
+    			"size": 5,
+    			"help": "@apaf.user.datatype.field.label.help"
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.user.datatype.field.description.label",
+    			"required": false,
+    			"size": 9
+    		},
+    		{
+    			"name": "type",
+    			"label": "@apaf.user.datatype.field.type.label",
+    			"type": "select",
+    			"size": "5",
+    			"values": [
+    				{"label": "@apaf.user.datatype.field.type.text", "value": "text"},
+    				{"label": "@apaf.user.datatype.field.type.password", "value": "password"},
+    				{"label": "@apaf.user.datatype.field.type.integer", "value": "integer"},
+    				{"label": "@apaf.user.datatype.field.type.date", "value": "date"},
+    				{"label": "@apaf.user.datatype.field.type.check", "value": "check"},
+    				{"label": "@apaf.user.datatype.field.type.switch", "value": "switch"},
+    				{"label": "@apaf.user.datatype.field.type.radio", "value": "radio"},
+    				{"label": "@apaf.user.datatype.field.type.color", "value": "color"},
+    				{"label": "@apaf.user.datatype.field.type.range", "value": "range"},
+    				{"label": "@apaf.user.datatype.field.type.select", "value": "select"},
+    				{"label": "@apaf.user.datatype.field.type.json", "value": "json"},
+    				{"label": "@apaf.user.datatype.field.type.javascript", "value": "javascript"},
+    				{"label": "@apaf.user.datatype.field.type.textarea", "value": "textarea"},
+    				{"label": "@apaf.user.datatype.field.type.array", "value": "array"},
+    				{"label": "@apaf.user.datatype.field.type.upload", "value": "upload"},
+    				{"label": "@apaf.user.datatype.field.type.button", "value": "button"},
+    				{"label": "@apaf.user.datatype.field.type.placeholder", "value": "placeholder"},
+    				{"label": "@apaf.user.datatype.field.type.richText", "value": "richText"},
+    				{"label": "@apaf.user.datatype.field.type.reference", "value": "reference"}
+    			]
+    		},
+    		{
+    			"name": "isIdField",
+    			"label": "@apaf.user.datatype.field.idfield.label",
+    			"type": "switch"
+    		},
+    		{
+    			"name": "required",
+    			"label": "@apaf.user.datatype.field.required.label",
+    			"type": "switch"
+    		},
+    		{
+    			"name": "size",
+    			"label": "@apaf.user.datatype.field.size.label",
+    			"required": false,
+    			"type": "range",
+    			"size": 7,
+    			"min": 1,
+    			"max": 10,
+    			"step": 1,
+    			"help": "@apaf.user.datatype.field.size.help",
+    			"constraint_": "if(!@.persistent){#.val('');#.setEditMode(false);}else{#.val('mybase');#.setEditMode(true);}"
+    		},
+    		{
+    			"name": "constraint",
+    			"label": "@apaf.user.datatype.field.constraint.label",
+    			"type": "text",
+    			"required": false,
+    			"size": 9
+    		}
+    	]
+    }
+}

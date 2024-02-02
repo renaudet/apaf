@@ -28,7 +28,12 @@
 						<div data-tab-target="form">
 							<div id="toolbar" class="npaUi" data-ref="editingToolbar"></div>
 							<div id="form0" class="npaUi" data-config="/resources/json/datatypeEditForm.json"></div>
-							<div id="datatablePlaceholder" class="npaUi" data-config="/resources/json/datatypeFields.json"></div>
+							<div class="row">
+								<div class="col-2">&nbsp;</div>
+								<div class="col-10">
+									<div id="datatablePlaceholder" class="npaUi" data-config="/resources/json/datatypeFields.json"></div>
+								</div>
+							</div>
 						</div>
 						<div data-tab-target="json">
 							<div id="jsonEditor0" class="npaUi" data-ref="jsonEditor"></div>
@@ -36,6 +41,9 @@
 					</div>
 				</div>
 			</div>
+		</div>
+		<div id="modalPlaceholder" class="npaUi" data-ref="dialog">
+			<div id="form1" class="npaUi" data-config="/resources/json/fieldEditForm.json"></div>
 		</div>
 		<div id="notifier" class="npaUi" data-ref="notifier"></div>
 		<script src="/js/jquery-3.6.3.min.js"></script>
