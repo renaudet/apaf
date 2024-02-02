@@ -80,6 +80,8 @@ Once the server is started, the APAF frontend may be accessed using the default 
 
 You will have to login first using the `admin` user. The default password may be found in the `apaf.login`'s plugin.
 
+![The APAF Login Screen](https://github.com/renaudet/apaf/blob/main/screenshots/loginPage.png?raw=true)
+
 ### Administering your APAF Server
 
 Once logged in as the `admin` user, the very first things to do are:
