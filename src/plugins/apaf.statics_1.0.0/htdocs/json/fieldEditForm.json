@@ -128,8 +128,9 @@
     			"name": "choices",
     			"label": "@apaf.user.datatype.field.choice.label",
     			"type": "array",
+				"datatype": "object",
     			"required": false,
-				"constraint": "if(@.type=='radio'||@.type=='array'){#.val([{\"label\":\"Choice 1\",\"value\":\"1\"},'B','C']);#.setEditMode(true);}else{#.val([]);#.setEditMode(false);}"
+				"constraint": "if(@.type=='radio'||@.type=='array'){#.setEditMode(true);}else{#.val([]);#.setEditMode(false);}"
     		}
     	]
     }

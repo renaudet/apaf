@@ -40,7 +40,7 @@
     			"required": false,
     			"size": 4,
     			"help": "@apaf.user.datatype.database.help",
-    			"constraint": "if(!@.persistent){#.val('');#.setEditMode(false);}else{#.val('mybase');#.setEditMode(true);}"
+    			"constraint": "if(!@.persistent){#.val('');#.setEditMode(false);}else{#.setEditMode(true);}"
     		},
     		{
     			"name": "addFieldBtn",
