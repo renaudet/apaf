@@ -27,6 +27,11 @@
                 "renderer": "typeof @.type=='undefined'?'text':@.type"
             },
             {
+                "label": "Required",
+                "field": "required",
+                "type": "boolean"
+            },
+            {
                 "label": "Actions",
                 "type": "rowActions",
                 "actions": [

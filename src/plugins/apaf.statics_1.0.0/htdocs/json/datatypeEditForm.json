@@ -48,6 +48,13 @@
     			"type": "button",
     			"buttonType": "primary",
     			"actionId": "addField"
+    		},
+    		{
+    			"name": "testBtn",
+    			"label": "@apaf.user.datatype.test.field",
+    			"type": "button",
+    			"buttonType": "success",
+    			"actionId": "testForm"
     		}
     	]
     }

@@ -372,7 +372,7 @@
 		    "version": "1.0.0",
 		    "type": "Editor",
 		    "configuration": {
-		        "height": 500,
+		        "height": 650,
 		    	"selectionListener": true,
 		    	"selectionProvider": "itemSelectionList",
 		        "toolbar": {
@@ -423,6 +423,21 @@
 		    		},
 		    		{
 		    			"label": "@apaf.simple.dialog.close.label",
+		    			"action": "close"
+		    		}
+		    	]
+		    }
+		},
+		"emptyDialog": {
+		    "id":"emptyDialog",
+		    "version": "1.0.0",
+		    "type": "ModalDialog",
+		    "configuration": {
+		    	"title": "@apaf.simple.dialog.default.title",
+		    	"size": "XXL",
+		    	"buttons": [
+		    		{
+		    			"label": "@apaf.empty.dialog.close.label",
 		    			"action": "close"
 		    		}
 		    	]

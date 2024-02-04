@@ -8,3 +8,7 @@
 	background-color: #4b93db;
 	color: #ffffff;
 }
+
+.card-scrollable {
+	overflow: auto;
+}

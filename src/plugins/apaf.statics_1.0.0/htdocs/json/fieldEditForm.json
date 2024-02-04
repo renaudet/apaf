@@ -28,6 +28,12 @@
     			"size": 9
     		},
     		{
+    			"name": "help",
+    			"label": "@apaf.user.datatype.field.help.label",
+    			"required": false,
+    			"size": 9
+    		},
+    		{
     			"name": "type",
     			"label": "@apaf.user.datatype.field.type.label",
     			"type": "select",
@@ -62,7 +68,8 @@
     		{
     			"name": "required",
     			"label": "@apaf.user.datatype.field.required.label",
-    			"type": "switch"
+    			"type": "switch",
+				"constraint": "if(@.isIdField){#.val(true);}"
     		},
     		{
     			"name": "size",
@@ -74,6 +81,7 @@
     			"max": 10,
     			"step": 1,
     			"help": "@apaf.user.datatype.field.size.help",
+				"constraint": "if(@.type=='text'||@.type=='password'||@.type=='integer'||@.type=='date'||@.type=='range'||@.type=='select'){#.setEditMode(true)}else{#.val(5);#.setEditMode(false);}",
     			"constraint_": "if(!@.persistent){#.val('');#.setEditMode(false);}else{#.val('mybase');#.setEditMode(true);}"
     		},
     		{
@@ -82,6 +90,46 @@
     			"type": "text",
     			"required": false,
     			"size": 9
+    		},
+    		{
+    			"name": "default",
+    			"label": "@apaf.user.datatype.field.default.label",
+    			"type": "text",
+				"size": 5,
+    			"required": false,
+				"default": "",
+				"constraint": "if(@.type=='text'||@.type=='integer'||@.type=='range'){#.setEditMode(true);}else{#.val('');#.setEditMode(false);}"
+    		},
+    		{
+    			"name": "min",
+    			"label": "@apaf.user.datatype.field.min.label",
+    			"type": "integer",
+    			"required": false,
+				"default": 0,
+				"constraint": "if(@.type=='range'){#.setEditMode(true);}else{#.val(0);#.setEditMode(false);}"
+    		},
+    		{
+    			"name": "max",
+    			"label": "@apaf.user.datatype.field.max.label",
+    			"type": "integer",
+    			"required": false,
+				"default": 10,
+				"constraint": "if(@.type=='range'){#.val(10);#.setEditMode(true);}else{#.val(0);#.setEditMode(false);}"
+    		},
+    		{
+    			"name": "step",
+    			"label": "@apaf.user.datatype.field.step.label",
+    			"type": "integer",
+    			"required": false,
+				"default": 1,
+				"constraint": "if(@.type=='range'){#.val(1);#.setEditMode(true);}else{#.val(0);#.setEditMode(false);}"
+    		},
+    		{
+    			"name": "choices",
+    			"label": "@apaf.user.datatype.field.choice.label",
+    			"type": "array",
+    			"required": false,
+				"constraint": "if(@.type=='radio'||@.type=='array'){#.val([{\"label\":\"Choice 1\",\"value\":\"1\"},'B','C']);#.setEditMode(true);}else{#.val([]);#.setEditMode(false);}"
     		}
     	]
     }
