@@ -22,6 +22,15 @@
     			"help": "@apaf.user.datatype.field.label.help"
     		},
     		{
+    			"name": "displayIndex",
+    			"label": "@apaf.user.datatype.field.displayIndex.label",
+    			"required": true,
+    			"size": 2,
+    			"type": "integer",
+    			"default": 1,
+    			"help": "@apaf.user.datatype.field.displayIndex.help"
+    		},
+    		{
     			"name": "description",
     			"label": "@apaf.user.datatype.field.description.label",
     			"required": false,
@@ -69,7 +78,8 @@
     			"name": "required",
     			"label": "@apaf.user.datatype.field.required.label",
     			"type": "switch",
-				"constraint": "if(@.isIdField){#.val(true);}"
+				"constraint": "if(@.isIdField){#.val(true);}",
+				"constrainedBy": "isIdField"
     		},
     		{
     			"name": "size",
@@ -82,7 +92,7 @@
     			"step": 1,
     			"help": "@apaf.user.datatype.field.size.help",
 				"constraint": "if(@.type=='text'||@.type=='password'||@.type=='integer'||@.type=='date'||@.type=='range'||@.type=='select'){#.setEditMode(true)}else{#.val(5);#.setEditMode(false);}",
-    			"constraint_": "if(!@.persistent){#.val('');#.setEditMode(false);}else{#.val('mybase');#.setEditMode(true);}"
+				"constrainedBy": "type"
     		},
     		{
     			"name": "constraint",
@@ -92,13 +102,24 @@
     			"size": 9
     		},
     		{
+    			"name": "constrainedBy",
+    			"label": "@apaf.user.datatype.field.constrainedBy.label",
+    			"type": "text",
+    			"required": false,
+    			"size": 3,
+    			"help": "@apaf.user.datatype.field.constrainedBy.help",
+				"constraint": "if(@.constraint.length>0){#.setEditMode(true);}else{#.val('');#.setEditMode(false);}",
+				"constrainedBy": "constraint"
+    		},
+    		{
     			"name": "default",
     			"label": "@apaf.user.datatype.field.default.label",
     			"type": "text",
 				"size": 5,
     			"required": false,
 				"default": "",
-				"constraint": "if(@.type=='text'||@.type=='integer'||@.type=='range'){#.setEditMode(true);}else{#.val('');#.setEditMode(false);}"
+				"constraint": "if(@.type=='text'||@.type=='integer'||@.type=='range'){#.setEditMode(true);}else{#.val('');#.setEditMode(false);}",
+				"constrainedBy": "type"
     		},
     		{
     			"name": "min",
@@ -106,7 +127,8 @@
     			"type": "integer",
     			"required": false,
 				"default": 0,
-				"constraint": "if(@.type=='range'){#.setEditMode(true);}else{#.val(0);#.setEditMode(false);}"
+				"constraint": "if(@.type=='range'){#.setEditMode(true);}else{#.val(0);#.setEditMode(false);}",
+				"constrainedBy": "type"
     		},
     		{
     			"name": "max",
@@ -114,7 +136,8 @@
     			"type": "integer",
     			"required": false,
 				"default": 10,
-				"constraint": "if(@.type=='range'){#.val(10);#.setEditMode(true);}else{#.val(0);#.setEditMode(false);}"
+				"constraint": "if(@.type=='range'){#.setEditMode(true);}else{#.val(0);#.setEditMode(false);}",
+				"constrainedBy": "type"
     		},
     		{
     			"name": "step",
@@ -122,7 +145,22 @@
     			"type": "integer",
     			"required": false,
 				"default": 1,
-				"constraint": "if(@.type=='range'){#.val(1);#.setEditMode(true);}else{#.val(0);#.setEditMode(false);}"
+				"constraint": "if(@.type=='range'){#.setEditMode(true);}else{#.val(0);#.setEditMode(false);}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "datatype",
+    			"label": "@apaf.user.datatype.field.datatype.label",
+    			"type": "select",
+    			"size": 3,
+    			"required": true,
+				"default": "text",
+				"values": [
+    				{"label": "@apaf.user.datatype.field.datatype.text", "value": "text"},
+    				{"label": "@apaf.user.datatype.field.datatype.object", "value": "object"}
+    			],
+				"constraint": "if(@.type=='array'){#.setEditMode(true);}else{#.setEditMode(false);}",
+				"constrainedBy": "type"
     		},
     		{
     			"name": "choices",
@@ -130,7 +168,37 @@
     			"type": "array",
 				"datatype": "object",
     			"required": false,
-				"constraint": "if(@.type=='radio'||@.type=='array'){#.setEditMode(true);}else{#.val([]);#.setEditMode(false);}"
+				"constraint": "if(@.type=='radio'){#.setEditMode(true);}else{#.val([]);#.setEditMode(false);}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "buttonType",
+    			"label": "@apaf.user.datatype.field.buttonType.label",
+    			"type": "select",
+    			"size": 3,
+    			"required": true,
+				"default": "primary",
+				"values": [
+    				{"label": "Primary", "value": "primary"},
+    				{"label": "Secondary", "value": "secondary"},
+    				{"label": "Success", "value": "success"},
+    				{"label": "Danger", "value": "danger"},
+    				{"label": "Warning", "value": "warning"},
+    				{"label": "Info", "value": "info"},
+    				{"label": "Light", "value": "light"},
+    				{"label": "Dark", "value": "dark"}
+    			],
+				"constraint": "if(@.type=='button'){#.setEditMode(true);}else{#.setEditMode(false);}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "actionId",
+    			"label": "@apaf.user.datatype.field.actionId.label",
+    			"type": "text",
+    			"required": false,
+    			"size": 3,
+				"constraint": "if(@.type=='button'){#.setEditMode(true);}else{#.setEditMode(false);}",
+				"constrainedBy": "type"
     		}
     	]
     }
