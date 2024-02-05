@@ -66,6 +66,10 @@ plugin.loginHandler = function(req,res){
 						securityEngine.loadUserRoles(registeredUser,function(user){
 							req.session.user = user;
 							req.session.user.password = password;
+							let now = moment();
+							req.session.lastAccess = now;
+							req.session.created = now;
+							req.session.alive = true;
 							res.json({"status": 200,"message": "ok","data": user.roles});
 						});
 					}else{

@@ -4,6 +4,7 @@
  */
  
 const ApafPlugin = require('../../apafUtil.js');
+const moment = require('moment');
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const GROUP_DATATYPE = 'group';
 const SECURITY_ROLE_DATATYPE = 'role';
@@ -17,6 +18,7 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 	if(typeof session!='undefined' && session!=null){
 		let user = session.user;
 		if(typeof user!=undefined && user!=null){
+			session.lastAccess = moment();
 			if(user.isAdmin || (user.roles && (typeof user.roles[requiredRole]!='undefined' || requiredRole==null))){
 				this.trace('<-checkUserAccess(ok)');
 				then(null,user);
