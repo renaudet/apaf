@@ -28,6 +28,8 @@
   		"datatype": {
   			"id": "fragment",
   			"name": "Fragment",
+  			"builtIn": true,
+  			"persistent": true,
   			"database": "apaf_fragments",
   			"fields": [
 	    		{
@@ -138,6 +140,8 @@
   		"datatype": {
   			"id": "application",
   			"name": "Application",
+  			"builtIn": true,
+  			"persistent": true,
   			"database": "apaf_applications",
   			"fields": [
 	    		{

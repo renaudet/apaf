@@ -36,6 +36,8 @@
   		"datatype": {
   			"id": "user",
   			"name": "User",
+  			"builtIn": true,
+  			"persistent": true,
   			"database": "apaf_users",
   			"fields": [
 	    		{
@@ -179,6 +181,8 @@
   		"datatype": {
   			"id": "group",
   			"name": "Group",
+  			"builtIn": true,
+  			"persistent": true,
   			"database": "apaf_groups",
   			"fields": [
 	    		{
@@ -278,6 +282,8 @@
   		"datatype": {
   			"id": "role",
   			"name": "SecurityRole",
+  			"builtIn": true,
+  			"persistent": true,
   			"database": "apaf_roles",
   			"fields": [
 	    		{

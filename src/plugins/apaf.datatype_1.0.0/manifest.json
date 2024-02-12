@@ -28,6 +28,53 @@
 	  		"username": "APAF_COUCH_DB_USER",
 	  		"password": "APAF_COUCH_DB_USER_PASSWD"
   		}
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.datatype.user.datatype",
+  		"datatype": {
+  			"id": "datatype",
+  			"name": "User Datatype",
+  			"builtIn": true,
+  			"persistent": true,
+  			"database": "apaf_datatypes",
+  			"fields": [
+	    		{
+	    			"name": "name",
+	    			"label": "@apaf.user.datatype.name",
+	    			"required": true,
+	    			"size": 3,
+	    			"help": "@apaf.user.datatype.name.help"
+	    		},
+	    		{
+	    			"name": "label",
+	    			"label": "@apaf.user.datatype.label",
+	    			"required": true,
+	    			"size": 3,
+	    			"help": "@apaf.user.datatype.label.help"
+	    		},
+	    		{
+	    			"name": "description",
+	    			"label": "@apaf.user.datatype.description",
+	    			"required": false,
+	    			"size": 4
+	    		},
+	    		{
+	    			"name": "persistent",
+	    			"label": "@apaf.user.datatype.persistent",
+	    			"type": "check",
+	    			"help": "@apaf.user.datatype.persistent.help"
+	    		},
+	    		{
+	    			"name": "database",
+	    			"label": "@apaf.user.datatype.database",
+	    			"required": false,
+	    			"size": 4,
+	    			"help": "@apaf.user.datatype.database.help",
+	    			"constraint": ""
+	    		}
+  			]
+  		}
   	}
   ],
   "provides": [

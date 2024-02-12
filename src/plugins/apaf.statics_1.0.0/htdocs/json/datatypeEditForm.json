@@ -43,6 +43,72 @@
     			"constraint": "if(!@.persistent){#.val('');#.setEditMode(false);}else{#.setEditMode(true);}"
     		},
     		{
+    			"name": "readRole",
+    			"label": "@apaf.user.datatype.read.role",
+    			"type": "reference",
+    			"multiple": false,
+    			"required": false,
+    			"size": 4,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "roleManager"
+		        },
+		        "renderer": {
+		        	"title": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "'<img src=\"/uiTools/img/silk/lock.png\">&nbsp;'+@.name"
+		        	}
+		        }
+    		},
+    		{
+    			"name": "writeRole",
+    			"label": "@apaf.user.datatype.update.role",
+    			"type": "reference",
+    			"multiple": false,
+    			"required": false,
+    			"size": 4,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "roleManager"
+		        },
+		        "renderer": {
+		        	"title": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.name"
+		        	}
+		        }
+    		},
+    		{
+    			"name": "deleteRole",
+    			"label": "@apaf.user.datatype.delete.role",
+    			"type": "reference",
+    			"multiple": false,
+    			"required": false,
+    			"size": 4,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "roleManager"
+		        },
+		        "renderer": {
+		        	"title": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.name"
+		        	}
+		        }
+    		},
+    		{
     			"name": "addFieldBtn",
     			"label": "@apaf.user.datatype.add.field",
     			"type": "button",

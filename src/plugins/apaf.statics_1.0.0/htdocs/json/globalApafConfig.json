@@ -300,6 +300,13 @@
 		    	}
 		    }
 		},
+		"genericDataManager": {
+		    "id":"genericManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+		    }
+		},
 		"editingToolbar": {
 		    "id":"editingToolbar",
 		    "version": "1.0.0",
@@ -437,9 +444,41 @@
 		    	"size": "XXL",
 		    	"buttons": [
 		    		{
+		    			"label": "@apaf.empty.dialog.cancel.label",
+		    			"action": "cancel"
+		    		},
+		    		{
 		    			"label": "@apaf.empty.dialog.close.label",
 		    			"action": "close"
 		    		}
+		    	]
+		    }
+		},
+		"dataToolbar": {
+		    "id":"dataToolbar",
+		    "version": "1.0.0",
+		    "type": "Toolbar",
+		    "configuration": {
+		    	"selectionListener": true,
+		    	"selectionProvider": "itemSelectionList",
+		    	"actions": [
+		    		{
+		                "label": "@data.toolbar.print.label",
+		                "actionId": "print",
+		                "icon": "/uiTools/img/silk/printer.png",
+		                "enabled": false,
+		                "enableOnSelection": false
+		            },
+		    		{
+		                "type": "separator"
+		            },
+		    		{
+		                "label": "@data.toolbar.add.label",
+		                "actionId": "add",
+		                "icon": "/uiTools/img/silk/add.png",
+		                "enabled": false,
+		                "enableOnSelection": true
+		            }
 		    	]
 		    }
 		}

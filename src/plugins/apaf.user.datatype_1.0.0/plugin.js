@@ -57,6 +57,7 @@ plugin.createDatatypeHandler = function(req,res){
 				}else{
 					plugin.debug('<-createDatatypeHandler() - success');
 					res.json({"status": 200,"message": "created","data": data});
+					datatypePlugin.refreshDatatype(data);
 				}
 			});
 		}
@@ -82,6 +83,7 @@ plugin.updateDatatypeHandler = function(req,res){
 				}else{
 					plugin.debug('<-updateDatatypeHandler() - success');
 					res.json({"status": 200,"message": "updated","data": data});
+					datatypePlugin.refreshDatatype(data);
 				}
 			});
 		}
@@ -105,31 +107,244 @@ plugin.deleteDatatypeHandler = function(req,res){
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					plugin.debug('<-deleteDatatypeHandler() - success');
-					res.json({"status": 200,"message": "deleted","data": data});
+					res.json({"status": 200,"message": "deleted","data": data.record});
+					datatypePlugin.refreshDatatype(data.record,true);
 				}
 			});
 		}
 	});
 }
 
-plugin.findDatatypeHandler = function(req,res){
-	plugin.debug('->findDatatypeHandler()');
-	let requiredRole = plugin.getRequiredSecurityRole('apaf.datatype.find.user.datatype.handler');
+plugin.findDatatypeByPrimaryKeyHandler = function(req,res){
+	plugin.debug('->findDatatypeByPrimaryKeyHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.datatype.find.user.datatype.by.id.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
-			plugin.debug('<-findDatatypeHandler() - error');
+			plugin.debug('<-findDatatypeByPrimaryKeyHandler() - error');
 			res.json({"status": 500,"message": err,"data": []});
 		}else{
 			let recordId = req.params.id;
 			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 			datatypePlugin.findByPrimaryKey(USER_DATATYPE_DATATYPE,{"id": recordId},function(err,data){
 				if(err){
-					plugin.debug('<-findDatatypeHandler() - error');
+					plugin.debug('<-findDatatypeByPrimaryKeyHandler() - error');
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
-					plugin.debug('<-findDatatypeHandler() - success');
+					plugin.debug('<-findDatatypeByPrimaryKeyHandler() - success');
 					res.json({"status": 200,"message": "found","data": data});
+				}
+			});
+		}
+	});
+}
+
+plugin.findDatatypeByNameHandler = function(req,res){
+	plugin.debug('->findDatatypeByNameHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.datatype.find.user.datatype.by.name.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-findDatatypeByNameHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let datatypeName = req.query.name;
+			if(typeof datatypeName=='undefined' || datatypeName.length==0){
+				plugin.debug('<-findDatatypeByNameHandler() - error invalid name');
+				res.json({"status": 406,"message": "Not Acceptable","data": "No datatype name found in request"});
+			}else{
+				let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+				datatypePlugin.query(USER_DATATYPE_DATATYPE,{"selector": {"name": {"$eq": datatypeName}}},function(err,data){
+					if(err){
+						plugin.debug('<-findDatatypeByNameHandler() - error');
+						res.json({"status": 500,"message": err,"data": []});
+					}else{
+						if(data && data.length>0){
+							let datatypeRecord = data[0];
+							plugin.debug('<-findDatatypeByNameHandler() - success');
+							res.json({"status": 200,"message": "found","data": datatypeRecord});
+						}else{
+							plugin.debug('<-findDatatypeByNameHandler() - error');
+							res.json({"status": 404,"message": "Not Found"});
+						}
+					}
+				});
+			}
+		}
+	});
+}
+
+plugin.queryUserDataHandler = function(req,res){
+	plugin.debug('->queryUserDataHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.datatype.query.user.data.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-queryUserDataHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let datatypeName = req.params.datatypeName;
+			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+			datatypePlugin.query(USER_DATATYPE_DATATYPE,{"selector": {"name": {"$eq": datatypeName}}},function(err,data){
+				if(err){
+					plugin.debug('<-queryUserDataHandler() - error');
+					res.json({"status": 500,"message": err,"data": []});
+				}else{
+					if(data && data.length>0){
+						let datatypeRecord = data[0];
+						if(user.isAdmin || datatypeRecord.readRole.length==0 ||
+						   typeof user.roles[datatypeRecord.readRole]!='undefined'){
+							datatypePlugin.query(datatypeRecord.name,{},function(err,data){
+								if(err){
+									plugin.debug('<-queryUserDataHandler() - error');
+									res.json({"status": 500,"message": err,"data": []});
+								}else{
+									plugin.debug('<-queryUserDataHandler() - success');
+									res.json({"status": 200,"message": "found","data": data});
+								}
+							});
+						}else{
+							plugin.debug('<-queryUserDataHandler() - error');
+							res.json({"status": 401,"message": "unauthorized","data": []});
+						}
+					}else{
+						plugin.debug('<-queryUserDataHandler() - error');
+						let msg = 'datatype '+datatypeName+' not found';
+						res.json({"status": 404,"message": "Not Found","data": msg});
+					}
+				}
+			});
+		}
+	});
+}
+
+plugin.createUserDataHandler = function(req,res){
+	plugin.debug('->createUserDataHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.datatype.create.user.data.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-createUserDataHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let datatypeName = req.params.datatypeName;
+			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+			datatypePlugin.query(USER_DATATYPE_DATATYPE,{"selector": {"name": {"$eq": datatypeName}}},function(err,data){
+				if(err){
+					plugin.debug('<-createUserDataHandler() - error');
+					res.json({"status": 500,"message": err,"data": []});
+				}else{
+					if(data && data.length>0){
+						let datatypeRecord = data[0];
+						if(user.isAdmin || datatypeRecord.writeRole.length==0 ||
+						   typeof user.roles[datatypeRecord.writeRole]!='undefined'){
+							datatypePlugin.createRecord(datatypeRecord.name,req.body,function(err,data){
+								if(err){
+									plugin.debug('<-createUserDataHandler() - error');
+									res.json({"status": 500,"message": err,"data": []});
+								}else{
+									plugin.debug('<-createUserDataHandler() - success');
+									res.json({"status": 200,"message": "created","data": data});
+								}
+							});
+						}else{
+							plugin.debug('<-createUserDataHandler() - error');
+							res.json({"status": 401,"message": "unauthorized","data": []});
+						}
+					}else{
+						plugin.debug('<-createUserDataHandler() - error');
+						let msg = 'datatype '+datatypeName+' not found';
+						res.json({"status": 404,"message": "Not Found","data": msg});
+					}
+				}
+			});
+		}
+	});
+}
+
+plugin.updateUserDataHandler = function(req,res){
+	plugin.debug('->updateUserDataHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.datatype.update.user.data.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-updateUserDataHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let datatypeName = req.params.datatypeName;
+			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+			datatypePlugin.query(USER_DATATYPE_DATATYPE,{"selector": {"name": {"$eq": datatypeName}}},function(err,data){
+				if(err){
+					plugin.debug('<-updateUserDataHandler() - error');
+					res.json({"status": 500,"message": err,"data": []});
+				}else{
+					if(data && data.length>0){
+						let datatypeRecord = data[0];
+						if(user.isAdmin || datatypeRecord.writeRole.length==0 ||
+						   typeof user.roles[datatypeRecord.writeRole]!='undefined'){
+							datatypePlugin.updateRecord(datatypeRecord.name,req.body,function(err,data){
+								if(err){
+									plugin.debug('<-updateUserDataHandler() - error');
+									res.json({"status": 500,"message": err,"data": []});
+								}else{
+									plugin.debug('<-updateUserDataHandler() - success');
+									res.json({"status": 200,"message": "updated","data": data});
+								}
+							});
+						}else{
+							plugin.debug('<-updateUserDataHandler() - error');
+							res.json({"status": 401,"message": "unauthorized","data": []});
+						}
+					}else{
+						plugin.debug('<-updateUserDataHandler() - error');
+						let msg = 'datatype '+datatypeName+' not found';
+						res.json({"status": 404,"message": "Not Found","data": msg});
+					}
+				}
+			});
+		}
+	});
+}
+
+plugin.deleteUserDataHandler = function(req,res){
+	plugin.debug('->deleteUserDataHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.datatype.delete.user.data.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-deleteUserDataHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let datatypeName = req.params.datatypeName;
+			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+			datatypePlugin.query(USER_DATATYPE_DATATYPE,{"selector": {"name": {"$eq": datatypeName}}},function(err,data){
+				if(err){
+					plugin.debug('<-deleteUserDataHandler() - error');
+					res.json({"status": 500,"message": err,"data": []});
+				}else{
+					if(data && data.length>0){
+						let datatypeRecord = data[0];
+						if(user.isAdmin || datatypeRecord.deleteRole.length==0 ||
+						   typeof user.roles[datatypeRecord.deleteRole]!='undefined'){
+							let id = req.params.id;
+							datatypePlugin.deleteRecord(datatypeRecord.name,{"id": id},function(err,data){
+								if(err){
+									plugin.debug('<-deleteUserDataHandler() - error');
+									res.json({"status": 500,"message": err,"data": []});
+								}else{
+									plugin.debug('<-deleteUserDataHandler() - success');
+									res.json({"status": 200,"message": "updated","data": data});
+								}
+							});
+						}else{
+							plugin.debug('<-deleteUserDataHandler() - error');
+							res.json({"status": 401,"message": "unauthorized","data": []});
+						}
+					}else{
+						plugin.debug('<-deleteUserDataHandler() - error');
+						let msg = 'datatype '+datatypeName+' not found';
+						res.json({"status": 404,"message": "Not Found","data": msg});
+					}
 				}
 			});
 		}

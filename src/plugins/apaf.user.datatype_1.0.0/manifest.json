@@ -24,49 +24,9 @@
   		"path": "/apaf-datatype"
   	},
   	{
-  		"point": "apaf.datatype.base.datatype",
-  		"id": "apaf.user.datatype.datatype",
-  		"datatype": {
-  			"id": "datatype",
-  			"name": "User Datatype",
-  			"database": "apaf_datatypes",
-  			"fields": [
-	    		{
-	    			"name": "name",
-	    			"label": "@apaf.user.datatype.name",
-	    			"required": true,
-	    			"size": 3,
-	    			"help": "@apaf.user.datatype.name.help"
-	    		},
-	    		{
-	    			"name": "label",
-	    			"label": "@apaf.user.datatype.label",
-	    			"required": true,
-	    			"size": 3,
-	    			"help": "@apaf.user.datatype.label.help"
-	    		},
-	    		{
-	    			"name": "description",
-	    			"label": "@apaf.user.datatype.description",
-	    			"required": false,
-	    			"size": 4
-	    		},
-	    		{
-	    			"name": "persistent",
-	    			"label": "@apaf.user.datatype.persistent",
-	    			"type": "check",
-	    			"help": "@apaf.user.datatype.persistent.help"
-	    		},
-	    		{
-	    			"name": "database",
-	    			"label": "@apaf.user.datatype.database",
-	    			"required": false,
-	    			"size": 4,
-	    			"help": "@apaf.user.datatype.database.help",
-	    			"constraint": ""
-	    		}
-  			]
-  		}
+  		"point": "npa.http.router",
+  		"id": "apaf.user.data.router",
+  		"path": "/user-data"
   	},
   	{
   		"point": "apaf.menu.item.provider",
@@ -120,11 +80,69 @@
   	},
   	{
   		"point": "npa.http.handler",
-  		"id": "apaf.datatype.find.user.datatype.handler",
+  		"id": "apaf.datatype.find.user.datatype.by.id.handler",
   		"router": "apaf.user.datatype.router",
   		"method": "GET",
   		"schema": "/datatype/:id",
-  		"handler": "findDatatypeHandler",
+  		"handler": "findDatatypeByPrimaryKeyHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.datatype.find.user.datatype.by.name.handler",
+  		"router": "apaf.user.datatype.router",
+  		"method": "GET",
+  		"schema": "/datatype",
+  		"handler": "findDatatypeByNameHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.user.datatype.menu.user.data",
+  		"menu": "developmentMenuPlaceholder",
+  		"securityRole": "",
+  		"item": {
+			"id": "manageUserData",
+    		"label": "@apaf.menu.user.data.label",
+    		"actionId": "redirect",
+    		"icon": "/resources/img/apaf-user-data.png",
+    		"uri": "/resources/html/manageUserData.html"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.datatype.query.user.data.handler",
+  		"router": "apaf.user.data.router",
+  		"method": "POST",
+  		"schema": "/:datatypeName/query",
+  		"handler": "queryUserDataHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.datatype.create.user.data.handler",
+  		"router": "apaf.user.data.router",
+  		"method": "POST",
+  		"schema": "/:datatypeName",
+  		"handler": "createUserDataHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.datatype.update.user.data.handler",
+  		"router": "apaf.user.data.router",
+  		"method": "PUT",
+  		"schema": "/:datatypeName",
+  		"handler": "updateUserDataHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.datatype.delete.user.data.handler",
+  		"router": "apaf.user.data.router",
+  		"method": "DELETE",
+  		"schema": "/:datatypeName/:id",
+  		"handler": "deleteUserDataHandler",
   		"securityRole": ""
   	}
   ],
