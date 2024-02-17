@@ -7,6 +7,12 @@
     	"class": "form-frame-noborder",
     	"fields": [
     		{
+    			"name": "login",
+    			"label": "@apaf.user.login",
+    			"size": 5,
+    			"constraint": "#.setEditMode(false);"
+    		},
+    		{
     			"name": "lastname",
     			"label": "@apaf.user.lastname",
     			"required": true,

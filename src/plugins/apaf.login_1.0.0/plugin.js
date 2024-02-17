@@ -64,6 +64,8 @@ plugin.loginHandler = function(req,res){
 						plugin.debug('<-loginHandler(200)');
 						let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 						securityEngine.loadUserRoles(registeredUser,function(user){
+							plugin.debug('user:');
+							plugin.debug(JSON.stringify(user,null,'\t'));
 							req.session.user = user;
 							req.session.user.password = password;
 							let now = moment();

@@ -9,6 +9,8 @@ const JSON_EDITOR_ID = 'jsonEditor';
 const ITEM_SELECTION_LIST_ID = 'itemSelectionList';
 const DATA_MANAGER_ID = 'fragmentManager';
 const EDITING_TOOLBAR_ID = 'editingToolbar';
+const EMPTY_DIALOG_ID = 'emptyDialog';
+const SOURCE_CODE_FIELD_NAME = 'source';
 
 $(document).ready(function(){
 	checkSessionStatus(initializeUi);
@@ -21,6 +23,7 @@ initializeUi = function(){
 			npaUi.on('save',saveRecord);
 			npaUi.on('delete',deleteRecord);
 			npaUi.on('saveJson',saveJson);
+			npaUi.on('openSnippetLibrary',openSnippetLibrary);
 			npaUi.render();
 		});
 	});
@@ -129,4 +132,60 @@ deleteRecord = function(){
 				showError(errorMsg.message?errorMsg.message:errorMsg);
 		});
 	}
+}
+
+function insertTextAtCursor(text) {
+	let form = npaUi.getComponent(EDIT_FORM_ID);
+	let editor = form.getEditor(SOURCE_CODE_FIELD_NAME);
+    var doc = editor.getDoc();
+    var cursor = doc.getCursor();
+    doc.replaceRange(text, cursor);
+}
+
+openSnippetLibrary = function(){
+	let dialog = npaUi.getComponent(EMPTY_DIALOG_ID);
+	dialog.setTitle('APAF Snippet Library');
+	let html = '';
+	html += '<div>';
+	html += '  <select id="snippetSelector" class="form-control form-control-sm">';
+	html += '    <option value="">-- Please, select --</option>';
+	html += '  </select>';
+	html += '</div>';
+	html += '<div id="snippet" style="min-height: 400px;overflow: auto;font-family: lucida console;font-size: 0.9rem;background-color: #000000;color: #00ff00;">';
+	html += '</div>';
+	dialog.setBody(html);
+	$.loadJson('/dev/snippets/snippetList.json',function(snippetConfig){
+		for(var i=0;i<snippetConfig.length;i++){
+			let snippet = snippetConfig[i];
+			let option = '';
+			option += '<option value="';
+			option += snippet.location;
+			option += '">';
+			option += snippet.label;
+			option += '</option>';
+			$('#snippetSelector').append(option);
+		}
+		dialog.open();
+	});
+	dialog.onClose(function(){
+		let selectedSnippet = $('#snippet pre').text();
+		insertTextAtCursor(selectedSnippet);
+	});
+	$('#snippetSelector').off('.fragment');
+	$('#snippetSelector').on('click.fragment',function(){
+		$('#snippet').empty();
+		let selectedValue = $('#snippetSelector').val();
+		if(selectedValue && selectedValue.length>0){
+			$.ajax({
+		        url: selectedValue,
+		        dataType: 'text',
+		        async: true,
+		        success: function(){
+				}
+		    }).done(function(txt){
+				$('#snippet').append('<pre>'+txt.replace(/</g,'&lt;').replace(/\t/g,'&nbsp;&nbsp;&nbsp;')+'</pre>');
+			});
+	    }
+	});
+	//dialog.open();
 }

@@ -4,6 +4,7 @@
  */
  
 const GLOBAL_CONFIGURATION_FILE = '/resources/json/globalApafConfig.json';
+const APPLICATION_CARD_ID = 'genericApplicationsCard';
 
 var application = null;
 var xeval = eval;
@@ -22,11 +23,16 @@ initializeUi = function(){
 }
 
 loadApplication = function(){
+	npaUi.onComponentLoaded = function(){};
 	let appId = $.urlParam('id');
 	makeRESTCall('GET','/apaf-dev/application/'+appId,{},function(response){
 		if(response.status==200){
 			application = response.data;
 			$('#applicationName').html(application.name);
+			let card = $apaf(APPLICATION_CARD_ID);
+			if(typeof application.menuIcon!='undefined' && application.menuIcon.length>0){
+				card.setIcon(application.menuIcon);
+			}
 			loadApplicationDeps();
 		}else{
 			console.log(response);
@@ -66,6 +72,7 @@ loadApplicationDeps = function(){
 	}
 	loadFragments(application.fragments,0,function(){
 		if(typeof main!='undefined'){
+			console.log('APAF - calling the custom application main() method');
 			main();
 		}else{
 			showError('@apaf.apps.page.error.no-main');

@@ -18,6 +18,12 @@
   		"dir": "apaf.dev"
   	},
   	{
+  		"point": "npa.http.static",
+  		"id": "apaf.dev.htdocs",
+  		"path": "/dev",
+  		"localDir": "htdocs"
+  	},
+  	{
   		"point": "npa.http.router",
   		"id": "apaf.dev.router",
   		"path": "/apaf-dev"

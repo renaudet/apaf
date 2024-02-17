@@ -82,6 +82,13 @@
 				"constrainedBy": "isIdField"
     		},
     		{
+    			"name": "multiple",
+    			"label": "@apaf.user.datatype.field.multiple.label",
+    			"type": "switch",
+				"constraint": "if(@.type=='reference'){#.show();#.setEditMode(true)}else{#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
     			"name": "size",
     			"label": "@apaf.user.datatype.field.size.label",
     			"required": false,
@@ -112,13 +119,22 @@
 				"constrainedBy": "constraint"
     		},
     		{
+    			"name": "renderer",
+    			"label": "@apaf.user.datatype.field.renderer.label",
+    			"type": "text",
+    			"required": false,
+    			"size": 9,
+    			"help": "@apaf.user.datatype.field.renderer.help"
+    		},
+    		{
     			"name": "default",
     			"label": "@apaf.user.datatype.field.default.label",
     			"type": "text",
 				"size": 5,
     			"required": false,
 				"default": "",
-				"constraint": "if(@.type=='text'||@.type=='integer'||@.type=='range'){#.setEditMode(true);}else{#.val('');#.setEditMode(false);}",
+				"constraint_": "if(@.type=='text'||@.type=='integer'||@.type=='range'){#.setEditMode(true);}else{#.val('');#.setEditMode(false);}",
+				"constraint": "if(@.type=='text'||@.type=='integer'||@.type=='range'){#.show();#.setEditMode(true);}else{#.val('');#.hide();}",
 				"constrainedBy": "type"
     		},
     		{
@@ -127,7 +143,7 @@
     			"type": "integer",
     			"required": false,
 				"default": 0,
-				"constraint": "if(@.type=='range'){#.setEditMode(true);}else{#.val(0);#.setEditMode(false);}",
+				"constraint": "if(@.type=='range'){#.show();#.setEditMode(true);}else{#.val(0);#.hide();}",
 				"constrainedBy": "type"
     		},
     		{
@@ -136,7 +152,7 @@
     			"type": "integer",
     			"required": false,
 				"default": 10,
-				"constraint": "if(@.type=='range'){#.setEditMode(true);}else{#.val(0);#.setEditMode(false);}",
+				"constraint": "if(@.type=='range'){#.show();#.setEditMode(true);}else{#.val(0);#.hide();}",
 				"constrainedBy": "type"
     		},
     		{
@@ -145,7 +161,7 @@
     			"type": "integer",
     			"required": false,
 				"default": 1,
-				"constraint": "if(@.type=='range'){#.setEditMode(true);}else{#.val(0);#.setEditMode(false);}",
+				"constraint": "if(@.type=='range'){#.show();#.setEditMode(true);}else{#.val(0);#.hide();}",
 				"constrainedBy": "type"
     		},
     		{
@@ -159,7 +175,7 @@
     				{"label": "@apaf.user.datatype.field.datatype.text", "value": "text"},
     				{"label": "@apaf.user.datatype.field.datatype.object", "value": "object"}
     			],
-				"constraint": "if(@.type=='array'){#.setEditMode(true);}else{#.setEditMode(false);}",
+				"constraint": "if(@.type=='array'){#.show();#.setEditMode(true);}else{#.hide();}",
 				"constrainedBy": "type"
     		},
     		{
@@ -168,7 +184,7 @@
     			"type": "array",
 				"datatype": "object",
     			"required": false,
-				"constraint": "if(@.type=='radio'){#.setEditMode(true);}else{#.val([]);#.setEditMode(false);}",
+				"constraint": "if(@.type=='radio'){#.show();#.setEditMode(true);}else{#.val([]);#.hide();}",
 				"constrainedBy": "type"
     		},
     		{
@@ -188,7 +204,7 @@
     				{"label": "Light", "value": "light"},
     				{"label": "Dark", "value": "dark"}
     			],
-				"constraint": "if(@.type=='button'){#.setEditMode(true);}else{#.setEditMode(false);}",
+				"constraint": "if(@.type=='button'){#.show();#.setEditMode(true);}else{#.hide();}",
 				"constrainedBy": "type"
     		},
     		{
@@ -197,7 +213,7 @@
     			"type": "text",
     			"required": false,
     			"size": 3,
-				"constraint": "if(@.type=='button'){#.setEditMode(true);}else{#.setEditMode(false);}",
+				"constraint": "if(@.type=='button'){#.show();#.setEditMode(true);}else{#.hide();}",
 				"constrainedBy": "type"
     		}
     	]

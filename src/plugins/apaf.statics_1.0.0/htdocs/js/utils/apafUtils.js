@@ -51,3 +51,54 @@ function increaseVersionNumber(vn){
 		return "1.0.0";
 	}
 }
+
+ApafCallWrapper = class {
+	onSuccessCallback = null;
+	onErrorCallback = null;
+	constructor(){
+	}
+	then(callback){
+		this.onSuccessCallback = callback;
+		return this;
+	}
+	onError(callback){
+		this.onErrorCallback = callback;
+		return this;
+	}
+}
+$apaf = function(componentId){
+	return npaUi.getComponent(componentId);
+}
+
+var apaf = {};
+apaf.call = function(callContext){
+	let callWrapper = new ApafCallWrapper();
+	let method = 'GET';
+	let uri = '/';
+	let payload = {};
+	if(typeof callContext.method!='undefined'){
+		method = callContext.method;
+	}
+	if(typeof callContext.uri!='undefined'){
+		uri = callContext.uri;
+	}
+	if(typeof callContext.payload!='undefined'){
+		payload = callContext.payload;
+	}
+	makeRESTCall(method,uri,payload,function(response){
+		console.log('apaf.call():');
+		console.log(callContext);
+		console.log(response);
+		if(200==response.status){
+			callWrapper.onSuccessCallback(response.data);
+		}else{
+			callWrapper.onErrorCallback(response.message);
+		}
+	},function(errorMsg){
+		if(errorMsg.httpStatus==404){
+			callWrapper.onErrorCallback('API \''+uri+'\' not found for method \''+method+'\'!');
+		}else
+			callWrapper.onErrorCallback(errorMsg.message?errorMsg.message:errorMsg);
+	});
+	return callWrapper;
+}

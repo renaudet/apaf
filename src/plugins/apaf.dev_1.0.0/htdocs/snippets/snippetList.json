@@ -1,0 +1,6 @@
+[
+	{"label":"Main endpoint for an APAF application","location":"/dev/snippets/main.txt"},
+	{"label":"Query the user-defined database for datatype \"type1\"","location":"/dev/snippets/queryDatatype.txt"},
+	{"label":"Create a two-column layout with a 1/3-2/3 ratio","location":"/dev/snippets/layout.txt"},
+	{"label":"Small NPA-UI Application with a Form","location":"/dev/snippets/smallApplication.txt"}
+]

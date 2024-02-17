@@ -187,7 +187,7 @@ plugin.queryUserDataHandler = function(req,res){
 			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 			datatypePlugin.query(USER_DATATYPE_DATATYPE,{"selector": {"name": {"$eq": datatypeName}}},function(err,data){
 				if(err){
-					plugin.debug('<-queryUserDataHandler() - error');
+					plugin.debug('<-queryUserDataHandler() - error datatype');
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					if(data && data.length>0){
@@ -196,7 +196,7 @@ plugin.queryUserDataHandler = function(req,res){
 						   typeof user.roles[datatypeRecord.readRole]!='undefined'){
 							datatypePlugin.query(datatypeRecord.name,{},function(err,data){
 								if(err){
-									plugin.debug('<-queryUserDataHandler() - error');
+									plugin.debug('<-queryUserDataHandler() - error database');
 									res.json({"status": 500,"message": err,"data": []});
 								}else{
 									plugin.debug('<-queryUserDataHandler() - success');
@@ -204,11 +204,15 @@ plugin.queryUserDataHandler = function(req,res){
 								}
 							});
 						}else{
-							plugin.debug('<-queryUserDataHandler() - error');
+							plugin.debug('<-queryUserDataHandler() - error unauthorized');
+							plugin.debug('datatype:');
+							plugin.debug(JSON.stringify(datatypeRecord,null,'\t'));
+							plugin.debug('user:');
+							plugin.debug(JSON.stringify(user,null,'\t'));
 							res.json({"status": 401,"message": "unauthorized","data": []});
 						}
 					}else{
-						plugin.debug('<-queryUserDataHandler() - error');
+						plugin.debug('<-queryUserDataHandler() - error not found');
 						let msg = 'datatype '+datatypeName+' not found';
 						res.json({"status": 404,"message": "Not Found","data": msg});
 					}

@@ -1,0 +1,66 @@
+const MAIN_CARD_ID = 'genericApplicationsCard';
+const MYFORM_CONFIG = {
+    "id":"myForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "My Form",
+    	"class": "form-frame-noborder",
+    	"fields": [
+    		{
+    			"name": "firstname",
+    			"label": "Firstname",
+    			"required": true,
+    			"size": 4
+    		},
+    		{
+    			"name": "lastname",
+    			"label": "Lastname",
+    			"required": true,
+    			"size": 4
+    		},
+    		{
+    			"name": "birthday",
+    			"label": "Birthday",
+              	"type": "date",
+    			"size": 3
+    		},
+    		{
+    			"name": "button",
+    			"label": "Create Record",
+              	"type": "button",
+    			"buttonType": "primary",
+    			"actionId": "createRecord"
+    		}
+    	]
+    }
+}
+
+// main APAF endpoint for this application
+main = function(){
+   let card = npaUi.getComponent(MAIN_CARD_ID);
+   let html = '';
+   html += '<div id="myFormDiv" class="user-app" data-ref="myForm"></div>';
+   $('#'+card.getContentDivId()).html(html);
+   npaUi.registerComponentConfig('myForm',MYFORM_CONFIG);
+   npaUi.onComponentLoaded = initializeForm;
+   npaUi.on('createRecord',createUserRecord);
+   npaUi.render('user-app');
+}
+
+initializeForm = function(){
+  let form = $apaf('myForm');
+  form.setData({"firstname": "John","lastname": "Doe"});
+  form.setEditMode(true);
+}
+
+createUserRecord = function(){
+  let form = $apaf('myForm');
+  if(form.isValid()){
+	  let record = form.getData();
+	  let html = '<div style="font-family: lucida console;">';
+	  html += JSON.stringify(record,null,'\t').replace(/\n/g,'<br>').replace(/\t/g,'&nbsp;&nbsp;&nbsp;');
+	  html += '</div>';
+	  showInfo(html);
+  }
+}

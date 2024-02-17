@@ -22,6 +22,14 @@
 				        		"icon": "/uiTools/img/silk/help.png"
 		        			},
 		        			{
+		        				"id": "openNewMenu",
+				        		"label": "@apaf.menu.help.window.label",
+				        		"actionId": "redirect",
+				        		"uri": "/resources/html/home.html",
+				        		"newWindow": true,
+				        		"icon": "/uiTools/img/silk/application_form_add.png"
+		        			},
+		        			{
 		        				"type": "placeholder",
 		        				"id": "helpMenuPlaceholder"
 		        			},

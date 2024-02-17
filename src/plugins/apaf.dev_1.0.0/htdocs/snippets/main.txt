@@ -1,0 +1,9 @@
+const MAIN_CARD_ID = 'genericApplicationsCard';
+
+//this is the main APAF endpoint for this application
+main = function(){
+	let card = npaUi.getComponent(MAIN_CARD_ID);
+	let html = '';
+    html += '<h1>Hello, World!</h1>';
+    $('#'+card.getContentDivId()).html(html);
+}

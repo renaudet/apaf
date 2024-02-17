@@ -6,7 +6,6 @@
 const GLOBAL_CONFIGURATION_FILE = '/resources/json/globalApafConfig.json';
 const EDIT_FORM_ID = 'editForm';
 const ITEM_SELECTION_LIST_ID = 'itemSelectionList';
-const DATA_MANAGER_ID = 'datatypeManager';
 const GENERIC_DATA_MANAGER_ID = 'genericManager';
 const EDITING_TOOLBAR_ID = 'editingToolbar';
 const EMPTY_DIALOG_ID = 'emptyDialog';
@@ -57,7 +56,7 @@ var datatypeSelectionHandler = {
 		selectedDatatype = datatype;
 		console.log(datatype);
 		updateDataManagerConfiguration();
-		createCustomDatatable(loadCustomData);
+		createCustomDatatable();
 	}
 }
 
@@ -78,19 +77,6 @@ initializeUi = function(){
 	});
 }
 
-loadCustomData = function(){
-	//let dataManager = npaUi.getComponent(DATA_MANAGER_ID);
-	makeRESTCall('POST','/user-data/'+selectedDatatype.name+'/query',{},function(response){
-		if(response.status==200){
-			console.log(response.data);
-		}else{
-			showError(response.message);
-		}
-	},function(errorMsg){
-		showError(errorMsg);
-	});
-}
-
 createDatamanagerConfig = function(){
 	let config = Object.assign({},baseGenericDataManagerConfig);
 	config.query.uri = config.query.uri.replace(/datatype/g,selectedDatatype.name);
@@ -106,7 +92,7 @@ updateDataManagerConfiguration = function(){
 	manager.setConfiguration(createDatamanagerConfig());
 }
 
-createCustomDatatable = function(then){
+createCustomDatatable = function(){
 	$('#'+DATATABLE_AREA_ID).empty();
 	let html = '';
 	html += '<div id="'+selectedDatatype.name+'_table"></div>';
@@ -124,14 +110,17 @@ createCustomDatatable = function(then){
 		if(typeof field.type!='undefined'){
 			column.type = field.type;
 		}
+		if(typeof field.renderer!='undefined'){
+			column.renderer = field.renderer;
+		}
 		datatableConfig.configuration.columns.push(column);
 	}
 	let actionColumn = {"label": "Actions","type": "rowActions","actions": []};
-	actionColumn.actions.push({"label": "@datatype.fields.table.column.edit.label","actionId": "editRecord","icon": "/uiTools/img/silk/page_edit.png"});
-	actionColumn.actions.push({"label": "@datatype.fields.table.column.delete.label","actionId": "deleteRecord","icon": "/uiTools/img/silk/page_delete.png"});
+	actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.edit.label","actionId": "editRecord","icon": "/uiTools/img/silk/page_edit.png"});
+	actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.delete.label","actionId": "deleteRecord","icon": "/uiTools/img/silk/page_delete.png"});
 	datatableConfig.configuration.columns.push(actionColumn);
 	npaUi.renderSingleComponent(selectedDatatype.name+'_table',datatableConfig,function(){
-		then();
+		//then();
 	});
 }
 
@@ -216,7 +205,7 @@ editRecord = function(event){
 
 deleteRecord = function(event){
 	console.log(event);	
-	if(confirm('Ok to delete record?')){
+	if(confirm(npaUi.getLocalizedString('@apaf.page.user.data.table.action.delete.confirm'))){
 		let manager = npaUi.getComponent(GENERIC_DATA_MANAGER_ID);
 		manager.delete(event.item).then(function(){
 			refreshUserDataTable();

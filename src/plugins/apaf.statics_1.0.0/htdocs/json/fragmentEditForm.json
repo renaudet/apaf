@@ -38,7 +38,14 @@
     			"name": "source",
     			"label": "@apaf.fragment.source",
     			"type": "javascript",
-    			"height": 600
+    			"height": 600,
+    			"buttons": [
+    				{
+    					"label": "Snippets Library",
+    					"icon": "/uiTools/img/silk/book_open.png",
+    					"actionId": "openSnippetLibrary"
+    				}
+    			]
     		}
     	]
     }

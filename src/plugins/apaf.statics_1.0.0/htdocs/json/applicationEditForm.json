@@ -32,6 +32,28 @@
     			"type": "switch"
     		},
     		{
+    			"name": "restrictedToRole",
+    			"label": "@apaf.application.restrictedToRole",
+    			"type": "select",
+    			"multiple": false,
+    			"required": false,
+    			"size": 4,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "roleManager"
+		        },
+		        "renderer": {
+		        	"label": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.name"
+		        	}
+		        }
+    		},
+    		{
     			"name": "fragments",
     			"label": "@apaf.application.fragments",
     			"type": "reference",
@@ -52,6 +74,12 @@
 			        	"processor": "'<img src=\"/uiTools/img/silk/script.png\">&nbsp;'+@.name+'&nbsp;<small><small>('+@.version+')</small></small>'"
 		        	}
 		        }
+    		},
+    		{
+    			"name": "menuIcon",
+    			"label": "@apaf.application.menuIcon",
+    			"required": false,
+    			"size": 6
     		}
     	]
     }

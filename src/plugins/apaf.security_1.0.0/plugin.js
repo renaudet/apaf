@@ -19,7 +19,7 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 		let user = session.user;
 		if(typeof user!=undefined && user!=null){
 			session.lastAccess = moment();
-			if(user.isAdmin || (user.roles && (typeof user.roles[requiredRole]!='undefined' || requiredRole==null))){
+			if(user.isAdmin || requiredRole==null || requiredRole.length==0 || (user.roles && typeof user.roles[requiredRole]!='undefined')){
 				this.trace('<-checkUserAccess(ok)');
 				then(null,user);
 			}else{

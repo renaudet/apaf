@@ -27,13 +27,21 @@ plugin.generateAppsMenuHandler = function(req,res){
 					let items = [];
 					for(var i=0;i<apps.length;i++){
 						let application = apps[i];
-						let item = {};
-						item.id = application.id;
-						item.actionId = 'redirect';
-						item.label = application.name;
-						item.tooltip = application.description;
-						item.uri = '/resources/html/apafApplication.html?id='+application.id;
-						items.push(item);
+						if(user.isAdmin ||
+						   typeof application.restrictedToRole=='undefined' ||
+						   application.restrictedToRole.length==0 ||
+						   typeof user.roles[application.restrictedToRole]!='undefined'){
+							let item = {};
+							item.id = application.id;
+							item.actionId = 'redirect';
+							item.label = application.name;
+							item.tooltip = application.description;
+							item.uri = '/resources/html/apafApplication.html?id='+application.id;
+							if(typeof application.menuIcon!='undefined'  && application.menuIcon.length>0){
+								item.icon = application.menuIcon;
+							}
+							items.push(item);
+						}
 					}
 					plugin.debug('<-findApplicationsHandler() - success');
 					res.json({"status": 200,"message": "found","data": items});
