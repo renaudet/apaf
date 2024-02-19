@@ -27,12 +27,56 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 				then('unauthorized',null);
 			}
 		}else{
-			this.trace('<-checkUserAccess(unauthenticated)');
-			then('unauthenticated',null);
+			let authToken = this.checkAuthorizationToken(req);
+			if(authToken!=null){
+				let loginHandler = this.runtime.getPlugin('apaf.login'); // circular reference!
+				loginHandler.authenticate(authToken.login,authToken.password,function(err,user){
+					if(err){
+						plugin.trace('<-checkUserAccess(loginHandler)');
+						then(err,null);
+					}else{
+						if(user.isAdmin || requiredRole==null || requiredRole.length==0 || (user.roles && typeof user.roles[requiredRole]!='undefined')){
+							session.user = user;
+							let now = moment();
+							req.session.lastAccess = now;
+							req.session.created = now;
+							req.session.alive = true;
+							plugin.trace('<-checkUserAccess(ok)');
+							then(null,user);
+						}else{
+							plugin.trace('<-checkUserAccess(loginHandler,unauthorized)');
+							then('unauthorized',null);
+						}
+						
+					}
+				});
+			}else{
+				this.trace('<-checkUserAccess(unauthenticated)');
+				then('unauthenticated',null);
+			}
 		}
 	}else{
-		this.trace('<-checkUserAccess(no session)');
-		then('no session',null);
+		let authToken = this.checkAuthorizationToken(req);
+		if(authToken!=null){
+			
+		}else{
+			this.trace('<-checkUserAccess(no session)');
+			then('no session',null);
+		}
+	}
+}
+
+plugin.checkAuthorizationToken = function(req){
+	if(typeof req.headers.authorization!='undefined'){
+		const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
+		const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':');
+		if(login && login.length>0){
+			return {"login": login,"password": password};
+		}else{
+			return null;
+		}
+	}else{
+		return null;
 	}
 }
 

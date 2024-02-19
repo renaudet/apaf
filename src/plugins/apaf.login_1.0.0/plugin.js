@@ -41,6 +41,44 @@ plugin.beforeExtensionPlugged = function(){
 	});
 }
 
+plugin.authenticate = function(userId,password,then){
+	this.debug('->authenticate()');
+	this.debug('userId: '+userId);
+	let md5Pwd = md5(password);
+	this.debug('md5Pwd: '+md5Pwd);
+	let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+	datatypePlugin.query(USER_DATATYPE,{"selector": {"login": {"$eq": userId}}},function(err,data){
+		if(err){
+			plugin.debug('<-authenticate(500)');
+			let errorMsg = 'error looking up for user login "'+userId+'" in database';
+			plugin.error(JSON.stringify(err));
+			then(errorMsg,null);
+		}else{
+			if(data && data.length==0){
+				plugin.debug('<-authenticate(404)');
+				let errorMsg = 'user login "'+userId+'" not found';
+				plugin.error(errorMsg);
+				then(errorMsg,null);
+			}else{
+				let registeredUser = data[0];
+				if(registeredUser.password==md5Pwd){
+					let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+					securityEngine.loadUserRoles(registeredUser,function(user){
+						plugin.debug('<-authenticate(200)');
+						user.password = password;
+						then(null,user);
+					});
+				}else{
+					plugin.debug('<-authenticate(401)');
+					let errorMsg = 'invalid credential "'+password+'" for user '+userId;
+					plugin.error(errorMsg);
+					then(errorMsg,null);
+				}
+			}
+		}
+	});
+}
+
 plugin.loginHandler = function(req,res){
 	plugin.debug('->loginHandler()');
 	res.set('Content-Type','application/json');

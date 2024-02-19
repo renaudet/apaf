@@ -13,7 +13,7 @@
   	{
   		"point": "npa.log.provider",
   		"id": "apaf.application.logger",
-  		"dir": "apaf.admin"
+  		"dir": "apaf.security"
   	},
   	{
   		"point": "npa.core.service",

@@ -35,6 +35,22 @@
     			"values": ["snippet","library","servlet"]
     		},
     		{
+    			"name": "alias",
+    			"label": "@apaf.fragment.alias",
+    			"required": false,
+    			"size": 4,
+    			"help": "@apaf.fragment.alias.help",
+    			"constraint": "if('servlet'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+    		},
+    		{
+    			"name": "enabled",
+    			"label": "@apaf.fragment.enabled",
+    			"type": "check",
+    			"help": "@apaf.fragment.enabled.help",
+    			"default": false,
+    			"constraint": "if('servlet'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+    		},
+    		{
     			"name": "source",
     			"label": "@apaf.fragment.source",
     			"type": "javascript",

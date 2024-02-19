@@ -1,0 +1,63 @@
+{
+  "id": "apaf.dyn.api",
+  "name": "REST client provider",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "npa.dyn.logger",
+  		"dir": "apaf.dyn.api"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.dyn.api.router",
+  		"path": "/apaf-api"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dyn.api.get.handler",
+  		"router": "apaf.dyn.api.router",
+  		"method": "GET",
+  		"schema": "/servlet/:alias",
+  		"handler": "invokeDynamicApiHandler",
+  		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dyn.api.post.handler",
+  		"router": "apaf.dyn.api.router",
+  		"method": "POST",
+  		"schema": "/servlet/:alias",
+  		"handler": "invokeDynamicApiHandler",
+  		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dyn.api.put.handler",
+  		"router": "apaf.dyn.api.router",
+  		"method": "PUT",
+  		"schema": "/servlet/:alias",
+  		"handler": "invokeDynamicApiHandler",
+  		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dyn.api.delete.handler",
+  		"router": "apaf.dyn.api.router",
+  		"method": "DELETE",
+  		"schema": "/servlet/:alias",
+  		"handler": "invokeDynamicApiHandler",
+  		"securityRole": "coreServices"
+  	}
+  ],
+  "provides": [
+  ]
+}
