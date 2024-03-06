@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: apaf
+  labels:
+    app: apaf
+    tier: frontend
+spec:
+  containers:
+  - name: apaf
+    image: 192.168.2.218:5000/apaf:1.0
+    ports:
+    - containerPort: 9080
+      name: apaf-web-port
+      
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: apaf-service
+spec:
+   type: ClusterIP
+   selector:
+      app: apaf
+   ports:
+      - name: apaf-service-port
+        protocol: TCP
+        port: 80
+        targetPort: apaf-web-port
+   externalIPs:
+     - 192.168.2.218

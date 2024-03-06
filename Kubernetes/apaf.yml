@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: apaf
+  labels:
+    app: apaf
+    tier: frontend
+spec:
+  containers:
+  - name: apaf
+    image: 192.168.2.218:5000/apaf:1.0
+    imagePullPolicy: IfNotPresent
+    env:
+    - name: COUCHDB_HOST
+      value: "virtual-couch"
+    - name: COUCHDB_PORT
+      value: "5984"

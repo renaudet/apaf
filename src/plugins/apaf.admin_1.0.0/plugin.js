@@ -18,7 +18,7 @@ plugin.checkSessionHandler = function(req,res){
 	plugin.debug('->checkSessionHandler()');
 	res.set('Content-Type','application/json');
 	let session = req.session;
-	if(typeof session!='undefined' && session!=null){
+	if(typeof session!='undefined' && session!=null && session.alive){
 		let user = session.user;
 		if(typeof user!=undefined && user!=null){
 			plugin.debug('<-checkSessionHandler()');

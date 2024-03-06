@@ -1,31 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="NPA Container for Podman" default="build">
+<project name="APAF Container for Podman" default="publish">
     <target name="init">
-    	<property name="export.dir" value="G:/NPA/export"/>
+    	<property name="apaf.version" value="1.1.1"/>
+    	<property name="export.dir" value="G:/APAF/build"/>
+    	<property name="package.dir" value="G:/SCAF/htdocs/apaf"/>
     	<property name="target.host" value="192.168.2.116"/>
     	<property name="target.host.user" value="pi"/>
     	<property name="target.host.password" value="raspberry4me"/>
     	<property name="target.dir" value="/home/pi/podman/build"/>
     </target>
 	
-	<target name="export" depends="init" description="Export resources on a single directory">
-	    <copy todir="${export.dir}/apaf">
-	      <fileset dir="./src">
-  		    <include name="**/*.*"/>
+	<target name="export.npa" depends="init" description="Export resources for NPA">
+		<copy todir="${export.dir}">
+	      <fileset dir="../Node-Plugin-Architecture/src">
+  		    <include name="core/**/*"/>
+  		    <include name="plugins/**/*"/>
+  		    <include name="app.js"/>
+  		    <include name="package.json"/>
 		    <exclude name="**/CVS/*"/>
 	      </fileset>
 	    </copy>
 	</target>
 	
-	<target name="publish" depends="init" description="Publish resources on the target host">
-		<scp todir="${target.host.user}@${target.host}:${target.dir}" password="${target.host.password}" trust="true">
-	      	<fileset dir="${export.dir}">
-	      		<include name="**/*"/>
-	      	</fileset>
-	    </scp>
+	<target name="export.tools" depends="init" description="Export resources for NPA UI Tools">
+		<copy todir="${export.dir}/tools">
+	      <fileset dir="../npa-ui-tools/src">
+  		    <include name="plugins/**/*"/>
+  		    <include name="npaUtil.js"/>
+		    <exclude name="**/CVS/*"/>
+	      </fileset>
+	    </copy>
 	</target>
 	
-	<target name="build" depends="export,publish" description="Publish resources and build the container on the target Podman instance">
+	<target name="export.apaf" depends="init" description="Export resources for APAF">
+		<copy todir="${export.dir}/apaf">
+	      <fileset dir="./src">
+  		    <include name="plugins/**/*"/>
+  		    <include name="apafUtil.js"/>
+		    <exclude name="**/CVS/*"/>
+	      </fileset>
+	    </copy>
+	</target>
+	
+	<target name="export.all" depends="export.npa,export.tools,export.apaf" description="Export all required resources on a single directory">
+		<copy todir="${export.dir}">
+	      <fileset dir="./Docker">
+  		    <include name="appConfig.json"/>
+  		    <include name="Dockerfile"/>
+		    <exclude name="**/CVS/*"/>
+	      </fileset>
+	    </copy>
+	</target>
+
+	<target name="publish" depends="export.all" description="Package the APAF application in a ZIP file located in the document-root of the HTTP server">
+		<tar destfile="${package.dir}/apaf_${apaf.version}.tar">
+			<tarfileset dir="${export.dir}"/>
+		</tar>
+		<copy todir="${package.dir}">
+	      <fileset dir="./Kubernetes">
+  		    <include name="*.yml"/>
+		    <exclude name="**/CVS/*"/>
+	      </fileset>
+	    </copy>
 	</target>
 </project>

@@ -14,6 +14,7 @@ apaf.page.login.error.invalid=Identification invalide - merci de v&eacute;rifier
 apaf.page.login.error.internal=Erreur interne au serveur
 apaf.page.login.error.unauthorized=Utilisateur inconnu
 apaf.page.login.error.validation=Impossible d'authentifier l'utilisateur: {0}
+apaf.page.login.error.unavailable=Le service d'authentification n'est pas disponible actuellement
 apaf.page.home.title=Page d'accueil
 apaf.page.users.title=Gestion des Utilisateurs APAF
 apaf.page.users.selection.title=Liste des Utilisateurs

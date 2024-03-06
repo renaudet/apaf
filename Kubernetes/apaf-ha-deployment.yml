@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apaf-deployment
+  labels:
+    app: apaf
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: apaf
+  template:
+    metadata:
+      labels:
+        app: apaf
+    spec:
+      containers:
+      - name: apaf
+        image: 192.168.2.218:5000/apaf:1.2
+        ports:
+        - containerPort: 9080
+          name: apaf-web-port
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: apaf-lb
+spec:
+   type: ClusterIP
+   selector:
+      app: apaf
+   ports:
+      - protocol: TCP
+        port: 80
+        targetPort: 9080
+   externalIPs:
+     - 192.168.2.218
+     
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apaf-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: apaf-lb
+            port:
+              number: 80

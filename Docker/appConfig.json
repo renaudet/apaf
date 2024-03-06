@@ -1,0 +1,16 @@
+{ 
+	"sites": [
+		{
+			"id": "default",
+			"location": "./plugins"
+		},
+		{
+			"id": "npa.ui.tools",
+			"location": "./tools/plugins"
+		},
+		{
+			"id": "apaf",
+			"location": "./apaf/plugins"
+		}
+	]
+}

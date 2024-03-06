@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: couch
+  labels:
+    app: couchdb
+    tier: backend
+spec:
+  containers:
+  - name: couchdb
+    image: couchdb:2.3.1

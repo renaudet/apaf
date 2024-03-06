@@ -19,13 +19,17 @@ plugin.logoutHandler = function(req,res){
 		try{
 			var sess = req.session;
 			sess.alive = false;
-			sess.destroy();
+			sess.save(function(err){
+				if(!err){
+					//sess.destroy();
+					req.sessionStore.destroy(sess.id);
+				}
+			});
 		}catch(ex){
 			plugin.error('An error occurred - guess the session already expired!');
 		}
 		plugin.debug('<-logoutHandler(200)');
-		//res.json({"status": 200,"message": "ok"});
-		res.redirect('/');
+		res.redirect('/resources/html/login.html');
 	});
 }
 

@@ -105,26 +105,28 @@ plugin.registerDatasource = function(datatype){
 	datasource.dbname = datatype.database;
 	datasource.reference = id;
 	couchService.registerDatasource(datasource);
-	// create database if not exists
-	couchService.checkDatabase(datasource.reference,function(err,exists){
-		if(err){
-			plugin.error('Error checking for CouchDB database '+datasource.reference);
-			plugin.error(JSON.stringify(err));
-			plugin.trace('<-registerDatasource()');
-		}else{
-			if(!exists){
-				couchService.createDatabase(datasource.reference,function(err,created){
-					if(err){
-						plugin.error('Error creating CouchDB database '+datasource.reference);
-						plugin.error(JSON.stringify(err));
-					}
-					plugin.trace('<-registerDatasource()');
-				});
-			}else{
+	// create database if not exists - ignore the datatype ref as it is for sure created at plugin initialization time
+	if(datasource.reference!='datatype'){
+		couchService.checkDatabase(datasource.reference,function(err,exists){
+			if(err){
+				plugin.error('Error checking for CouchDB database '+datasource.reference);
+				plugin.error(JSON.stringify(err));
 				plugin.trace('<-registerDatasource()');
+			}else{
+				if(!exists){
+					couchService.createDatabase(datasource.reference,function(err,created){
+						if(err){
+							plugin.error('Error creating CouchDB database '+datasource.reference);
+							plugin.error(JSON.stringify(err));
+						}
+						plugin.trace('<-registerDatasource()');
+					});
+				}else{
+					plugin.trace('<-registerDatasource()');
+				}
 			}
-		}
-	});
+		});
+	}
 }
 
 plugin.checkDatatype = function(datatypeId,then){

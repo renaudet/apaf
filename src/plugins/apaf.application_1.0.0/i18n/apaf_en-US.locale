@@ -14,6 +14,7 @@ apaf.page.login.error.invalid=Invalid credential - please check login and passwo
 apaf.page.login.error.internal=Internal error
 apaf.page.login.error.unauthorized=Unknown user
 apaf.page.login.error.validation=Unable to validate credentials: {0}
+apaf.page.login.error.unavailable=Login service is currently unavailable
 apaf.page.home.title=All Purpose Application Framework Home
 apaf.page.users.title=Manage APAF Users
 apaf.page.users.selection.title=Available Users

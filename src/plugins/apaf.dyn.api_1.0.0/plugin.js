@@ -77,7 +77,8 @@ plugin.invokeServlet = function(fragment,payload,user,then){
 		xeval(moduleSrc);
 		initializeServlet();
 		if(typeof servlet.endpoint!='undefined'){
-			let result = servlet.endpoint(user,payload);
+			let context = {"user": user,"runtime": plugin.runtime,"require": require};
+			let result = servlet.endpoint(payload,context);
 			this.debug('<-invokeServlet() - success');
 			then(null,result);
 		}else{
@@ -85,6 +86,7 @@ plugin.invokeServlet = function(fragment,payload,user,then){
 			then('Error executing servlet "'+fragment.alias+'" - no endpoint configured',null);
 		}
 	}catch(evaluationException){
+		console.log(evaluationException);
 		this.debug('<-invokeServlet() - error evaluation');
 		then('Error executing servlet "'+fragment.alias+'" - exception evaluating the code',null);
 	}

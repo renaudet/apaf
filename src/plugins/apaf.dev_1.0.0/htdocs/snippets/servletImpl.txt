@@ -1,4 +1,11 @@
-myFunction = function(user,params){
+/*
+ * ctx: {
+ 	"user": <connected user>,
+ 	"runtime": <npa runtime>,
+ 	"require": <require function>
+   }
+ */
+myFunction = function(params,ctx){
 
 }
 
