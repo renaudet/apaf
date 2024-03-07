@@ -8,6 +8,8 @@ const moment = require('moment');
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const GROUP_DATATYPE = 'group';
 const SECURITY_ROLE_DATATYPE = 'role';
+const SECURITY_TOKEN_URI_PARAM_NAME = 'token';
+const CRYPTOGRAPHY_SERVICE_NAME = 'cryptography';
 
 
 var plugin = new ApafPlugin();
@@ -67,16 +69,42 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 }
 
 plugin.checkAuthorizationToken = function(req){
+	this.trace('->checkAuthorizationToken()');
 	if(typeof req.headers.authorization!='undefined'){
+		this.trace('Authorization header found');
 		const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
 		const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':');
 		if(login && login.length>0){
+			this.trace('->checkAuthorizationToken() token found');
 			return {"login": login,"password": password};
 		}else{
+			this.trace('->checkAuthorizationToken() invalid token');
 			return null;
 		}
 	}else{
-		return null;
+		if(typeof req.query[SECURITY_TOKEN_URI_PARAM_NAME]!='undefined' && req.query[SECURITY_TOKEN_URI_PARAM_NAME].length>0){
+			this.trace('Security token found');
+			let token = req.query[SECURITY_TOKEN_URI_PARAM_NAME];
+			let cryptoService = this.getService(CRYPTOGRAPHY_SERVICE_NAME);
+			let decrypted = cryptoService.decrypt(token).split(':');
+			if(decrypted && decrypted.length==3){
+				let login = decrypted[0];
+				let password = decrypted[1];
+				let uri = decrypted[2];
+				let path = req.baseUrl+req.path;
+				if(uri==path){
+					this.trace('->checkAuthorizationToken() valid token found');
+					return {"login": login,"password": password};
+				}else{
+					this.trace('->checkAuthorizationToken() invalid token for this request path '+path);
+					return null;
+				}
+			}else{
+				this.trace('->checkAuthorizationToken() invalid token');
+				return null;
+			}
+		}else
+			return null;
 	}
 }
 

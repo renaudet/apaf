@@ -1,0 +1,31 @@
+{
+    "id":"tokenEditForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.apis.tokens.form.title",
+    	"class": "form-frame-noborder",
+    	"fields": [
+    		{
+    			"name": "login",
+    			"label": "@apaf.token.datatype.login",
+    			"required": true,
+    			"size": 4
+    		},
+    		{
+    			"name": "password",
+    			"label": "@apaf.token.datatype.password",
+    			"type": "password",
+    			"required": true,
+    			"minimumLength": 6,
+    			"size": 4
+    		},
+    		{
+    			"name": "uri",
+    			"label": "@apaf.token.datatype.uri",
+    			"required": true,
+    			"size": 8
+    		}
+    	]
+    }
+}

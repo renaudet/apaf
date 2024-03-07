@@ -1,0 +1,14 @@
+{
+    "id":"apisMenu",
+    "version": "1.0.0",
+    "type": "VerticalMenu",
+    "configuration": {
+    	"expandsTo": "workArea",
+    	"items": [
+    		{
+    			"id": "securityTokens",
+    			"label": "@apaf.apis.menu.tokens"
+    		}
+    	]
+    }
+}

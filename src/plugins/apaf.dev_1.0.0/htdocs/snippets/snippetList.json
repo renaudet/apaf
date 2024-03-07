@@ -4,5 +4,6 @@
 	{"label":"Create a two-column layout with a 1/3-2/3 ratio","location":"/dev/snippets/layout.txt"},
 	{"label":"Small NPA-UI Application with a Form","location":"/dev/snippets/smallApplication.txt"},
 	{"label":"Perform a REST API call","location":"/dev/snippets/restCall.txt"},
-	{"label":"Base servlet implementation","location":"/dev/snippets/servletImpl.txt"}
+	{"label":"Base servlet implementation","location":"/dev/snippets/servletImpl.txt"},
+	{"label":"Call a Servlet","location":"/dev/snippets/servletCall.txt"}
 ]

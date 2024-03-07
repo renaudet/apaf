@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="All-Purpose-Application-Framework Manage APIs Page">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2024 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link rel="icon" type="image/png" href="/resources/img/apaf-logo.png?version=1.0"/>
+		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<title>All Purpose Application Framework</title>
+	</head>
+	<body>
+		<div id="dataManagerPlaceholder1" class="npaUi" data-config="/resources/json/tokenManagerConfig.json"></div>
+		<div id="navBar" class="npaUi" data-ref="menu"></div>
+		<div id="card" class="npaUi" data-config="/resources/json/manageApisCardConfig.json">
+			<div id="verticalMenu" class="npaUi" data-config="/resources/json/apisMenuConfig.json">
+				<div data-menu-ref="securityTokens">
+					<div id="tokenToolbar" class="npaUi" data-config="/resources/json/tokenTableToolbar.json"></div>
+					<div id="tokenEditPage" class="npaUi" data-config="/resources/json/tokenTable.json"></div>
+				</div>
+			</div>
+		</div>
+		<div id="modalPlaceholder" class="npaUi" data-ref="dialog">
+			<div id="tokenForm" class="npaUi" data-config="/resources/json/tokenEditForm.json"></div>
+		</div>
+		<div id="notifier" class="npaUi" data-ref="notifier"></div>
+		<script src="/js/jquery-3.6.3.min.js"></script>
+		<script src="/js/bootstrap.bundle.min.js"></script>
+		<script src="/uiTools/js/npaUiCore.js"></script>
+		<script src="/resources/js/utils/apafUtils.js"></script>
+		<script src="/resources/js/manageApis.js"></script>
+	</body>
+</html>

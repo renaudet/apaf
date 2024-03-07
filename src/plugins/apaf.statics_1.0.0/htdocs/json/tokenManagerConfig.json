@@ -1,0 +1,28 @@
+{
+	"id":"tokenManager",
+	"version": "1.0.0",
+	"type": "DataManager",
+	"configuration": {
+		"query": {
+			"type": "local",
+			"uri": "/apaf-tokens/token/query",
+			"payload": {"selector": {}},
+			"method": "POST",
+	        "adapter": "@.data"
+		},
+		"create": {
+			"type": "local",
+			"uri": "/apaf-tokens/token",
+			"method": "POST",
+			"payload": "@",
+	        "adapter": "@.data"
+		},
+		"delete": {
+			"type": "local",
+			"uri": "/apaf-tokens/token/@.id",
+			"method": "DELETE",
+			"payload": "{}",
+	        "adapter": "@.data"
+		}
+	}
+}

@@ -15,6 +15,11 @@ $(document).ready(function(){
 });
 
 onPageReady = function(){
+	$(document).bind('keypress',function(e){
+		if(e.keyCode === 13){
+	    	$("#loginBtn").trigger('click');
+	    }
+	});
 	$('#loginBtn').on('click',function(){
 		let userid = $('#userid').val();
 		let passwd = $('#passwd').val();

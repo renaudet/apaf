@@ -1,0 +1,16 @@
+{
+    "id":"tokenTableToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+    	"actions": [
+    		{
+                "label": "@apaf.token.toolbar.action.create",
+                "actionId": "addToken",
+                "icon": "/uiTools/img/silk/add.png",
+                "enabled": true,
+                "enableOnSelection": true
+            }
+    	]
+    }
+}

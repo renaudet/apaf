@@ -1,0 +1,108 @@
+{
+  "id": "apaf.tokens",
+  "name": "Security tokens handler for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.crypto","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.tokens.logger",
+  		"dir": "apaf.tokens"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.tokens.router",
+  		"path": "/apaf-tokens"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.tokens.datatype",
+  		"datatype": {
+  			"id": "token",
+  			"name": "Security Token",
+  			"builtIn": true,
+  			"persistent": true,
+  			"database": "apaf_tokens",
+  			"fields": [
+	    		{
+	    			"name": "login",
+	    			"label": "@apaf.token.datatype.login",
+	    			"required": true,
+	    			"size": 4
+	    		},
+	    		{
+	    			"name": "password",
+	    			"label": "@apaf.token.datatype.password",
+	    			"type": "password",
+	    			"required": true,
+	    			"minimumLength": 6,
+	    			"size": 4
+	    		},
+	    		{
+	    			"name": "uri",
+	    			"label": "@apaf.token.datatype.uri",
+	    			"required": true,
+	    			"size": 8
+	    		},
+	    		{
+	    			"name": "created",
+	    			"label": "@apaf.token.datatype.created",
+	    			"type": "date",
+	    			"required": true,
+	    			"size": 2
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.tokens.query.handler",
+  		"router": "apaf.tokens.router",
+  		"method": "POST",
+  		"schema": "/token/query",
+  		"handler": "queryTokensHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.tokens.create.handler",
+  		"router": "apaf.tokens.router",
+  		"method": "POST",
+  		"schema": "/token",
+  		"handler": "createTokenHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.tokens.delete.handler",
+  		"router": "apaf.tokens.router",
+  		"method": "DELETE",
+  		"schema": "/token/:id",
+  		"handler": "deleteTokenHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.apis.menu.item",
+  		"menu": "adminMenuPlaceholder",
+  		"securityRole": "administrator",
+  		"item": {
+			"id": "manageApis",
+    		"label": "@apaf.page.apis.title",
+    		"actionId": "redirect",
+    		"icon": "/uiTools/img/silk/plugin.png",
+    		"uri": "/resources/html/manageApis.html"
+		}
+  	}
+  ],
+  "provides": [
+  ]
+}

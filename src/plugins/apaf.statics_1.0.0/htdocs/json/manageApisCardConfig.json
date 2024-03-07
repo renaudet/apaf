@@ -1,0 +1,10 @@
+{
+    "id":"manageApisCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/uiTools/img/silk/plugin.png",
+        "label": "@apaf.page.apis.title",
+        "stylesheet": "/resources/css/apafCard.css"
+    }
+}
