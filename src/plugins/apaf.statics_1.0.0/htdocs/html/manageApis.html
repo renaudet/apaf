@@ -12,6 +12,7 @@
 	    <meta name='viewport' content='width=device-width, initial-scale=1'>
 		<link rel="icon" type="image/png" href="/resources/img/apaf-logo.png?version=1.0"/>
 		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/css/treeViewer.css" rel="stylesheet">
 		<title>All Purpose Application Framework</title>
 	</head>
 	<body>
@@ -23,6 +24,16 @@
 					<div id="tokenToolbar" class="npaUi" data-config="/resources/json/tokenTableToolbar.json"></div>
 					<div id="tokenEditPage" class="npaUi" data-config="/resources/json/tokenTable.json"></div>
 				</div>
+				<div data-menu-ref="workspace">
+					<div id="workspaceToolbar" class="npaUi" data-config="/resources/json/workspaceTreeToolbar.json"></div>
+					<div class="row" style="margin-top: 5px;">
+						<div id="treeArea" class="col-4"></div>
+						<div id="actionArea" class="col-8">
+							<!-- <div id="editorToolbar" class="npaUi" data-config="/resources/json/workspaceEditorToolbar.json"></div> -->
+							<div id="editor" class="npaUi" data-config="/resources/json/workspaceFileEditor.json"></div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div id="modalPlaceholder" class="npaUi" data-ref="dialog">
@@ -31,6 +42,7 @@
 		<div id="notifier" class="npaUi" data-ref="notifier"></div>
 		<script src="/js/jquery-3.6.3.min.js"></script>
 		<script src="/js/bootstrap.bundle.min.js"></script>
+		<script src="/js/treeViewer.js"></script>
 		<script src="/uiTools/js/npaUiCore.js"></script>
 		<script src="/resources/js/utils/apafUtils.js"></script>
 		<script src="/resources/js/manageApis.js"></script>

@@ -8,6 +8,10 @@
     		{
     			"id": "securityTokens",
     			"label": "@apaf.apis.menu.tokens"
+    		},
+    		{
+    			"id": "workspace",
+    			"label": "@apaf.apis.menu.workspace"
     		}
     	]
     }

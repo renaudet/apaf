@@ -7,7 +7,6 @@ const ApafPlugin = require('../../apafUtil.js');
 const moment = require('moment');
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
-const SECURITY_TOKEN_URI_PARAM_NAME = 'token';
 const CRYPTOGRAPHY_SERVICE_NAME = 'cryptography';
 const TOKEN_DATATYPE_NAME = 'token';
 

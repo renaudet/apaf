@@ -102,3 +102,29 @@ apaf.call = function(callContext){
 	});
 	return callWrapper;
 }
+apaf.put = function(putContext){
+	if(typeof putContext.contentType=='undefined' || 'application/json'==putContext.contentType){
+		putContext.method = 'PUT';
+		return this.call(putContext);
+	}else{
+		let callWrapper = new ApafCallWrapper();
+		$.ajax({
+	      url        : putContext.uri,
+	      type       : 'PUT',
+	      contentType: putContext.contentType,
+		  success    : function(){},
+	      data       : putContext.payload
+	    })
+		.done(function (response) {
+			callWrapper.onSuccessCallback(response);
+		})
+		.fail(function(jqXHR, textStatus) {
+			var errorMsg = jqXHR.responseText;
+			if(jqXHR.status!=200){
+				errorMsg = jqXHR.statusText;
+			}
+			callWrapper.onErrorCallback(errorMsg);
+		});
+		return callWrapper;
+	}
+}

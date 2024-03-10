@@ -1,0 +1,23 @@
+{
+    "id":"workspaceEditorToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+    	"actions": [
+    		{
+                "label": "@apaf.workspace.editor.toolbar.action.edit",
+                "actionId": "editFile",
+                "icon": "/uiTools/img/silk/page_white_edit.png",
+                "enabled": true,
+                "enableOnSelection": true
+            },
+    		{
+                "label": "@apaf.workspace.editor.toolbar.action.save",
+                "actionId": "saveFile",
+                "icon": "/uiTools/img/silk/disk.png",
+                "enabled": false,
+                "enableOnSelection": true
+            }
+    	]
+    }
+}

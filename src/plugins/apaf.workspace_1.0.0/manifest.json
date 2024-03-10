@@ -1,0 +1,90 @@
+{
+  "id": "apaf.workspace",
+  "name": "Security workspace handler for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.workspace","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.workspace.logger",
+  		"dir": "apaf.workspace"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.workspace.router",
+  		"path": "/apaf-workspace"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workspace.project.create.handler",
+  		"router": "apaf.workspace.router",
+  		"method": "POST",
+  		"schema": "/project",
+  		"handler": "createProjectHandler",
+  		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workspace.project.find.handler",
+  		"router": "apaf.workspace.router",
+  		"method": "POST",
+  		"schema": "/project/find",
+  		"handler": "findProjectHandler",
+  		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workspace.folder.create.handler",
+  		"router": "apaf.workspace.router",
+  		"method": "POST",
+  		"schema": "/folder",
+  		"handler": "createFolderHandler",
+  		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workspace.folder.read.handler",
+  		"router": "apaf.workspace.router",
+  		"method": "GET",
+  		"schema": "/folder",
+  		"handler": "readFolderContentHandler",
+  		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workspace.file.read.handler",
+  		"router": "apaf.workspace.router",
+  		"method": "GET",
+  		"schema": "/file/:encrypted",
+  		"handler": "readFileContentHandler",
+  		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workspace.file.write.handler",
+  		"router": "apaf.workspace.router",
+  		"method": "PUT",
+  		"schema": "/file/:encrypted",
+  		"handler": "writeFileHandler",
+  		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workspace.delete.handler",
+  		"router": "apaf.workspace.router",
+  		"method": "DELETE",
+  		"schema": "/:encrypted",
+  		"handler": "deleteResourceHandler",
+  		"securityRole": "coreServices"
+  	}
+  ],
+  "provides": [
+  ]
+}
