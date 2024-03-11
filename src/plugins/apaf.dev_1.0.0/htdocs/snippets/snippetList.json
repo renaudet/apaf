@@ -5,5 +5,6 @@
 	{"label":"Small NPA-UI Application with a Form","location":"/dev/snippets/smallApplication.txt"},
 	{"label":"Perform a REST API call","location":"/dev/snippets/restCall.txt"},
 	{"label":"Base servlet implementation","location":"/dev/snippets/servletImpl.txt"},
-	{"label":"Call a Servlet","location":"/dev/snippets/servletCall.txt"}
+	{"label":"Call a Servlet","location":"/dev/snippets/servletCall.txt"},
+	{"label":"Send a mail","location":"/dev/snippets/sendMail.txt"}
 ]

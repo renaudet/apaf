@@ -12,7 +12,7 @@
   "extends": [
   	{
   		"point": "npa.log.provider",
-  		"id": "apaf.application.logger",
+  		"id": "apaf.security.logger",
   		"dir": "apaf.security"
   	},
   	{

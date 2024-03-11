@@ -1,0 +1,45 @@
+{
+  "id": "apaf.mail.provider",
+  "name": "Mail service handler for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.mail","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.mail.provider.logger",
+  		"dir": "apaf.mail.provider"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.mail.provider.router",
+  		"path": "/apaf-mail"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.mail.provider.sendMail.handler",
+  		"router": "apaf.mail.provider.router",
+  		"method": "POST",
+  		"schema": "/send",
+  		"handler": "sendMailHandler",
+  		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "npa.mail.provider",
+  		"id": "apaf.smtp.mail.provider",
+  		"type": "SMTP",
+		"host": "smtp.wanadoo.fr",
+		"port": 587,
+		"secure": false,
+		"username": "nicolas.renaudet",
+		"password": "Franquin1"
+  	}
+  ],
+  "provides": [
+  ]
+}
