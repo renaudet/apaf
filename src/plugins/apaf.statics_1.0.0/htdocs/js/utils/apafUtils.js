@@ -128,3 +128,27 @@ apaf.put = function(putContext){
 		return callWrapper;
 	}
 }
+apaf.upload = function(folderPath,filename,formData){
+	let callWrapper = new ApafCallWrapper();
+	let encrypted = btoa(folderPath);
+	var actionUrl = '/apaf-workspace/file/'+encrypted;
+	$.ajax({
+      url        : actionUrl,
+      type       : 'POST',
+      data       : formData,
+	  processData: false,
+      contentType: false,
+      success    : function(){}
+	})
+	.done(function (response) {
+		callWrapper.onSuccessCallback(response);
+	})
+	.fail(function( jqXHR, textStatus ) {
+		var errorMsg = jqXHR.responseText; // assume it is plain text
+		if(jqXHR.status!=200){
+			errorMsg = jqXHR.statusText;
+		}
+		callWrapper.onErrorCallback(errorMsg);
+	});
+	return callWrapper;
+}

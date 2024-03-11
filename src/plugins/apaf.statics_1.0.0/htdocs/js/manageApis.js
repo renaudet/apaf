@@ -5,6 +5,7 @@
  
 const GLOBAL_CONFIGURATION_FILE = '/resources/json/globalApafConfig.json';
 const DIALOG_ID = 'simpleDialog';
+const EMPTY_DIALOG_ID = 'emptyDialog';
 const TOKEN_EDIT_FORM_ID = 'tokenEditForm';
 const DATA_MANAGER_ID = 'tokenManager';
 const DATATABLE_ID = 'tokenTable';
@@ -29,6 +30,8 @@ initializeUi = function(){
 			npaUi.on('newProject',newProject);
 			npaUi.on('newFolder',newFolder);
 			npaUi.on('saveFile',saveEditorFile);
+			npaUi.on('uploadResource',uploadResource);
+			npaUi.on('downloadResource',downloadResource);
 			npaUi.on('deleteResource',deleteResource);
 			npaUi.render();
 		});
@@ -40,10 +43,10 @@ initComponents = function(){
 }
 
 addToken = function(){
-	let tokenEditForm = npaUi.getComponent(TOKEN_EDIT_FORM_ID);
+	let tokenEditForm = $apaf(TOKEN_EDIT_FORM_ID);
 	tokenEditForm.setData({});
 	tokenEditForm.setEditMode(true);
-	let dialog = npaUi.getComponent(DIALOG_ID);
+	let dialog = $apaf(DIALOG_ID);
 	dialog.onClose(function(){
 		let tokenData = tokenEditForm.getData();
 		createToken(tokenData);
@@ -52,9 +55,9 @@ addToken = function(){
 }
 
 createToken = function(tokenData){
-	let dataManager = npaUi.getComponent(DATA_MANAGER_ID);
+	let dataManager = $apaf(DATA_MANAGER_ID);
 	dataManager.update(tokenData).then(function(data){
-		let datatable = npaUi.getComponent(DATATABLE_ID);
+		let datatable = $apaf(DATATABLE_ID);
 		datatable.refresh();
 	}).onError(function(errorMsg){
 		if(errorMsg.httpStatus==404){
@@ -67,9 +70,9 @@ createToken = function(tokenData){
 deleteToken = function(event){
 	let selectedToken = event.item;
 	if(confirm(npaUi.getLocalizedString('@apaf.page.apis.confirm.delete'))){
-		let dataManager = npaUi.getComponent(DATA_MANAGER_ID);
+		let dataManager = $apaf(DATA_MANAGER_ID);
 		dataManager.delete(selectedToken).then(function(data){
-			let datatable = npaUi.getComponent(DATATABLE_ID);
+			let datatable = $apaf(DATATABLE_ID);
 			datatable.refresh();
 			flash('@apaf.page.apis.deleted');
 		}).onError(function(errorMsg){
@@ -121,6 +124,46 @@ var filesystemVisitor = {
 	}
 }
 
+const FILE_ICON = {
+	"txt": "/uiTools/img/silk/page_white_text.png",
+	"json": "/uiTools/img/silk/page_white_wrench.png",
+	"png": "/uiTools/img/silk/page_white_picture.png",
+	"jpg": "/uiTools/img/silk/page_white_camera.png",
+	"jpeg": "/uiTools/img/silk/page_white_camera.png",
+	"gif": "/uiTools/img/silk/page_white_picture.png",
+	"pdf": "/uiTools/img/silk/page_white_acrobat.png",
+	"zip": "/uiTools/img/silk/page_white_compressed.png",
+	"htm": "/uiTools/img/silk/page_white_code.png",
+	"html": "/uiTools/img/silk/page_white_code.png",
+	"sql": "/uiTools/img/silk/page_white_database.png",
+	"ppt": "/uiTools/img/silk/page_white_powerpoint.png",
+	"pptx": "/uiTools/img/silk/page_white_powerpoint.png",
+	"doc": "/uiTools/img/silk/page_white_word.png",
+	"docx": "/uiTools/img/silk/.png",
+	"xls": "/uiTools/img/silk/page_white_excel.png",
+	"xlsx": "/uiTools/img/silk/page_white_excel.png",
+	"cmd": "/uiTools/img/silk/page_white_gear.png",
+	"ps": "/uiTools/img/silk/page_white_gear.png",
+	"log": "/uiTools/img/silk/page_white_text.png.png",
+	"js": "/uiTools/img/silk/page_white_csharp.png",
+	"default": "/uiTools/img/silk/page_white.png"
+}
+
+fileToIcon = function(filename){
+	let index = filename.lastIndexOf('.');
+	if(index>=0){
+		let fileExt = filename.substring(index+1).toLowerCase();
+		let registeredIcon = FILE_ICON[fileExt];
+		if(typeof registeredIcon!='undefined'){
+			return registeredIcon;
+		}else{
+			return FILE_ICON['default'];
+		}
+	}else{
+		return FILE_ICON['default'];
+	}
+}
+
 var filesystemDecorator = {
 	decorate(element,label){
 		if(element.createdBy){
@@ -128,7 +171,7 @@ var filesystemDecorator = {
 		}
 		if(element.type){
 			if('file'==element.type){
-				return '<img src="/uiTools/img/silk/page_white_text.png">&nbsp;'+label;
+				return '<img src="'+fileToIcon(label)+'">&nbsp;'+label;
 			}
 			if('directory'==element.type){
 				return '<img src="/uiTools/img/silk/folder.png">&nbsp;<b>'+label+'</b>';
@@ -141,13 +184,15 @@ var filesystemDecorator = {
 var filesystemEventListener = {
 	onNodeSelected(node){
 		selectedNode = node;
-		let toolbar = npaUi.getComponent(WORKSPACE_TOOLBAR_ID);
+		let toolbar = $apaf(WORKSPACE_TOOLBAR_ID);
 		toolbar.setEnabled('deleteResource',true);
+		toolbar.setEnabled('downloadResource',false);
 		let fsObject = node.data;
 		if(fsObject.createdBy || 'directory'==fsObject.type){
 			selectedFolder = fsObject;
 			currentContainerNode = node;
 			toolbar.setEnabled('newFolder',true);
+			toolbar.setEnabled('uploadResource',true);
 			if(!fsObject.loaded){
 				let project = '';
 				let folderPath = '';
@@ -172,6 +217,9 @@ var filesystemEventListener = {
 				});
 			}
 			updateEditorContent(null);
+		}
+		if('file'==fsObject.type){
+			toolbar.setEnabled('downloadResource',true);
 		}
 		if('file'==fsObject.type && (
 			fsObject.name.endsWith('.txt') ||
@@ -272,7 +320,7 @@ updateEditorContent = function(file){
 	      "uri": "/apaf-workspace/file/"+encrypted,
 	      "payload": {}
 	   }).then(function(data){
-		 let editor = npaUi.getComponent(WORKSPACE_EDITOR_ID);
+		 let editor = $apaf(WORKSPACE_EDITOR_ID);
 		 editor.setText(data);
 		 editor.setEnabled('editFile',true);
 		 editor.setEnabled('saveFile',false);
@@ -281,7 +329,7 @@ updateEditorContent = function(file){
 	      showError(msg);
 	   });
 	}else{
-		let editor = npaUi.getComponent(WORKSPACE_EDITOR_ID);
+		let editor = $apaf(WORKSPACE_EDITOR_ID);
 		editor.setText('');
 		editor.setEnabled('editFile',false);
 		editor.setEnabled('saveFile',false);
@@ -290,7 +338,7 @@ updateEditorContent = function(file){
 }
 
 saveEditorFile = function(){
-   let editor = npaUi.getComponent(WORKSPACE_EDITOR_ID);
+   let editor = $apaf(WORKSPACE_EDITOR_ID);
    let content = editor.getText();
    let toEncrypt = selectedFile.project+'/'+selectedFile.path; 
    let encrypted = btoa(toEncrypt);
@@ -335,4 +383,78 @@ deleteResource = function(){
 	      showError(msg);
 	   });
 	}
+}
+
+var uploadDialogInitialized = false;
+uploadResource = function(){
+	let dialog = $apaf(EMPTY_DIALOG_ID);
+	if(!uploadDialogInitialized){
+		let dialogTitle = npaUi.getLocalizedString('@apaf.workspace.toolbar.action.import.dialog.title');
+		dialog.setTitle(dialogTitle);
+		let html = '';
+		html += '<div class="row form-row" id="uploadDialogForm">';
+		html += '  <div class="col-2" style="font-weight: bold;text-align: right;">';
+		html += npaUi.getLocalizedString('@apaf.workspace.toolbar.action.import.dialog.field');
+		html += '  </div>';
+		html += '  <div class="col-7">';
+		html += '     <input class="form-control" type="file" id="uploadFileInput"/>';
+		html += '  </div>';
+		html += '  <div class="col-3">';
+		html += '    <button id="uploadFileInputSubmitBtn" type="button" class="btn btn-primary">'+npaUi.getLocalizedString('@apaf.workspace.toolbar.action.import.dialog.button')+'</button>';
+		html += '  </div>';
+		html += '</div>';
+		html += '';
+		dialog.setBody(html);
+		$('#uploadFileInputSubmitBtn').on('click',function(){
+			var file = $('#uploadFileInput').get(0).files[0];
+			var formdata = new FormData();
+			formdata.append("data", file);
+			let folderPath = '';
+			let project = '';
+			let absolutePath = '';
+			if('directory'==selectedFolder.type){
+				project = selectedFolder.project;
+				folderPath = selectedFolder.path;
+				absolutePath = selectedFolder.project+'/'+selectedFolder.path;
+			}else{
+				project = selectedFolder.name;
+				folderPath = '';
+				absolutePath = selectedFolder.name;
+			}
+			apaf.upload(absolutePath,'newFile.bin',formdata)
+			.then(function(response){
+				let entry = {"name": file.name,"type": "file","project": project,"path": folderPath};
+				let treeNode = currentContainerNode.tree.createTreeStructure(currentContainerNode.id+'_child_'+Math.floor(Math.random() * 100000),entry);
+				currentContainerNode.addChild(treeNode);
+				currentContainerNode.open();
+				selectedFolder.children.push(entry);
+			    treeViewer.refreshTree();
+				showConfirm(response.message);
+			})
+			.onError(function(errorMsg){
+				showError(errorMsg);
+			});
+		});
+		dialog.onClose(function(){	
+		});
+		uploadDialogInitialized = true;
+	}
+	dialog.open();
+}
+
+function download(url) {
+  const a = document.createElement('a')
+  a.href = url
+  a.download = url.split('/').pop()
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+}
+
+downloadResource = function(){
+	let file = selectedNode.data;
+	let workspaceRelativePath = file.project+'/'+file.path;
+	let encrypted = btoa(workspaceRelativePath);
+	let resourceUrl = '/apaf-workspace/binaryFile/'+encrypted;
+	download(resourceUrl);
 }

@@ -7,7 +7,7 @@
     		{
                 "label": "@apaf.workspace.toolbar.action.new",
                 "actionId": "newProject",
-                "icon": "/uiTools/img/silk/add.png",
+                "icon": "/uiTools/img/silk/book_add.png",
                 "enabled": true,
                 "enableOnSelection": true
             },
@@ -15,6 +15,23 @@
                 "label": "@apaf.workspace.toolbar.action.folder",
                 "actionId": "newFolder",
                 "icon": "/uiTools/img/silk/folder_add.png",
+                "enabled": false,
+                "enableOnSelection": true
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "label": "@apaf.workspace.toolbar.action.import",
+                "actionId": "uploadResource",
+                "icon": "/uiTools/img/silk/folder_page.png",
+                "enabled": false,
+                "enableOnSelection": true
+            },
+    		{
+                "label": "@apaf.workspace.toolbar.action.export",
+                "actionId": "downloadResource",
+                "icon": "/uiTools/img/silk/folder_go.png",
                 "enabled": false,
                 "enableOnSelection": true
             },

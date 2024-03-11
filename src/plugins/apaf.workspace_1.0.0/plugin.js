@@ -4,6 +4,7 @@
  */
 
 const ApafPlugin = require('../../apafUtil.js');
+const formidable = require('formidable');
 const moment = require('moment');
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const WORKSPACE_SERVICE_NAME = 'workspace';
@@ -94,13 +95,14 @@ plugin.readFolderContentHandler = function(req,res){
 		}else{
 			let project = req.query.project;
 			let folder = req.query.folder;
+			let showHidden = ('true'==req.query.hidden);
 			if(project && project.length>0){
 				if(typeof folder=='undefined' || folder==null){
 					folder = '';
 				}
 				let relativPath = project+'/'+folder;
 				let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
-				let content = workspaceService.folderContent(relativPath);
+				let content = workspaceService.folderContent(relativPath,showHidden);
 				plugin.debug('<-readFolderContentHandler()');
 				res.json({"status": 200,"message": "Ok","data": content});
 			}else{
@@ -200,6 +202,74 @@ plugin.deleteResourceHandler = function(req,res){
 			}else{
 				plugin.debug('<-deleteResourceHandler() bad request');
 				res.json({"status": 406,"message": "Not acceptable","data": "No resource path received!"});
+			}
+		}
+	});
+}
+
+plugin.uploadFileHandler = function(req,res){
+	plugin.debug('->uploadFileHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.workspace.file.upload.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-uploadFileHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let encryptedData = req.params.encrypted;
+			if(encryptedData && encryptedData.length>0){
+				let buff = Buffer.from(encryptedData, 'base64');
+				let folder = buff.toString('ascii');
+				let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
+				let uploadDir = workspaceService.absolutePath(folder);
+				const form = formidable({ "multiples": false, "uploadDir": uploadDir });
+				form.parse(req, function(err, fields, files){
+					if(err){
+						plugin.debug('<-uploadFileHandler() - request parsing error');
+						res.json({"status": 406,"message": err,"data": []});
+					}else{
+						for(var entry in files){
+							var file = files[entry];
+							workspaceService.renameFile(uploadDir,file.newFilename,file.originalFilename);
+						}
+						plugin.debug('<-uploadFileHandler()');
+						res.json({"status": 200,"message": "Uploaded","data": file.originalFilename});
+					}
+				});
+			}else{
+				plugin.debug('<-uploadFileHandler() - bad request');
+				res.json({"status": 406,"message": "Not acceptable","data": "No resource path received!"});
+			}
+		}
+	});
+}
+
+plugin.readBinaryFileContentHandler = function(req,res){
+	plugin.debug('->readBinaryFileContentHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.workspace.file.read.binary.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-readBinaryFileContentHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let encryptedData = req.params.encrypted;
+			if(encryptedData && encryptedData.length>0){
+				let buff = Buffer.from(encryptedData, 'base64');
+				let filePath = buff.toString('ascii');
+				if(filePath.lastIndexOf('/')>=0){
+					let filename = filePath.substring(filePath.lastIndexOf('/')+1);
+					let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
+					let absoluteFilePath = workspaceService.absolutePath(filePath); 
+					plugin.debug('<-readBinaryFileContentHandler() sending file '+filename);
+					res.download(absoluteFilePath, filename); 
+				}else{
+					plugin.debug('<-readBinaryFileContentHandler() bad request');
+					res.json({"status": 406,"message": "Not acceptable","data": "Invalid path data received!"});
+				}
+			}else{
+				plugin.debug('<-readBinaryFileContentHandler() bad request');
+				res.json({"status": 406,"message": "Not acceptable","data": "No path data received!"});
 			}
 		}
 	});
