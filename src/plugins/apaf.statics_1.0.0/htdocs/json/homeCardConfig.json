@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "type": "Card",
     "configuration": {
-        "icon": "/resources/img/apaf-logo.png",
+        "icon": "/apaf-branding/img/apaf-logo.png",
         "label": "@apaf.page.home.title",
-        "stylesheet": "/resources/css/apafCard.css"
+        "stylesheet": "/apaf-branding/css/apafCard.css"
     }
 }

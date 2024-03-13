@@ -5,6 +5,6 @@
     "configuration": {
         "icon": "/uiTools/img/silk/help.png",
         "label": "@apaf.page.about.title",
-        "stylesheet": "/resources/css/apafCard.css"
+        "stylesheet": "/apaf-branding/css/apafCard.css"
     }
 }

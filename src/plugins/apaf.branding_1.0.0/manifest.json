@@ -1,0 +1,29 @@
+{
+  "id": "apaf.branding",
+  "name": "Branding provider for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"}
+  ],
+  "cache_control": "public, max-age=0, s-maxage=0",
+  "extends": [
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.branding.router",
+  		"path": "/apaf-branding"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.branding.resource.handler",
+  		"router": "apaf.branding.router",
+  		"method": "GET",
+  		"schema": "/:category/:resourceId",
+  		"handler": "getBrandingResourceHandler"
+  	}
+  ],
+  "provides": [
+  	{"id": "apaf.branding.provider"}
+  ]
+}

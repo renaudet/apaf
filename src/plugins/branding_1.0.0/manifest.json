@@ -1,0 +1,25 @@
+{
+  "id": "branding",
+  "name": "Custom Branding provider for Test",
+  "version": "1.0.0",
+  "requires": [
+  	{"type": "plugin","id": "apaf.branding","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.application","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"}
+  ],
+ "extends": [
+  	{
+  		"point": "apaf.branding.provider",
+  		"id": "custom.branding.provider",
+  		"path": "/htdocs"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.branding.locale.provider.fr",
+  		"path": "i18n/apaf_fr-FR.locale",
+  		"locale": "fr-FR"
+  	}
+  ],
+  "provides": [
+  ]
+}

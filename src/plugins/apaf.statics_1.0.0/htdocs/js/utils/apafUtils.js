@@ -66,6 +66,7 @@ ApafCallWrapper = class {
 		return this;
 	}
 }
+
 $apaf = function(componentId){
 	return npaUi.getComponent(componentId);
 }
@@ -151,4 +152,7 @@ apaf.upload = function(folderPath,filename,formData){
 		callWrapper.onErrorCallback(errorMsg);
 	});
 	return callWrapper;
+}
+apaf.localize = function(txt){
+	return npaUi.getLocalizedString(txt);
 }

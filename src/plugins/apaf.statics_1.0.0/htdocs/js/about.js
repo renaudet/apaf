@@ -20,7 +20,7 @@ displayAboutBox = function(){
 	html += '  <div class="col-1">&nbsp;</div>';
 	html += '  <div class="col-10">';
 	html += '    <div class="card" style="margin-top: 10px;">';
-	html += '      <div id="aboutHeader" class="card-header" style="padding-top: 5px;padding-bottom: 5px;">The All Purpose Application Framework - APAF</div>';
+	html += '      <div id="aboutHeader" class="card-header" style="padding-top: 5px;padding-bottom: 5px;">'+apaf.localize('@apaf.page.about.card.title')+'</div>';
 	html += '      <ul class="list-group list-group-flush">';
 	html += '        <li id="aboutAreaContent" class="list-group-item">&nbsp;</li>';
 	html += '      </ul>';
@@ -35,12 +35,12 @@ displayAboutBox = function(){
 displayCopyrightInfo = function(parent){
 	var html = '';
 	html += '<div style="">';
-	html += '   <img src="/resources/img/apaf-logo.png" style="display: block;margin-right: auto;margin-left: auto;">';
+	html += '   <img src="/apaf-branding/img/apaf-logo.png" style="display: block;margin-right: auto;margin-left: auto;">';
 	html += '</div>';
 	html += '<div style="text-align: center;">';
-	html += '   <b>Author: </b>Nicolas Renaudet<br>';
+	html += '   <b>'+apaf.localize('@apaf.page.about.card.author')+'</b>&nbsp;Nicolas Renaudet<br>';
 	html += '   <b>&copy;Copyright: </b>2024 - Nicolas Renaudet - All Rights Reserved<br>';
-	html += '   <b>Licence:</b>&nbsp;<span id="licence" style="font-style: italic;color: gray;">MIT</span><br>';
+	html += '   <b>'+apaf.localize('@apaf.page.about.card.license')+'</b>&nbsp;<span id="licence" style="font-style: italic;color: gray;">MIT</span><br>';
 	html += '</div>';
 	html += '<div style="margin-top: 20px;">&nbsp;</div>';
 	parent.append(html);

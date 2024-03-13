@@ -5,6 +5,6 @@
     "configuration": {
         "icon": "/resources/img/apaf-user-data.png",
         "label": "@apaf.page.user.data.title",
-        "stylesheet": "/resources/css/apafCard.css"
+        "stylesheet": "/apaf-branding/css/apafCard.css"
     }
 }

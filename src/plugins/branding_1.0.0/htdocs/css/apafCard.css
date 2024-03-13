@@ -1,0 +1,14 @@
+/***
+ * apafCard.css - CSS file for base APAF Card components
+ * Copyright 2024 Nicolas Renaudet - All rights reserved
+ *
+ ***/
+ 
+.npa-card-header {
+	background-color: #f0f0f0;
+	color: #000000;
+}
+
+.card-scrollable {
+	overflow: auto;
+}
