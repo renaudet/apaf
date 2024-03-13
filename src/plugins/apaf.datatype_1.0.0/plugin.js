@@ -18,6 +18,38 @@ plugin.lazzyPlug = function(extenderId,extensionPointConfig){
 		this.trace(JSON.stringify(datatype,null,'\t'));
 		this.registerDatatype(datatype);
 	}
+	if('apaf.datatype.object.initializer'==extensionPointConfig.point){
+		if(typeof this.commands=='undefined'){
+			this.commands = [];
+		}
+		this.commands.push(function(then){
+			plugin.info('initializing object for datatype '+extensionPointConfig.datatype);
+			plugin.trace('data: '+JSON.stringify(extensionPointConfig.data,null,'\t'));
+			plugin.initializeObject(extensionPointConfig.datatype,extensionPointConfig.data,then);
+		});
+	}
+}
+
+plugin.onConfigurationLoaded = function(){
+	this.trace('->onConfigurationLoaded()');
+	if(typeof this.commands!='undefined'){
+		this.trace('found '+this.commands.length+' postponned commands to execute');
+		let executeCommandLst = function(commandLst,index,then){
+			if(index<commandLst.length){
+				let command = commandLst[index];
+				plugin.trace('executing postponned command #'+index);
+				command(function(){
+					executeCommandLst(commandLst,index+1,then);
+				});
+			}else{
+				then();
+			}
+		}
+		executeCommandLst(this.commands,0,function(){
+			delete this.commands;
+		});
+	}
+	this.trace('<-onConfigurationLoaded()');
 }
 
 plugin.beforeExtensionPlugged = function(){
@@ -242,6 +274,47 @@ plugin.deleteRecord = function(datatypeId,data,callback){
 			couchService.deleteRecord(datatypeId,data,callback);
 		}
 	});
+}
+
+plugin.initializeObject = function(datatype,data,then){
+	this.trace('->initializeObject('+datatype+')');
+	let query = {};
+	let selector = {"$and": []};
+	for(var fieldName in data){
+		let fieldValue = data[fieldName];
+		let condition = {};
+		condition[fieldName] = {};
+		condition[fieldName]['$eq'] = fieldValue
+		selector['$and'].push(condition);
+	}
+	query.selector=selector;
+	this.query(datatype,query,function(err,resultSet){
+		if(err){
+			plugin.error('An error occured looking up for an existing "'+datatype+'" record with selector '+JSON.stringify(selector));
+			plugin.error(JSON.stringify(err));
+			plugin.trace('<-initializeObject()');
+			then();
+		}else{
+			if(resultSet && resultSet.length==0){
+				plugin.info('object not found');
+				plugin.debug(JSON.stringify(resultSet));
+				plugin.createRecord(datatype,data,function(err,createdRecord){
+					if(err){
+						plugin.error('An error occured creating a new "'+datatype+'" record');
+						plugin.error(JSON.stringify(err));
+					}else{
+						plugin.info('A new record of type "'+datatype+'" was created - ID#: '+createdRecord.id);
+					}
+					plugin.trace('<-initializeObject()');
+					then();
+				});
+			}else{
+				plugin.info('object already exists');
+				plugin.trace('<-initializeObject()');
+				then();
+			}
+		}
+	})
 }
 
 module.exports = plugin;

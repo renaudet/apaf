@@ -38,6 +38,15 @@
 		"secure": false,
 		"username": "nicolas.renaudet",
 		"password": "Franquin1"
+  	},
+  	{
+  		"point": "apaf.datatype.object.initializer",
+  		"id": "apaf.mail.provider.role.initializer.coreServices",
+  		"datatype": "role",
+  		"data": {
+  			"name": "coreServices",
+  			"description": "Grant permission to use APAF Core services"
+  		}
   	}
   ],
   "provides": [

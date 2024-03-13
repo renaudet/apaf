@@ -51,6 +51,15 @@
   		"schema": "/menu",
   		"handler": "generateAppsMenuHandler",
   		"securityRole": ""
+  	},
+  	{
+  		"point": "apaf.datatype.object.initializer",
+  		"id": "apaf.apps.role.initializer.operator",
+  		"datatype": "role",
+  		"data": {
+  			"name": "operator",
+  			"description": "Grant access to APAF-designed applications"
+  		}
   	}
   ],
   "provides": [

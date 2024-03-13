@@ -28,6 +28,15 @@
   		"schema": "/invoke",
   		"handler": "invokeRestApiHandler",
   		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "apaf.datatype.object.initializer",
+  		"id": "apaf.rest.api.role.initializer.coreServices",
+  		"datatype": "role",
+  		"data": {
+  			"name": "coreServices",
+  			"description": "Grant permission to use APAF Core services"
+  		}
   	}
   ],
   "provides": [

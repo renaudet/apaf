@@ -56,6 +56,15 @@
   		"schema": "/servlet/:alias",
   		"handler": "invokeDynamicApiHandler",
   		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "apaf.datatype.object.initializer",
+  		"id": "apaf.dyn.api.role.initializer.coreServices",
+  		"datatype": "role",
+  		"data": {
+  			"name": "coreServices",
+  			"description": "Grant permission to use APAF Core services"
+  		}
   	}
   ],
   "provides": [

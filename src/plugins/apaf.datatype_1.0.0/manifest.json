@@ -78,6 +78,7 @@
   	}
   ],
   "provides": [
-  	{"id": "apaf.datatype.base.datatype"}
+  	{"id": "apaf.datatype.base.datatype"},
+  	{"id": "apaf.datatype.object.initializer"}
   ]
 }

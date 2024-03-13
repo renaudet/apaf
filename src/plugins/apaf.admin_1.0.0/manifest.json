@@ -137,7 +137,7 @@
   		"method": "POST",
   		"schema": "/user/query",
   		"handler": "queryUserHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "manageUser"
   	},
   	{
   		"point": "npa.http.handler",
@@ -146,7 +146,7 @@
   		"method": "POST",
   		"schema": "/user",
   		"handler": "createUserHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "manageUser"
   	},
   	{
   		"point": "npa.http.handler",
@@ -155,7 +155,7 @@
   		"method": "PUT",
   		"schema": "/user",
   		"handler": "updateUserHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "manageUser"
   	},
   	{
   		"point": "npa.http.handler",
@@ -173,7 +173,7 @@
   		"method": "GET",
   		"schema": "/user/:id",
   		"handler": "findUserHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "manageUser"
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
@@ -238,7 +238,7 @@
   		"method": "POST",
   		"schema": "/group/query",
   		"handler": "queryGroupHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "manageGroup"
   	},
   	{
   		"point": "npa.http.handler",
@@ -247,7 +247,7 @@
   		"method": "POST",
   		"schema": "/group",
   		"handler": "createGroupHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "manageGroup"
   	},
   	{
   		"point": "npa.http.handler",
@@ -256,7 +256,7 @@
   		"method": "PUT",
   		"schema": "/group",
   		"handler": "updateGroupHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "manageGroup"
   	},
   	{
   		"point": "npa.http.handler",
@@ -274,7 +274,7 @@
   		"method": "GET",
   		"schema": "/group/:id",
   		"handler": "findGroupHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "manageGroup"
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
@@ -407,6 +407,33 @@
 			"type": "placeholder",
 			"id": "adminMenuPlaceholder"
 		}
+  	},
+  	{
+  		"point": "apaf.datatype.object.initializer",
+  		"id": "apaf.admin.role.initializer.administrator",
+  		"datatype": "role",
+  		"data": {
+  			"name": "administrator",
+  			"description": "Full-priviledged access to any protected resource"
+  		}
+  	},
+  	{
+  		"point": "apaf.datatype.object.initializer",
+  		"id": "apaf.admin.role.initializer.userManager",
+  		"datatype": "role",
+  		"data": {
+  			"name": "manageUser",
+  			"description": "Grant permission to read, create or update a User"
+  		}
+  	},
+  	{
+  		"point": "apaf.datatype.object.initializer",
+  		"id": "apaf.admin.role.initializer.groupManager",
+  		"datatype": "role",
+  		"data": {
+  			"name": "manageGroup",
+  			"description": "Grant permission to read, create or update a user Group"
+  		}
   	}
   ],
   "provides": [

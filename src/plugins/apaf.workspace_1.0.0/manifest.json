@@ -101,6 +101,15 @@
   		"schema": "/file/:encrypted",
   		"handler": "uploadFileHandler",
   		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "apaf.datatype.object.initializer",
+  		"id": "apaf.workspace.role.initializer.coreServices",
+  		"datatype": "role",
+  		"data": {
+  			"name": "coreServices",
+  			"description": "Grant permission to use APAF Core services"
+  		}
   	}
   ],
   "provides": [
