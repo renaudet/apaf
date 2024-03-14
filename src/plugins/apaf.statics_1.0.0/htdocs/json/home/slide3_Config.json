@@ -1,0 +1,9 @@
+{
+    "id":"import3",
+    "version": "1.0.0",
+    "type": "HtmlImport",
+    "configuration": {
+        "url": "/apaf-branding/html/slide3.html",
+        "stylesheet": "/apaf-branding/css/homeSlide.css"
+    }
+}

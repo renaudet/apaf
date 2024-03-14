@@ -1,0 +1,30 @@
+/***
+ * homeSlide.css - CSS file for Home Page slides
+ * Copyright 2024 Nicolas Renaudet - All rights reserved
+ *
+ ***/
+ 
+.apaf-slide-title {
+	padding-top: 9.5rem;
+	margin-top: 0.5rem;
+	margin-left: 3rem;
+	margin-right: 3rem;
+	margin-bottom: 2rem;
+}
+
+.apaf-logo {
+	background-image: url("/apaf-branding/img/apaf.png");
+	background-repeat: no-repeat;
+	background-position-x: center;
+}
+
+.apaf-comment {
+	font-weight: 500;
+	color: rgba(100,100,100,1);
+	font-size: 1.5rem;
+}
+
+.scrollable-550 {
+	max-height: 550px;
+	overflow-y: scroll;
+}

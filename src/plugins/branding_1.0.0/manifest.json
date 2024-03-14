@@ -18,6 +18,12 @@
   		"id": "apaf.branding.locale.provider.fr",
   		"path": "i18n/apaf_fr-FR.locale",
   		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.branding.locale.provider.us",
+  		"path": "i18n/apaf_en-US.locale",
+  		"locale": "en-US"
   	}
   ],
   "provides": [

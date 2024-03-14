@@ -4,14 +4,8 @@
     "type": "Carousel",
     "configuration": {
     	"expandsTo": "workArea",
-        "slides": [
-        	{
-        		"id": "slide1",
-        		"active": true
-        	},
-        	{
-        		"id": "slide2"
-        	}
-        ]
+    	"transitionStyle": "fade",
+    	"stylesheet": "/apaf-branding/css/homeCarousel.css",
+    	"autoPlay": true
     }
 }

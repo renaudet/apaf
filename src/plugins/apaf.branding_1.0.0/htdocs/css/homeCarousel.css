@@ -1,0 +1,17 @@
+/***
+ * carousel.css - default CSS file for the NPA UI Carousel component
+ * Copyright 2024 Nicolas Renaudet - All rights reserved
+ *
+ ***/
+ 
+.npa-carousel-header {
+	margin-top: 3px;
+}
+
+.npa-carousel-inner {
+	background-color: #fafafa;
+	background-image: linear-gradient(rgba(86, 154, 214, 0.5), rgba(87, 217, 93, 0.3));
+	min-height: 500px;
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
