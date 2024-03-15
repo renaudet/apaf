@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="APAF Container for Podman" default="publish">
+<project name="APAF Container for Docker" default="publish">
     <target name="init">
-    	<property name="apaf.version" value="1.1.1"/>
+    	<property name="apaf.version" value="1.2.0"/>
     	<property name="export.dir" value="G:/APAF/build"/>
     	<property name="package.dir" value="G:/SCAF/htdocs/apaf"/>
     	<property name="target.host" value="192.168.2.116"/>
@@ -59,7 +59,7 @@
 		</tar>
 		<copy todir="${package.dir}">
 	      <fileset dir="./Kubernetes">
-  		    <include name="*.yml"/>
+  		    <include name="apaf-ha-deployment.yml"/>
 		    <exclude name="**/CVS/*"/>
 	      </fileset>
 	    </copy>

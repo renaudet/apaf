@@ -36,8 +36,8 @@
 		"host": "smtp.wanadoo.fr",
 		"port": 587,
 		"secure": false,
-		"username": "nicolas.renaudet",
-		"password": "Franquin1"
+		"username": "$SMTP-USER",
+		"password": "$SMTP_PASSWD"
   	},
   	{
   		"point": "apaf.datatype.object.initializer",

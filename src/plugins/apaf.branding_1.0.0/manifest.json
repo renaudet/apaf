@@ -7,7 +7,7 @@
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"}
   ],
-  "cache_control": "public, max-age=0, s-maxage=0",
+  "cache_control": "public, max-age=900, s-maxage=900",
   "extends": [
   	{
   		"point": "npa.http.router",
