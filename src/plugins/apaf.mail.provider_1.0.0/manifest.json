@@ -36,7 +36,7 @@
 		"host": "smtp.wanadoo.fr",
 		"port": 587,
 		"secure": false,
-		"username": "$SMTP-USER",
+		"username": "$SMTP_USER",
 		"password": "$SMTP_PASSWD"
   	},
   	{
