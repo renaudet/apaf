@@ -102,9 +102,55 @@ The following built-in Security Roles are used by APAF to protect important feat
 
 * administrator: required role for all administrative tasks such as creating/updating/deleting a User, a Group or a custom Security Role
 * developer: required role for all development tasks such as creating/updating/deleting Code Fragments, APAF Applications or custom Datatypes
+* operator: default role for accessing custom applications
+* manageUser: required role for administrative tasks such as creating/updating/deleting a User
+* manageGroup: required role for administrative tasks such as creating/updating/deleting a Group
+* coreServices: required role for using most of the Core APAF services such as mail, REST api calls or System calls
 
 ![The APAF Security Roles Management Screen](https://github.com/renaudet/apaf/blob/main/screenshots/rolesPage.png?raw=true)
 
+## User Groups
+
+Creating Groups of Users helps define required security roles for categories of users. The same user may be a member of several Groups at the same time.
+
 ![The APAF Groups Management Screen](https://github.com/renaudet/apaf/blob/main/screenshots/groupsPage.png?raw=true)
 
+## APAF Users
+
+APAF Users must be defined in the APAF CouchDB database. The `domain` property makes it possible to use an external authentication mechanism like an LDAP registry.
+
+By default, the `local` domain authenticates the user credential using an equality check on the password's md5 hash value stored in the User's record.
+
 ![The APAF Users Management Screen](https://github.com/renaudet/apaf/blob/main/screenshots/usersPage.png?raw=true)
+
+The User page is not intended to be a password-management facility. In case an update operation is done on the page, the password is updated with all the other fields.
+
+## Fragments of code
+
+The main APAF concept is the notion of fragment. A fragment is a piece of code defined from within the APAF development interface and stored in the APAF CouchDB database.
+Several components in APAF may use fragments of code for customization purpose. The most obvious example of such customizations are APAF Applications.
+
+![The APAF Code Fragment definition page](https://github.com/renaudet/apaf/blob/main/screenshots/fragmentsPage.png?raw=true)
+
+Fragments are written in Javascript. Depending on the purpose for this fragment, the source code may have some requirement such as a specific entry point.
+
+```javascript
+main = function(){
+	let html = '';
+    html += '<h1>Hello, World!</h1>';
+    $('#workArea').html(html);
+}
+```
+The built-in editor offers a facility known as the APAF Snippet Library that helps implement those requirements and gives usefull code examples to best use the APIs.
+
+![The APAF Snippet Library](https://github.com/renaudet/apaf/blob/main/screenshots/snippetLibrary.png?raw=true)
+
+For `servlet` type of code fragment, extra parameters are required such as an alias and an activation switch.
+
+![Servlets require extra parameters](https://github.com/renaudet/apaf/blob/main/screenshots/servletDefinition.png?raw=true)
+
+A Servlet is a specific type of code fragment that executes server-side and can be called as a REST API endpoint using an URI such as `/apaf-api/servlet/<alias>`
+Thus, Servlet are the number one option for implementing micro-services using APAF. See the chapter related to Security Token for more information
+
+ 
+
