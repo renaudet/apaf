@@ -154,13 +154,26 @@ Thus, Servlet are the number one option for implementing micro-services using AP
 
 ## Custom Datatypes
 
-APAF allows the developer to define its own datatypes. Datatypes are lightweight object structures that can be used as a database schema if declared persistent.
-A new CouchDB database will be created if required to store records following the custom datatype schema.
+APAF allows the developer to define its own datatypes. Datatypes are lightweight object structures written in JSON that can be used as a database schema if declared persistent.
+A new CouchDB database will be created if required to store records following the custom datatype schema, but mapping an existing database is also possible.
  
 ![Custom Datatype definition](https://github.com/renaudet/apaf/blob/main/screenshots/datatypesPage.png?raw=true)
 
-The custom datatype editor offers a specific editor to define custom fields within a datatype
+The custom datatype editor offers a specific editor to define custom fields within a datatype using many supported built-in types: 
+
+* text
+* integer
+* boolean
+* date
+* range
+* fixed-choice selection
+* exclusive selection
+* ... and more
 
 ![The Custom Datatype field definition dialog](https://github.com/renaudet/apaf/blob/main/screenshots/newDatatypeFieldDialog.png?raw=true)
 
-APAF offers SQL-like facilities to establish relationships between datatypes such as one-to-one and one-to-many relationships
+APAF offers SQL-like facilities to establish relationships between datatypes such as one-to-one and one-to-many relationships.
+APAF will generate ready-to-use, customizable forms to help create / update records according to the Datatype schema. The generated form can include inline help, automatique validation and custom handlers so that the content of a field may be defined after the content of another field for example
+
+![Custom Datatype fields](https://github.com/renaudet/apaf/blob/main/screenshots/fieldList.png?raw=true)
+![Generated form](https://github.com/renaudet/apaf/blob/main/screenshots/generatedForm.png?raw=true)
