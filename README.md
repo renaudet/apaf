@@ -152,5 +152,15 @@ For `servlet` type of code fragment, extra parameters are required such as an al
 A Servlet is a specific type of code fragment that executes server-side and can be called as a REST API endpoint using an URI such as `/apaf-api/servlet/<alias>`
 Thus, Servlet are the number one option for implementing micro-services using APAF. See the chapter related to Security Token for more information
 
- 
+## Custom Datatypes
 
+APAF allows the developer to define its own datatypes. Datatypes are lightweight object structures that can be used as a database schema if declared persistent.
+A new CouchDB database will be created if required to store records following the custom datatype schema.
+ 
+![Custom Datatype definition](https://github.com/renaudet/apaf/blob/main/screenshots/datatypesPage.png?raw=true)
+
+The custom datatype editor offers a specific editor to define custom fields within a datatype
+
+![The Custom Datatype field definition dialog](https://github.com/renaudet/apaf/blob/main/screenshots/newDatatypeFieldDialog.png?raw=true)
+
+APAF offers SQL-like facilities to establish relationships between datatypes such as one-to-one and one-to-many relationships
