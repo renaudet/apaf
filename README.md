@@ -175,5 +175,32 @@ The custom datatype editor offers a specific editor to define custom fields with
 APAF offers SQL-like facilities to establish relationships between datatypes such as one-to-one and one-to-many relationships.
 APAF will generate ready-to-use, customizable forms to help create / update records according to the Datatype schema. The generated form can include inline help, automatique validation and custom handlers so that the content of a field may be defined after the content of another field for example
 
+The fields list...
 ![Custom Datatype fields](https://github.com/renaudet/apaf/blob/main/screenshots/fieldList.png?raw=true)
+
+And the generated form by APAF
 ![Generated form](https://github.com/renaudet/apaf/blob/main/screenshots/generatedForm.png?raw=true)
+
+## The Custom Datatype Browser
+
+For persistent Datatypes, APAF delivers an integrated database browser based on the Datatype schema. APAF will generate tables and input forms to help create, read, update and delete records of these user-defined Datatypes
+
+![Custom Datatype Browser](https://github.com/renaudet/apaf/blob/main/screenshots/browsingCustomDatatypes.png?raw=true)
+
+## Workspace
+
+APAF applications may use the local filesystem as temporary working space, storage space or event document root for web-native resource types.
+The `manage APIs` menu gives administrators access to a remote workspace explorer with a tree-like structure and integrated editor for text-based file resources
+
+ ![The APAF Workspace manager](https://github.com/renaudet/apaf/blob/main/screenshots/workspacePage.png?raw=true)
+ 
+ ## Workflows
+ 
+ One of the most advanced feature of APAF, the workflow editor, enables synchronous-like workflow development using built-in or custom nodes.
+ 
+ ![The APAF Workflow Editor](https://github.com/renaudet/apaf/blob/main/screenshots/workflowEditor.png?raw=true)
+ 
+ The developer design the workflow by draging / droping nodes from the palette to the diagram area and then creating connections between nodes to define the flow of control between activities.
+ 
+ The integrated execution console enables developers to test their workflow from within the workflow editor
+ ![The APAF Workflow execution console](https://github.com/renaudet/apaf/blob/main/screenshots/workflowExecution.png?raw=true)
