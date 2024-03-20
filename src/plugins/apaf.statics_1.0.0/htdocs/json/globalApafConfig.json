@@ -309,6 +309,48 @@
 		    	}
 		    }
 		},
+		"workflowDataManager": {
+		    "id":"workflowManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+				"query": {
+					"type": "local",
+					"uri": "/apaf-workflow/query",
+					"payload": {"selector": {}},
+					"method": "POST",
+			        "adapter": "@.data"
+				},
+				"create": {
+					"type": "local",
+					"uri": "/apaf-workflow",
+					"method": "POST",
+					"payload": "@",
+			        "adapter": "@.data"
+				},
+				"update": {
+					"type": "local",
+					"uri": "/apaf-workflow",
+					"method": "PUT",
+					"payload": "@",
+			        "adapter": "@.data"
+				},
+				"delete": {
+					"type": "local",
+					"uri": "/apaf-workflow/@.id",
+					"method": "DELETE",
+					"payload": "{}",
+			        "adapter": "@.data"
+				},
+				"findByPrimaryKey": {
+					"type": "local",
+					"uri": "/apaf-workflow/@.name",
+					"method": "GET",
+					"payload": "{}",
+			        "adapter": "@.data"
+				}
+			}
+		},
 		"genericDataManager": {
 		    "id":"genericManager",
 		    "version": "1.0.0",

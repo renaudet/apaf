@@ -1,0 +1,10 @@
+{
+    "id":"workflowEditorCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/resources/img/apaf-workflows.png",
+        "label": "@apaf.page.workflow.editor.title",
+        "stylesheet": "/apaf-branding/css/apafCard.css"
+    }
+}

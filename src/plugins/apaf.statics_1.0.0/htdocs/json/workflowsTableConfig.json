@@ -1,0 +1,60 @@
+{
+    "id":"workflowTable",
+    "version": "1.0.0",
+    "type": "Datatable",
+    "configuration": {
+        "datasource": {
+            "type": "managed",
+            "manager": "workflowManager"
+        },
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "name",
+        	"ascending": true
+        },
+    	"maxHeight": 800,
+        "columns": [
+            {
+                "label": "@apaf.workflow.datatype.name",
+                "field": "name"
+            },
+            {
+                "label": "@apaf.workflow.datatype.description",
+                "field": "description"
+            },
+            {
+                "label": "@apaf.workflow.datatype.created",
+                "field": "created"
+            },
+            {
+                "label": "@apaf.workflow.datatype.updated",
+                "field": "lastUpdatedBy"
+            },
+            {
+                "label": "@apaf.workflow.datatype.version",
+                "field": "version"
+            },
+            {
+                "label": "@apaf.workflow.table.action.column",
+                "type": "rowActions",
+                "actions": [
+                    {
+                        "label": "@apaf.workflow.table.action.edit.record.label",
+                        "actionId": "editRecord",
+                        "icon": "/uiTools/img/silk/pencil.png"
+                    },
+                    {
+                        "label": "@apaf.workflow.table.action.edit.workflow.label",
+                        "actionId": "editWorkflow",
+                        "icon": "/uiTools/img/silk/shape_ungroup.png"
+                    },
+                    {
+                        "label": "@apaf.workflow.table.action.delete.label",
+                        "actionId": "deleteWorkflow",
+                        "icon": "/uiTools/img/silk/chart_organisation_delete.png"
+                    }
+                ]
+            }
+        ]
+    }
+}

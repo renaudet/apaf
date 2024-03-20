@@ -1,0 +1,41 @@
+const NODE_TYPE = 'SomeType';
+
+helper.palette.contribute = function(editor){
+  var loader = new ImageLoader();
+  loader.addImage('backgroundIcon','/resources/img/workflows/mediumNodeIcon.png');
+  loader.addImage('foregroundIcon','/uiTools/img/silk/bricks.png');
+  loader.load();
+  loader.onReadyState = function(){
+    factory = new GraphicNodeFactory(NODE_TYPE,loader.getImage('backgroundIcon'));
+    factory.instanceCount = 0;
+    factory.createNode = function(){
+      var nodeId = NODE_TYPE+'_'+(this.instanceCount++);
+      var node = new GraphicNode(nodeId,NODE_TYPE);
+      node.backgroundIcon = loader.getImage('backgroundIcon');
+      node.foregroundIcon = loader.getImage('foregroundIcon');
+      var input01 = new GraphicNodeTerminal('input');
+      var output01 = new GraphicNodeTerminal('output');
+      var output02 = new GraphicNodeTerminal('error');
+      node.addInputTerminal(input01);
+      node.addOutputTerminal(output01);
+      node.addOutputTerminal(output02);
+      node.addProperty('propertyName','Property Label','string',false,'some value');
+      return node;
+    }
+    editor.getPalette().addFactory(factory);
+    factory.close();
+    editor.refresh();
+  }
+}
+
+helper.engine.addCustomNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input01'==inputTerminalName){
+			executionContext['propertyName'] = node.getProperty('propertyName');
+			node.fire('output',executionContext);
+		}else{
+			node.error('Invalid input terminal "'+inputTerminalName+'" for '+NODE_TYPE+' node #'+node.id());
+		}
+	}
+	engine.registerNodeType(NODE_TYPE,nodeHandler);
+}

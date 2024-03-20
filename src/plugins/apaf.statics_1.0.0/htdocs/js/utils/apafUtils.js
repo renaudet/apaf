@@ -153,6 +153,67 @@ apaf.upload = function(folderPath,filename,formData){
 	});
 	return callWrapper;
 }
-apaf.localize = function(txt){
-	return npaUi.getLocalizedString(txt);
+apaf.localize = function(txt,data=[]){
+	return npaUi.getLocalizedString(txt,data);
+}
+const WORKFLOW_ENGINE_DEPS = [
+	{"type": "js","uri": "/resources/js/utils/apafNodes.js"},
+	{"type": "js","uri": "/resources/js/utils/workflowEngine.js"}
+]
+apaf.executeWorkflow = function(name,version,context,then){
+	//are dependencies already loaded ?
+	if(typeof this.workflowDepLoaded=='undefined'){
+		loadDeps(WORKFLOW_ENGINE_DEPS,function(){
+			apaf.workflowDepLoaded = true;
+			apaf.workflowEngine = new WorkflowEngine({});
+			loadBuiltInNodeHandlers(apaf.workflowEngine);
+			let query = {"selector": {"type": {"$eq": "workflowNode"}}};
+			let ctx = {"method": "POST","uri": "/apaf-dev/fragment/query","payload": query};
+			apaf.call(ctx)
+			    .then(function(fragments){
+					for(var i=0;i<fragments.length;i++){
+						let customNodeFragment = fragments[i];
+						try{
+							eval('var helper = {"palette":{},"engine":{}};var initializeHelper = function(){'+customNodeFragment.source+'}');
+							initializeHelper();
+							if(typeof helper.engine.addCustomNode!='undefined'){
+								helper.engine.addCustomNode(apaf.workflowEngine);
+							}
+						}catch(evalException){
+							console.log(evalException);
+							showError('Exception evaluating custom Workflow node '+customNodeFragment.name);
+						}
+					}
+					apaf.executeWorkflow(name,version,context,then);
+			     })
+			    .onError(function(errorMsg){
+					then(errorMsg,null);
+			     });
+		});
+	}else{
+		// load workflow by name and version
+		let query = {"selector": {"$and": [{"name": {"$eq": name}}, {"version": {"$eq": version}}]}};
+		let ctx = {"method": "POST","uri": "/apaf-workflow/query","payload": query};
+		apaf.call(ctx)
+			.then(function(resultSet){
+				if(resultSet && resultSet.length==1){
+					let workflow = resultSet[0];
+					let workflowListener = new WorkflowEngineEventListener();
+					workflowListener.setEventHandler(function(event){
+						if('stop'==event.type){
+							then(null,context);
+						}else{
+							console.log(event);
+						}
+					});
+					apaf.workflowEngine.setEventListener(workflowListener);
+					apaf.workflowEngine.start(workflow,context);
+				}else{
+					then('Not found',null);
+				}
+			})
+			.onError(function(errorMsg){
+				then(errorMsg,null);
+		    });
+	}
 }

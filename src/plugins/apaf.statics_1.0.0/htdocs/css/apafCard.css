@@ -12,3 +12,7 @@
 .card-scrollable {
 	overflow: auto;
 }
+
+.npa-card-footer {
+	font-size: 0.8rem;
+}

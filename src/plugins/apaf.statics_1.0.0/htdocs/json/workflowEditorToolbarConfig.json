@@ -1,0 +1,43 @@
+{
+    "id":"workflowEditorToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+    	"actions": [
+    		{
+                "label": "@apaf.workflow.editor.toolbar.action.save",
+                "actionId": "save",
+                "icon": "/uiTools/img/silk/disk.png",
+                "enabled": true,
+                "enableOnSelection": true
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "label": "@apaf.workflow.editor.toolbar.action.undo",
+                "actionId": "undo",
+                "icon": "/uiTools/img/silk/arrow_undo.png",
+                "enabled": true,
+                "enableOnSelection": true
+            },
+    		{
+                "label": "@apaf.workflow.editor.toolbar.action.redo",
+                "actionId": "redo",
+                "icon": "/uiTools/img/silk/arrow_redo.png",
+                "enabled": true,
+                "enableOnSelection": true
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "label": "@apaf.workflow.editor.toolbar.action.run",
+                "actionId": "run",
+                "icon": "/uiTools/img/silk/control_play_blue.png",
+                "enabled": true,
+                "enableOnSelection": true
+            }
+    	]
+    }
+}

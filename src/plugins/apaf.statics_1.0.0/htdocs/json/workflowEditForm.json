@@ -1,0 +1,28 @@
+{
+    "id":"workflowEditForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.workflow.form.title",
+    	"class": "form-frame-noborder",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.workflow.datatype.name",
+    			"required": true,
+    			"size": 4
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.workflow.datatype.description",
+    			"size": 9
+    		},
+    		{
+    			"name": "version",
+    			"label": "@apaf.workflow.datatype.version",
+    			"required": true,
+    			"size": 2
+    		}
+    	]
+    }
+}

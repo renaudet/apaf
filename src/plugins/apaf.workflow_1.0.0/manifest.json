@@ -1,0 +1,125 @@
+{
+  "id": "apaf.workflow",
+  "name": "Security workflow handler for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.workflow.logger",
+  		"dir": "apaf.workflow"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.workflow.router",
+  		"path": "/apaf-workflow"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.workflow.datatype",
+  		"datatype": {
+  			"id": "workflow",
+  			"name": "Workflow",
+  			"builtIn": true,
+  			"persistent": true,
+  			"database": "apaf_workflows",
+  			"fields": [
+	    		{
+	    			"name": "name",
+	    			"label": "@apaf.workflow.datatype.name",
+	    			"required": true,
+	    			"size": 4
+	    		},
+	    		{
+	    			"name": "description",
+	    			"label": "@apaf.workflow.datatype.description",
+	    			"size": 9
+	    		},
+	    		{
+	    			"name": "version",
+	    			"label": "@apaf.workflow.datatype.version",
+	    			"size": 2
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.query.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "POST",
+  		"schema": "/query",
+  		"handler": "queryWorkflowHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.create.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "POST",
+  		"schema": "/",
+  		"handler": "createWorkflowHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.update.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "PUT",
+  		"schema": "/",
+  		"handler": "updateWorkflowHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.delete.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "DELETE",
+  		"schema": "/:id",
+  		"handler": "deleteWorkflowHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.get.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "GET",
+  		"schema": "/:workflowName",
+  		"handler": "getByNameHandler",
+  		"securityRole": "coreServices"
+  	},
+  	{
+  		"point": "apaf.datatype.object.initializer",
+  		"id": "apaf.workflow.role.initializer.coreServices",
+  		"datatype": "role",
+  		"data": {
+  			"name": "coreServices",
+  			"description": "Grant permission to use APAF Core services"
+  		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.workflow.menu.item",
+  		"menu": "developmentMenuPlaceholder",
+  		"securityRole": "",
+  		"item": {
+			"id": "manageWorkflow",
+    		"label": "@apaf.menu.workflow.label",
+    		"actionId": "redirect",
+    		"icon_": "/uiTools/img/silk/chart_organisation.png",
+    		"icon": "/resources/img/apaf-workflows.png",
+    		"uri": "/resources/html/manageWorkflows.html"
+		}
+  	}
+  ],
+  "provides": [
+  ]
+}
