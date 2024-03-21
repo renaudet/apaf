@@ -66,14 +66,19 @@ loadCustomNodes = function(workflowEditor,workflowEngine){
 			let fragments = response.data;
 			for(var i=0;i<fragments.length;i++){
 				let customWorkflowNodeFragment = fragments[i];
+				console.log('found custom node: '+customWorkflowNodeFragment.name);
 				try{
 					xeval('var helper = {"palette":{},"engine":{}};var initializeHelper = function(){'+customWorkflowNodeFragment.source+'}');
+					console.log('fragment evaluated successfully');
 					initializeHelper();
+					console.log('helper initialized successfully');
 					if(typeof helper.palette.contribute!='undefined'){
 						helper.palette.contribute(workflowEditor);
+						console.log('palette updated successfully');
 					}
 					if(typeof helper.engine.addCustomNode!='undefined'){
 						helper.engine.addCustomNode(workflowEngine);
+						console.log('runtime updated successfully');
 					}
 				}catch(evalException){
 					console.log(evalException);
@@ -116,7 +121,7 @@ initializeEditor = function(){
 	}
 	editor.init(function(){
 	  if(typeof workflow.data!='undefined'){
-      	editor.loadModel(workflow.data);
+      	setTimeout(function(){ editor.loadModel(workflow.data); },1000);
       }
     });
 	$(window).on('resize',function(){
@@ -274,7 +279,6 @@ openWorkflowExecutionConsole = function(){
 	html += '</div>';
 	dialog.setBody(html);
 	dialog.onClose(function(){
-		
 	});
 	dialog.open();
 }
@@ -307,14 +311,31 @@ log = function(level,msg){
 }
 
 executeWorkflow = function(){
-	let consoleListener = new WorkflowEngineEventListener();
-	consoleListener.setEventHandler(function(event){
-		console.log('Event from WorkflowEngine:');
-		console.log(event);
-		log(event.type,event.source+': '+event.data);
-	});
-	engine.setEventListener(consoleListener);
-	openWorkflowExecutionConsole();
-	clearConsole();
-	engine.start(workflow,{});
+	if(workflow.serverSide){
+		if(confirm(npaUi.getLocalizedString('@apaf.workflow.editor.execution.server.confirmation'))){
+			flash('sending request to execute workflow "'+workflow.name+' v'+workflow.version+'" server-side');
+			let callContext = {};
+			callContext.method = 'POST';
+			callContext.uri = '/apaf-workflow/execute/'+workflow.id;
+			callContext.payload = {};
+			apaf.call(callContext)
+			    .then(function(responseData){
+					showInfo(JSON.stringify(responseData,null,'\t').replace(/\t/g,'&nbsp;&nbsp;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;'));
+			    })
+			    .onError(function(errorMsg){
+					showError(errorMsg);
+			    });
+		}
+	}else{
+		let consoleListener = new WorkflowEngineEventListener();
+		consoleListener.setEventHandler(function(event){
+			console.log('Event from WorkflowEngine:');
+			console.log(event);
+			log(event.type,event.source+': '+event.data);
+		});
+		engine.setEventListener(consoleListener);
+		openWorkflowExecutionConsole();
+		clearConsole();
+		engine.start(workflow,{});
+	}
 }

@@ -118,6 +118,15 @@
     		"icon": "/resources/img/apaf-workflows.png",
     		"uri": "/resources/html/manageWorkflows.html"
 		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.execute.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "POST",
+  		"schema": "/execute/:id",
+  		"handler": "executeWorkflowHandler",
+  		"securityRole": "coreServices"
   	}
   ],
   "provides": [

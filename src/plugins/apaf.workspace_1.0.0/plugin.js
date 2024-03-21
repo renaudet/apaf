@@ -257,11 +257,14 @@ plugin.readBinaryFileContentHandler = function(req,res){
 			if(encryptedData && encryptedData.length>0){
 				let buff = Buffer.from(encryptedData, 'base64');
 				let filePath = buff.toString('ascii');
+				plugin.debug('received request for file '+filePath);
 				if(filePath.lastIndexOf('/')>=0){
 					let filename = filePath.substring(filePath.lastIndexOf('/')+1);
+					plugin.debug('filename is '+filename);
 					let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
 					let absoluteFilePath = workspaceService.absolutePath(filePath); 
-					plugin.debug('<-readBinaryFileContentHandler() sending file '+filename);
+					plugin.debug('absoluteFilePath is '+absoluteFilePath);
+					plugin.debug('<-readBinaryFileContentHandler() sending file '+filePath);
 					res.download(absoluteFilePath, filename); 
 				}else{
 					plugin.debug('<-readBinaryFileContentHandler() bad request');

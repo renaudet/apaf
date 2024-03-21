@@ -4,6 +4,7 @@
  */
 
 const ApafPlugin = require('../../apafUtil.js');
+const WorkflowEngine = require('./workflowEngine.js');
 const moment = require('moment');
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
@@ -139,6 +140,49 @@ plugin.getByNameHandler = function(req,res){
 						plugin.debug('<-getByNameHandler()');
 						res.json({"status": 500,"message": err,"data": []});
 					}
+				}
+			});
+		}
+	});
+}
+
+plugin.executeWorkflowHandler = function(req,res){
+	plugin.debug('->executeWorkflowHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.workflow.execute.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-executeWorkflowHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let workflowId = req.params.id;
+			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+			datatypePlugin.findByPrimaryKey(WORKFLOW_DATATYPE,{"id": workflowId},function(err,workflow){
+				if(err){
+					plugin.debug('<-executeWorkflowHandler()');
+					res.json({"status": 500,"message": err,"data": []});
+				}else{
+					let engine = new WorkflowEngine(plugin,{});
+					engine.setEventListener(function(event){
+						if('stop'==event.type){
+							plugin.debug('<-executeWorkflowHandler()');
+							res.json({"status": 200,"message": "executed","data": engine.runtimeContext});
+						}
+						if('debug'==event.type){
+							plugin.debug(event.source+' '+event.data);
+						}
+						if('log'==event.type){
+							plugin.info(event.source+' '+event.data);
+						}
+						if('error'==event.type){
+							plugin.error(event.source+' '+event.data);
+						}
+					});
+					let runtimeContext = req.body;
+					if(typeof runtimeContext=='undefined' || runtimeContext==null){
+						runtimeContext = {};
+					}
+					engine.start(workflow,runtimeContext);
 				}
 			});
 		}

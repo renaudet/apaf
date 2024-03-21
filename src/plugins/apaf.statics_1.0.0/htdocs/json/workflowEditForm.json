@@ -22,6 +22,12 @@
     			"label": "@apaf.workflow.datatype.version",
     			"required": true,
     			"size": 2
+    		},
+    		{
+    			"name": "serverSide",
+    			"label": "@apaf.workflow.datatype.serverSide",
+    			"type": "switch",
+    			"help": "@apaf.workflow.datatype.serverSide.help"
     		}
     	]
     }

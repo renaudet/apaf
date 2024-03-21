@@ -11,6 +11,7 @@ const DATA_MANAGER_ID = 'tokenManager';
 const DATATABLE_ID = 'tokenTable';
 const WORKSPACE_TOOLBAR_ID = 'workspaceTreeToolbar';
 const WORKSPACE_EDITOR_ID = 'workspaceFileEditor';
+const CARD_ID = 'manageApisCard';
 
 let treeViewer = null;
 let selectedFolder = null;
@@ -33,9 +34,14 @@ initializeUi = function(){
 			npaUi.on('uploadResource',uploadResource);
 			npaUi.on('downloadResource',downloadResource);
 			npaUi.on('deleteResource',deleteResource);
+			npaUi.on('menu.item.selected',onPageChanged)
 			npaUi.render();
 		});
 	});
+}
+
+onPageChanged = function(){
+	setStatus('');
 }
 
 initComponents = function(){
@@ -183,6 +189,7 @@ var filesystemDecorator = {
 
 var filesystemEventListener = {
 	onNodeSelected(node){
+		setStatus('');
 		selectedNode = node;
 		let toolbar = $apaf(WORKSPACE_TOOLBAR_ID);
 		toolbar.setEnabled('deleteResource',true);
@@ -220,6 +227,7 @@ var filesystemEventListener = {
 		}
 		if('file'==fsObject.type){
 			toolbar.setEnabled('downloadResource',true);
+			setStatus('url: '+createDownloadUrl(fsObject));
 		}
 		if('file'==fsObject.type && (
 			fsObject.name.endsWith('.txt') ||
@@ -235,6 +243,11 @@ var filesystemEventListener = {
 			updateEditorContent(fsObject);
 		}
 	}
+}
+
+setStatus = function(status){
+	let card = $apaf(CARD_ID);
+	card.setStatus(status);
 }
 
 initWorkspaceViewer = function(){
@@ -442,6 +455,12 @@ uploadResource = function(){
 	dialog.open();
 }
 
+createDownloadUrl = function(file){
+	console.log('createDownloadUrl:');
+	console.log(file);
+	return '/apaf-workspace/binaryFile/'+btoa(file.project+'/'+file.path);
+}
+
 function download(url) {
   const a = document.createElement('a')
   a.href = url
@@ -453,8 +472,5 @@ function download(url) {
 
 downloadResource = function(){
 	let file = selectedNode.data;
-	let workspaceRelativePath = file.project+'/'+file.path;
-	let encrypted = btoa(workspaceRelativePath);
-	let resourceUrl = '/apaf-workspace/binaryFile/'+encrypted;
-	download(resourceUrl);
+	download(createDownloadUrl(file));
 }

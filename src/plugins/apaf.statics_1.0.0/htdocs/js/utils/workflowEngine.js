@@ -32,7 +32,20 @@ class WorkflowNodeWrapper{
 		return this.workflowNode.id;
 	}
 	getProperty(propertyName){
-		return this.workflowNode.properties[propertyName].value;
+		let prop = this.workflowNode.properties[propertyName];
+		if(typeof prop!='undefined'){
+			if(prop.override){
+				if(typeof this.engine.runtimeContext[this.id()]!='undefined' && this.engine.runtimeContext[this.id()][propertyName]!='undefined'){
+					return this.engine.runtimeContext[this.id()][propertyName];
+				}else{
+					return prop.value;
+				}
+			}else{
+				return prop.value;
+			}
+		}else{
+			return undefined;
+		}
 	}
 	log(msg){
 		this.engine.fireEvent('log',this.id(),msg);
@@ -113,6 +126,7 @@ class WorkflowEngine{
 		this.workflowWrappers = {};
 		this.links = {};
 		this.nodeActivationEnabled = true;
+		this.runtimeContext = runtimeContext;
 		this.fireEvent('start.requested','engine','Workflow name is "'+workflow.name+'"');
 		this.loadWorkflow(workflow);
 		if(this.startNode!=null){
