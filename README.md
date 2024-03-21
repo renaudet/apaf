@@ -40,6 +40,7 @@ A typical environment should define the following environment variables:
 * **APAF_COUCH_DB_USER** (required if CouchDB is secured)
 * **APAF_COUCH_DB_USER_PASSWD** (required if CouchDB is secured)
 * **NODE_PATH** (required) should point to the node_modules folder of the Node-Plugin-Architecture base installation
+* **WORKSPACE_LOC** (optional) default to ./workspace
 
 Other usefull environment variables for APAF:
 
@@ -192,23 +193,23 @@ For persistent Datatypes, APAF delivers an integrated database browser based on 
 APAF applications may use the local filesystem as temporary working space, storage space or event document root for web-native resource types.
 The `manage APIs` menu gives administrators access to a remote workspace explorer with a tree-like structure and integrated editor for text-based file resources
 
- ![The APAF Workspace manager](https://github.com/renaudet/apaf/blob/main/screenshots/workspacePage.png?raw=true)
+![The APAF Workspace manager](https://github.com/renaudet/apaf/blob/main/screenshots/workspacePage.png?raw=true)
  
- The base workspace location is defined by the `WORKSPACE_LOC` environment variable at server startup. Then, the administrator can create Projects in the workspace.
- Application developers may refer to these project by name to work on file resources.
+The base workspace location is defined by the `WORKSPACE_LOC` environment variable at server startup. Then, the administrator can create Projects in the workspace.
+Application developers may refer to these project by name to work on file resources.
  
- The files stored in the project or their sub-folders can be downloaded using a specific API call `/apaf-workspace/binaryFile/<base64-encoded-path-relative-to-workspace>`
+The files stored in the project or their sub-folders can be downloaded using a specific API call `/apaf-workspace/binaryFile/<base64-encoded-path-relative-to-workspace>`
  
 ## Workflows
  
- One of the most advanced feature of APAF, the workflow editor, enables synchronous-like workflow development using built-in or custom nodes.
+One of the most advanced feature of APAF, the workflow editor, enables synchronous-like workflow development using built-in or custom nodes.
  
- ![The APAF Workflow Editor](https://github.com/renaudet/apaf/blob/main/screenshots/workflowEditor.png?raw=true)
+![The APAF Workflow Editor](https://github.com/renaudet/apaf/blob/main/screenshots/workflowEditor.png?raw=true)
  
- The developer designs the workflow by draging / droping nodes from the palette to the diagram area and then creating connections between nodes to define the flow of control between activities.
+The developer designs the workflow by draging / droping nodes from the palette to the diagram area and then creating connections between nodes to define the flow of control between activities.
  
- The integrated execution console enables developers to test their workflow from within the workflow editor
+The integrated execution console enables developers to test their workflow from within the workflow editor
  
- ![The APAF Workflow execution console](https://github.com/renaudet/apaf/blob/main/screenshots/workflowExecution.png?raw=true)
+![The APAF Workflow execution console](https://github.com/renaudet/apaf/blob/main/screenshots/workflowExecution.png?raw=true)
  
- These workflows may then be called from custom APAF applications as reusable business components. It also greatly reduce the time needed to develop complex asynchronous applications when multiple calls to REST providers are expected for example.
+These workflows may then be called from custom APAF applications as reusable business components. It also greatly reduce the time needed to develop complex asynchronous applications when multiple calls to REST providers are expected for example.
