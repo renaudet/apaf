@@ -16,6 +16,8 @@ const MAIL_NODE_TYPE = 'Mail';
 const REST_CALL_SUPPORT_PLUGIN_ID = 'npa.rest';
 const DEFAULT_MAIL_PROVIDER_ID = 'SMTP';
 const MAIL_SERVICE_NAME = 'mail';
+const DEBUG_NODE_TYPE = 'Debug';
+const TRASH_NODE_TYPE = 'Trash';
 
 var xeval = eval;
  
@@ -104,6 +106,9 @@ class WorkflowEngine{
 		nodeHandler = function(node,inputTerminalName,executionContext){
 			if('input'!=inputTerminalName){
 				node.error('Invalid input terminal "'+inputTerminalName+'" activation for Stop node #'+node.id());
+			}else{
+				executionContext.status = 'failure';
+				engine.stop('Workflow immediate Stop requested due to failure');
 			}
 		}
 		this.registerNodeType(STOP_NODE_TYPE,nodeHandler);
@@ -252,6 +257,23 @@ class WorkflowEngine{
 			}
 		}
 		this.registerNodeType(MAIL_NODE_TYPE,nodeHandler);
+		nodeHandler = function(node,inputTerminalName,executionContext){
+			if('input'!=inputTerminalName){
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for Debug node #'+node.id());
+			}else{
+				if(typeof executionContext[node.getProperty('debug.variable.name')]!='undefined'){
+					node.debug(JSON.stringify(executionContext[node.getProperty('debug.variable.name')],null,'\t'));
+				}
+				node.fire('then',executionContext);
+			}
+		}
+		this.registerNodeType(DEBUG_NODE_TYPE,nodeHandler);
+		nodeHandler = function(node,inputTerminalName,executionContext){
+			if('input'!=inputTerminalName){
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for Trash node #'+node.id());
+			}
+		}
+		engine.registerNodeType(TRASH_NODE_TYPE,nodeHandler);
 	}
 	registerNodeType(type,runtimeHandler){
 		if(typeof this.nodeTypes[type]!='undefined'){

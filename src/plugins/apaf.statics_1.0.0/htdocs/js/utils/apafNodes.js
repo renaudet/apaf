@@ -12,6 +12,8 @@ const REST_NODE_TYPE = 'RestCall';
 const OR_NODE_TYPE = 'Or';
 const FORK_NODE_TYPE = 'Fork';
 const MAIL_NODE_TYPE = 'Mail';
+const DEBUG_NODE_TYPE = 'Debug';
+const TRASH_NODE_TYPE = 'Trash';
  
 addStartNode = function(engine){
 	let nodeHandler = function(node,inputTerminalName,executionContext){
@@ -24,6 +26,9 @@ addStopNode = function(engine){
 	let nodeHandler = function(node,inputTerminalName,executionContext){
 		if('input'!=inputTerminalName){
 			node.error('Invalid input terminal "'+inputTerminalName+'" activation for Stop node #'+node.id());
+		}else{
+			executionContext.status = 'failure';
+			engine.stop('Workflow immediate Stop requested due to failure');
 		}
 	}
 	engine.registerNodeType(STOP_NODE_TYPE,nodeHandler);
@@ -203,6 +208,29 @@ addSendMailNode = function(engine){
 	engine.registerNodeType(MAIL_NODE_TYPE,nodeHandler);
 }
 
+addDebugNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input'!=inputTerminalName){
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for Debug node #'+node.id());
+		}else{
+			if(typeof executionContext[node.getProperty('debug.variable.name')]!='undefined'){
+				node.debug(JSON.stringify(executionContext[node.getProperty('debug.variable.name')],null,'\t'));
+			}
+			node.fire('then',executionContext);
+		}
+	}
+	engine.registerNodeType(DEBUG_NODE_TYPE,nodeHandler);
+}
+
+addTrashNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input'!=inputTerminalName){
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for Trash node #'+node.id());
+		}
+	}
+	engine.registerNodeType(TRASH_NODE_TYPE,nodeHandler);
+}
+
 loadBuiltInNodeHandlers = function(engine){
 	addStartNode(engine);
     addEndNode(engine);
@@ -214,6 +242,8 @@ loadBuiltInNodeHandlers = function(engine){
     addOrNode(engine);
     addForkNode(engine);
     addSendMailNode(engine);
+    addDebugNode(engine);
+    addTrashNode(engine);
 }
 
 loadBuiltinNodes = function(editor,engine){
@@ -230,6 +260,7 @@ loadBuiltinNodes = function(editor,engine){
 	loader.addImage('orNodeIcon','/resources/img/workflows/nodeIcons/orNode.png');
 	loader.addImage('forkNodeIcon','/resources/img/workflows/nodeIcons/forkNode.png');
 	loader.addImage('mailNodeIcon','/resources/img/workflows/nodeIcons/mailNode.png');
+	loader.addImage('debugNodeIcon','/resources/img/workflows/nodeIcons/debugIcon.png');
 	loader.load();
 	loader.onReadyState = function(){
 		let factory = new GraphicNodeFactory(START_NODE_TYPE,loader.getImage('startNodeIcon'));
@@ -401,6 +432,35 @@ loadBuiltinNodes = function(editor,engine){
 	      return node;
 	    }
 	    editor.getPalette().addFactory(factory);
+		
+		factory = new GraphicNodeFactory(DEBUG_NODE_TYPE,loader.getImage('debugNodeIcon'));
+		factory.instanceCount = 0;
+	    factory.createNode = function(){
+	      var nodeId = 'Debug_'+(this.instanceCount++);
+	      var node = new GraphicNode(nodeId,DEBUG_NODE_TYPE);
+	      node.backgroundIcon = loader.getImage('debugNodeIcon');
+	      var input01 = new GraphicNodeTerminal('input');
+	      var output01 = new GraphicNodeTerminal('then');
+	      node.addInputTerminal(input01);
+	      node.addOutputTerminal(output01);
+	      node.addProperty('debug.variable.name','Debug variable name','string',true,'toDebug');
+	      return node;
+	    }
+	    editor.getPalette().addFactory(factory);
+	    factory.close();
+		
+		factory = new GraphicNodeFactory(TRASH_NODE_TYPE,loader.getImage('trashIcon'));
+		factory.instanceCount = 0;
+	    factory.createNode = function(){
+	      var nodeId = 'Trash_'+(this.instanceCount++);
+	      var node = new GraphicNode(nodeId,TRASH_NODE_TYPE);
+	      node.backgroundIcon = loader.getImage('trashIcon');
+	      var input01 = new GraphicNodeTerminal('input');
+	      node.addInputTerminal(input01);
+	      return node;
+	    }
+	    editor.getPalette().addFactory(factory);
+	    factory.close();
 	    
 	    loadBuiltInNodeHandlers(engine);
 	    editor.refresh();
