@@ -14,6 +14,7 @@ const FORK_NODE_TYPE = 'Fork';
 const MAIL_NODE_TYPE = 'Mail';
 const DEBUG_NODE_TYPE = 'Debug';
 const TRASH_NODE_TYPE = 'Trash';
+const SET_PROPERTY_NODE_TYPE = 'SetProperty';
  
 addStartNode = function(engine){
 	let nodeHandler = function(node,inputTerminalName,executionContext){
@@ -28,7 +29,7 @@ addStopNode = function(engine){
 			node.error('Invalid input terminal "'+inputTerminalName+'" activation for Stop node #'+node.id());
 		}else{
 			executionContext.status = 'failure';
-			engine.stop('Workflow immediate Stop requested due to failure');
+			engine.stop('Workflow immediate Stop requested due to failure',executionContext['_uid']);
 		}
 	}
 	engine.registerNodeType(STOP_NODE_TYPE,nodeHandler);
@@ -41,9 +42,9 @@ addEndNode = function(engine){
 		}else{
 			let status = executionContext.status;
 			if(typeof status!='undefined'){
-				engine.stop('Workflow completed - status is '+status);
+				engine.stop('Workflow completed - status is '+status,executionContext['_uid']);
 			}else{
-				engine.stop('Workflow completed - status is '+status);
+				engine.stop('Workflow completed - status is '+status,executionContext['_uid']);
 			}
 		}
 	}
@@ -215,6 +216,8 @@ addDebugNode = function(engine){
 		}else{
 			if(typeof executionContext[node.getProperty('debug.variable.name')]!='undefined'){
 				node.debug(JSON.stringify(executionContext[node.getProperty('debug.variable.name')],null,'\t'));
+			}else{
+				node.debug('variable '+node.getProperty('debug.variable.name')+' not set!');
 			}
 			node.fire('then',executionContext);
 		}
@@ -231,6 +234,21 @@ addTrashNode = function(engine){
 	engine.registerNodeType(TRASH_NODE_TYPE,nodeHandler);
 }
 
+addSetPropertyNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input'!=inputTerminalName){
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for Debug node #'+node.id());
+		}else{
+			node.debug('variable name: '+node.getProperty('variable.name'));
+			node.debug('value set: '+node.getProperty('value.to.set'));
+			executionContext[node.getProperty('variable.name')] = node.getProperty('value.to.set');
+			node.fire('then',executionContext);
+		}
+	}
+	engine.registerNodeType(SET_PROPERTY_NODE_TYPE,nodeHandler);
+}
+
+
 loadBuiltInNodeHandlers = function(engine){
 	addStartNode(engine);
     addEndNode(engine);
@@ -244,6 +262,7 @@ loadBuiltInNodeHandlers = function(engine){
     addSendMailNode(engine);
     addDebugNode(engine);
     addTrashNode(engine);
+    addSetPropertyNode(engine);
 }
 
 loadBuiltinNodes = function(editor,engine){
@@ -261,6 +280,8 @@ loadBuiltinNodes = function(editor,engine){
 	loader.addImage('forkNodeIcon','/resources/img/workflows/nodeIcons/forkNode.png');
 	loader.addImage('mailNodeIcon','/resources/img/workflows/nodeIcons/mailNode.png');
 	loader.addImage('debugNodeIcon','/resources/img/workflows/nodeIcons/debugIcon.png');
+	loader.addImage('trashNodeIcon','/resources/img/workflows/nodeIcons/trashIcon.png');
+	loader.addImage('setPropertyNodeIcon','/resources/img/workflows/nodeIcons/setPropertyNode.png');
 	loader.load();
 	loader.onReadyState = function(){
 		let factory = new GraphicNodeFactory(START_NODE_TYPE,loader.getImage('startNodeIcon'));
@@ -449,14 +470,31 @@ loadBuiltinNodes = function(editor,engine){
 	    editor.getPalette().addFactory(factory);
 	    factory.close();
 		
-		factory = new GraphicNodeFactory(TRASH_NODE_TYPE,loader.getImage('trashIcon'));
+		factory = new GraphicNodeFactory(TRASH_NODE_TYPE,loader.getImage('trashNodeIcon'));
 		factory.instanceCount = 0;
 	    factory.createNode = function(){
 	      var nodeId = 'Trash_'+(this.instanceCount++);
 	      var node = new GraphicNode(nodeId,TRASH_NODE_TYPE);
-	      node.backgroundIcon = loader.getImage('trashIcon');
+	      node.backgroundIcon = loader.getImage('trashNodeIcon');
 	      var input01 = new GraphicNodeTerminal('input');
 	      node.addInputTerminal(input01);
+	      return node;
+	    }
+	    editor.getPalette().addFactory(factory);
+	    factory.close();
+		
+		factory = new GraphicNodeFactory(SET_PROPERTY_NODE_TYPE,loader.getImage('setPropertyNodeIcon'));
+		factory.instanceCount = 0;
+	    factory.createNode = function(){
+	      var nodeId = 'SetProperty_'+(this.instanceCount++);
+	      var node = new GraphicNode(nodeId,SET_PROPERTY_NODE_TYPE);
+	      node.backgroundIcon = loader.getImage('setPropertyNodeIcon');
+	      var input01 = new GraphicNodeTerminal('input');
+	      var output01 = new GraphicNodeTerminal('then');
+	      node.addInputTerminal(input01);
+	      node.addOutputTerminal(output01);
+	      node.addProperty('variable.name','Context variable name','string',true,'myVar');
+	      node.addProperty('value.to.set','Value to set','string',true,'someValue');
 	      return node;
 	    }
 	    editor.getPalette().addFactory(factory);

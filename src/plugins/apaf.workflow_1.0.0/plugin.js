@@ -8,7 +8,9 @@ const WorkflowEngine = require('./workflowEngine.js');
 const moment = require('moment');
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
+const FRAGMENT_DATATYPE = 'fragment';
 const WORKFLOW_DATATYPE = 'workflow';
+const WORKFLOW_TIMEOUT = 60*1000;
 
 var plugin = new ApafPlugin();
 
@@ -146,6 +148,22 @@ plugin.getByNameHandler = function(req,res){
 	});
 }
 
+plugin.loadCustomNodeFragments = function(then){
+	plugin.debug('->loadCustomNodeFragments()');
+	let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+	let query = {"selector": {"type": {"$eq": "workflowNode"}}};
+	datatypePlugin.query(FRAGMENT_DATATYPE,query,function(err, fragments){
+		if(err){
+			plugin.error('Error loading custom node fragments: '+err);
+			plugin.debug('<-loadCustomNodeFragments() - error');
+			then([]);
+		}else{
+			plugin.debug('<-loadCustomNodeFragments() - success');
+			then(fragments);
+		}
+	});
+}
+
 plugin.executeWorkflowHandler = function(req,res){
 	plugin.debug('->executeWorkflowHandler()');
 	let requiredRole = plugin.getRequiredSecurityRole('apaf.workflow.execute.handler');
@@ -162,27 +180,36 @@ plugin.executeWorkflowHandler = function(req,res){
 					plugin.debug('<-executeWorkflowHandler()');
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
-					let engine = new WorkflowEngine(plugin,{});
-					engine.setEventListener(function(event){
-						if('stop'==event.type){
-							plugin.debug('<-executeWorkflowHandler()');
-							res.json({"status": 200,"message": "executed","data": engine.runtimeContext});
+					plugin.debug('execution requested for Workflow "'+workflow.name+'" v'+workflow.version);
+					let engine = new WorkflowEngine(plugin,{"global.timeout": WORKFLOW_TIMEOUT});
+					plugin.loadCustomNodeFragments(function(fragments){
+						for(var i=0;i<fragments.length;i++){
+							engine.registerCustomNode(fragments[i]);
 						}
-						if('debug'==event.type){
-							plugin.debug(event.source+' '+event.data);
+						engine.setEventListener(function(event){
+							if('stop'==event.type){
+								plugin.debug('<-executeWorkflowHandler()');
+								res.json({"status": 200,"message": "executed","data": engine.runtimeContext});
+							}
+							if('debug'==event.type){
+								plugin.debug(event.source+' '+event.data);
+							}
+							if('warning'==event.type){
+								plugin.info(event.source+' '+event.data);
+							}
+							if('log'==event.type){
+								plugin.info(event.source+' '+event.data);
+							}
+							if('error'==event.type){
+								plugin.error(event.source+' '+event.data);
+							}
+						});
+						let runtimeContext = req.body;
+						if(typeof runtimeContext=='undefined' || runtimeContext==null){
+							runtimeContext = {};
 						}
-						if('log'==event.type){
-							plugin.info(event.source+' '+event.data);
-						}
-						if('error'==event.type){
-							plugin.error(event.source+' '+event.data);
-						}
+						engine.start(workflow,runtimeContext);
 					});
-					let runtimeContext = req.body;
-					if(typeof runtimeContext=='undefined' || runtimeContext==null){
-						runtimeContext = {};
-					}
-					engine.start(workflow,runtimeContext);
 				}
 			});
 		}

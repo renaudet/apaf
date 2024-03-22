@@ -9,6 +9,8 @@ const CARD_ID = 'workflowEditorCard';
 const MODAL_DIALOG_ID = 'emptyDialog';
 const JSON_DIALOG_ID = 'simpleDialog';
 const JSON_EDITOR_ID = 'jsonEditor';
+const WORKFLOW_TIMEOUT = 30*1000;
+const WORKFLOW_NODE_ACTIVATION_DELAY = 1000;
 
 var xeval = eval;
 var workflow = null;
@@ -98,7 +100,7 @@ loadCustomNodes = function(workflowEditor,workflowEngine){
 initializeEditor = function(){
 	$('#editorArea').height($('#workArea').height()-35);
 	editor = new GraphicalEditor('myEditor','editorArea',{"background": "#f5f3e9"});
-	engine = new WorkflowEngine({"activation.delay": 1500});
+	engine = new WorkflowEngine({"activation.delay": WORKFLOW_NODE_ACTIVATION_DELAY,"global.timeout": WORKFLOW_TIMEOUT});
 	loadBuiltinNodes(editor,engine);
 	loadCustomNodes(editor,engine);
 	editor.setListener(new WorkflowEventListener(handlerWorkflowEvents));
@@ -233,6 +235,7 @@ createNodeEditor = function(node){
 	html += '<table id="data-table" class="table table-hover table-condensed">';
 	html += '  <thead>';
 	html += '    <tr>';
+	html += '      <th>Description</th>';
 	html += '      <th>Property Name</th>';
 	html += '      <th>Type</th>';
 	html += '      <th>Allow<br>Context</th>';
@@ -245,6 +248,7 @@ createNodeEditor = function(node){
 		let property = props[i];
 		html += '<tr>';
 		html += '  <td>'+property.label+'</td>';
+		html += '  <td style="font-family: courier;">'+property.name+'</td>';
 		html += '  <td>'+property.type+'</td>';
 		if(property.override){
 			html += '  <td><span style="color: #00a000;">&checkmark;</span></td>';
@@ -290,6 +294,9 @@ clearConsole = function(){
 log = function(level,msg){
 	let timestamp = moment().format('HH:mm:ss');
 	let color = '#0000ff';
+	if('start'==level || 'stop'==level){
+		console.log(msg);
+	}
 	if('log'==level){
 		color = '#000000';
 	}
@@ -298,6 +305,9 @@ log = function(level,msg){
 	}
 	if('debug'==level){
 		color = '#808080';
+	}
+	if('warning'==level){
+		color = '#d67d2f';
 	}
 	let html = '<div>';
 	html += '<span style="color: #000000;">';

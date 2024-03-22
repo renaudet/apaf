@@ -2,6 +2,7 @@
  * workflowEngine.js - javascript support library for APAF Workflow execution
  * Copyright 2024 Nicolas Renaudet - All rights reserved
  */
+const CONTEXT_EXECUTION_ID_VARIABLE_NAME = '_uid';
  
 class WorkflowEngineEventListener{
 	eventHandler = null;
@@ -35,7 +36,7 @@ class WorkflowNodeWrapper{
 		let prop = this.workflowNode.properties[propertyName];
 		if(typeof prop!='undefined'){
 			if(prop.override){
-				if(typeof this.engine.runtimeContext[this.id()]!='undefined' && this.engine.runtimeContext[this.id()][propertyName]!='undefined'){
+				if(typeof this.engine.runtimeContext[this.id()]!='undefined' && typeof this.engine.runtimeContext[this.id()][propertyName]!='undefined'){
 					return this.engine.runtimeContext[this.id()][propertyName];
 				}else{
 					return prop.value;
@@ -99,7 +100,7 @@ class WorkflowEngine{
 				}
 			}else{
 				this.fireEvent('error','engine','found unsuported node type "'+node.type+'"');
-				this.stop('Workflow stopped unexpectedly');
+				this.stop('Workflow stopped unexpectedly',this.runtimeContext[CONTEXT_EXECUTION_ID_VARIABLE_NAME]);
 			}
 		}
 	}
@@ -113,7 +114,7 @@ class WorkflowEngine{
 				this.links[connection.source] = {"target": this.workflowWrappers[targetNodeId],"terminal": targetTerminal};
 			}else{
 				this.fireEvent('error','engine','found unresolved connection from "'+connection.source+'" to "'+connection.target+'"');
-				this.stop('Workflow stopped unexpectedly');
+				this.stop('Workflow stopped unexpectedly',this.runtimeContext[CONTEXT_EXECUTION_ID_VARIABLE_NAME]);
 			}
 		}
 	}
@@ -128,18 +129,27 @@ class WorkflowEngine{
 		this.nodeActivationEnabled = true;
 		this.runtimeContext = runtimeContext;
 		this.fireEvent('start.requested','engine','Workflow name is "'+workflow.name+'"');
+		this.runtimeContext[CONTEXT_EXECUTION_ID_VARIABLE_NAME] = Date.now();
+		console.log('workflowEngine: starting workflow execution with UID #'+this.runtimeContext[CONTEXT_EXECUTION_ID_VARIABLE_NAME]);
 		this.loadWorkflow(workflow);
 		if(this.startNode!=null){
+			if(typeof this.options['global.timeout']!='undefined'){
+				this.setTimeout(this.options['global.timeout']);
+			}
 			this.fireEvent('debug','engine','activating node #'+this.startNode.id());
 			this.startNode.handler(this.startNode,'dummy',runtimeContext);
 		}else{
 			this.fireEvent('error','engine','no Start node found');
-			this.stop('Workflow stopped unexpectedly');
+			this.stop('Workflow stopped unexpectedly',this.runtimeContext[CONTEXT_EXECUTION_ID_VARIABLE_NAME]);
 		}
 	}
-	stop(msg){
-		this.fireEvent('stop','engine',msg);
-		this.nodeActivationEnabled = false;
+	stop(msg,uid){
+		if(this.nodeActivationEnabled && uid==this.runtimeContext[CONTEXT_EXECUTION_ID_VARIABLE_NAME]){
+			this.fireEvent('stop','engine',msg);
+			this.nodeActivationEnabled = false;
+		}else{
+			console.log('workflowEngine: received stop message "'+msg+'" with UID #'+uid);
+		}
 	}
 	fireEvent(type,source,data){
 		if(this.nodeActivationEnabled){
@@ -160,9 +170,13 @@ class WorkflowEngine{
 					target.handler(target,targetTerminal,context);
 				}
 			}else{
-				this.fireEvent('error','engine','activation requested for unknown terminal "'+terminalId+'"');
-				this.stop('Workflow stopped unexpectedly');
+				this.fireEvent('warning','engine','activation requested for unbound terminal "'+terminalId+'"');
 			}
 		}
+	}
+	setTimeout(delayMsec){
+		let engine = this;
+		let uid = this.runtimeContext[CONTEXT_EXECUTION_ID_VARIABLE_NAME];
+		setTimeout(function(){ engine.stop('Workflow completed - global timeout reached',uid); },delayMsec);
 	}
 }

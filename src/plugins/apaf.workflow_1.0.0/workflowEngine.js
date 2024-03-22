@@ -2,6 +2,8 @@
  * workflowEngine.js - APAF Workflows Engine for server-side workflow execution
  * Copyright 2024 Nicolas Renaudet - All rights reserved
  */
+
+const { v4: uuidv4 } = require('uuid');
  
 const START_NODE_TYPE = 'Start';
 const STOP_NODE_TYPE = 'Stop';
@@ -18,6 +20,7 @@ const DEFAULT_MAIL_PROVIDER_ID = 'SMTP';
 const MAIL_SERVICE_NAME = 'mail';
 const DEBUG_NODE_TYPE = 'Debug';
 const TRASH_NODE_TYPE = 'Trash';
+const SET_PROPERTY_NODE_TYPE = 'SetProperty';
 
 var xeval = eval;
  
@@ -53,7 +56,7 @@ class WorkflowNodeWrapper{
 		let prop = this.workflowNode.properties[propertyName];
 		if(typeof prop!='undefined'){
 			if(prop.override){
-				if(typeof this.engine.runtimeContext[this.id()]!='undefined' && this.engine.runtimeContext[this.id()][propertyName]!='undefined'){
+				if(typeof this.engine.runtimeContext[this.id()]!='undefined' && typeof this.engine.runtimeContext[this.id()][propertyName]!='undefined'){
 					return this.engine.runtimeContext[this.id()][propertyName];
 				}else{
 					return prop.value;
@@ -83,6 +86,7 @@ class WorkflowNodeWrapper{
 }
  
 class WorkflowEngine{
+	executionId = uuidv4();
 	nodeTypes = {};
 	eventListener = new WorkflowEngineEventListener();
 	workflowWrappers = {};
@@ -97,6 +101,7 @@ class WorkflowEngine{
 		this.loadBuiltInNodes();
 	}
 	loadBuiltInNodes(){
+		this.debug('->WorkflowEngine#loadBuiltInNodes()');
 		let plugin = this.plugin;
 		let engine = this;
 		let nodeHandler = function(node,inputTerminalName,executionContext){
@@ -274,18 +279,51 @@ class WorkflowEngine{
 			}
 		}
 		engine.registerNodeType(TRASH_NODE_TYPE,nodeHandler);
+		nodeHandler = function(node,inputTerminalName,executionContext){
+			if('input'!=inputTerminalName){
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for Debug node #'+node.id());
+			}else{
+				node.debug('variable name: '+node.getProperty('variable.name'));
+				node.debug('value set: '+node.getProperty('value.to.set'));
+				executionContext[node.getProperty('variable.name')] = node.getProperty('value.to.set');
+				node.fire('then',executionContext);
+			}
+		}
+		this.registerNodeType(SET_PROPERTY_NODE_TYPE,nodeHandler);
+		
+		this.debug('<-WorkflowEngine#loadBuiltInNodes()');
 	}
 	registerNodeType(type,runtimeHandler){
+		this.debug('->WorkflowEngine#registerNodeType('+type+',handler)');
 		if(typeof this.nodeTypes[type]!='undefined'){
 			throw new Error('Node type "'+type+'" is already defined - duplication detected!');
 		}else{
 			this.nodeTypes[type] = runtimeHandler;
 		}
+		this.debug('<-WorkflowEngine#registerNodeType()');
+	}
+	registerCustomNode(fragment){
+		this.debug('->WorkflowEngine#registerCustomNode("'+fragment.name+'" v'+fragment.version+')');
+		try{
+			xeval('var helper = {"palette":{},"engine":{}};var initializeHelper = function(){'+fragment.source+'}');
+			this.debug('fragment evaluated successfully');
+			initializeHelper();
+			this.debug('helper initialized successfully');
+			if(typeof helper.engine.addCustomNode!='undefined'){
+				helper.engine.addCustomNode(this);
+			}
+		}catch(evalException){
+			this.error(evalException.message);
+		}
+		this.debug('<-WorkflowEngine#registerCustomNode()');
 	}
 	setEventListener(eventListenerFunction){
+		this.debug('->WorkflowEngine#setEventListener()');
 		this.eventListener.setEventHandler(eventListenerFunction);
+		this.debug('->WorkflowEngine#setEventListener()');
 	}
 	loadNodes(workflow){
+		this.debug('->WorkflowEngine#loadNodes()');
 		for(var i=0;i<workflow.data.nodes.length;i++){
 			let node = workflow.data.nodes[i];
 			if(typeof this.nodeTypes[node.type]!='undefined'){
@@ -302,8 +340,10 @@ class WorkflowEngine{
 				this.stop('Workflow stopped unexpectedly');
 			}
 		}
+		this.debug('<-WorkflowEngine#loadNodes()');
 	}
 	loadLinks(workflow){
+		this.debug('->WorkflowEngine#loadLinks()');
 		for(var i=0;i<workflow.data.connections.length;i++){
 			let connection = workflow.data.connections[i];
 			let tokens = connection.target.split('#');
@@ -316,12 +356,16 @@ class WorkflowEngine{
 				this.stop('Workflow stopped unexpectedly');
 			}
 		}
+		this.debug('<-WorkflowEngine#loadLinks()');
 	}
 	loadWorkflow(workflow){
+		this.debug('->WorkflowEngine#loadWorkflow()');
 		this.loadNodes(workflow);
 		this.loadLinks(workflow);
+		this.debug('<-WorkflowEngine#loadWorkflow()');
 	}
 	start(workflow,runtimeContext){
+		this.debug('->WorkflowEngine#start("'+workflow.name+'",ctx)');
 		this.startNode = null;
 		this.workflowWrappers = {};
 		this.links = {};
@@ -330,16 +374,27 @@ class WorkflowEngine{
 		this.fireEvent('start.requested','engine','Workflow name is "'+workflow.name+'"');
 		this.loadWorkflow(workflow);
 		if(this.startNode!=null){
+			this.debug('starting workflow execution process with ID#'+this.executionId);
+			if(typeof this.options['global.timeout']!='undefined'){
+				this.setTimeout(this.options['global.timeout']);
+			}
 			this.fireEvent('debug','engine','activating node #'+this.startNode.id());
 			this.startNode.handler(this.startNode,'dummy',runtimeContext);
 		}else{
 			this.fireEvent('error','engine','no Start node found');
 			this.stop('Workflow stopped unexpectedly');
 		}
+		this.debug('<-WorkflowEngine#start()');
+		return this.executionId;
 	}
 	stop(msg){
-		this.fireEvent('stop','engine',msg);
-		this.nodeActivationEnabled = false;
+		this.debug('->WorkflowEngine#stop()');
+		if(this.nodeActivationEnabled){
+			this.fireEvent('stop','engine',msg);
+			this.nodeActivationEnabled = false;
+			this.debug('workflow execution process ID#'+this.executionId+' is now stopped!');
+		}
+		this.debug('<-WorkflowEngine#stop()');
 	}
 	fireEvent(type,source,data){
 		if(this.nodeActivationEnabled){
@@ -347,6 +402,7 @@ class WorkflowEngine{
 		}
 	}
 	activateLink(sourceNodeId,terminalName,context){
+		this.debug('->WorkflowEngine#activateLink('+sourceNodeId+','+terminalName+',ctx)');
 		if(this.nodeActivationEnabled){
 			let terminalId = sourceNodeId+'#'+terminalName;
 			let link = this.links[terminalId];
@@ -360,10 +416,20 @@ class WorkflowEngine{
 					target.handler(target,targetTerminal,context);
 				}
 			}else{
-				this.fireEvent('error','engine','activation requested for unknown terminal "'+terminalId+'"');
-				this.stop('Workflow stopped unexpectedly');
+				this.fireEvent('warning','engine','activation requested from unbound terminal "'+terminalId+'"');
 			}
 		}
+		this.debug('<-WorkflowEngine#activateLink()');
+	}
+	setTimeout(delayMsec){
+		let engine = this;
+		setTimeout(function(){ engine.stop('Workflow completed - global timeout reached'); },delayMsec);
+	}
+	debug(txt){
+		this.plugin.debug(txt);
+	}
+	error(txt){
+		this.plugin.error(txt);
 	}
 }
 
