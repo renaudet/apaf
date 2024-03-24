@@ -428,6 +428,9 @@ plugin.getProfileHandler = function(req,res){
 					//delete data.password;
 					delete data['_id'];
 					delete data['_rev'];
+					if(typeof data.preferences=='undefined'){
+						data.preferences = {};
+					}
 					res.json({"status": 200,"message": "found","data": data});
 				}
 			});
@@ -451,11 +454,21 @@ plugin.updateProfileHandler = function(req,res){
 						plugin.debug('<-updateProfileHandler() - error');
 						res.json({"status": 500,"message": err,"data": []});
 					}else{
-						userRecord.firstname = profileData.firstname;
-						userRecord.lastname = profileData.lastname;
-						userRecord.mail = profileData.mail;
-						if(profileData.password && profileData.password.length>0){
-							userRecord.password = profileData.password;
+						if(profileData.firstname || profileData.lastname || profileData.mail){
+							userRecord.firstname = profileData.firstname;
+							userRecord.lastname = profileData.lastname;
+							userRecord.mail = profileData.mail;
+							if(profileData.password && profileData.password.length>0){
+								userRecord.password = profileData.password;
+							}
+						}
+						if(profileData.preferences){
+							if(typeof userRecord.preferences=='undefined'){
+								userRecord.preferences = {};
+							}
+							for(var pref in profileData.preferences){
+								userRecord.preferences[pref] = profileData.preferences[pref];
+							}
 						}
 						userRecord.lastUpdated = moment().format('YYYY/MM/DD HH:mm:ss');
 						datatypePlugin.updateRecord(USER_DATATYPE,userRecord,function(err,data){

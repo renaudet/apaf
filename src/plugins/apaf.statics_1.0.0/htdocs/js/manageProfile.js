@@ -5,6 +5,7 @@
  
 const GLOBAL_CONFIGURATION_FILE = '/resources/json/globalApafConfig.json';
 const USER_EDIT_FORM_ID = 'profileEditForm';
+const WORKFLOW_PREFERENCE_EDIT_FORM_ID = 'workflowEditorPrefsEditForm';
 
 let userProfile = null;
 $(document).ready(function(){
@@ -15,10 +16,18 @@ initializeUi = function(){
 	npaUi.loadConfigFrom(GLOBAL_CONFIGURATION_FILE,function(){
 		npaUi.initialize(function(){
 			npaUi.on('save',saveUserData);
+			npaUi.on('menu.item.selected',onMenuSelected)
 			npaUi.onComponentLoaded = getUserProfile;
+			npaUi.on('saveWorkflowPrefs',saveWorkflowPrefs);
 			npaUi.render();
 		});
 	});
+}
+
+onMenuSelected = function(event){
+	if('preferences'==event.menu){
+		openMenuPreferences();
+	}
 }
 
 getUserProfile = function(){
@@ -64,4 +73,33 @@ saveUserData = function(){
 			showError(error.message);
 		});
 	}
+}
+
+openMenuPreferences = function(){
+	let form = npaUi.getComponent(WORKFLOW_PREFERENCE_EDIT_FORM_ID);
+	if(userProfile.preferences && userProfile.preferences.workflow){
+		let preferences = Object.assign({},userProfile.preferences.workflow);
+		form.setData(preferences);
+	}
+	form.setEditMode(true);
+}
+
+saveWorkflowPrefs = function(){
+	let form = npaUi.getComponent(WORKFLOW_PREFERENCE_EDIT_FORM_ID);
+	let preferences = form.getData();
+	let profileData = {"id": userProfile.id,"preferences":{"workflow": preferences}};
+	makeRESTCall('PUT','/apaf-admin/profile',profileData,function(response){
+		if(response.status==200){
+			userProfile = response.data;
+			let form = npaUi.getComponent(USER_EDIT_FORM_ID);
+			let formData = Object.assign({},userProfile);
+			delete formData.password;
+			form.setData(formData);
+			flash('Updated!');
+		}else{
+			showWarning(response.message);
+		}
+	},function(error){
+		showError(error.message);
+	});
 }

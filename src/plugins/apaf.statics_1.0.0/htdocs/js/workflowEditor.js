@@ -16,6 +16,7 @@ var xeval = eval;
 var workflow = null;
 var editor = null;
 var engine = null;
+var preferences = null;
 
 $(document).ready(function(){
 	checkSessionStatus(initializeUi);
@@ -43,7 +44,7 @@ onComponentLoaded = function(){
 			if(data && data.length==1){
 				workflow = data[0];
 				setStatus('Editing: '+workflow.name+' v'+workflow.version);
-				initializeEditor();
+				getUserProfile(initializeEditor);
 			}else{
 				showError('No workflow found with ID #'+workflowId);
 			}
@@ -97,9 +98,26 @@ loadCustomNodes = function(workflowEditor,workflowEngine){
 	});
 }
 
+getUserProfile = function(then){
+	preferences = {"backgroundColor": "#ffffff","gridSize": 20,"showGrid": true,"gridColor": "#d0e7f5","confirmDelete": false};
+	makeRESTCall('GET','/apaf-admin/profile',{},function(response){
+		if(response.status==200){
+			if(response.data.preferences && response.data.preferences.workflow){
+				preferences = response.data.preferences.workflow;
+			}
+		}else{
+			showWarning(response.message);
+		}
+		then();
+	},function(error){
+		showError(error.message);
+		then();
+	});
+}
+
 initializeEditor = function(){
 	$('#editorArea').height($('#workArea').height()-35);
-	editor = new GraphicalEditor('myEditor','editorArea',{"background": "#ffffff","gridSize": 20,"showGrid": true,"gridColor": "#d0e7f5","confirmDelete": false});//f5f3e9
+	editor = new GraphicalEditor('myEditor','editorArea',preferences);//f5f3e9
 	engine = new WorkflowEngine({"activation.delay": WORKFLOW_NODE_ACTIVATION_DELAY,"global.timeout": WORKFLOW_TIMEOUT});
 	loadBuiltinNodes(editor,engine);
 	loadCustomNodes(editor,engine);

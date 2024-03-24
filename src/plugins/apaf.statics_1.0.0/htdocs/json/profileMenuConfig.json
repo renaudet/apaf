@@ -11,8 +11,7 @@
     		},
     		{
     			"id": "preferences",
-    			"label": "@apaf.profile.vertical.menu.preferences",
-    			"active": false
+    			"label": "@apaf.profile.vertical.menu.preferences"
     		}
     	]
     }

@@ -824,8 +824,8 @@ function GraphicalEditor(id,parentId,properties){
 	this.parentId = parentId;
 	this.commandStack = new CommandStack();
 	this.gcManager = new ReactivArea(id,parentId,$('#'+parentId).width(),$('#'+parentId).height());
-	if(properties.background){
-		this.gcManager.background = properties.background;
+	if(properties.backgroundColor){
+		this.gcManager.background = properties.backgroundColor;
 	}else{
 		this.gcManager.background = '#ffffff';
 	}

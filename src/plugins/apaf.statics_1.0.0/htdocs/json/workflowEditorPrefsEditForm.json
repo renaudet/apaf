@@ -1,0 +1,52 @@
+{
+    "id":"workflowEditorPrefsEditForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.preferences.workflow.title",
+    	"class": "form-frame-noborder",
+    	"fields": [
+    		{
+    			"name": "backgroundColor",
+    			"label": "@apaf.page.preferences.workflow.background.color",
+    			"type": "color",
+    			"default": "#ffffff"
+    		},
+    		{
+    			"name": "gridSize",
+    			"label": "@apaf.page.preferences.workflow.grid.size",
+    			"type": "range",
+    			"default": 10,
+    			"min": 5,
+    			"max": 60,
+    			"step": 5,
+    			"size": 8
+    		},
+    		{
+    			"name": "showGrid",
+    			"label": "@apaf.page.preferences.workflow.grid.show",
+    			"type": "switch",
+    			"default": true
+    		},
+    		{
+    			"name": "gridColor",
+    			"label": "@apaf.page.preferences.workflow.grid.color",
+    			"type": "color",
+    			"default": "#a0a0a0"
+    		},
+    		{
+    			"name": "confirmDelete",
+    			"label": "@apaf.page.preferences.workflow.delete.confirm",
+    			"type": "switch",
+    			"default": true
+    		},
+    		{
+    			"name": "saveBtn",
+    			"type": "button",
+    			"buttonType": "primary",
+    			"label": "@apaf.page.preferences.workflow.button.save",
+    			"actionId": "saveWorkflowPrefs"
+    		}
+    	]
+    }
+}
