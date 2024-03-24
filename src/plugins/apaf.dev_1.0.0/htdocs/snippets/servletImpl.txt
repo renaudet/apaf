@@ -4,9 +4,10 @@
  	"runtime": <npa runtime>,
  	"require": <require function>
    }
+   then: function(err,result)
  */
-myFunction = function(params,ctx){
-
+myFunction = function(params,ctx,then){
+	then(null,'some result');
 }
 
 servlet.endpoint = myFunction;

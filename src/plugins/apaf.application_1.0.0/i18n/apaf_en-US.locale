@@ -65,6 +65,7 @@ apaf.page.preferences.workflow.background.color=Background color
 apaf.page.preferences.workflow.grid.size=Grid Size
 apaf.page.preferences.workflow.grid.show=Show the grid
 apaf.page.preferences.workflow.grid.color=Grid color
+apaf.page.preferences.workflow.palette.color=Palette background color
 apaf.page.preferences.workflow.delete.confirm=Confirm item deletion
 apaf.user.password.check=Password check
 apaf.profile.button.save=Save changes

@@ -35,6 +35,12 @@
     			"default": "#a0a0a0"
     		},
     		{
+    			"name": "paletteColor",
+    			"label": "@apaf.page.preferences.workflow.palette.color",
+    			"type": "color",
+    			"default": "#e3d4af"
+    		},
+    		{
     			"name": "confirmDelete",
     			"label": "@apaf.page.preferences.workflow.delete.confirm",
     			"type": "switch",

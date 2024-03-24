@@ -4,6 +4,9 @@
  */
 
 const { v4: uuidv4 } = require('uuid');
+const DATATYPE_PLUGIN_ID = 'apaf.datatype';
+//const SECURITY_SERVICE_NAME = 'apaf-security';
+const USER_DATATYPE_DATATYPE = 'datatype';
  
 const START_NODE_TYPE = 'Start';
 const STOP_NODE_TYPE = 'Stop';
@@ -22,6 +25,10 @@ const DEBUG_NODE_TYPE = 'Debug';
 const TRASH_NODE_TYPE = 'Trash';
 const SET_PROPERTY_NODE_TYPE = 'SetProperty';
 const DELAY_NODE_TYPE = 'Delay';
+const DB_QUERY_NODE_TYPE = 'DB_Query';
+const DB_CREATE_NODE_TYPE = 'DB_Create';
+const DB_UPDATE_NODE_TYPE = 'DB_Update';
+const DB_DELETE_NODE_TYPE = 'DB_Delete';
 
 var xeval = eval;
  
@@ -106,8 +113,10 @@ class WorkflowEngine{
 	options = null;
 	startNode = null;
 	plugin = null;
-	constructor(plugin,options={}){
+	owner = null;
+	constructor(plugin,processOwner,options={}){
 		this.plugin = plugin;
+		this.owner = processOwner;
 		this.options = options;
 		this.loadBuiltInNodes();
 	}
@@ -115,6 +124,7 @@ class WorkflowEngine{
 		this.debug('->WorkflowEngine#loadBuiltInNodes()');
 		let plugin = this.plugin;
 		let engine = this;
+		let user = engine.owner;
 		let nodeHandler = function(node,inputTerminalName,executionContext){
 			node.fire('do',executionContext);
 		}
@@ -208,16 +218,21 @@ class WorkflowEngine{
 				}
 				node.debug('performing REST call '+node.getProperty('method')+' '+node.getProperty('uri'));
 				let restPlugin = plugin.runtime.getPlugin(REST_CALL_SUPPORT_PLUGIN_ID);
-				restPlugin.performRestApiCall(callContext,function(err,data){
-					if(err){
-						node.error('REST call failed with error '+err);
-						node.fire('error',executionContext);
-					}else{
-						node.debug('REST call was successfull');
-						executionContext[node.getProperty('response.variable.name')] = data;
-						node.fire('then',executionContext);
-					}
-				});
+				if(user.isAdmin || typeof user.roles['coreServices']!='undefined'){
+					restPlugin.performRestApiCall(callContext,function(err,data){
+						if(err){
+							node.error('REST call failed with error '+err);
+							node.fire('error',executionContext);
+						}else{
+							node.debug('REST call was successfull');
+							executionContext[node.getProperty('response.variable.name')] = data;
+							node.fire('then',executionContext);
+						}
+					});
+				}else{
+					node.error('REST call failed: unauthorized');
+					node.fire('error',executionContext);
+				}
 			}
 		}
 		this.registerNodeType(REST_NODE_TYPE,nodeHandler);
@@ -256,20 +271,25 @@ class WorkflowEngine{
 				}
 				node.debug('sending mail to '+node.getProperty('to'));
 				let mailService = plugin.getService(MAIL_SERVICE_NAME);
-				mailService.sendMail(DEFAULT_MAIL_PROVIDER_ID,callContext.from,callContext.to,callContext.subject,callContext.content,callContext.asHtml,function(err,response){
-					if(err){
-						node.error('Mail sending failed: '+err);
-						node.fire('error',executionContext);
-					}else{
-						if(response.response){
-							node.debug('Mail sent - response is '+response.response);
-							node.fire('then',executionContext);
+				if(user.isAdmin || typeof user.roles['coreServices']!='undefined'){
+					mailService.sendMail(DEFAULT_MAIL_PROVIDER_ID,callContext.from,callContext.to,callContext.subject,callContext.content,callContext.asHtml,function(err,response){
+						if(err){
+							node.error('Mail sending failed: '+err);
+							node.fire('error',executionContext);
 						}else{
-							node.debug('Mail sent - status is unknown');
-							node.fire('then',executionContext);
+							if(response.response){
+								node.debug('Mail sent - response is '+response.response);
+								node.fire('then',executionContext);
+							}else{
+								node.debug('Mail sent - status is unknown');
+								node.fire('then',executionContext);
+							}
 						}
-					}
-				});
+					});
+				}else{
+					node.error('Mail sending failed: unauthorized');
+					node.fire('error',executionContext);
+				}
 			}
 		}
 		this.registerNodeType(MAIL_NODE_TYPE,nodeHandler);
@@ -309,6 +329,160 @@ class WorkflowEngine{
 			}
 		}
 		this.registerNodeType(DELAY_NODE_TYPE,nodeHandler);
+		nodeHandler = function(node,inputTerminalName,executionContext){
+			if('input'!=inputTerminalName){
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for DB_Query node #'+node.id());
+			}else{
+				let datatype = node.getProperty('datatype');
+				let queryExpr = node.getProperty('query');
+				if(typeof queryExpr=='undefined' || queryExpr==null || queryExpr.length==0){
+					queryExpr = '{}';
+				}
+				let query = JSON.parse(queryExpr);
+				let resultSetVariableName = node.getProperty('resultset.variable.name');
+				let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+				datatypePlugin.query(USER_DATATYPE_DATATYPE,{"selector": {"name": {"$eq": datatype}}},function(err,data){
+					if(err){
+						node.error('Database datatype query failed: '+err);
+						node.fire('error',executionContext);
+					}else{
+						if(data && data.length>0){
+							let datatypeRecord = data[0];
+							if(user.isAdmin || datatypeRecord.readRole.length==0 || typeof user.roles[datatypeRecord.readRole]!='undefined'){
+								datatypePlugin.query(datatypeRecord.name,query,function(err,data){
+									if(err){
+										node.error('Database query failed: '+err);
+										node.fire('error',executionContext);
+									}else{
+										executionContext[resultSetVariableName] = data;
+										node.fire('then',executionContext);
+									}
+								});
+							}else{
+								node.error('Database query failed: unauthorized');
+								node.fire('error',executionContext);
+							}
+						}else{
+							node.error('Database query failed: datatype "'+datatype+'" not found');
+							node.fire('error',executionContext);
+						}
+					}
+				});
+			}
+		}
+		engine.registerNodeType(DB_QUERY_NODE_TYPE,nodeHandler);
+		nodeHandler = function(node,inputTerminalName,executionContext){
+			if('input'!=inputTerminalName){
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for DB_Create node #'+node.id());
+			}else{
+				let datatype = node.getProperty('datatype');
+				let recordVariableName = node.getProperty('record.variable.name');
+				let record = executionContext[recordVariableName];
+				let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+				datatypePlugin.query(USER_DATATYPE_DATATYPE,{"selector": {"name": {"$eq": datatype}}},function(err,data){
+					if(err){
+						node.error('Database datatype query failed: '+err);
+						node.fire('error',executionContext);
+					}else{
+						if(data && data.length>0){
+							let datatypeRecord = data[0];
+							if(user.isAdmin || datatypeRecord.writeRole.length==0 || typeof user.roles[datatypeRecord.writeRole]!='undefined'){
+								datatypePlugin.createRecord(datatypeRecord.name,record,function(err,data){
+									if(err){
+										node.error('Database record creation failed: '+err);
+										node.fire('error',executionContext);
+									}else{
+										executionContext[recordVariableName] = data;
+										node.fire('then',executionContext);
+									}
+								});
+							}else{
+								node.error('Database record creation failed: unauthorized');
+								node.fire('error',executionContext);
+							}
+						}else{
+							node.error('Database record creation failed: datatype "'+datatype+'" not found');
+							node.fire('error',executionContext);
+						}
+					}
+				});
+			}
+		}
+		this.registerNodeType(DB_CREATE_NODE_TYPE,nodeHandler);
+		nodeHandler = function(node,inputTerminalName,executionContext){
+			if('input'!=inputTerminalName){
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for DB_Update node #'+node.id());
+			}else{
+				let datatype = node.getProperty('datatype');
+				let recordVariableName = node.getProperty('record.variable.name');
+				let record = executionContext[recordVariableName];
+				let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+				datatypePlugin.query(USER_DATATYPE_DATATYPE,{"selector": {"name": {"$eq": datatype}}},function(err,data){
+					if(err){
+						node.error('Database datatype query failed: '+err);
+						node.fire('error',executionContext);
+					}else{
+						if(data && data.length>0){
+							let datatypeRecord = data[0];
+							if(user.isAdmin || datatypeRecord.writeRole.length==0 || typeof user.roles[datatypeRecord.writeRole]!='undefined'){
+								datatypePlugin.updateRecord(datatypeRecord.name,record,function(err,data){
+									if(err){
+										node.error('Database record update failed: '+err);
+										node.fire('error',executionContext);
+									}else{
+										executionContext[recordVariableName] = data;
+										node.fire('then',executionContext);
+									}
+								});
+							}else{
+								node.error('Database record update failed: unauthorized');
+								node.fire('error',executionContext);
+							}
+						}else{
+							node.error('Database record update failed: datatype "'+datatype+'" not found');
+							node.fire('error',executionContext);
+						}
+					}
+				});
+			}
+		}
+		this.registerNodeType(DB_UPDATE_NODE_TYPE,nodeHandler);
+		nodeHandler = function(node,inputTerminalName,executionContext){
+			if('input'!=inputTerminalName){
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for DB_Delete node #'+node.id());
+			}else{
+				let datatype = node.getProperty('datatype');
+				let recordIdVariableName = node.getProperty('record.id.variable.name');
+				let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+				datatypePlugin.query(USER_DATATYPE_DATATYPE,{"selector": {"name": {"$eq": datatype}}},function(err,data){
+					if(err){
+						node.error('Database datatype query failed: '+err);
+						node.fire('error',executionContext);
+					}else{
+						if(data && data.length>0){
+							let datatypeRecord = data[0];
+							if(user.isAdmin || datatypeRecord.deleteRole.length==0 || typeof user.roles[datatypeRecord.deleteRole]!='undefined'){
+								datatypePlugin.deleteRecord(datatypeRecord.name,{"id": recordIdVariableName},function(err,data){
+									if(err){
+										node.error('Database record deletion failed: '+err);
+										node.fire('error',executionContext);
+									}else{
+										node.fire('then',executionContext);
+									}
+								});
+							}else{
+								node.error('Database record deletion failed: unauthorized');
+								node.fire('error',executionContext);
+							}
+						}else{
+							node.error('Database record deletion failed: datatype "'+datatype+'" not found');
+							node.fire('error',executionContext);
+						}
+					}
+				});
+			}
+		}
+		engine.registerNodeType(DB_DELETE_NODE_TYPE,nodeHandler);
 		
 		this.debug('<-WorkflowEngine#loadBuiltInNodes()');
 	}

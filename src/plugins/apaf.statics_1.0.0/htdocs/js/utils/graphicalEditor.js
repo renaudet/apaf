@@ -550,6 +550,7 @@ function GraphicNodePalette(title,width,parent){
 	this.shiftY = 0;
 	this.targetFactory = null;
 	this.highlightedFactory = false;
+	this.backgroundColor = '#e3d4af';
 }
 
 GraphicNodePalette.prototype.isTarget = function(mouseEvent){
@@ -570,7 +571,7 @@ GraphicNodePalette.prototype.repaint = function(gc){
 	gc.shadowOffsetX = 0;
 	gc.shadowOffsetY = 0;
 	gc.shadowBlur = 0;
-	gc.fillStyle = '#e3d4af';
+	gc.fillStyle = this.backgroundColor;
 	gc.fillRect(0, 0, this.width, this.parent.height);
 	
 	var loc = HEADER_HEIGHT+NODE_FACTORY_PADDING+this.shiftY;
@@ -834,6 +835,9 @@ function GraphicalEditor(id,parentId,properties){
 		paletteTitle = properties.paletteTitle;
 	}
 	this.gcManager.palette = new GraphicNodePalette(paletteTitle,80,this.gcManager);
+	if(properties.paletteColor){
+		this.gcManager.palette.backgroundColor = properties.paletteColor;
+	}
 	this.gcManager.dragTarget = null;
 	this.gcManager.stack = this.commandStack;
 	this.gcManager.nodeCache = {};

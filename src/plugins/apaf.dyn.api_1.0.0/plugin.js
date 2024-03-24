@@ -78,9 +78,8 @@ plugin.invokeServlet = function(fragment,payload,user,then){
 		initializeServlet();
 		if(typeof servlet.endpoint!='undefined'){
 			let context = {"user": user,"runtime": plugin.runtime,"require": require};
-			let result = servlet.endpoint(payload,context);
+			servlet.endpoint(payload,context,then);
 			this.debug('<-invokeServlet() - success');
-			then(null,result);
 		}else{
 			this.debug('<-invokeServlet() - error endpoint not found');
 			then('Error executing servlet "'+fragment.alias+'" - no endpoint configured',null);

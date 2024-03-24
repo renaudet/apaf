@@ -65,6 +65,7 @@ apaf.page.preferences.workflow.background.color=Couleur de fond
 apaf.page.preferences.workflow.grid.size=Pas de la grille
 apaf.page.preferences.workflow.grid.show=Afficher la grille
 apaf.page.preferences.workflow.grid.color=Couleur de la grille
+apaf.page.preferences.workflow.palette.color=Couleur de la palette
 apaf.page.preferences.workflow.delete.confirm=Demander confirmation pour les suppressions
 apaf.user.password.check=V&eacute;rification
 apaf.profile.button.save=Sauvegarder les modifications

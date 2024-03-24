@@ -1,0 +1,18 @@
+const WORKFLOW_PLUGIN_ID = 'apaf.workflow';
+const WORKFLOW_NAME = 'myWorkflow';
+const WORKFLOW_VERSION = '1.0.0';
+
+/*
+ * ctx: {
+ 	"user": <connected user>,
+ 	"runtime": <npa runtime>,
+ 	"require": <require function>
+   }
+   then: function(err,result)
+ */
+myFunction = function(params,ctx,then){
+	let workflowPlugin = ctx.runtime.getPlugin(WORKFLOW_PLUGIN_ID);
+	workflowPlugin.executeWorkflow(WORKFLOW_NAME,WORKFLOW_VERSION,ctx.user,params,then);
+}
+
+servlet.endpoint = myFunction;
