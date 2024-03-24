@@ -129,8 +129,11 @@ plugin.getByNameHandler = function(req,res){
 			res.json({"status": 500,"message": err,"data": []});
 		}else{
 			let workflowName = req.params.workflowName;
+			let workflowVersion = req.params.workflowVersion;
+			plugin.debug('request to execute workflow "'+workflowName+'" version '+workflowVersion);
+			let query = {"selector": {"$and": [{"name": {"$eq": workflowName}}, {"version": {"$eq": workflowVersion}}]}};
 			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
-			datatypePlugin.query(WORKFLOW_DATATYPE,{"selector": {"name": {"$eq": workflowName}}},function(err,data){
+			datatypePlugin.query(WORKFLOW_DATATYPE,query,function(err,data){
 				if(err){
 					plugin.debug('<-getByNameHandler()');
 					res.json({"status": 500,"message": err,"data": []});
@@ -140,7 +143,7 @@ plugin.getByNameHandler = function(req,res){
 						res.json({"status": 200,"message": "ok","data": data[0]});
 					}else{
 						plugin.debug('<-getByNameHandler()');
-						res.json({"status": 500,"message": err,"data": []});
+						res.json({"status": 404,"message": "invalid name or version","data": []});
 					}
 				}
 			});

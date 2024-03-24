@@ -15,6 +15,11 @@ const MAIL_NODE_TYPE = 'Mail';
 const DEBUG_NODE_TYPE = 'Debug';
 const TRASH_NODE_TYPE = 'Trash';
 const SET_PROPERTY_NODE_TYPE = 'SetProperty';
+const DELAY_NODE_TYPE = 'Delay';
+const DB_QUERY_NODE_TYPE = 'DB_Query';
+const DB_CREATE_NODE_TYPE = 'DB_Create';
+const DB_UPDATE_NODE_TYPE = 'DB_Update';
+const DB_DELETE_NODE_TYPE = 'DB_Delete';
  
 addStartNode = function(engine){
 	let nodeHandler = function(node,inputTerminalName,executionContext){
@@ -149,7 +154,7 @@ addRestCallNode = function(engine){
 addOrNode = function(engine){
 	let nodeHandler = function(node,inputTerminalName,executionContext){
 		if('input1'!=inputTerminalName && 'input2'!=inputTerminalName){
-			node.error('Invalid input terminal "'+inputTerminalName+'" activation for If node #'+node.id());
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for Or node #'+node.id());
 		}else{
 			node.fire('then',executionContext);
 		}
@@ -172,7 +177,7 @@ addForkNode = function(engine){
 addSendMailNode = function(engine){
 	let nodeHandler = function(node,inputTerminalName,executionContext){
 		if('input'!=inputTerminalName){
-			node.error('Invalid input terminal "'+inputTerminalName+'" activation for RestCall node #'+node.id());
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for SendMail node #'+node.id());
 		}else{
 			let content = executionContext[node.getProperty('mail.content.variable.name')];
 			if(typeof content=='undefined'){
@@ -237,7 +242,7 @@ addTrashNode = function(engine){
 addSetPropertyNode = function(engine){
 	let nodeHandler = function(node,inputTerminalName,executionContext){
 		if('input'!=inputTerminalName){
-			node.error('Invalid input terminal "'+inputTerminalName+'" activation for Debug node #'+node.id());
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for SetProperty node #'+node.id());
 		}else{
 			node.debug('variable name: '+node.getProperty('variable.name'));
 			node.debug('value set: '+node.getProperty('value.to.set'));
@@ -246,6 +251,120 @@ addSetPropertyNode = function(engine){
 		}
 	}
 	engine.registerNodeType(SET_PROPERTY_NODE_TYPE,nodeHandler);
+}
+
+addDelayNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input'!=inputTerminalName){
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for Delay node #'+node.id());
+		}else{
+			setTimeout(function(){ node.fire('then',executionContext); },node.getProperty('delay'));
+		}
+	}
+	engine.registerNodeType(DELAY_NODE_TYPE,nodeHandler);
+}
+
+addDbQueryNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input'!=inputTerminalName){
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for DB_Query node #'+node.id());
+		}else{
+			let datatype = node.getProperty('datatype');
+			let queryExpr = node.getProperty('query');
+			if(typeof queryExpr=='undefined' || queryExpr==null || queryExpr.length==0){
+				queryExpr = '{}';
+			}
+			let query = JSON.parse(queryExpr);
+			let resultSetVariableName = node.getProperty('resultset.variable.name');
+			let callContext = {};
+			callContext.method = 'POST';
+			callContext.uri = '/user-data/'+datatype+'/query';
+			callContext.payload = query
+			apaf.call(callContext)
+			    .then(function(data){
+					executionContext[resultSetVariableName] = data;
+					node.fire('then',executionContext);
+				})
+			    .onError(function(errorMsg){
+					node.error('Database query failed: '+errorMsg);
+					node.fire('error',executionContext);
+				});
+		}
+	}
+	engine.registerNodeType(DB_QUERY_NODE_TYPE,nodeHandler);
+}
+
+addDbCreateNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input'!=inputTerminalName){
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for DB_Create node #'+node.id());
+		}else{
+			let datatype = node.getProperty('datatype');
+			let recordVariableName = node.getProperty('record.variable.name');
+			let callContext = {};
+			callContext.method = 'POST';
+			callContext.uri = '/user-data/'+datatype;
+			callContext.payload = executionContext[recordVariableName];
+			apaf.call(callContext)
+			    .then(function(data){
+					executionContext[recordVariableName] = data;
+					node.fire('then',executionContext);
+				})
+			    .onError(function(errorMsg){
+					node.error('Database record creation failed: '+errorMsg);
+					node.fire('error',executionContext);
+				});
+		}
+	}
+	engine.registerNodeType(DB_CREATE_NODE_TYPE,nodeHandler);
+}
+
+addDbUpdateNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input'!=inputTerminalName){
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for DB_Update node #'+node.id());
+		}else{
+			let datatype = node.getProperty('datatype');
+			let recordVariableName = node.getProperty('record.variable.name');
+			let callContext = {};
+			callContext.method = 'PUT';
+			callContext.uri = '/user-data/'+datatype;
+			callContext.payload = executionContext[recordVariableName];
+			apaf.call(callContext)
+			    .then(function(data){
+					executionContext[recordVariableName] = data;
+					node.fire('then',executionContext);
+				})
+			    .onError(function(errorMsg){
+					node.error('Database record update failed: '+errorMsg);
+					node.fire('error',executionContext);
+				});
+		}
+	}
+	engine.registerNodeType(DB_UPDATE_NODE_TYPE,nodeHandler);
+}
+
+addDbDeleteNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input'!=inputTerminalName){
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for DB_Delete node #'+node.id());
+		}else{
+			let datatype = node.getProperty('datatype');
+			let recordIdVariableName = node.getProperty('record.id.variable.name');
+			let callContext = {};
+			callContext.method = 'DELETE';
+			callContext.uri = '/user-data/'+datatype+'/'+executionContext[recordIdVariableName];
+			apaf.call(callContext)
+			    .then(function(data){
+					node.fire('then',executionContext);
+				})
+			    .onError(function(errorMsg){
+					node.error('Database record deletion failed: '+errorMsg);
+					node.fire('error',executionContext);
+				});
+		}
+	}
+	engine.registerNodeType(DB_DELETE_NODE_TYPE,nodeHandler);
 }
 
 
@@ -263,6 +382,11 @@ loadBuiltInNodeHandlers = function(engine){
     addDebugNode(engine);
     addTrashNode(engine);
     addSetPropertyNode(engine);
+    addDelayNode(engine);
+    addDbQueryNode(engine);
+    addDbCreateNode(engine);
+    addDbUpdateNode(engine);
+    addDbDeleteNode(engine);
 }
 
 loadBuiltinNodes = function(editor,engine){
@@ -282,6 +406,11 @@ loadBuiltinNodes = function(editor,engine){
 	loader.addImage('debugNodeIcon','/resources/img/workflows/nodeIcons/debugIcon.png');
 	loader.addImage('trashNodeIcon','/resources/img/workflows/nodeIcons/trashIcon.png');
 	loader.addImage('setPropertyNodeIcon','/resources/img/workflows/nodeIcons/setPropertyNode.png');
+	loader.addImage('delayhNodeIcon','/resources/img/workflows/nodeIcons/delayNode.png');
+	loader.addImage('dbQueryNodeIcon','/resources/img/workflows/nodeIcons/databaseQueryIcon.png');
+	loader.addImage('dbCreateNodeIcon','/resources/img/workflows/nodeIcons/databaseCreateIcon.png');
+	loader.addImage('dbUpdateNodeIcon','/resources/img/workflows/nodeIcons/databaseUpdateIcon.png');
+	loader.addImage('dbDeleteNodeIcon','/resources/img/workflows/nodeIcons/databaseDeleteIcon.png');
 	loader.load();
 	loader.onReadyState = function(){
 		let factory = new GraphicNodeFactory(START_NODE_TYPE,loader.getImage('startNodeIcon'));
@@ -453,6 +582,7 @@ loadBuiltinNodes = function(editor,engine){
 	      return node;
 	    }
 	    editor.getPalette().addFactory(factory);
+	    factory.close();
 		
 		factory = new GraphicNodeFactory(DEBUG_NODE_TYPE,loader.getImage('debugNodeIcon'));
 		factory.instanceCount = 0;
@@ -495,6 +625,98 @@ loadBuiltinNodes = function(editor,engine){
 	      node.addOutputTerminal(output01);
 	      node.addProperty('variable.name','Context variable name','string',true,'myVar');
 	      node.addProperty('value.to.set','Value to set','string',true,'someValue');
+	      return node;
+	    }
+	    editor.getPalette().addFactory(factory);
+	    factory.close();
+		
+		factory = new GraphicNodeFactory(DELAY_NODE_TYPE,loader.getImage('delayhNodeIcon'));
+		factory.instanceCount = 0;
+	    factory.createNode = function(){
+	      var nodeId = 'Delay'+(this.instanceCount++);
+	      var node = new GraphicNode(nodeId,DELAY_NODE_TYPE);
+	      node.backgroundIcon = loader.getImage('delayhNodeIcon');
+	      var input01 = new GraphicNodeTerminal('input');
+	      var output01 = new GraphicNodeTerminal('then');
+	      node.addInputTerminal(input01);
+	      node.addOutputTerminal(output01);
+	      node.addProperty('delay','Delay time (msec)','int',true,1000);
+	      return node;
+	    }
+	    editor.getPalette().addFactory(factory);
+	    factory.close();
+		
+		factory = new GraphicNodeFactory(DB_QUERY_NODE_TYPE,loader.getImage('dbQueryNodeIcon'));
+		factory.instanceCount = 0;
+	    factory.createNode = function(){
+	      var nodeId = 'DB_Query_'+(this.instanceCount++);
+	      var node = new GraphicNode(nodeId,DB_QUERY_NODE_TYPE);
+	      node.backgroundIcon = loader.getImage('dbQueryNodeIcon');
+	      var input01 = new GraphicNodeTerminal('input');
+	      var output01 = new GraphicNodeTerminal('then');
+	      var output02 = new GraphicNodeTerminal('error');
+	      node.addInputTerminal(input01);
+	      node.addOutputTerminal(output01);
+	      node.addOutputTerminal(output02);
+	      node.addProperty('datatype','Datatype name','string',true,'');
+	      node.addProperty('query','Query expr.','string',true,'{}');
+	      node.addProperty('resultset.variable.name','ResultSet variable name','string',true,'data');
+	      return node;
+	    }
+	    editor.getPalette().addFactory(factory);
+		
+		factory = new GraphicNodeFactory(DB_CREATE_NODE_TYPE,loader.getImage('dbCreateNodeIcon'));
+		factory.instanceCount = 0;
+	    factory.createNode = function(){
+	      var nodeId = 'DB_Create_'+(this.instanceCount++);
+	      var node = new GraphicNode(nodeId,DB_CREATE_NODE_TYPE);
+	      node.backgroundIcon = loader.getImage('dbCreateNodeIcon');
+	      var input01 = new GraphicNodeTerminal('input');
+	      var output01 = new GraphicNodeTerminal('then');
+	      var output02 = new GraphicNodeTerminal('error');
+	      node.addInputTerminal(input01);
+	      node.addOutputTerminal(output01);
+	      node.addOutputTerminal(output02);
+	      node.addProperty('datatype','Datatype name','string',true,'');
+	      node.addProperty('record.variable.name','Record variable name','string',true,'record');
+	      return node;
+	    }
+	    editor.getPalette().addFactory(factory);
+	    factory.close();
+		
+		factory = new GraphicNodeFactory(DB_UPDATE_NODE_TYPE,loader.getImage('dbUpdateNodeIcon'));
+		factory.instanceCount = 0;
+	    factory.createNode = function(){
+	      var nodeId = 'DB_Update_'+(this.instanceCount++);
+	      var node = new GraphicNode(nodeId,DB_UPDATE_NODE_TYPE);
+	      node.backgroundIcon = loader.getImage('dbUpdateNodeIcon');
+	      var input01 = new GraphicNodeTerminal('input');
+	      var output01 = new GraphicNodeTerminal('then');
+	      var output02 = new GraphicNodeTerminal('error');
+	      node.addInputTerminal(input01);
+	      node.addOutputTerminal(output01);
+	      node.addOutputTerminal(output02);
+	      node.addProperty('datatype','Datatype name','string',true,'');
+	      node.addProperty('record.variable.name','Record variable name','string',true,'record');
+	      return node;
+	    }
+	    editor.getPalette().addFactory(factory);
+	    factory.close();
+		
+		factory = new GraphicNodeFactory(DB_DELETE_NODE_TYPE,loader.getImage('dbDeleteNodeIcon'));
+		factory.instanceCount = 0;
+	    factory.createNode = function(){
+	      var nodeId = 'DB_Delete_'+(this.instanceCount++);
+	      var node = new GraphicNode(nodeId,DB_DELETE_NODE_TYPE);
+	      node.backgroundIcon = loader.getImage('dbDeleteNodeIcon');
+	      var input01 = new GraphicNodeTerminal('input');
+	      var output01 = new GraphicNodeTerminal('then');
+	      var output02 = new GraphicNodeTerminal('error');
+	      node.addInputTerminal(input01);
+	      node.addOutputTerminal(output01);
+	      node.addOutputTerminal(output02);
+	      node.addProperty('datatype','Datatype name','string',true,'');
+	      node.addProperty('record.id.variable.name','Record #ID variable name','string',true,'recordId');
 	      return node;
 	    }
 	    editor.getPalette().addFactory(factory);

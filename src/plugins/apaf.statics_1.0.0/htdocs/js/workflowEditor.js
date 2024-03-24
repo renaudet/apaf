@@ -9,7 +9,7 @@ const CARD_ID = 'workflowEditorCard';
 const MODAL_DIALOG_ID = 'emptyDialog';
 const JSON_DIALOG_ID = 'simpleDialog';
 const JSON_EDITOR_ID = 'jsonEditor';
-const WORKFLOW_TIMEOUT = 30*1000;
+const WORKFLOW_TIMEOUT = 5*60*1000;
 const WORKFLOW_NODE_ACTIVATION_DELAY = 1000;
 
 var xeval = eval;
@@ -99,7 +99,7 @@ loadCustomNodes = function(workflowEditor,workflowEngine){
 
 initializeEditor = function(){
 	$('#editorArea').height($('#workArea').height()-35);
-	editor = new GraphicalEditor('myEditor','editorArea',{"background": "#f5f3e9"});
+	editor = new GraphicalEditor('myEditor','editorArea',{"background": "#ffffff","gridSize": 20,"showGrid": true,"gridColor": "#d0e7f5","confirmDelete": false});//f5f3e9
 	engine = new WorkflowEngine({"activation.delay": WORKFLOW_NODE_ACTIVATION_DELAY,"global.timeout": WORKFLOW_TIMEOUT});
 	loadBuiltinNodes(editor,engine);
 	loadCustomNodes(editor,engine);

@@ -92,7 +92,7 @@
   		"id": "apaf.workflow.get.handler",
   		"router": "apaf.workflow.router",
   		"method": "GET",
-  		"schema": "/:workflowName",
+  		"schema": "/:workflowName/:workflowVersion",
   		"handler": "getByNameHandler",
   		"securityRole": "coreServices"
   	},

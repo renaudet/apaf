@@ -32,6 +32,16 @@ class WorkflowNodeWrapper{
 	id(){
 		return this.workflowNode.id;
 	}
+	internalGetPropertyValue(propertyName){
+		let rawProperty = this.workflowNode.properties[propertyName];
+		if('int'==rawProperty.type){
+			return parseInt(rawProperty.value, 10);
+		}
+		if('boolean'==rawProperty.type){
+			return ('true'==rawProperty.value);
+		}
+		return rawProperty.value;
+	}
 	getProperty(propertyName){
 		let prop = this.workflowNode.properties[propertyName];
 		if(typeof prop!='undefined'){
@@ -39,10 +49,10 @@ class WorkflowNodeWrapper{
 				if(typeof this.engine.runtimeContext[this.id()]!='undefined' && typeof this.engine.runtimeContext[this.id()][propertyName]!='undefined'){
 					return this.engine.runtimeContext[this.id()][propertyName];
 				}else{
-					return prop.value;
+					return this.internalGetPropertyValue(propertyName);
 				}
 			}else{
-				return prop.value;
+				return this.internalGetPropertyValue(propertyName);
 			}
 		}else{
 			return undefined;

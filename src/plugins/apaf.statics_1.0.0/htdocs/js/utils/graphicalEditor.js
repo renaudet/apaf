@@ -250,10 +250,12 @@ GraphicNode.prototype.onMouseMove = function(mouseEvent){
 	}
 }
 
-GraphicNode.prototype.setLocation = function(x,y){
+GraphicNode.prototype.setLocation = function(x,y,gridSize){
 	this.x = 0;
 	this.y = 0;
-	this.onMouseMove({"dx": x,"dy": y});
+	let dx = Math.floor(x/gridSize)*gridSize;
+	let dy = Math.floor(y/gridSize)*gridSize;
+	this.onMouseMove({"dx": dx,"dy": dy});
 }
 
 GraphicNode.prototype.onMouseOver = function(mouseEvent){
@@ -849,6 +851,22 @@ function GraphicalEditor(id,parentId,properties){
 	this.gcManager.dragCmd = null;
 	this.gcManager.dragStartX = 0;
 	this.gcManager.dragStartY = 0;
+	this.gcManager.gridSize = 1;
+	this.gcManager.showGrid = false;
+	this.gcManager.gridColor = '#d3d3d3';
+	if(properties.gridSize){
+		this.gcManager.gridSize = properties.gridSize;
+	}
+	if(properties.showGrid){
+		this.gcManager.showGrid = true;
+	}
+	if(properties.gridColor){
+		this.gcManager.gridColor = properties.gridColor;
+	}
+	this.gcManager.confirmDelete = true;
+	if(typeof properties.confirmDelete!='undefined'){
+		this.gcManager.confirmDelete = properties.confirmDelete;
+	}
 	
 	this.gcManager.onResized = function(){
 	}
@@ -874,8 +892,10 @@ function GraphicalEditor(id,parentId,properties){
 				this.dragMode = true;
 				this.dragCmd = new Command('Move all');
 				this.dragCmd.manager = this;
-				this.dragCmd.dragStartX = mouseEvent.location.x;
-				this.dragCmd.dragStartY = mouseEvent.location.y;
+				//this.dragCmd.dragStartX = mouseEvent.location.x;
+				//this.dragCmd.dragStartY = mouseEvent.location.y;
+				this.dragCmd.dragStartX = Math.floor(mouseEvent.location.x/this.gridSize)*this.gridSize;
+				this.dragCmd.dragStartY = Math.floor(mouseEvent.location.y/this.gridSize)*this.gridSize;
 				this.dragCmd.execute = function(){
 					var dx = this.dragEndX-this.dragStartX;
 					var dy = this.dragEndY-this.dragStartY;
@@ -903,8 +923,10 @@ function GraphicalEditor(id,parentId,properties){
 				if(!this.connectionMode){
 					this.dragMode = true;
 					this.dragTarget = this.selection;
-					this.dragStartX = mouseEvent.location.x;
-					this.dragStartY = mouseEvent.location.y;
+					//this.dragStartX = mouseEvent.location.x;
+					//this.dragStartY = mouseEvent.location.y;
+					this.dragStartX = Math.floor(mouseEvent.location.x/this.gridSize)*this.gridSize;;
+					this.dragStartY = Math.floor(mouseEvent.location.y/this.gridSize)*this.gridSize;
 					this.dragCmd = new Command('Move selection');
 					this.dragCmd.manager = this;
 					this.dragCmd.selection = this.selection;
@@ -962,8 +984,10 @@ function GraphicalEditor(id,parentId,properties){
 				}
 			}else
 			if(this.dragMode){
-				this.dragCmd.dragEndX = mouseEvent.location.x;
-				this.dragCmd.dragEndY = mouseEvent.location.y;
+				//this.dragCmd.dragEndX = mouseEvent.location.x;
+				//this.dragCmd.dragEndY = mouseEvent.location.y;
+				this.dragCmd.dragEndX = Math.floor(mouseEvent.location.x/this.gridSize)*this.gridSize;
+				this.dragCmd.dragEndY = Math.floor(mouseEvent.location.y/this.gridSize)*this.gridSize;
 				if(this.dragCmd.dragEndX!=this.dragCmd.dragStartX || this.dragCmd.dragEndY!=this.dragCmd.dragStartY){
 					this.stack.execute(this.dragCmd);
 				}
@@ -981,8 +1005,12 @@ function GraphicalEditor(id,parentId,properties){
 				this.palette.onMouseMove(mouseEvent);
 			}else
 			if(this.dragTarget==this.selection){
-				var dx = mouseEvent.location.x-this.dragStartX;
-				var dy = mouseEvent.location.y-this.dragStartY;
+				let x = Math.floor(mouseEvent.location.x/this.gridSize)*this.gridSize;
+				let y = Math.floor(mouseEvent.location.y/this.gridSize)*this.gridSize;
+				//var dx = mouseEvent.location.x-this.dragStartX;
+				//var dy = mouseEvent.location.y-this.dragStartY;
+				var dx = x-this.dragStartX;
+				var dy = y-this.dragStartY;
 				mouseEvent.dx = dx;
 				mouseEvent.dy = dy;
 				for(var i=0;i<this.selection.length;i++){
@@ -990,8 +1018,10 @@ function GraphicalEditor(id,parentId,properties){
 					node.onMouseMove(mouseEvent);
 				}
 				this.repaint();
-				this.dragStartX = mouseEvent.location.x;
-				this.dragStartY = mouseEvent.location.y;
+				//this.dragStartX = mouseEvent.location.x;
+				//this.dragStartY = mouseEvent.location.y;
+				this.dragStartX = x;
+				this.dragStartY = y;
 			}else
 			if(this.dragTarget==this.selectedConnection){
 				var delivered = false;
@@ -1029,7 +1059,7 @@ function GraphicalEditor(id,parentId,properties){
 		if(keyEvent.keyCode==16){
 			this.holdSelection = true;
 		}
-		if(keyEvent.keyCode==46 && this.selectedConnection && confirm('Delete this connection ?')){
+		if(keyEvent.keyCode==46 && this.selectedConnection && (!this.confirmDelete || confirm('Delete this connection ?'))){
 			var cmd = new Command('Create Connnection');
 			cmd.manager = this;
 			cmd.connection = this.selectedConnection;
@@ -1052,7 +1082,33 @@ function GraphicalEditor(id,parentId,properties){
 			this.stack.execute(cmd);
 		}
 	}
+	this.gcManager.showGrid = function(gc){
+		if(this.showGrid){
+			gc.shadowOffsetX = 0;
+			gc.shadowOffsetY = 0;
+			gc.shadowBlur = 0;
+			gc.strokeStyle = this.gridColor;
+			gc.lineWidth = 1;
+			let x = 0.33;
+			while(x<this.width){
+				gc.beginPath();
+			    gc.moveTo(x,0);
+			    gc.lineTo(x,this.height);
+		    	gc.stroke();
+		    	x+=this.gridSize+0.33;
+			}
+			let y = 0.33;
+			while(y<this.height){
+				gc.beginPath();
+			    gc.moveTo(0,y);
+			    gc.lineTo(this.width,y);
+		    	gc.stroke();
+		    	y+=this.gridSize+0.33;
+			}
+		}
+	}
 	this.gcManager.paint = function(gc){
+		this.showGrid(gc);
 		for(connId in this.connectorCache){
 			var conn = this.connectorCache[connId];
 			conn.repaint(gc);
@@ -1184,7 +1240,7 @@ function GraphicalEditor(id,parentId,properties){
 		}
 		if(event.type=='node.deleted'){
 			var node = event.source;
-			if(confirm('Delete node '+node.id+' ?')){
+			if(!this.confirmDelete || confirm('Delete node '+node.id+' ?')){
 				var cmd = new Command('Delete Node '+node.id);
 				cmd.manager = this;
 				cmd.node = node;
@@ -1325,7 +1381,7 @@ GraphicalEditor.prototype.loadModel = function(model){
 		if(factory){
 			var node = factory.createNode();
 			node.id = serializedNode.id;
-			node.setLocation(serializedNode.x,serializedNode.y);
+			node.setLocation(serializedNode.x,serializedNode.y,this.gcManager.gridSize);
 			node.properties = serializedNode.properties;
 			this.gcManager.registerNode(node);
 			nodeByIds[serializedNode.id] = node;
@@ -1361,174 +1417,4 @@ GraphicalEditor.prototype.loadModel = function(model){
 
 GraphicalEditor.prototype.refresh = function(){
 	this.gcManager.repaint();
-}
-
-function openPropertyEditorDialog(node){
-	$.get('/html/fragments/workflowPropertyEditor.html',function(html){
-		$(document).off('.propertyEditor');
-		$('#closeDlgBtn').prop('disabled',false);
-		openDialog('Property Editor for '+node.id,html);
-		var props = node.getProperties();
-		for(var i=0;i<props.length;i++){
-			var property = props[i];
-			var row = '<tr>';
-			row += '  <td>'+property.label+'</td>';
-			row += '  <td>'+property.type+'</td>';
-			if(property.override){
-				row += '  <td><img src="/img/glyphicons-153-check.png" style="width: 18px;vertical-align: middle;" title="Context override enabled"></td>';
-			}else{
-				row += '  <td><img src="/img/glyphicons-154-unchecked.png" style="width: 18px;vertical-align: middle;" title="No context override allowed"></td>';
-			}
-			row += '  <td>'+createPropertyEditor(property,node)+'</td>';
-			row += '</tr>';
-			$('#data-table tbody').append(row);
-			postCreateEditor(property,node);
-		}
-		$(document).on('click.propertyEditor','#closeDlgBtn',function(){
-			node.onPropertyEdited();
-		});
-	});
-}
-
-function createPropertyEditor(property,node){
-	var editorName = 'edit_'+property.name.replace(/\./g,'_');
-	if(property.type=='string' || property.type=='int'){
-		var html = '<input type="text" id="'+editorName+'" class="form-control form-control-sm">';
-		return html;
-	}
-	if(property.type=='boolean'){
-		var html = '<select id="'+editorName+'" class="form-control form-control-sm"><option value="true">True</option><option value="false">False</option></select>';
-		return html;
-	}
-	if(property.type=='code'){
-		var html = '<button type="button" id="'+editorName+'" class="btn btn-sm btn-secondary">Edit</button>';
-		return html;
-	}
-	if(property.type.startsWith('instance:')){
-		var html = '<select id="'+editorName+'" class="form-control form-control-sm"></select>';
-		return html;
-	}
-	if(property.type=='entity'){
-		var html = '<select id="'+editorName+'" class="form-control form-control-sm"></select>';
-		return html;
-	}
-}
-
-function makeLabel(instance,entity){
-	var label = '';
-	var idFields = [];
-	for(var i=0;i<entity.attributes.length;i++){
-		var attribute = entity.attributes[i];
-		if(attribute.idField){
-			idFields.push(attribute.name);
-		}
-	}
-	var first = true;
-	for(var i=0;i<idFields.length;i++){
-		var fieldName = idFields[i];
-		if(!first){
-			label += ' / ';
-		}
-		label += instance[fieldName];
-		first = false;
-	}
-	return label;
-}
-
-function postCreateEditor(property,node){
-	$('#dialogBody').css('height','300px');
-	$('#dialogWindow').css('max-width','800px');
-	var editorName = 'edit_'+property.name.replace(/\./g,'_');
-	if(property.type=='string'){
-		$('#'+editorName).val(property.value);
-		$(document).on('input.propertyEditor','#'+editorName,function(){
-			property.value = $('#'+editorName).val();
-		});
-	}
-	if(property.type=='int'){
-		$('#'+editorName).val(property.value);
-		$(document).on('input.propertyEditor','#'+editorName,function(){
-			var newValue = $('#'+editorName).val();
-			try{
-				if(Number.isInteger(eval(newValue))){
-					property.value = eval(newValue);
-				}
-			}catch(e){
-			}
-		});
-	}
-	if(property.type=='boolean'){
-		$('#'+editorName).val(property.value?'true':'false');
-		$(document).on('change.propertyEditor','#'+editorName,function(){
-			property.value = ($('#'+editorName).val()=='true');
-		});
-	}
-	if(property.type=='code'){
-		$(document).on('click.propertyEditor','#'+editorName,function(){
-			$('#dialogBody').empty();
-			$('#dialogBody').css('height','600px');
-			$('#dialogWindow').css('max-width','1000px');
-			$('#dialogTitle').html('Code Editor');
-			var html = '<textarea id="codeEditor" class="form-control"></textarea>';
-			$('#dialogBody').append(html);
-			editor = CodeMirror.fromTextArea(codeEditor, {
-			    lineNumbers: true,
-			    theme: 'abcdef',
-			    mode:  "javascript"
-			});
-			editor.setSize(null,$('#dialogBody').height());
-			editor.setValue(property.value);
-			$(document).on('click.propertyEditor','#closeDlgBtn',function(){
-				property.value = editor.getValue();
-			});
-		});
-	}
-	if(property.type.startsWith('instance:')){
-		var dotIndex = property.type.indexOf(':');
-		var entityPropertyName = property.type.substring(dotIndex+1);
-		if(entityPropertyName && entityPropertyName.length>0){
-			var entityId = node.getProperty(entityPropertyName);
-			if(entityId){
-				getJSON({},'/exp/Entity/detail/'+entityId,function(response){
-					var entity = response.data;
-					getJSON({"entityId": entityId },'/manageInstances/findInstances',function(response){
-						var instances = response.data;
-						for(var i=0;i<instances.length;i++){
-							var instance = instances[i];
-							var option = '<option value="'+instance.id+'">'+makeLabel(instance,entity)+'</option>';
-							$('#'+editorName).append(option);
-						}
-						if(property.value && property.value.length>0){
-							console.log(property.value);
-							$('#'+editorName).val(property.value);
-						}
-						$(document).on('change.propertyEditor','#'+editorName,function(){
-							console.log($('#'+editorName).val());
-							property.value = $('#'+editorName).val();
-						});
-					});
-				});
-			}else{
-				displayError('Configuration mismatch for property '+property.name+' in node '+node.id+': property '+entityPropertyName+' is not defined');
-			}
-		}else{
-			displayError('Configuration mismatch for property '+property.name+' in node '+node.id+': missing entity property name');
-		}
-	}
-	if(property.type=='entity'){
-		postJSON({},'/exp/Entity/find',function(response){
-			var entities = sortOn(response.data,'name');
-			for(var i=0;i<entities.length;i++){
-				var entity = entities[i];
-				var option = '<option value="'+entity.id+'">'+entity.name+'</option>';
-				$('#'+editorName).append(option);
-			}
-			if(property.value && property.value.length>0){
-				$('#'+editorName).val(property.value);
-			}
-			$(document).on('change.propertyEditor','#'+editorName,function(){
-				property.value = $('#'+editorName).val();
-			});
-		});
-	}
 }

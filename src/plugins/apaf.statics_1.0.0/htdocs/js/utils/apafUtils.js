@@ -198,16 +198,30 @@ apaf.executeWorkflow = function(name,version,context,then){
 			.then(function(resultSet){
 				if(resultSet && resultSet.length==1){
 					let workflow = resultSet[0];
-					let workflowListener = new WorkflowEngineEventListener();
-					workflowListener.setEventHandler(function(event){
-						if('stop'==event.type){
-							then(null,context);
-						}else{
-							console.log(event);
-						}
-					});
-					apaf.workflowEngine.setEventListener(workflowListener);
-					apaf.workflowEngine.start(workflow,context);
+					if(workflow.serverSide){
+						let callContext = {};
+						callContext.method = 'POST';
+						callContext.uri = '/apaf-workflow/execute/'+workflow.id;
+						callContext.payload = context;
+						apaf.call(callContext)
+						    .then(function(workflowResponse){
+								then(null,workflowResponse);
+							})
+							.onError(function(errorMsg){
+								then(errorMsg,null);
+						    });
+					}else{
+						let workflowListener = new WorkflowEngineEventListener();
+						workflowListener.setEventHandler(function(event){
+							if('stop'==event.type){
+								then(null,context);
+							}else{
+								console.log(event);
+							}
+						});
+						apaf.workflowEngine.setEventListener(workflowListener);
+						apaf.workflowEngine.start(workflow,context);
+					}
 				}else{
 					then('Not found',null);
 				}

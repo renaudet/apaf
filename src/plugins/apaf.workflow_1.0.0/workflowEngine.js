@@ -21,6 +21,7 @@ const MAIL_SERVICE_NAME = 'mail';
 const DEBUG_NODE_TYPE = 'Debug';
 const TRASH_NODE_TYPE = 'Trash';
 const SET_PROPERTY_NODE_TYPE = 'SetProperty';
+const DELAY_NODE_TYPE = 'Delay';
 
 var xeval = eval;
  
@@ -52,6 +53,16 @@ class WorkflowNodeWrapper{
 	id(){
 		return this.workflowNode.id;
 	}
+	internalGetPropertyValue(propertyName){
+		let rawProperty = this.workflowNode.properties[propertyName];
+		if('int'==rawProperty.type){
+			return parseInt(rawProperty.value, 10);
+		}
+		if('boolean'==rawProperty.type){
+			return ('true'==rawProperty.value);
+		}
+		return rawProperty.value;
+	}
 	getProperty(propertyName){
 		let prop = this.workflowNode.properties[propertyName];
 		if(typeof prop!='undefined'){
@@ -59,10 +70,10 @@ class WorkflowNodeWrapper{
 				if(typeof this.engine.runtimeContext[this.id()]!='undefined' && typeof this.engine.runtimeContext[this.id()][propertyName]!='undefined'){
 					return this.engine.runtimeContext[this.id()][propertyName];
 				}else{
-					return prop.value;
+					return this.internalGetPropertyValue(propertyName);
 				}
 			}else{
-				return prop.value;
+				return this.internalGetPropertyValue(propertyName);
 			}
 		}else{
 			return undefined;
@@ -212,7 +223,7 @@ class WorkflowEngine{
 		this.registerNodeType(REST_NODE_TYPE,nodeHandler);
 		nodeHandler = function(node,inputTerminalName,executionContext){
 			if('input1'!=inputTerminalName && 'input2'!=inputTerminalName){
-				node.error('Invalid input terminal "'+inputTerminalName+'" activation for If node #'+node.id());
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for Or node #'+node.id());
 			}else{
 				node.fire('then',executionContext);
 			}
@@ -229,7 +240,7 @@ class WorkflowEngine{
 		this.registerNodeType(FORK_NODE_TYPE,nodeHandler);
 		nodeHandler = function(node,inputTerminalName,executionContext){
 			if('input'!=inputTerminalName){
-				node.error('Invalid input terminal "'+inputTerminalName+'" activation for RestCall node #'+node.id());
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for SendMail node #'+node.id());
 			}else{
 				let content = executionContext[node.getProperty('mail.content.variable.name')];
 				if(typeof content=='undefined'){
@@ -281,7 +292,7 @@ class WorkflowEngine{
 		engine.registerNodeType(TRASH_NODE_TYPE,nodeHandler);
 		nodeHandler = function(node,inputTerminalName,executionContext){
 			if('input'!=inputTerminalName){
-				node.error('Invalid input terminal "'+inputTerminalName+'" activation for Debug node #'+node.id());
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for SetProperty node #'+node.id());
 			}else{
 				node.debug('variable name: '+node.getProperty('variable.name'));
 				node.debug('value set: '+node.getProperty('value.to.set'));
@@ -290,6 +301,14 @@ class WorkflowEngine{
 			}
 		}
 		this.registerNodeType(SET_PROPERTY_NODE_TYPE,nodeHandler);
+		nodeHandler = function(node,inputTerminalName,executionContext){
+			if('input'!=inputTerminalName){
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for Delay node #'+node.id());
+			}else{
+				setTimeout(function(){ node.fire('then',executionContext); },node.getProperty('delay'));
+			}
+		}
+		this.registerNodeType(DELAY_NODE_TYPE,nodeHandler);
 		
 		this.debug('<-WorkflowEngine#loadBuiltInNodes()');
 	}
