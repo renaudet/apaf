@@ -20,6 +20,7 @@ const DB_QUERY_NODE_TYPE = 'DB_Query';
 const DB_CREATE_NODE_TYPE = 'DB_Create';
 const DB_UPDATE_NODE_TYPE = 'DB_Update';
 const DB_DELETE_NODE_TYPE = 'DB_Delete';
+const FOR_LOOP_NODE_TYPE = 'For';
  
 addStartNode = function(engine){
 	let nodeHandler = function(node,inputTerminalName,executionContext){
@@ -367,6 +368,33 @@ addDbDeleteNode = function(engine){
 	engine.registerNodeType(DB_DELETE_NODE_TYPE,nodeHandler);
 }
 
+addForLoopNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input'!=inputTerminalName && 'loopBack'!=inputTerminalName){
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for For_Loop node #'+node.id());
+		}else{
+			if('input'==inputTerminalName){
+				executionContext[node.getProperty('indice.variable.name')] = node.getProperty('indice.initial.value');
+				if(node.getProperty('indice.initial.value')<node.getProperty('indice.max.value')){
+					node.fire('do',executionContext);
+				}else{
+					node.fire('then',executionContext);
+				}
+			}else{
+				executionContext[node.getProperty('indice.variable.name')] = executionContext[node.getProperty('indice.variable.name')]+node.getProperty('indice.increment');
+				let indice = executionContext[node.getProperty('indice.variable.name')];
+				if(indice<node.getProperty('indice.max.value')){
+					node.debug('current indice value: '+indice);
+					node.fire('do',executionContext);
+				}else{
+					node.fire('then',executionContext);
+				}
+			}	
+		}
+	}
+	engine.registerNodeType(FOR_LOOP_NODE_TYPE,nodeHandler);
+}
+
 
 loadBuiltInNodeHandlers = function(engine){
 	addStartNode(engine);
@@ -387,6 +415,7 @@ loadBuiltInNodeHandlers = function(engine){
     addDbCreateNode(engine);
     addDbUpdateNode(engine);
     addDbDeleteNode(engine);
+    addForLoopNode(engine);
 }
 
 loadBuiltinNodes = function(editor,engine){
@@ -411,6 +440,7 @@ loadBuiltinNodes = function(editor,engine){
 	loader.addImage('dbCreateNodeIcon','/resources/img/workflows/nodeIcons/databaseCreateIcon.png');
 	loader.addImage('dbUpdateNodeIcon','/resources/img/workflows/nodeIcons/databaseUpdateIcon.png');
 	loader.addImage('dbDeleteNodeIcon','/resources/img/workflows/nodeIcons/databaseDeleteIcon.png');
+	loader.addImage('forLoopNodeIcon','/resources/img/workflows/nodeIcons/forLoopNode.png');
 	loader.load();
 	loader.onReadyState = function(){
 		let factory = new GraphicNodeFactory(START_NODE_TYPE,loader.getImage('startNodeIcon'));
@@ -717,6 +747,29 @@ loadBuiltinNodes = function(editor,engine){
 	      node.addOutputTerminal(output02);
 	      node.addProperty('datatype','Datatype name','string',true,'');
 	      node.addProperty('record.id.variable.name','Record #ID variable name','string',true,'recordId');
+	      return node;
+	    }
+	    editor.getPalette().addFactory(factory);
+	    factory.close();
+		
+		factory = new GraphicNodeFactory(FOR_LOOP_NODE_TYPE,loader.getImage('forLoopNodeIcon'));
+		factory.instanceCount = 0;
+	    factory.createNode = function(){
+	      var nodeId = 'For_'+(this.instanceCount++);
+	      var node = new GraphicNode(nodeId,FOR_LOOP_NODE_TYPE);
+	      node.backgroundIcon = loader.getImage('forLoopNodeIcon');
+	      var input01 = new GraphicNodeTerminal('input');
+	      var input02 = new GraphicNodeTerminal('loopBack');
+	      var output01 = new GraphicNodeTerminal('then');
+	      var output02 = new GraphicNodeTerminal('do');
+	      node.addInputTerminal(input01);
+	      node.addInputTerminal(input02);
+	      node.addOutputTerminal(output01);
+	      node.addOutputTerminal(output02);
+	      node.addProperty('indice.variable.name','Indice variable name','string',true,'i');
+	      node.addProperty('indice.initial.value','Indice initial value','int',true,0);
+	      node.addProperty('indice.max.value','Indice final value','int',true,10);
+	      node.addProperty('indice.increment','Increment','int',true,1);
 	      return node;
 	    }
 	    editor.getPalette().addFactory(factory);

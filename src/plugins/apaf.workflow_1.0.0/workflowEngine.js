@@ -29,6 +29,7 @@ const DB_QUERY_NODE_TYPE = 'DB_Query';
 const DB_CREATE_NODE_TYPE = 'DB_Create';
 const DB_UPDATE_NODE_TYPE = 'DB_Update';
 const DB_DELETE_NODE_TYPE = 'DB_Delete';
+const FOR_LOOP_NODE_TYPE = 'For';
 
 var xeval = eval;
  
@@ -483,6 +484,30 @@ class WorkflowEngine{
 			}
 		}
 		engine.registerNodeType(DB_DELETE_NODE_TYPE,nodeHandler);
+		nodeHandler = function(node,inputTerminalName,executionContext){
+			if('input'!=inputTerminalName && 'loopBack'!=inputTerminalName){
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for For_Loop node #'+node.id());
+			}else{
+				if('input'==inputTerminalName){
+					executionContext[node.getProperty('indice.variable.name')] = node.getProperty('indice.initial.value');
+					if(node.getProperty('indice.initial.value')<node.getProperty('indice.max.value')){
+						node.fire('do',executionContext);
+					}else{
+						node.fire('then',executionContext);
+					}
+				}else{
+					executionContext[node.getProperty('indice.variable.name')] = executionContext[node.getProperty('indice.variable.name')]+node.getProperty('indice.increment');
+					let indice = executionContext[node.getProperty('indice.variable.name')];
+					if(indice<node.getProperty('indice.max.value')){
+						node.debug('current indice value: '+indice);
+						node.fire('do',executionContext);
+					}else{
+						node.fire('then',executionContext);
+					}
+				}	
+			}
+		}
+		this.registerNodeType(FOR_LOOP_NODE_TYPE,nodeHandler);
 		
 		this.debug('<-WorkflowEngine#loadBuiltInNodes()');
 	}

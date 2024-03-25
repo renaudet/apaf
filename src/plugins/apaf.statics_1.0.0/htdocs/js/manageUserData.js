@@ -98,7 +98,8 @@ createCustomDatatable = function(){
 	html += '<div id="'+selectedDatatype.name+'_table"></div>';
 	$('#'+DATATABLE_AREA_ID).html(html);
 	let datatableId = selectedDatatype.name+'_tmpTable';
-	let datatableConfig = {"id": datatableId,"version": "1.0.0","type": "Datatable","configuration": {"maxHeight": 600,"columns": []}};
+	let maxHeight = $('#workArea').height()-50;
+	let datatableConfig = {"id": datatableId,"version": "1.0.0","type": "Datatable","configuration": {"maxHeight": maxHeight,"columns": []}};
 	datatableConfig.configuration.datasource = {
 		"type": "managed",
 		"manager": "genericManager"

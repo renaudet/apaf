@@ -41,6 +41,18 @@
     			"default": "#e3d4af"
     		},
     		{
+    			"name": "globalTimeout",
+    			"label": "@apaf.page.preferences.workflow.global.timeout",
+    			"type": "integer",
+    			"default": 180
+    		},
+    		{
+    			"name": "activationDelay",
+    			"label": "@apaf.page.preferences.workflow.activation.delay",
+    			"type": "integer",
+    			"default": 1000
+    		},
+    		{
     			"name": "confirmDelete",
     			"label": "@apaf.page.preferences.workflow.delete.confirm",
     			"type": "switch",

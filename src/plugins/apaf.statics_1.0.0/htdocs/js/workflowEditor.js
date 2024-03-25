@@ -9,7 +9,7 @@ const CARD_ID = 'workflowEditorCard';
 const MODAL_DIALOG_ID = 'emptyDialog';
 const JSON_DIALOG_ID = 'simpleDialog';
 const JSON_EDITOR_ID = 'jsonEditor';
-const WORKFLOW_TIMEOUT = 5*60*1000;
+const WORKFLOW_TIMEOUT_SEC = 3*60;
 const WORKFLOW_NODE_ACTIVATION_DELAY = 1000;
 
 var xeval = eval;
@@ -99,7 +99,7 @@ loadCustomNodes = function(workflowEditor,workflowEngine){
 }
 
 getUserProfile = function(then){
-	preferences = {"backgroundColor": "#ffffff","gridSize": 20,"showGrid": true,"gridColor": "#d0e7f5","confirmDelete": false};
+	preferences = {"backgroundColor": "#ffffff","gridSize": 20,"showGrid": true,"gridColor": "#d0e7f5","confirmDelete": false,"globalTimeout": WORKFLOW_TIMEOUT_SEC,"activationDelay": WORKFLOW_NODE_ACTIVATION_DELAY};
 	makeRESTCall('GET','/apaf-admin/profile',{},function(response){
 		if(response.status==200){
 			if(response.data.preferences && response.data.preferences.workflow){
@@ -118,7 +118,8 @@ getUserProfile = function(then){
 initializeEditor = function(){
 	$('#editorArea').height($('#workArea').height()-35);
 	editor = new GraphicalEditor('myEditor','editorArea',preferences);//f5f3e9
-	engine = new WorkflowEngine({"activation.delay": WORKFLOW_NODE_ACTIVATION_DELAY,"global.timeout": WORKFLOW_TIMEOUT});
+	let timeout = preferences.globalTimeout*1000;
+	engine = new WorkflowEngine({"activation.delay": preferences.activationDelay,"global.timeout": timeout});
 	loadBuiltinNodes(editor,engine);
 	loadCustomNodes(editor,engine);
 	editor.setListener(new WorkflowEventListener(handlerWorkflowEvents));
