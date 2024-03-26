@@ -17,12 +17,12 @@ $(document).ready(function(){
 initializeUi = function(){
 	npaUi.loadConfigFrom(GLOBAL_CONFIGURATION_FILE,function(){
 		npaUi.initialize(function(){
-			//npaUi.onComponentLoaded = onComponentLoaded;
 			npaUi.on('addWorkflow',addWorkflow);
 			npaUi.on('editRecord',editWorkflow);
 			npaUi.on('editWorkflow',openWorkflowEditor);
 			npaUi.on('deleteWorkflow',deleteWorkflow);
-			//npaUi.registerSelectionListener(ITEM_SELECTION_LIST_ID,datatypeSelectionHandler);
+			npaUi.on('duplicateWorkflow',duplicateWorkflow);
+			npaUi.on('filter',filterData);
 			npaUi.render();
 		});
 	});
@@ -94,7 +94,27 @@ deleteWorkflow = function(event){
 	}
 }
 
+duplicateWorkflow = function(event){
+	let workflow = event.item;
+	let duplicated = Object.assign({},workflow);
+	duplicated.name = duplicated.name+' (copy)';
+	delete duplicated.id;
+	delete duplicated.rev;
+	delete duplicated._id;
+	delete duplicated._rev;
+	saveWorkflow(duplicated,function(){
+		let table = $apaf(WORKFLOW_TABLE_ID);
+		table.refresh();
+	});
+}
+
 openWorkflowEditor = function(event){
 	let workflow = event.item;
 	window.open(WORKFLOW_EDITOR_URI+'?workflowId='+workflow.id,'workflow_editor_'+workflow.id);
+}
+
+filterData = function(event){
+	let filterExpr = event.data;
+	let datatable = $apaf(WORKFLOW_TABLE_ID);
+	datatable.applyFilter(filterExpr);
 }

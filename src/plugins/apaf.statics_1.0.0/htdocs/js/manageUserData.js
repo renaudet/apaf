@@ -71,6 +71,7 @@ initializeUi = function(){
 			npaUi.on('add',addRecord);
 			npaUi.on('editRecord',editRecord);
 			npaUi.on('deleteRecord',deleteRecord);
+			npaUi.on('filter',filterData);
 			npaUi.registerSelectionListener(ITEM_SELECTION_LIST_ID,datatypeSelectionHandler);
 			npaUi.render();
 		});
@@ -217,4 +218,10 @@ deleteRecord = function(event){
 				showError(errorMsg.message?errorMsg.message:errorMsg);
 		});
 	}
+}
+
+filterData = function(event){
+	let filterExpr = event.data;
+	let datatable = $apaf(selectedDatatype.name+'_tmpTable');
+	datatable.applyFilter(filterExpr);
 }

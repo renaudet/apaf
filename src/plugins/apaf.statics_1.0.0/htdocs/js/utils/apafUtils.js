@@ -14,20 +14,17 @@ $.urlParam = function(name){
 }
  
 function checkSessionStatus(then){
-	console.log('checkSessionStatus()');
 	makeRESTCall('GET','/apaf-admin/session',{},function(response){
-		console.log(response);
 		if(200==response.status){
 			if(typeof then!='undefined'){
 				then();
 			}
 		}else{
-			//console.log(response);
-			//showError('Unable to load page: '+response.message);
+			console.log('checkSessionStatus() -> '+response.status);
 			setTimeout(function(){ window.location.replace('/resources/html/login.html')},500);
 		}
 	},function(errorMsg){
-		//showError('Unable to load page: '+errorMsg);
+		console.log('checkSessionStatus() -> error: '+errorMsg);
 		setTimeout(function(){ window.location.replace('/resources/html/login.html')},500);
 	});
 }

@@ -52,6 +52,11 @@
                         "label": "@apaf.workflow.table.action.delete.label",
                         "actionId": "deleteWorkflow",
                         "icon": "/uiTools/img/silk/chart_organisation_delete.png"
+                    },
+                    {
+                        "label": "@apaf.workflow.table.action.duplicate.label",
+                        "actionId": "duplicateWorkflow",
+                        "icon": "/uiTools/img/silk/page_copy.png"
                     }
                 ]
             }

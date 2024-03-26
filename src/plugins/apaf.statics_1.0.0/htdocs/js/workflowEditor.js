@@ -17,6 +17,7 @@ var workflow = null;
 var editor = null;
 var engine = null;
 var preferences = null;
+var newVersionNeeded = true;
 
 $(document).ready(function(){
 	checkSessionStatus(initializeUi);
@@ -99,7 +100,7 @@ loadCustomNodes = function(workflowEditor,workflowEngine){
 }
 
 getUserProfile = function(then){
-	preferences = {"backgroundColor": "#ffffff","gridSize": 20,"showGrid": true,"gridColor": "#d0e7f5","confirmDelete": false,"globalTimeout": WORKFLOW_TIMEOUT_SEC,"activationDelay": WORKFLOW_NODE_ACTIVATION_DELAY};
+	preferences = {"backgroundColor": "#ffffff","gridSize": 20,"showGrid": true,"gridColor": "#d0e7f5","confirmDelete": false,"autoSave": false,"globalTimeout": WORKFLOW_TIMEOUT_SEC,"activationDelay": WORKFLOW_NODE_ACTIVATION_DELAY};
 	makeRESTCall('GET','/apaf-admin/profile',{},function(response){
 		if(response.status==200){
 			if(response.data.preferences && response.data.preferences.workflow){
@@ -125,15 +126,16 @@ initializeEditor = function(){
 	editor.setListener(new WorkflowEventListener(handlerWorkflowEvents));
 	editor.saveModel = function(then){
 		workflow.data = editor.serializeModel();
-		workflow.version = increaseVersionNumber(workflow.version);
+		if(newVersionNeeded){
+			workflow.version = increaseVersionNumber(workflow.version);
+		}
 		let workflowManager = $apaf(WORKFLOW_DATA_MANAGER_ID);
 		workflowManager.update(workflow)
 		.then(function(data){
 			workflow['_rev'] = data['_rev'];
 			workflow.lastUpdated = data.lastUpdated;
 			workflow.lastUpdatedBy = data.lastUpdatedBy;
-			flash('Workflow "'+workflow.name+'" saved! New version is v'+workflow.version);
-			setStatus('Editing: '+workflow.name+' v'+workflow.version);
+			newVersionNeeded = true;
 			then();
 		})
 		.onError(function(errorMsg){
@@ -162,7 +164,10 @@ redoEditorAction = function(){
 }
 
 saveWorkflow = function(){
-	editor.save();
+	editor.save(function(){
+		flash('Workflow "'+workflow.name+'" saved! New version is v'+workflow.version);
+		setStatus('Editing: '+workflow.name+' v'+workflow.version);
+	});
 }
 
 handlerWorkflowEvents = function(event){
@@ -175,6 +180,31 @@ handlerWorkflowEvents = function(event){
 	}
 	if('edit.node'==event.type){
 		openNodeEditor(event.source);
+	}
+	if(preferences.autoSave &&
+	   ('node.edited'==event.type ||
+	    'node.created'==event.type ||
+	    'node.deleted'==event.type ||
+	    'node.restored'==event.type ||
+	    'connection.deleted'==event.type ||
+	    'connection.restored'==event.type ||
+	    'connection.end'==event.type)){
+		workflow.data = editor.serializeModel();
+		if(newVersionNeeded){
+			workflow.version = increaseVersionNumber(workflow.version);
+		}
+		let workflowManager = $apaf(WORKFLOW_DATA_MANAGER_ID);
+		workflowManager.update(workflow)
+		.then(function(data){
+			workflow['_rev'] = data['_rev'];
+			workflow.lastUpdated = data.lastUpdated;
+			workflow.lastUpdatedBy = data.lastUpdatedBy;
+			setStatus('Editing: '+workflow.name+' v'+workflow.version);
+			newVersionNeeded = false;
+		})
+		.onError(function(errorMsg){
+			showError(errorMsg);
+		});
 	}
 }
 

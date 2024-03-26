@@ -59,6 +59,12 @@
     			"default": true
     		},
     		{
+    			"name": "autoSave",
+    			"label": "@apaf.page.preferences.workflow.auto.save",
+    			"type": "switch",
+    			"default": false
+    		},
+    		{
     			"name": "saveBtn",
     			"type": "button",
     			"buttonType": "primary",

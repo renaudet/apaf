@@ -861,8 +861,8 @@ function GraphicalEditor(id,parentId,properties){
 	if(properties.gridSize){
 		this.gcManager.gridSize = properties.gridSize;
 	}
-	if(properties.showGrid){
-		this.gcManager.showGrid = true;
+	if(typeof properties.showGrid!='undefined'){
+		this.gcManager.showGrid = properties.showGrid;
 	}
 	if(properties.gridColor){
 		this.gcManager.gridColor = properties.gridColor;
@@ -1064,7 +1064,7 @@ function GraphicalEditor(id,parentId,properties){
 			this.holdSelection = true;
 		}
 		if(keyEvent.keyCode==46 && this.selectedConnection && (!this.confirmDelete || confirm('Delete this connection ?'))){
-			var cmd = new Command('Create Connnection');
+			var cmd = new Command('Delete Connnection');
 			cmd.manager = this;
 			cmd.connection = this.selectedConnection;
 			cmd.execute = function(){
@@ -1074,11 +1074,13 @@ function GraphicalEditor(id,parentId,properties){
 				this.connection.setSource(null);
 				this.connection.setTarget(null);
 				this.manager.repaint();
+				this.manager.fireEvent({"type": "connection.deleted","source": this.source});
 			}
 			cmd.undo = function(){
 				this.connection = new GraphicNodeConnection(this.source,this.target);
 				this.manager.registerConnector(this.connection);
 				this.manager.repaint();
+				this.manager.fireEvent({"type": "connection.restored","source": this.source});
 			}
 			cmd.redo = function(){
 				this.execute();
@@ -1086,7 +1088,7 @@ function GraphicalEditor(id,parentId,properties){
 			this.stack.execute(cmd);
 		}
 	}
-	this.gcManager.showGrid = function(gc){
+	this.gcManager.paintGrid = function(gc){
 		if(this.showGrid){
 			gc.shadowOffsetX = 0;
 			gc.shadowOffsetY = 0;
@@ -1112,7 +1114,7 @@ function GraphicalEditor(id,parentId,properties){
 		}
 	}
 	this.gcManager.paint = function(gc){
-		this.showGrid(gc);
+		this.paintGrid(gc);
 		for(connId in this.connectorCache){
 			var conn = this.connectorCache[connId];
 			conn.repaint(gc);
@@ -1195,6 +1197,16 @@ function GraphicalEditor(id,parentId,properties){
 	this.gcManager.getFactory = function(type){
 		return this.palette.getFactory(type);
 	}
+	this.gcManager.fireEvent = function(event){
+		if(this.eventListener){
+			try{
+				this.eventListener.handleEvent(event);
+			}catch(e){
+				console.log('Exception');
+				console.log(e);
+			}
+		}
+	}
 	this.gcManager.handleEvent = function(event){
 		if(event.type=='node.created'){
 			var node = event.node;
@@ -1255,9 +1267,11 @@ function GraphicalEditor(id,parentId,properties){
 				cmd.undo = function(){
 					this.manager.registerNode(this.node);
 					this.manager.repaint();
+					this.manager.fireEvent({"type": "node.restored","source": this.node});
 				}
 				cmd.redo = function(){
 					this.execute();
+					this.manager.fireEvent({"type": "node.deleted","source": this.node});
 				}
 				this.stack.execute(cmd);
 			}
@@ -1265,7 +1279,6 @@ function GraphicalEditor(id,parentId,properties){
 		if(event.type=='edit.node'){
 			var node = event.source;
 			this.deselectAllNodes();
-			//openPropertyEditorDialog(node);
 		}
 		if(event.type=='connection.start'){
 			var source = event.source;
@@ -1293,9 +1306,11 @@ function GraphicalEditor(id,parentId,properties){
 					this.connection.setSource(null);
 					this.connection.setTarget(null);
 					this.manager.repaint();
+					this.manager.fireEvent({"type": "connection.deleted","source": this.target});
 				}
 				cmd.redo = function(){
 					this.execute();
+					this.manager.fireEvent({"type": "connection.restored","source": this.target});
 				}
 				this.selectedConnection.setSource(null);
 				this.selectConnection(null);
@@ -1308,11 +1323,7 @@ function GraphicalEditor(id,parentId,properties){
 			var connection = event.source;
 			this.selectConnection(connection);
 		}
-		if(this.eventListener){
-			try{
-				this.eventListener.handleEvent(event);
-			}catch(e){}
-		}
+		this.fireEvent(event);
 	}
 }
 

@@ -33,6 +33,26 @@ plugin.checkSessionHandler = function(req,res){
 	}
 }
 
+plugin.maintainSessionHandler = function(req,res){
+	plugin.debug('->maintainSessionHandler()');
+	res.set('Content-Type','application/json');
+	let session = req.session;
+	if(typeof session!='undefined' && session!=null && session.alive){
+		let user = session.user;
+		if(typeof user!=undefined && user!=null){
+			session.lastAccess = moment();
+			plugin.debug('<-maintainSessionHandler()');
+			res.json({"status": 200,"message": "ok","data": session.lastAccess});
+		}else{
+			plugin.debug('<-checkSessionHandler()');
+			res.json({"status": 500,"message": "unauthenticated","data": []});
+		}
+	}else{
+		plugin.debug('<-maintainSessionHandler()');
+		res.json({"status": 500,"message": "no session","data": []});
+	}
+}
+
 plugin.queryUserHandler = function(req,res){
 	plugin.debug('->queryUserHandler()');
 	res.set('Content-Type','application/json');

@@ -529,8 +529,26 @@
 		                "icon": "/uiTools/img/silk/add.png",
 		                "enabled": false,
 		                "enableOnSelection": true
+		            },
+		    		{
+		                "type": "separator"
+		            },
+		    		{
+		                "type": "control",
+		                "kind": "filter",
+		                "actionId": "filter",
+		                "label": "@data.toolbar.filter.label",
+		                "width": 300
 		            }
 		    	]
+		    }
+		},
+		"sessionMonitor": { 
+			"id":"sessionMonitor",
+		    "version": "1.0.0",
+		    "type": "apaf.SessionMonitor",
+		    "configuration": {
+		    	"monitoringInterval": 30
 		    }
 		}
 	}

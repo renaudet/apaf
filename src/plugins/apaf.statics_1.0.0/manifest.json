@@ -3,7 +3,8 @@
   "name": "Static resources for APAF",
   "version": "1.0.0",
   "requires": [
-  	{"type": "plugin","id": "npa.http","version": "1.0.0"}
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -11,6 +12,14 @@
   		"id": "apaf.statics.htdocs",
   		"path": "/resources",
   		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.statics.components.session.monitor",
+  		"namespace": "apaf",
+  		"name": "SessionMonitor",
+  		"version": "1.0.0",
+  		"dependency": "/resources/js/components/sessionMonitor.js"
   	}
   ],
   "provides": [

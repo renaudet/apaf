@@ -10,6 +10,16 @@
                 "icon": "/uiTools/img/silk/add.png",
                 "enabled": true,
                 "enableOnSelection": true
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "type": "control",
+                "kind": "filter",
+                "actionId": "filter",
+                "label": "@data.toolbar.filter.label",
+                "width": 300
             }
     	]
     }

@@ -24,11 +24,19 @@
   	},
   	{
   		"point": "npa.http.handler",
-  		"id": "apaf.admin.checkSession.handler",
+  		"id": "apaf.admin.check.session.handler",
   		"router": "apaf.admin.router",
   		"method": "GET",
   		"schema": "/session",
   		"handler": "checkSessionHandler"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.maintain.session.handler",
+  		"router": "apaf.admin.router",
+  		"method": "PUT",
+  		"schema": "/session",
+  		"handler": "maintainSessionHandler"
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
