@@ -5,6 +5,7 @@
 
 const { v4: uuidv4 } = require('uuid');
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
+const WORKFLOW_PLUGIN_ID = 'apaf.workflow';
 const USER_DATATYPE_DATATYPE = 'datatype';
 const FRAGMENT_DATATYPE = 'fragment';
  
@@ -31,6 +32,7 @@ const DB_UPDATE_NODE_TYPE = 'DB_Update';
 const DB_DELETE_NODE_TYPE = 'DB_Delete';
 const FOR_LOOP_NODE_TYPE = 'For';
 const SNIPPET_NODE_TYPE = 'Snippet';
+const WORKFLOW_NODE_TYPE = 'Workflow';
 
 var xeval = eval;
 
@@ -583,6 +585,30 @@ class WorkflowEngine{
 			}
 		}
 		this.registerNodeType(SNIPPET_NODE_TYPE,nodeHandler);
+		nodeHandler = function(node,inputTerminalName,executionContext){
+			if('input'!=inputTerminalName){
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for Snippet node #'+node.id());
+			}else{
+				let workflowName = node.getProperty('workflow.name');
+		        let contextVarName = node.getProperty('context.variable.name');
+		        let workflowCtx = executionContext[contextVarName];
+		        node.debug('workflow name is "'+workflowName+'"');
+		        if(typeof workflowCtx=='undefined'){
+		           node.debug('workflow execution context variable "'+contextVarName+'" not found - using default context');
+		           workflowCtx = {"status": "pending"};
+		        }
+		        let workflowPlugin = plugin.runtime.getPlugin(WORKFLOW_PLUGIN_ID);
+		        workflowPlugin.executeWorkflow(workflowName,null,user,workflowCtx,function(err,ctx){
+					if(err){
+		           	node.fire('error',executionContext);
+		           }else{
+		           	executionContext[contextVarName] = ctx;
+		           	node.fire('output',executionContext);
+		           }
+				});
+			}
+		}
+		this.registerNodeType(WORKFLOW_NODE_TYPE,nodeHandler);
 		
 		this.debug('<-WorkflowEngine#loadBuiltInNodes()');
 	}

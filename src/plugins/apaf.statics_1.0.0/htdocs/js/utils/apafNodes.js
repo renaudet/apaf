@@ -23,6 +23,7 @@ const DB_DELETE_NODE_TYPE = 'DB_Delete';
 const FOR_LOOP_NODE_TYPE = 'For';
 const LIBRARY_NODE_TYPE = 'Library';
 const SNIPPET_NODE_TYPE = 'Snippet';
+const WORKFLOW_NODE_TYPE = 'Workflow';
 
 var zeval = eval;
  
@@ -458,6 +459,32 @@ addLoadSnippetNode = function(engine){
 	engine.registerNodeType(SNIPPET_NODE_TYPE,nodeHandler);
 }
 
+addWorkflowExecutionNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input'!=inputTerminalName){
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for Workflow node #'+node.id());
+		}else{
+			let workflowName = node.getProperty('workflow.name');
+	         let contextVarName = node.getProperty('context.variable.name');
+	         let workflowCtx = executionContext[contextVarName];
+	         node.debug('workflow name is "'+workflowName+'"');
+	         if(typeof workflowCtx=='undefined'){
+	           node.debug('workflow execution context variable "'+contextVarName+'" not found - using default context');
+	           workflowCtx = {"status": "pending"};
+	         }
+	         apaf.executeWorkflow(workflowName,null,workflowCtx,function(err,ctx){
+	           if(err){
+	           	node.fire('error',executionContext);
+	           }else{
+	           	executionContext[contextVarName] = ctx;
+	           	node.fire('output',executionContext);
+	           }
+	         });
+		}
+	}
+	engine.registerNodeType(WORKFLOW_NODE_TYPE,nodeHandler);
+}
+
 
 loadBuiltInNodeHandlers = function(engine){
 	addStartNode(engine);
@@ -481,6 +508,7 @@ loadBuiltInNodeHandlers = function(engine){
     addForLoopNode(engine);
     addLoadLibraryNode(engine);
     addLoadSnippetNode(engine);
+    addWorkflowExecutionNode(engine);
 }
 
 loadBuiltinNodes = function(editor,engine){
@@ -508,6 +536,7 @@ loadBuiltinNodes = function(editor,engine){
 	loader.addImage('forLoopNodeIcon','/resources/img/workflows/nodeIcons/forLoopNode.png');
 	loader.addImage('libraryNodeIcon','/resources/img/workflows/nodeIcons/loadLibraryNode.png');
 	loader.addImage('snippetNodeIcon','/resources/img/workflows/nodeIcons/snippetNode.png');
+	loader.addImage('workflowNodeIcon','/resources/img/workflows/nodeIcons/workflowNode.png');
 	loader.load();
 	loader.onReadyState = function(){
 		let factory = new GraphicNodeFactory(START_NODE_TYPE,loader.getImage('startNodeIcon'));
@@ -871,6 +900,25 @@ loadBuiltinNodes = function(editor,engine){
 	      node.addOutputTerminal(output01);
 	      node.addOutputTerminal(output02);
 	      node.addProperty('snippet.name','Snippet Name','string',false,'');
+	      return node;
+	    }
+	    editor.getPalette().addFactory(factory);
+	    factory.close();
+	    
+	    factory = new GraphicNodeFactory(WORKFLOW_NODE_TYPE,loader.getImage('workflowNodeIcon'));
+	    factory.instanceCount = 0;
+	    factory.createNode = function(){
+	      var nodeId = WORKFLOW_NODE_TYPE+'_'+(this.instanceCount++);
+	      var node = new GraphicNode(nodeId,WORKFLOW_NODE_TYPE);
+	      node.backgroundIcon = loader.getImage('workflowNodeIcon');
+	      var input01 = new GraphicNodeTerminal('input');
+	      var output01 = new GraphicNodeTerminal('output');
+	      var output02 = new GraphicNodeTerminal('error');
+	      node.addInputTerminal(input01);
+	      node.addOutputTerminal(output01);
+	      node.addOutputTerminal(output02);
+	      node.addProperty('workflow.name','Workflow name','string',false,'');
+	      node.addProperty('context.variable.name','Context variable','string',true,'workflowCtx');
 	      return node;
 	    }
 	    editor.getPalette().addFactory(factory);

@@ -12,6 +12,45 @@ const FRAGMENT_DATATYPE = 'fragment';
 const WORKFLOW_DATATYPE = 'workflow';
 const WORKFLOW_TIMEOUT = 60*1000;
 
+function sortOn(list,attributeName,descending=true){
+	if(typeof attributeName=='undefined'){
+		return list;
+	}else{
+		if(list.length>1){
+			for(var i=0;i<list.length-1;i++){
+				for(var j=i+1;j<list.length;j++){
+					var listi = list[i];
+					var listj = list[j];
+					if(typeof listj[attributeName]!='undefined' && typeof listi[attributeName]!='undefined'){
+						if(Number.isInteger(listj[attributeName])){
+							if(listj[attributeName]<listi[attributeName]){
+								var tmp = listi;
+								list[i] = listj;
+								list[j] = tmp;
+							}
+						}else{
+							if(descending){
+								if(listj[attributeName].localeCompare(listi[attributeName])<0){
+									var tmp = listi;
+									list[i] = listj;
+									list[j] = tmp;
+								}
+							}else{
+								if(listj[attributeName].localeCompare(listi[attributeName])>0){
+									var tmp = listi;
+									list[i] = listj;
+									list[j] = tmp;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return list;
+	}
+}
+
 var plugin = new ApafPlugin();
 
 plugin.queryWorkflowHandler = function(req,res){
@@ -227,14 +266,19 @@ plugin.executeWorkflow = function(workflowName,workflowVersion,owner,runtimeCont
 	this.trace('workflowVersion: '+workflowVersion);
 	this.trace('owner: '+owner.login);
 	let datatypePlugin = this.runtime.getPlugin(DATATYPE_PLUGIN_ID);
-	let query = {"selector": {"$and": [{"name": {"$eq": workflowName}}, {"version": {"$eq": workflowVersion}}]}};
+	let query = {"selector": {"name": {"$eq": workflowName}}};
+	if(workflowVersion!=null && workflowVersion.length>0){
+		query =  {"selector": {"$and": [{"name": {"$eq": workflowName}}, {"version": {"$eq": workflowVersion}}]}};
+	}
 	datatypePlugin.query(WORKFLOW_DATATYPE,query,function(err,workflows){
 		if(err){
 			plugin.debug('<-executeWorkflow() - error looking up for workflow');
 			then(err,null);
 		}else{
 			if(workflows && workflows.length>0){
-				let workflow = workflows[0];
+				let sortedResultSet = workflows.length==1?workflows:sortOn(workflows,'version',false);
+				let workflow = sortedResultSet[0];
+				//let workflow = workflows[0];
 				plugin.debug('found Workflow "'+workflow.name+'" v'+workflow.version+' with #ID: '+workflow.id);
 				let engine = new WorkflowEngine(plugin,owner,{"global.timeout": WORKFLOW_TIMEOUT});
 				plugin.loadCustomNodeFragments(function(fragments){
