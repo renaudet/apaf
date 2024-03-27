@@ -189,12 +189,16 @@ apaf.executeWorkflow = function(name,version,context,then){
 		});
 	}else{
 		// load workflow by name and version
-		let query = {"selector": {"$and": [{"name": {"$eq": name}}, {"version": {"$eq": version}}]}};
+		let query = {"selector": {"name": {"$eq": name}}};
+		if(version!=null && version.length>0){
+			query =  {"selector": {"$and": [{"name": {"$eq": name}}, {"version": {"$eq": version}}]}};
+		}
 		let ctx = {"method": "POST","uri": "/apaf-workflow/query","payload": query};
 		apaf.call(ctx)
 			.then(function(resultSet){
-				if(resultSet && resultSet.length==1){
-					let workflow = resultSet[0];
+				if(resultSet && resultSet.length>0){
+					let sortedResultSet = resultSet.length==1?resultSet:sortOn(resultSet,'version',false);
+					let workflow = sortedResultSet[0];
 					if(workflow.serverSide){
 						let callContext = {};
 						callContext.method = 'POST';
