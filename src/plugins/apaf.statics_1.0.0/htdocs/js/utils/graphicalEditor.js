@@ -734,8 +734,11 @@ GraphicNodeFactory.prototype.setVerticalLocation = function(location){
 
 GraphicNodeFactory.prototype.onMouseDown = function(mouseEvent){
 	var node = this.createNode();
-	var locX = mouseEvent.location.x+this.palette.width;
-	var locY = mouseEvent.location.y;
+	let gridSize = this.palette.parent.gridSize;
+	let x = mouseEvent.location.x+this.palette.width+20;
+	let y = mouseEvent.location.y;
+	var locX = Math.floor(x/gridSize)*gridSize;
+	var locY = Math.floor(y/gridSize)*gridSize;
 	node.onMouseMove({"dx": locX,"dy": locY});
 	this.palette.onNodeCreated(this,node);
 }
