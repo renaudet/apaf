@@ -253,6 +253,7 @@ addJsonEditorChangedHandler = function(componentId,node,property){
 		jsonEditor.setText(property.value);
 		jsonEditor.setReadonly(false);
 		let jsonEditorDialog = $apaf(JSON_DIALOG_ID);
+		jsonEditorDialog.setTitle(apaf.localize('@apaf.workflow.editor.dialog.node.title'));
 		jsonEditorDialog.onClose(function(){
 			node.setProperty(property.name,jsonEditor.getText());
 		});
@@ -314,7 +315,7 @@ createNodeEditor = function(node){
 
 openNodeEditor = function(node){
 	let dialog = $apaf(MODAL_DIALOG_ID);
-	dialog.setTitle('Property Editor for "'+node.id+'"');
+	dialog.setTitle(apaf.localize('@apaf.workflow.editor.dialog.property',[node.id]));
 	dialog.setBody(createNodeEditor(node));
 	postCreatePropertyEditor(node);
 	dialog.onClose(function(){
@@ -327,6 +328,7 @@ openNodeEditor = function(node){
 openWorkflowExecutionConsole = function(){
 	let dialog = $apaf(MODAL_DIALOG_ID);
 	dialog.setTitle('Workflow "'+workflow.name+'" executing...');
+	dialog.setTitle(apaf.localize('@apaf.workflow.editor.dialog.console',[workflow.name,workflow.version]));
 	let html = '';
 	html += '<div id="console" class="workflow-console">';
 	html += '</div>';
@@ -386,15 +388,30 @@ executeWorkflow = function(){
 			    });
 		}
 	}else{
-		let consoleListener = new WorkflowEngineEventListener();
-		consoleListener.setEventHandler(function(event){
-			console.log('Event from WorkflowEngine:');
-			console.log(event);
-			log(event.type,event.source+': '+event.data);
+		let jsonEditor = $apaf(JSON_EDITOR_ID);
+		jsonEditor.setText('{\n   "status": "pending"\n}');
+		jsonEditor.setReadonly(false);
+		let jsonEditorDialog = $apaf(JSON_DIALOG_ID);
+		jsonEditorDialog.setTitle(apaf.localize('@apaf.workflow.editor.dialog.context.title'));
+		jsonEditorDialog.onClose(function(){
+			try{
+				var context = JSON.parse(jsonEditor.getText());
+			}catch(parseException){
+				showError(parseException.message);
+			}
+			if(context){
+				let consoleListener = new WorkflowEngineEventListener();
+				consoleListener.setEventHandler(function(event){
+					console.log('Event from WorkflowEngine:');
+					console.log(event);
+					log(event.type,event.source+': '+event.data);
+				});
+				engine.setEventListener(consoleListener);
+				openWorkflowExecutionConsole();
+				clearConsole();
+				engine.start(workflow,context);
+			}
 		});
-		engine.setEventListener(consoleListener);
-		openWorkflowExecutionConsole();
-		clearConsole();
-		engine.start(workflow,{});
+		jsonEditorDialog.open();
 	}
 }

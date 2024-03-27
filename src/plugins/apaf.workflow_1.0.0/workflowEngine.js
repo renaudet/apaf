@@ -5,8 +5,8 @@
 
 const { v4: uuidv4 } = require('uuid');
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
-//const SECURITY_SERVICE_NAME = 'apaf-security';
 const USER_DATATYPE_DATATYPE = 'datatype';
+const FRAGMENT_DATATYPE = 'fragment';
  
 const START_NODE_TYPE = 'Start';
 const STOP_NODE_TYPE = 'Stop';
@@ -30,8 +30,48 @@ const DB_CREATE_NODE_TYPE = 'DB_Create';
 const DB_UPDATE_NODE_TYPE = 'DB_Update';
 const DB_DELETE_NODE_TYPE = 'DB_Delete';
 const FOR_LOOP_NODE_TYPE = 'For';
+const SNIPPET_NODE_TYPE = 'Snippet';
 
 var xeval = eval;
+
+function sortOn(list,attributeName,descending=true){
+	if(typeof attributeName=='undefined'){
+		return list;
+	}else{
+		if(list.length>1){
+			for(var i=0;i<list.length-1;i++){
+				for(var j=i+1;j<list.length;j++){
+					var listi = list[i];
+					var listj = list[j];
+					if(typeof listj[attributeName]!='undefined' && typeof listi[attributeName]!='undefined'){
+						if(Number.isInteger(listj[attributeName])){
+							if(listj[attributeName]<listi[attributeName]){
+								var tmp = listi;
+								list[i] = listj;
+								list[j] = tmp;
+							}
+						}else{
+							if(descending){
+								if(listj[attributeName].localeCompare(listi[attributeName])<0){
+									var tmp = listi;
+									list[i] = listj;
+									list[j] = tmp;
+								}
+							}else{
+								if(listj[attributeName].localeCompare(listi[attributeName])>0){
+									var tmp = listi;
+									list[i] = listj;
+									list[j] = tmp;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return list;
+	}
+}
  
 class WorkflowEngineEventListener{
 	eventHandler = null;
@@ -508,6 +548,41 @@ class WorkflowEngine{
 			}
 		}
 		this.registerNodeType(FOR_LOOP_NODE_TYPE,nodeHandler);
+		nodeHandler = function(node,inputTerminalName,executionContext){
+			if('input'!=inputTerminalName){
+				node.error('Invalid input terminal "'+inputTerminalName+'" activation for Snippet node #'+node.id());
+			}else{
+				let snippet = node.getProperty('snippet.name');
+				if(snippet && snippet.length>0){
+					let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+					datatypePlugin.query(FRAGMENT_DATATYPE,{"selector": {"name": {"$eq": snippet}}},function(err,fragments){
+						if(err){
+							node.error('unable to load fragment "'+snippet+'": '+errorMsg);
+							node.fire('error',executionContext);
+						}else{
+							if(fragments && fragments.length>0){
+								let orderedList = sortOn(fragments,'version',false);
+								let lastFragmentVersion = orderedList[0];
+								try{
+									xeval(lastFragmentVersion.source);
+									node.debug('snippet "'+lastFragmentVersion.name+'" v'+lastFragmentVersion.version+' loaded successfully!');
+									node.fire('then',executionContext);
+								}catch(evalException){
+									node.error('exception evaluating fragment "'+lastFragmentVersion.name+'" v'+lastFragmentVersion.version);
+									node.fire('error',executionContext);
+								}
+							}else{
+								node.error('fragment name "'+snippet+'" not found');
+								node.fire('error',executionContext);
+							}
+						}
+					});
+				}else{
+					node.fire('then',executionContext);
+				}
+			}
+		}
+		this.registerNodeType(SNIPPET_NODE_TYPE,nodeHandler);
 		
 		this.debug('<-WorkflowEngine#loadBuiltInNodes()');
 	}

@@ -21,6 +21,10 @@ const DB_CREATE_NODE_TYPE = 'DB_Create';
 const DB_UPDATE_NODE_TYPE = 'DB_Update';
 const DB_DELETE_NODE_TYPE = 'DB_Delete';
 const FOR_LOOP_NODE_TYPE = 'For';
+const LIBRARY_NODE_TYPE = 'Library';
+const SNIPPET_NODE_TYPE = 'Snippet';
+
+var zeval = eval;
  
 addStartNode = function(engine){
 	let nodeHandler = function(node,inputTerminalName,executionContext){
@@ -80,7 +84,7 @@ addIfNode = function(engine){
 		}else{
 			let toEval = node.getProperty('condition');
 			try{
-				let booleanEvaluation = xeval(toEval);
+				let booleanEvaluation = zeval(toEval);
 				if(booleanEvaluation){
 					node.fire('then',executionContext);
 				}else{
@@ -101,7 +105,7 @@ addScriptNode = function(engine){
 		}else{
 			let toEval = 'var handler = {}; handler.activate=function(node,ctx){'+node.getProperty('source')+'}';
 			try{
-				xeval(toEval);
+				zeval(toEval);
 				handler.activate(node,executionContext);
 			}catch(t){
 				//console.log(t);
@@ -395,6 +399,65 @@ addForLoopNode = function(engine){
 	engine.registerNodeType(FOR_LOOP_NODE_TYPE,nodeHandler);
 }
 
+addLoadLibraryNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input'!=inputTerminalName){
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for LoadLibrary node #'+node.id());
+		}else{
+			let libraryPath = node.getProperty('library.path');
+			if(libraryPath && libraryPath.length>0){
+				$.loadScript(libraryPath, function(){
+					node.fire('then',executionContext);
+				});
+			}else{
+				node.fire('then',executionContext);
+			}
+		}
+	}
+	engine.registerNodeType(LIBRARY_NODE_TYPE,nodeHandler);
+}
+
+addLoadSnippetNode = function(engine){
+	let nodeHandler = function(node,inputTerminalName,executionContext){
+		if('input'!=inputTerminalName){
+			node.error('Invalid input terminal "'+inputTerminalName+'" activation for Snippet node #'+node.id());
+		}else{
+			let snippet = node.getProperty('snippet.name');
+			if(snippet && snippet.length>0){
+				let callCtx = {};
+				callCtx.method = 'POST';
+				callCtx.uri = '/apaf-dev/fragment/query';
+				callCtx.payload = {"selector": {"name": {"$eq": snippet}}};
+				apaf.call(callCtx)
+				    .then(function(fragments){
+						if(fragments && fragments.length>0){
+							let orderedList = sortOn(fragments,'version',false);
+							let lastFragmentVersion = orderedList[0];
+							try{
+								zeval(lastFragmentVersion.source);
+								node.debug('snippet "'+lastFragmentVersion.name+'" v'+lastFragmentVersion.version+' loaded successfully!');
+								node.fire('then',executionContext);
+							}catch(evalException){
+								node.error('exception evaluating fragment "'+lastFragmentVersion.name+'" v'+lastFragmentVersion.version);
+								node.fire('error',executionContext);
+							}
+						}else{
+							node.error('fragment name "'+snippet+'" not found');
+							node.fire('error',executionContext);
+						}
+				     })
+				    .onError(function(errorMsg){
+						node.error('unable to load fragment "'+snippet+'": '+errorMsg);
+						node.fire('error',executionContext);
+					});
+			}else{
+				node.fire('then',executionContext);
+			}
+		}
+	}
+	engine.registerNodeType(SNIPPET_NODE_TYPE,nodeHandler);
+}
+
 
 loadBuiltInNodeHandlers = function(engine){
 	addStartNode(engine);
@@ -416,6 +479,8 @@ loadBuiltInNodeHandlers = function(engine){
     addDbUpdateNode(engine);
     addDbDeleteNode(engine);
     addForLoopNode(engine);
+    addLoadLibraryNode(engine);
+    addLoadSnippetNode(engine);
 }
 
 loadBuiltinNodes = function(editor,engine){
@@ -435,12 +500,14 @@ loadBuiltinNodes = function(editor,engine){
 	loader.addImage('debugNodeIcon','/resources/img/workflows/nodeIcons/debugIcon.png');
 	loader.addImage('trashNodeIcon','/resources/img/workflows/nodeIcons/trashIcon.png');
 	loader.addImage('setPropertyNodeIcon','/resources/img/workflows/nodeIcons/setPropertyNode.png');
-	loader.addImage('delayhNodeIcon','/resources/img/workflows/nodeIcons/delayNode.png');
+	loader.addImage('delayNodeIcon','/resources/img/workflows/nodeIcons/delayNode.png');
 	loader.addImage('dbQueryNodeIcon','/resources/img/workflows/nodeIcons/databaseQueryIcon.png');
 	loader.addImage('dbCreateNodeIcon','/resources/img/workflows/nodeIcons/databaseCreateIcon.png');
 	loader.addImage('dbUpdateNodeIcon','/resources/img/workflows/nodeIcons/databaseUpdateIcon.png');
 	loader.addImage('dbDeleteNodeIcon','/resources/img/workflows/nodeIcons/databaseDeleteIcon.png');
 	loader.addImage('forLoopNodeIcon','/resources/img/workflows/nodeIcons/forLoopNode.png');
+	loader.addImage('libraryNodeIcon','/resources/img/workflows/nodeIcons/loadLibraryNode.png');
+	loader.addImage('snippetNodeIcon','/resources/img/workflows/nodeIcons/snippetNode.png');
 	loader.load();
 	loader.onReadyState = function(){
 		let factory = new GraphicNodeFactory(START_NODE_TYPE,loader.getImage('startNodeIcon'));
@@ -528,7 +595,7 @@ loadBuiltinNodes = function(editor,engine){
 	      node.addInputTerminal(input01);
 	      node.addOutputTerminal(output01);
 	      node.addOutputTerminal(output02);
-	      node.addProperty('source','Source code','code',false,'//put here some code - end with node.fire(\'then\',ctx)');
+	      node.addProperty('source','Source code','code',false,'//your code here\n\nnode.log(\'some meaningfull text\');\nnode.fire(\'then\',ctx);');
 	      return node;
 	    }
 	    editor.getPalette().addFactory(factory);
@@ -660,12 +727,12 @@ loadBuiltinNodes = function(editor,engine){
 	    editor.getPalette().addFactory(factory);
 	    factory.close();
 		
-		factory = new GraphicNodeFactory(DELAY_NODE_TYPE,loader.getImage('delayhNodeIcon'));
+		factory = new GraphicNodeFactory(DELAY_NODE_TYPE,loader.getImage('delayNodeIcon'));
 		factory.instanceCount = 0;
 	    factory.createNode = function(){
 	      var nodeId = 'Delay'+(this.instanceCount++);
 	      var node = new GraphicNode(nodeId,DELAY_NODE_TYPE);
-	      node.backgroundIcon = loader.getImage('delayhNodeIcon');
+	      node.backgroundIcon = loader.getImage('delayNodeIcon');
 	      var input01 = new GraphicNodeTerminal('input');
 	      var output01 = new GraphicNodeTerminal('then');
 	      node.addInputTerminal(input01);
@@ -770,6 +837,40 @@ loadBuiltinNodes = function(editor,engine){
 	      node.addProperty('indice.initial.value','Indice initial value','int',true,0);
 	      node.addProperty('indice.max.value','Indice final value','int',true,10);
 	      node.addProperty('indice.increment','Increment','int',true,1);
+	      return node;
+	    }
+	    editor.getPalette().addFactory(factory);
+	    factory.close();
+		
+		factory = new GraphicNodeFactory(LIBRARY_NODE_TYPE,loader.getImage('libraryNodeIcon'));
+		factory.instanceCount = 0;
+	    factory.createNode = function(){
+	      var nodeId = 'LoadLibrary_'+(this.instanceCount++);
+	      var node = new GraphicNode(nodeId,LIBRARY_NODE_TYPE);
+	      node.backgroundIcon = loader.getImage('libraryNodeIcon');
+	      var input01 = new GraphicNodeTerminal('input');
+	      var output01 = new GraphicNodeTerminal('then');
+	      node.addInputTerminal(input01);
+	      node.addOutputTerminal(output01);
+	      node.addProperty('library.path','Library Path','string',false,'');
+	      return node;
+	    }
+	    editor.getPalette().addFactory(factory);
+	    factory.close();
+		
+		factory = new GraphicNodeFactory(SNIPPET_NODE_TYPE,loader.getImage('snippetNodeIcon'));
+		factory.instanceCount = 0;
+	    factory.createNode = function(){
+	      var nodeId = 'Snippet_'+(this.instanceCount++);
+	      var node = new GraphicNode(nodeId,SNIPPET_NODE_TYPE);
+	      node.backgroundIcon = loader.getImage('snippetNodeIcon');
+	      var input01 = new GraphicNodeTerminal('input');
+	      var output01 = new GraphicNodeTerminal('then');
+	      var output02 = new GraphicNodeTerminal('error');
+	      node.addInputTerminal(input01);
+	      node.addOutputTerminal(output01);
+	      node.addOutputTerminal(output02);
+	      node.addProperty('snippet.name','Snippet Name','string',false,'');
 	      return node;
 	    }
 	    editor.getPalette().addFactory(factory);

@@ -251,3 +251,7 @@ apaf.workflow.editor.toolbar.action.undo=D&eacute;faire
 apaf.workflow.editor.toolbar.action.redo=Refaire
 apaf.workflow.editor.toolbar.action.run=Ex&eacute;cuter le Workflow
 apaf.workflow.editor.execution.server.confirmation=Ce Workflow est concu pour une execution cote serveur. Continuer ?
+apaf.workflow.editor.dialog.property=Propri&eacute;t&eacute;s du noeud "{0}"
+apaf.workflow.editor.dialog.node.title=Editeur de propri&eacute;t&eacute; - Code Javascript
+apaf.workflow.editor.dialog.context.title=Contexte d'ex&eacute;cution du Workflow (JSON)
+apaf.workflow.editor.dialog.console=Ex&eacute;cution du Workflow "{0}" v{1} ...

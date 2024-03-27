@@ -251,3 +251,7 @@ apaf.workflow.editor.toolbar.action.undo=Undo
 apaf.workflow.editor.toolbar.action.redo=Redo
 apaf.workflow.editor.toolbar.action.run=Execute Worflow
 apaf.workflow.editor.execution.server.confirmation=This Worflow is designed for Server-side execution. Ok to continue?
+apaf.workflow.editor.dialog.property=Property editor for node "{0}"
+apaf.workflow.editor.dialog.node.title=Node property editor - Javascript code
+apaf.workflow.editor.dialog.context.title=Workflow context editor
+apaf.workflow.editor.dialog.console=Executing workflow "{0}" v{1} ...
