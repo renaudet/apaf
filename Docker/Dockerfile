@@ -13,6 +13,6 @@ ENV NPA_SESSIONS_COUCH_DB_USER=admin
 ENV NPA_SESSIONS_COUCH_DB_USER_PASSWD=admin4couch
 ENV NODE_PATH=/opt/NPA/node_modules
 ENV WORKSPACE_LOC=/opt/NPA/workspace
-ENV SMTP_USER=XXX
-ENV SMTP_PASSWD=XXX
+ENV SMTP_USER=smtpUser
+ENV SMTP_PASSWD=smtpPasswd
 CMD [ "node", "app.js", "--logs", "./logs", "--level", "info", "--port", "9080", "--application", "apaf" ]
