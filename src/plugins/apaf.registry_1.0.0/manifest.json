@@ -1,0 +1,151 @@
+{
+  "id": "apaf.registry",
+  "name": "Security tokens handler for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "registry": {
+  	"host": "192.168.2.2",
+  	"port": 5008,
+  	"secured": false
+  },
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.crypto","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.registry.logger",
+  		"dir": "apaf.registry"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.registry.router",
+  		"path": "/apaf-registry"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.publish.handler",
+  		"router": "apaf.registry.router",
+  		"method": "POST",
+  		"schema": "/publish",
+  		"handler": "publishFeatureHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.read.handler",
+  		"router": "apaf.registry.router",
+  		"method": "GET",
+  		"schema": "/catalog",
+  		"handler": "getCatalogHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.install.handler",
+  		"router": "apaf.registry.router",
+  		"method": "PUT",
+  		"schema": "/install",
+  		"handler": "installFeatureHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.registry.menu.item",
+  		"menu": "adminMenuPlaceholder",
+  		"securityRole": "administrator",
+  		"item": {
+			"id": "manageFeatures",
+    		"label": "@apaf.page.features.title",
+    		"actionId": "redirect",
+    		"icon": "/uiTools/img/silk/brick.png",
+    		"uri": "/resources/html/manageFeatures.html"
+		}
+  	},
+  	{
+  		"point": "npa.core.application",
+  		"id": "apaf.registry.application",
+  		"name": "registry"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.registry.datatype",
+  		"datatype": {
+  			"id": "feature",
+  			"name": "Feature",
+  			"builtIn": true,
+  			"persistent": true,
+  			"database": "apaf_features",
+  			"fields": [
+	    		{
+	    			"name": "name",
+	    			"label": "@apaf.page.features.form.name",
+	    			"required": true,
+	    			"size": 6,
+	    			"default": "MyFeature"
+	    		},
+	    		{
+	    			"name": "version",
+	    			"label": "@apaf.page.features.form.version",
+	    			"required": true,
+	    			"size": 2,
+	    			"default": "1.0.0"
+	    		},
+	    		{
+	    			"name": "copyright",
+	    			"label": "@apaf.page.features.form.copyright",
+	    			"required": false,
+	    			"size": 6
+	    		},
+	    		{
+	    			"name": "category",
+	    			"label": "@apaf.page.features.form.category",
+	    			"type": "select",
+	    			"size": 3,
+	    			"values": ["Tool","Application","Game"]
+	    		},
+	    		{
+	    			"name": "description",
+	    			"label": "@apaf.page.features.form.description",
+	    			"type": "richText",
+	    			"required": false
+	    		},
+	    		{
+	    			"name": "icon",
+	    			"label": "@apaf.page.features.form.icon",
+	    			"required": false,
+	    			"size": 8
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.registry.application.router",
+  		"path": "/catalog"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.application.publish.handler",
+  		"router": "apaf.registry.application.router",
+  		"method": "POST",
+  		"schema": "/v1",
+  		"handler": "storeFeatureHandler"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.application.search.handler",
+  		"router": "apaf.registry.application.router",
+  		"method": "GET",
+  		"schema": "/v1",
+  		"handler": "searchFeatureHandler"
+  	}
+  ],
+  "provides": [
+  ]
+}

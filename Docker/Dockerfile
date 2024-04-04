@@ -15,4 +15,5 @@ ENV NODE_PATH=/opt/NPA/node_modules
 ENV WORKSPACE_LOC=/opt/NPA/workspace
 ENV SMTP_USER=smtpUser
 ENV SMTP_PASSWD=smtpPasswd
+ENV PERSIST_HTTP_SESSION=true
 CMD [ "node", "app.js", "--logs", "./logs", "--level", "info", "--port", "9080", "--application", "apaf" ]

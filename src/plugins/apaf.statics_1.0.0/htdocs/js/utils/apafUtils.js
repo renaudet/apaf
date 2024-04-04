@@ -232,3 +232,19 @@ apaf.executeWorkflow = function(name,version,context,then){
 		    });
 	}
 }
+
+loadPreferences = function(then){
+	makeRESTCall('GET','/apaf-admin/profile',{},function(response){
+		if(response.status==200){
+			if(response.data.preferences){
+				then(response.data.preferences);
+			}else{
+				then({});
+			}
+		}else{
+			showWarning(response.message);
+		}
+	},function(error){
+		showError(error.message);
+	});
+}

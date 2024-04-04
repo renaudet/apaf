@@ -25,9 +25,11 @@
 					<div id="tokenEditPage" class="npaUi" data-config="/resources/json/tokenTable.json"></div>
 				</div>
 				<div data-menu-ref="workspace">
-					<div id="workspaceToolbar" class="npaUi" data-config="/resources/json/workspaceTreeToolbar.json"></div>
 					<div class="row" style="margin-top: 5px;">
-						<div id="treeArea" class="col-4"></div>
+						<div id="treeAreaParent" class="col-4">
+							<div id="workspaceToolbar" class="npaUi" data-config="/resources/json/workspaceTreeToolbar.json"></div>
+							<div id="treeArea">&nbsp;</div>
+						</div>
 						<div id="actionArea" class="col-8">
 							<!-- <div id="editorToolbar" class="npaUi" data-config="/resources/json/workspaceEditorToolbar.json"></div> -->
 							<div id="editor" class="npaUi" data-config="/resources/json/workspaceFileEditor.json"></div>

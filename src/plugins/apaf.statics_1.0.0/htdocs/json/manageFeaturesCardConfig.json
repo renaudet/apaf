@@ -1,0 +1,10 @@
+{
+    "id":"manageFeaturesCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/uiTools/img/silk/brick.png",
+        "label": "@apaf.page.features.title",
+        "stylesheet": "/apaf-branding/css/apafCard.css"
+    }
+}

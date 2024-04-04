@@ -1,0 +1,21 @@
+{
+    "id":"resourceTreeToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+    	"actions": [
+    		{
+                "label": "@apaf.page.features.toolbar.button.add",
+                "actionId": "addDep",
+                "icon": "/uiTools/img/silk/brick_add.png",
+                "enabled": false
+            },
+    		{
+                "label": "@apaf.page.features.toolbar.button.remove",
+                "actionId": "removeDep",
+                "icon": "/uiTools/img/silk/brick_delete.png",
+                "enabled": false
+            }
+    	]
+    }
+}

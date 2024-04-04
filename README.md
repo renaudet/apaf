@@ -41,6 +41,7 @@ A typical environment should define the following environment variables:
 * **APAF_COUCH_DB_USER_PASSWD** (required if CouchDB is secured)
 * **NODE_PATH** (required) should point to the node_modules folder of the Node-Plugin-Architecture base installation
 * **WORKSPACE_LOC** (optional) default to ./workspace
+* **PERSIST_HTTP_SESSION**  (required true/false)
 
 Other usefull environment variables for APAF:
 
@@ -49,6 +50,15 @@ Other usefull environment variables for APAF:
 * **LOG_LEVEL** (optional) the initial logging level - defaults to 'info' - one of 'info', 'fine' and 'finest'
 * **PORT** (optional) the HTTP server listening port - defaults to 9080
 * **ENV_NAME** (optional) a name for the process that makes it easier to retrieve
+* **SMTP_USER** (optional) the username for the SMTP provider
+* **SMTP_PASSWD** (optional) the password for the SMTP provider
+
+If the HTTP Session is configured as persistent:
+
+* **NPA_SESSION_COUCH_DB_HOST** (optional) the hostname for the CouchDB instance hosting the session database - default to 127.0.0.1
+* **NPA_SESSION_COUCH_DB_PORT** (optional) the port for the CouchDB instance hosting the session database - default to 5984
+* **NPA_SESSION_COUCH_DB_USER** (required if CouchDB is secured)
+* **NPA_SESSION_COUCH_DB_USER_PASSWD** (required if CouchDB is secured)
 
 A typical command-line may be:
 

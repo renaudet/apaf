@@ -1,0 +1,53 @@
+/***
+ * manageFeatures.css - CSS file for the Manage Features APAF page
+ * Copyright 2024 Nicolas Renaudet - All rights reserved
+ *
+ ***/
+
+.searchBar {
+	border: 1px solid #c3c3c3;
+	border-radius: 0.2rem;
+	box-shadow: 1px 1px 3px #a0a0a0;
+	background-color: #e6f5ff;
+	margin-bottom: 0px;
+	padding: 15px;
+}
+
+.result-list {
+	max-height: 800px;
+	overflow: auto;
+}
+
+.search-result {
+	border: 1px solid #c3c3c3;
+	border-radius: 0.2rem;
+	box-shadow: 1px 1px 3px #a0a0a0;
+	background-color: #ffffff;
+	margin-top: 15px;
+	margin-bottom: 0px;
+	padding: 15px;
+}
+
+.feature-title {
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #474c4f;
+}
+
+.feature-version {
+	font-size: 0.9rem;
+	color: #474c4f;
+}
+.feature-description {
+	background-color: #ebf1f5;
+	max-height: 150px;
+	overflow: auto;
+}
+
+.feature-copyright {
+	font-size: 0.9rem;
+}
+
+.feature-category {
+	font-size: 0.9rem;
+}

@@ -41,6 +41,7 @@ displayCopyrightInfo = function(parent){
 	html += '   <b>'+apaf.localize('@apaf.page.about.card.author')+'</b>&nbsp;Nicolas Renaudet<br>';
 	html += '   <b>&copy;Copyright: </b>2024 - Nicolas Renaudet - All Rights Reserved<br>';
 	html += '   <b>'+apaf.localize('@apaf.page.about.card.license')+'</b>&nbsp;<span id="licence" style="font-style: italic;color: gray;">MIT</span><br>';
+	html += '   <b>'+apaf.localize('@apaf.page.about.card.repository')+'</b>&nbsp;<a href="https://github.com/renaudet/apaf">https://github.com/renaudet/apaf</a><br>';
 	html += '</div>';
 	html += '<div style="margin-top: 20px;">&nbsp;</div>';
 	parent.append(html);

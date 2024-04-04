@@ -45,7 +45,7 @@
     		{
     			"name": "readRole",
     			"label": "@apaf.user.datatype.read.role",
-    			"type": "reference",
+    			"type": "select",
     			"multiple": false,
     			"required": false,
     			"size": 4,
@@ -54,20 +54,20 @@
 		            "manager": "roleManager"
 		        },
 		        "renderer": {
-		        	"title": {
+		        	"label": {
 			        	"type": "FieldItemRenderer",
 			        	"processor": "@.description"
 		        	},
 		        	"value": {
 			        	"type": "FieldItemRenderer",
-			        	"processor": "'<img src=\"/uiTools/img/silk/lock.png\">&nbsp;'+@.name"
+			        	"processor": "@.name"
 		        	}
 		        }
     		},
     		{
     			"name": "writeRole",
     			"label": "@apaf.user.datatype.update.role",
-    			"type": "reference",
+    			"type": "select",
     			"multiple": false,
     			"required": false,
     			"size": 4,
@@ -76,7 +76,7 @@
 		            "manager": "roleManager"
 		        },
 		        "renderer": {
-		        	"title": {
+		        	"label": {
 			        	"type": "FieldItemRenderer",
 			        	"processor": "@.description"
 		        	},
@@ -89,7 +89,7 @@
     		{
     			"name": "deleteRole",
     			"label": "@apaf.user.datatype.delete.role",
-    			"type": "reference",
+    			"type": "select",
     			"multiple": false,
     			"required": false,
     			"size": 4,
@@ -98,7 +98,7 @@
 		            "manager": "roleManager"
 		        },
 		        "renderer": {
-		        	"title": {
+		        	"label": {
 			        	"type": "FieldItemRenderer",
 			        	"processor": "@.description"
 		        	},
