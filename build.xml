@@ -2,13 +2,9 @@
 
 <project name="APAF Container for Docker" default="publish">
     <target name="init">
-    	<property name="apaf.version" value="1.5.0"/>
+    	<property name="apaf.version" value="1.7.0"/>
     	<property name="export.dir" value="G:/APAF/build"/>
     	<property name="package.dir" value="G:/SCAF/htdocs/apaf"/>
-    	<property name="target.host" value="192.168.2.116"/>
-    	<property name="target.host.user" value="pi"/>
-    	<property name="target.host.password" value="raspberry4me"/>
-    	<property name="target.dir" value="/home/pi/podman/build"/>
     </target>
 	
 	<target name="export.npa" depends="init" description="Export resources for NPA">
@@ -60,7 +56,6 @@
 		<copy todir="${package.dir}">
 	      <fileset dir="./Kubernetes">
   		    <include name="apaf-ha-deployment.yml"/>
-  		    <include name="apaf-registry-service.yml"/>
 		    <exclude name="**/CVS/*"/>
 	      </fileset>
 	    </copy>
