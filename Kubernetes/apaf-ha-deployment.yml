@@ -60,7 +60,7 @@ spec:
           claimName: workspace-claim
       containers:
       - name: apaf
-        image: 192.168.2.218:5000/apaf:1.4
+        image: 192.168.2.218:5000/apaf:1.6
         ports:
         - containerPort: 9080
           name: apaf-web-port
@@ -74,6 +74,10 @@ spec:
           value: "user"
         - name: SMTP_PASSWD
           value: "password"
+        - name: REGISTRY_HOST
+          value: "apaf-registry"
+        - name: REGISTRY_PORT
+          value: "5010"
 
 ---
 apiVersion: v1

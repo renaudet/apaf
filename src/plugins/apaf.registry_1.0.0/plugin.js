@@ -4,7 +4,6 @@
  */
 
 const ApafPlugin = require('../../apafUtil.js');
-const ENV_APPLICATION_PORT = 'APPLICATION_PORT';
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const REST_CALL_SUPPORT_PLUGIN_ID = 'npa.rest';
@@ -26,19 +25,15 @@ plugin.start = function(){
 	// make sure the datatype plugin is loaded
 	this.runtime.getPlugin('apaf.datatype');
 	// starts the HTTP Listener
-	var httpServer = plugin.getService('http');
-	if(typeof process.env[ENV_APPLICATION_PORT]!='undefined'){
-		httpServer.startListener(process.env[ENV_APPLICATION_PORT]);
-	}else{
-		httpServer.startListener(this.config.registry.port);
-	}
+	var httpServer = this.getService('http');
+	httpServer.startListener(this.getConfigValue('registry.port','integer'));
 }
 
 plugin.beforeExtensionPlugged = function(){
 	this.restContext = {
-		"host": this.config.registry.host,
-		"port": this.config.registry.port,
-		"secured": this.config.registry.secured,
+		"host": this.getConfigValue('registry.host'),
+		"port": this.getConfigValue('registry.port','integer'),
+		"secured": this.getConfigValue('registry.secured','boolean'),
 		"method": "POST",
 		"uri": "/catalog/v1"
 	}

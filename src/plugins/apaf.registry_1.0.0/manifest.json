@@ -4,9 +4,9 @@
   "version": "1.0.0",
   "plugin": "plugin.js",
   "registry": {
-  	"host": "192.168.2.2",
-  	"port": 5008,
-  	"secured": false
+  	"host": "$REGISTRY_HOST,192.168.2.2",
+  	"port": "$REGISTRY_PORT,5008",
+  	"secured": "$REGISTRY_SSL_ENABLED,false"
   },
   "requires": [
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},

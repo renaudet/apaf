@@ -41,7 +41,8 @@ A typical environment should define the following environment variables:
 * **APAF_COUCH_DB_USER_PASSWD** (required if CouchDB is secured)
 * **NODE_PATH** (required) should point to the node_modules folder of the Node-Plugin-Architecture base installation
 * **WORKSPACE_LOC** (optional) default to ./workspace
-* **PERSIST_HTTP_SESSION**  (required true/false)
+* **PERSIST_HTTP_SESSION**  (optional true/false) default to false
+* **HTTP_SESSION_TIMEOUT**  (optional) inactivity timeout in secondes - default to 900
 
 Other usefull environment variables for APAF:
 
@@ -52,6 +53,7 @@ Other usefull environment variables for APAF:
 * **ENV_NAME** (optional) a name for the process that makes it easier to retrieve
 * **SMTP_USER** (optional) the username for the SMTP provider
 * **SMTP_PASSWD** (optional) the password for the SMTP provider
+* **HTTP_SESSION_CLEANER_TIMEOUT**  (optional) delay in sec. between HTTP Session reaper thread loops - default to 120
 
 If the HTTP Session is configured as persistent:
 
