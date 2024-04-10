@@ -38,11 +38,20 @@
   	},
   	{
   		"point": "npa.http.handler",
-  		"id": "apaf.registry.read.handler",
+  		"id": "apaf.registry.getCatalog.handler",
   		"router": "apaf.registry.router",
   		"method": "GET",
   		"schema": "/catalog",
   		"handler": "getCatalogHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.getFeature.handler",
+  		"router": "apaf.registry.router",
+  		"method": "GET",
+  		"schema": "/feature/:id",
+  		"handler": "getFeatureHandler",
   		"securityRole": ""
   	},
   	{
@@ -144,6 +153,14 @@
   		"method": "GET",
   		"schema": "/v1",
   		"handler": "searchFeatureHandler"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.application.getById.handler",
+  		"router": "apaf.registry.application.router",
+  		"method": "GET",
+  		"schema": "/feature/:id",
+  		"handler": "getFeatureByIdHandler"
   	}
   ],
   "provides": [

@@ -464,28 +464,54 @@ initImportPage = function(){
 	$('#searchBtn').on('click',function(){
 		let name = $('#searchName').val();
 		let category = $('#searchCategory').val();
-		let params = 'name='+(typeof name!='undefined'?name:'')+'&category='+(typeof category!='undefined'?category:'');
+		let params = 'name='+(typeof name!='undefined'?name:'')+'&category='+(typeof category!='undefined'?category:'')+'&summary=true';
 		let callContext = {
 			"method": "GET",
 			"uri": "/apaf-registry/catalog?"+params,
 			"payload": {}
 		}
+		let loadFullFeature = function(featureId,then){
+			let uri = '/apaf-registry/feature/'+featureId;
+			let loadFeatureCallContext = {
+				"method": "GET",
+				"uri": uri,
+				"payload": {}
+			}
+			apaf.call(loadFeatureCallContext)
+			    .then(function(data){
+					if(data && data.status==200){
+						then(null,data.data);
+					}else{
+						then(data.message,null);
+					}
+				})
+			    .onError(function(errorMsg){
+					then(errorMsg,null);
+			    });
+		}
 		let configureInstallBtn = function(btnId,feature){
 			$('#'+btnId).on('click',function(){
-				let installCallContext = {
-					"method": "PUT",
-					"uri": "/apaf-registry/install",
-					"payload": feature
-				}
-				apaf.call(installCallContext)
-				    .then(function(data){
-						showInfo('Feature "'+feature.name+'" successfully installed!');
-						$('#'+btnId).prop('disabled',true);
-					})
-				    .onError(function(errorMsg){
-						console.log(errorMsg);
-						showError(errorMsg);
-				    });
+				loadFullFeature(feature.id,function(err,fullFeature){
+					if(err){
+						console.log(err);
+						showError(err);
+					}else{
+						let installCallContext = {
+							"method": "PUT",
+							"uri": "/apaf-registry/install",
+							"payload": fullFeature
+						}
+						apaf.call(installCallContext)
+						    .then(function(data){
+								showInfo('Feature "'+fullFeature.name+'" successfully installed!');
+								$('#'+btnId).prop('disabled',true);
+							})
+						    .onError(function(errorMsg){
+								console.log(errorMsg);
+								showError(errorMsg);
+						    });
+				    }
+				});
 			});
 		}
 		apaf.call(callContext).then(function(data){

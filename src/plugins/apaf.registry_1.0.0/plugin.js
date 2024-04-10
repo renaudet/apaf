@@ -89,6 +89,14 @@ plugin.getCatalogHandler = function(req,res){
 				}
 				ctx.uri += 'name='+req.query.name;
 			}
+			if(req.query.summary && 'true'==req.query.summary){
+				if(req.query.category || req.query.name){
+					ctx.uri += '&';
+				}else{
+					ctx.uri += '?';
+				}
+				ctx.uri += 'summary='+req.query.summary;
+			}
 			let restPlugin = plugin.runtime.getPlugin(REST_CALL_SUPPORT_PLUGIN_ID);
 			restPlugin.performRestApiCall(ctx,function(err,data){
 				if(err){
@@ -96,6 +104,33 @@ plugin.getCatalogHandler = function(req,res){
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					plugin.debug('<-getCatalogHandler() - success');
+					res.json({"status": 200,"message": "success","data": data});
+				}
+			});
+		}
+	});
+}
+
+plugin.getFeatureHandler = function(req,res){
+	plugin.debug('->getFeatureHandler()');
+	res.set('Content-Type','application/json');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,null,function(err,user){
+		if(err){
+			plugin.debug('<-getFeatureHandler() - error security');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let ctx = Object.assign({},plugin.restContext);
+			ctx.method = 'GET';
+			ctx.uri = '/catalog/feature/'+req.params.id
+			ctx.payload = {};
+			let restPlugin = plugin.runtime.getPlugin(REST_CALL_SUPPORT_PLUGIN_ID);
+			restPlugin.performRestApiCall(ctx,function(err,data){
+				if(err){
+					plugin.debug('<-getFeatureHandler() - error REST call');
+					res.json({"status": 500,"message": err,"data": []});
+				}else{
+					plugin.debug('<-getFeatureHandler() - success');
 					res.json({"status": 200,"message": "success","data": data});
 				}
 			});
@@ -114,7 +149,6 @@ plugin.installFeatureHandler = function(req,res){
 			res.json({"status": 500,"message": err,"data": []});
 		}else{
 			let feature = req.body;
-			//plugin.debug(JSON.stringify(feature,null,'\t'));
 			plugin.install(feature,function(err,status){
 				if(err){
 					plugin.debug('<-installFeatureHandler() - success');
@@ -221,9 +255,7 @@ plugin.installWorkflows = function(feature,ctx,then){
 				}else{
 					if(typeof data=='undefined' || data==null || data.length==0){
 						delete workflow.id;
-						//record.created = moment().format('YYYY/MM/DD HH:mm:ss');
 						workflow.createdBy = feature.copyright;
-						//record.lastUpdated = moment().format('YYYY/MM/DD HH:mm:ss');
 						workflow.lastUpdatedBy = feature.copyright;
 						plugin.debug('creating workflow "'+workflow.name+'"');
 						datatypePlugin.createRecord(WORKFLOW_DATATYPE,workflow,function(err,data){
@@ -408,12 +440,16 @@ plugin.searchFeatureHandler = function(req,res){
 	if(plugin.registryMode){
 		let category = req.query.category;
 		let name = req.query.name;
+		let summary = req.query.summary;
 		let query = {"selector": {"$and": []}};
 		if(typeof category!='undefined' && category.length>0){
 			query.selector['$and'].push({"category": {"$eq": category}});
 		}
 		if(typeof name!='undefined' && name.length>0){
 			query.selector['$and'].push({"name": {"$regex": name}});
+		}
+		if(typeof summary!='undefined' && 'true'==summary){
+			query.fields = ['id','name','version','category','copyright','description','icon'];
 		}
 		let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 		datatypePlugin.query(FEATURE_DATATYPE,query,function(err,data){
@@ -427,6 +463,26 @@ plugin.searchFeatureHandler = function(req,res){
 		});
 	}else{
 		plugin.debug('<-searchFeatureHandler() - unavailable');
+		res.json({"status": 418,"message": "I\'m a teapot ","data": []});
+	}
+}
+
+plugin.getFeatureByIdHandler = function(req,res){
+	plugin.debug('->getFeatureByIdHandler()');
+	if(plugin.registryMode){
+		let featureId = req.params.id;
+		let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+		datatypePlugin.findByPrimaryKey(FEATURE_DATATYPE,{"id": featureId},function(err,data){
+			if(err){
+				plugin.debug('<-getFeatureByIdHandler() - error');
+				res.json({"status": 500,"message": err,"data": []});
+			}else{
+				plugin.debug('<-getFeatureByIdHandler() - success');
+				res.json({"status": 200,"message": "ok","data": data});
+			}
+		});
+	}else{
+		plugin.debug('<-getFeatureByIdHandler() - unavailable');
 		res.json({"status": 418,"message": "I\'m a teapot ","data": []});
 	}
 }
