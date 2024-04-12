@@ -12,6 +12,7 @@
 	    <meta name='viewport' content='width=device-width, initial-scale=1'>
 		<link rel="icon" type="image/png" href="/apaf-branding/img/apaf-logo.png?version=1.0"/>
 		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/css/treeViewer.css" rel="stylesheet">
 		<title>All Purpose Application Framework</title>
 	</head>
 	<body>
@@ -19,14 +20,25 @@
 		<div id="card" class="npaUi" data-config="/resources/json/manageProfileCardConfig.json">
 			<div id="verticalMenu" class="npaUi" data-config="/resources/json/profileMenuConfig.json">
 				<div id="form1" class="npaUi" data-config="/resources/json/profileEditForm.json" data-menu-ref="userData"></div>
-				<div data-menu-ref="preferences">
-					<div id="form2" class="npaUi" data-config="/resources/json/workflowEditorPrefsEditForm.json"></div>
+				<div id="preferenceArea" data-menu-ref="preferences">
+					<!-- <div id="form2" class="npaUi" data-config="/resources/json/workflowEditorPrefsEditForm.json"></div>  -->
+				</div>
+				<div data-menu-ref="all.preferences">
+					<div class="row">
+						<div class="col-3">
+							<div id="preferenceTreeArea"></div>
+						</div>
+						<div class="col-9">
+							<div id="dynamicEditorArea"></div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 		<div id="notifier" class="npaUi" data-ref="notifier"></div>
 		<script src="/js/jquery-3.6.3.min.js"></script>
 		<script src="/js/bootstrap.bundle.min.js"></script>
+		<script src="/js/treeViewer.js"></script>
 		<script src="/js/md5.js"></script>
 		<script src="/uiTools/js/npaUiCore.js"></script>
 		<script src="/resources/js/utils/apafUtils.js"></script>

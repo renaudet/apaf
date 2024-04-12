@@ -2,7 +2,7 @@
 
 <project name="APAF Container for Docker" default="publish">
     <target name="init">
-    	<property name="apaf.version" value="1.7.0"/>
+    	<property name="apaf.version" value="1.8.0"/>
     	<property name="export.dir" value="G:/APAF/build"/>
     	<property name="package.dir" value="G:/SCAF/htdocs/apaf"/>
     </target>

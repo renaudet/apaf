@@ -12,6 +12,10 @@
     		{
     			"id": "preferences",
     			"label": "@apaf.profile.vertical.menu.preferences"
+    		},
+    		{
+    			"id": "all.preferences",
+    			"label": "@apaf.profile.vertical.menu.all.preferences"
     		}
     	]
     }

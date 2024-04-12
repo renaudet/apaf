@@ -75,6 +75,7 @@ apaf.profile.button.save=Sauvegarder les modifications
 apaf.profile.password.help=Laisser le champs vide pour conserver la valeur existante
 apaf.profile.vertical.menu.user=Donn&eacute;es Utilisateur
 apaf.profile.vertical.menu.preferences=Pr&eacute;f&eacute;rences
+apaf.profile.vertical.menu.all.preferences=Toutes les pr&eacute;f&eacute;rences
 apaf.page.about.title=A Propos d'APAF...
 apaf.page.about.card.title=APAF - La Bo&icirc;te &agrave; Outils g&eacute;n&eacute;raliste
 apaf.page.about.card.author=Auteur :

@@ -232,15 +232,32 @@ apaf.executeWorkflow = function(name,version,context,then){
 		    });
 	}
 }
-
-loadPreferences = function(then){
+apaf.getPreferences = function(then){
+	makeRESTCall('GET','/apaf-admin/profile?preferences=true',{},function(response){
+		if(response.status==200){
+			then(response.data);
+		}else{
+			showWarning(response.message);
+		}
+	},function(error){
+		showError(error.message);
+	});
+}
+apaf.savePreferences = function(preferences,then){
 	makeRESTCall('GET','/apaf-admin/profile',{},function(response){
 		if(response.status==200){
-			if(response.data.preferences){
-				then(response.data.preferences);
-			}else{
-				then({});
-			}
+			//then(response.data);
+			let profile = response.data;
+			let profileData = {"id": profile.id,"preferences": preferences};
+			makeRESTCall('PUT','/apaf-admin/profile',profileData,function(response){
+				if(response.status==200){
+					then(response.data);
+				}else{
+					showWarning(response.message);
+				}
+			},function(error){
+				showError(error.message);
+			});
 		}else{
 			showWarning(response.message);
 		}

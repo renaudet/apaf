@@ -75,6 +75,7 @@ apaf.profile.button.save=Save changes
 apaf.profile.password.help=Leave blank to keep the current password value
 apaf.profile.vertical.menu.user=Personnal Data
 apaf.profile.vertical.menu.preferences=Preferences
+apaf.profile.vertical.menu.all.preferences=All Preferences
 apaf.page.about.title=About APAF...
 apaf.page.about.card.title=The All Purpose Application Framework - APAF
 apaf.page.about.card.author=Author:

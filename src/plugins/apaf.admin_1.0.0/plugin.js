@@ -13,6 +13,14 @@ const GROUP_DATATYPE = 'group';
 const ROLE_DATATYPE = 'role';
 
 var plugin = new ApafPlugin();
+plugin.userPrefs = {};
+
+plugin.lazzyPlug = function(extenderId,extensionPointConfig){
+	if('apaf.admin.user.preference'==extensionPointConfig.point){
+		plugin.debug('adding User Preference "'+extensionPointConfig.preference+'" from #'+extenderId);
+		this.userPrefs[extensionPointConfig.preference] = extensionPointConfig;
+	}
+}
 
 plugin.checkSessionHandler = function(req,res){
 	plugin.debug('->checkSessionHandler()');
@@ -437,6 +445,7 @@ plugin.getProfileHandler = function(req,res){
 			res.json({"status": 500,"message": err,"data": []});
 		}else{
 			let recordId = user.id;
+			let preferenceOnly = (req.query.preferences?'true'==req.query.preferences:false);
 			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 			datatypePlugin.findByPrimaryKey(USER_DATATYPE,{"id": recordId},function(err,data){
 				if(err){
@@ -444,14 +453,24 @@ plugin.getProfileHandler = function(req,res){
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					plugin.debug('<-getProfileHandler() - success');
-					delete data.groups;
-					//delete data.password;
-					delete data['_id'];
-					delete data['_rev'];
-					if(typeof data.preferences=='undefined'){
-						data.preferences = {};
+					let result = null;//Object.assign({},data);
+					if(preferenceOnly){
+						if(typeof data.preferences=='undefined'){
+							result = {};
+						}else{
+							result = Object.assign({},data.preferences);
+						}
+					}else{
+						result = Object.assign({},data);
+						delete result.groups;
+						//delete result.password;
+						delete result['_id'];
+						delete result['_rev'];
+						if(typeof data.preferences=='undefined'){
+							result.preferences = {};
+						}
 					}
-					res.json({"status": 200,"message": "found","data": data});
+					res.json({"status": 200,"message": "found","data": result});
 				}
 			});
 		}
@@ -509,6 +528,20 @@ plugin.updateProfileHandler = function(req,res){
 				plugin.debug('<-updateProfileHandler() - error');
 				res.json({"status": 403,"message": "Unauthorized","data": []});
 			}
+		}
+	});
+}
+
+plugin.getPreferencesHandler = function(req,res){
+	plugin.debug('->getPreferencesHandler()');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,null,function(err,user){
+		if(err){
+			plugin.debug('<-getPreferencesHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			plugin.debug('<-getPreferencesHandler() - success');
+			res.json({"status": 200,"message": "ok","data": plugin.userPrefs });
 		}
 	});
 }

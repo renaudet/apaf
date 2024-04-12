@@ -399,6 +399,15 @@
   	},
   	{
   		"point": "npa.http.handler",
+  		"id": "apaf.admin.preferences.handler",
+  		"router": "apaf.admin.router",
+  		"method": "GET",
+  		"schema": "/preferences",
+  		"handler": "getPreferencesHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
   		"id": "apaf.admin.update.profile.handler",
   		"router": "apaf.admin.router",
   		"method": "PUT",
@@ -445,5 +454,6 @@
   	}
   ],
   "provides": [
+  	{"id": "apaf.admin.user.preference"}
   ]
 }
