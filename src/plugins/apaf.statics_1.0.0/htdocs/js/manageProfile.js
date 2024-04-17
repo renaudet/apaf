@@ -18,7 +18,7 @@ initializeUi = function(){
 			npaUi.onComponentLoaded = getUserProfile;
 			npaUi.on('save',saveUserData);
 			npaUi.on('menu.item.selected',onMenuSelected);
-			npaUi.on('saveWorkflowPrefs',saveWorkflowPrefs);
+			//npaUi.on('saveWorkflowPrefs',saveWorkflowPrefs);
 			npaUi.render();
 		});
 	});

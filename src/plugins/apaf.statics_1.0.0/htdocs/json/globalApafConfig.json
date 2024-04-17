@@ -367,14 +367,10 @@
 		    	"selectionProvider": "itemSelectionList",
 		    	"actions": [
 		    		{
-		                "label": "@apaf.toolbar.item.new",
-		                "actionId": "insert",
-		                "icon": "/uiTools/img/silk/table_row_insert.png"
-		            },
-		    		{
 		                "label": "@apaf.toolbar.item.edit",
 		                "actionId": "edit",
-		                "icon": "/uiTools/img/silk/table_edit.png",
+		                "icon_": "/uiTools/img/silk/table_edit.png",
+		                "icon": "/uiTools/img/silk/page_white_edit.png",
 		                "enabled": false,
 		                "enableOnSelection": true
 		            },
@@ -391,9 +387,28 @@
 		    		{
 		                "label": "@apaf.toolbar.item.delete",
 		                "actionId": "delete",
-		                "icon": "/uiTools/img/silk/table_row_delete.png",
+		                "icon_": "/uiTools/img/silk/table_row_delete.png",
+		                "icon": "/uiTools/img/silk/delete.png",
 		                "enabled": false,
 		                "enableOnSelection": true
+		            },
+		    		{
+		                "label": "@apaf.toolbar.item.new",
+		                "actionId": "insert",
+		                "icon_": "/uiTools/img/silk/table_row_insert.png",
+		                "icon": "/uiTools/img/silk/add.png"
+		            },
+		    		{
+		                "label": "generic action 1",
+		                "type": "conditional",
+		                "actionId": "generic1",
+		                "icon": "/uiTools/img/silk/page_white_lightning.png"
+		            },
+		    		{
+		                "label": "generic action 2",
+		                "type": "conditional",
+		                "actionId": "generic2",
+		                "icon": "/uiTools/img/silk/page_white_lightning.png"
 		            }
 		    	],
 		    	"pluggableActionHandlers": [

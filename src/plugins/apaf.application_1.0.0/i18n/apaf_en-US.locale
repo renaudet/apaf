@@ -110,6 +110,7 @@ apaf.application.fragments=Fragments
 apaf.application.menuIcon=Menu icon
 apaf.page.applications.delete.confirm=Are you sure you really want to delete Application "{0}"?
 apaf.page.applications.delete.flash=Application deleted!
+apaf.page.applications.action.execute=Execute
 apaf.menu.apps.label=Applications
 apaf.apps.page.error.loading=Unable to load application - see the log for details
 apaf.apps.page.error.no-main=Application does not define a main() method!

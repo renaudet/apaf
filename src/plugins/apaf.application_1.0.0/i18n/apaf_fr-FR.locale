@@ -110,6 +110,7 @@ apaf.application.fragments=Fragments associ&eacute;s
 apaf.application.menuIcon=Ic&ocirc;ne de menu
 apaf.page.applications.delete.confirm=Voulez-vous vraiment supprimer l'application "{0}" ?
 apaf.page.applications.delete.flash=Application supprim&eacute; !
+apaf.page.applications.action.execute=Executer
 apaf.menu.apps.label=Applications
 apaf.apps.page.error.loading=Impossible de charger l'application - voir la log pour plus de d&eacute;tails
 apaf.apps.page.error.no-main=L'application ne d&eacute;finit pas de m&eacute;thode main() !

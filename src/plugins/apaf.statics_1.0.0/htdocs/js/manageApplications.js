@@ -10,9 +10,19 @@ const ITEM_SELECTION_LIST_ID = 'itemSelectionList';
 const DATA_MANAGER_ID = 'applicationManager';
 const EDITING_TOOLBAR_ID = 'editingToolbar';
 
+var currentApplication = null;
+
 $(document).ready(function(){
 	checkSessionStatus(initializeUi);
 });
+
+var applicationSelectionHandler = {
+	onItemSelected: function(application){
+		let toolbar = npaUi.getComponent(EDITING_TOOLBAR_ID);
+		toolbar.setEnabled('generic1',true);
+		currentApplication = application;
+	}
+}
 
 initializeUi = function(){
 	npaUi.loadConfigFrom(GLOBAL_CONFIGURATION_FILE,function(){
@@ -21,9 +31,24 @@ initializeUi = function(){
 			npaUi.on('save',saveRecord);
 			npaUi.on('delete',deleteRecord);
 			npaUi.on('saveJson',saveJson);
+			npaUi.on('generic1',executeApplication);
+			npaUi.registerSelectionListener(ITEM_SELECTION_LIST_ID,applicationSelectionHandler);
+			npaUi.onComponentLoaded = initializeToolbar;
 			npaUi.render();
 		});
 	});
+}
+
+initializeToolbar = function(){
+	let toolbar = npaUi.getComponent(EDITING_TOOLBAR_ID);
+	let label = apaf.localize('@apaf.page.applications.action.execute');
+	toolbar.setSpecificConfig('generic1',{"icon": "/uiTools/img/silk/control_play_blue.png","label": label});
+}
+
+executeApplication = function(){
+	//console.log(currentApplication);
+	let targetUri = '/resources/html/apafApplication.html?id='+currentApplication.id;
+	window.open(targetUri,'application_'+currentApplication.id);
 }
 
 updateVersion = function(record){
@@ -121,6 +146,7 @@ deleteRecord = function(){
 			toolbar.setEnabled('edit',false);
 			toolbar.setEnabled('save',false);
 			toolbar.setEnabled('delete',false);
+			toolbar.setEnabled('generic',false);
 			flash('@apaf.page.applications.delete.flash');
 		}).onError(function(errorMsg){
 			if(errorMsg.httpStatus==404){
