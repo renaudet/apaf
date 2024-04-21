@@ -5,6 +5,6 @@
     "configuration": {
         "icon": "/uiTools/img/silk/application_form.png",
         "label": "#applicationName",
-        "stylesheet": "/resources/css/apafCard.css"
+        "stylesheet": "/resources/css/apafGenericCard.css"
     }
 } 

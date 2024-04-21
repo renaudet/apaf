@@ -34,6 +34,7 @@ plugin.beforeExtensionPlugged = function(){
 		"host": this.getConfigValue('registry.host'),
 		"port": this.getConfigValue('registry.port','integer'),
 		"secured": this.getConfigValue('registry.secured','boolean'),
+		"acceptCertificate": true,
 		"method": "POST",
 		"uri": "/catalog/v1"
 	}
@@ -52,13 +53,13 @@ plugin.publishFeatureHandler = function(req,res){
 			let ctx = Object.assign({},plugin.restContext);
 			ctx.payload = req.body;
 			let restPlugin = plugin.runtime.getPlugin(REST_CALL_SUPPORT_PLUGIN_ID);
-			restPlugin.performRestApiCall(ctx,function(err,data){
+			restPlugin.performRestApiCall(ctx,function(err,response){
 				if(err){
 					plugin.debug('<-publishFeatureHandler() - error REST call');
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					plugin.debug('<-publishFeatureHandler() - success');
-					res.json({"status": 200,"message": "success","data": data});
+					res.json({"status": 200,"message": "success","data": response.data});
 				}
 			});
 		}
@@ -98,13 +99,13 @@ plugin.getCatalogHandler = function(req,res){
 				ctx.uri += 'summary='+req.query.summary;
 			}
 			let restPlugin = plugin.runtime.getPlugin(REST_CALL_SUPPORT_PLUGIN_ID);
-			restPlugin.performRestApiCall(ctx,function(err,data){
+			restPlugin.performRestApiCall(ctx,function(err,response){
 				if(err){
 					plugin.debug('<-getCatalogHandler() - error REST call');
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					plugin.debug('<-getCatalogHandler() - success');
-					res.json({"status": 200,"message": "success","data": data});
+					res.json({"status": 200,"message": "success","data": response.data});
 				}
 			});
 		}
@@ -125,13 +126,13 @@ plugin.getFeatureHandler = function(req,res){
 			ctx.uri = '/catalog/feature/'+req.params.id
 			ctx.payload = {};
 			let restPlugin = plugin.runtime.getPlugin(REST_CALL_SUPPORT_PLUGIN_ID);
-			restPlugin.performRestApiCall(ctx,function(err,data){
+			restPlugin.performRestApiCall(ctx,function(err,response){
 				if(err){
 					plugin.debug('<-getFeatureHandler() - error REST call');
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					plugin.debug('<-getFeatureHandler() - success');
-					res.json({"status": 200,"message": "success","data": data});
+					res.json({"status": 200,"message": "success","data": response.data});
 				}
 			});
 		}

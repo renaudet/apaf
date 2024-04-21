@@ -34,13 +34,13 @@ plugin.invokeRestApiHandler = function(req,res){
 		}else{
 			let restPlugin = plugin.runtime.getPlugin(REST_CALL_SUPPORT_PLUGIN_ID);
 			let restContext = req.body;
-			restPlugin.performRestApiCall(restContext,function(err,data){
+			restPlugin.performRestApiCall(restContext,function(err,response){
 				if(err){
 					plugin.debug('<-invokeRestApiHandler() - error REST call');
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					plugin.debug('<-invokeRestApiHandler() - success');
-					res.json({"status": 200,"message": "success","data": data});
+					res.json({"status": 200,"message": "success","data": response.data,"headers": response.headers});
 				}
 			});
 		}

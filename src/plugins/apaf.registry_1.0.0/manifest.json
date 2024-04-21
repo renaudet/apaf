@@ -6,7 +6,7 @@
   "registry": {
   	"host": "$REGISTRY_HOST,twinxeon.online",
   	"port": "$REGISTRY_PORT,5008",
-  	"secured": "$REGISTRY_SSL_ENABLED,false"
+  	"secured": "$REGISTRY_SSL_ENABLED,true"
   },
   "requires": [
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},

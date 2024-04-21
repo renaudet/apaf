@@ -458,7 +458,11 @@ uploadResource = function(){
 createDownloadUrl = function(file){
 	console.log('createDownloadUrl:');
 	console.log(file);
-	return '/apaf-workspace/binaryFile/'+btoa(file.project+'/'+file.path);
+	if(file.path && file.path.length>0){
+		return '/apaf-workspace/binaryFile/'+btoa(file.project+'/'+file.path);
+	}else{
+		return '/apaf-workspace/binaryFile/'+btoa(file.project+'/'+file.name);
+	}
 }
 
 function download(url) {
