@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="APAF Deployment on Kubernetes" default="deploy">
+    <target name="init">
+    	<property name="sources.host" value="a2passervices.com"/>
+    	<property name="host" value="192.168.2.218"/>
+    	<property name="user" value="pi"/>
+    	<property name="password" value="raspberry4me"/>
+    	<property name="release" value="1.8"/>
+    	<property name="registry.port" value="5000"/>
+    </target>
+	
+	<target name="build.image" depends="init" description="Build the new Docker image">
+		<sshexec host="${host}" username="${user}" password="${password}" command="sudo docker build http://${sources.host}/apaf/apaf_${release}.0.tar -t apaf:${release}" trust="true"/>
+		<sshexec host="${host}" username="${user}" password="${password}" command="sudo docker image tag apaf:${release} ${host}:${registry.port}/apaf:${release}" trust="true"/>
+		<sshexec host="${host}" username="${user}" password="${password}" command="" trust="true"/>
+		<sshexec host="${host}" username="${user}" password="${password}" command="" trust="true"/>
+	</target>
+	
+	<target name="publish.image" depends="init" description="Publish the new Docker image to the registry">
+		<sshexec host="${host}" username="${user}" password="${password}" command="sudo docker push ${host}:${registry.port}/apaf:${release}" trust="true"/>
+	</target>
+	
+	<target name="clean" depends="init" description="Clean the local image repository">
+		<sshexec host="${host}" username="${user}" password="${password}" command="sudo docker image rm apaf:${release}" trust="true"/>
+	</target>
+	
+	<target name="apply.yaml" depends="init" description="Apply the apaf-deployment.yaml file">
+		<sshexec host="${host}" username="${user}" password="${password}" command="kubectl apply -f http://${sources.host}/apaf/apaf-ha-deployment.yml" trust="true"/>
+	</target>
+	
+	<target name="deploy" depends="build.image,publish.image,clean,apply.yaml" description="Deploy a new image on the cluster">
+	</target>
+</project>

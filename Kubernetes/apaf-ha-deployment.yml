@@ -108,6 +108,8 @@ spec:
           value: "apaf-registry"
         - name: REGISTRY_PORT
           value: "5010"
+        - name: ENABLE_SSL
+          value: "false"
 
 ---
 apiVersion: v1

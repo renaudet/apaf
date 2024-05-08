@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="APAF Container for Docker" default="publish">
+<project name="Create APAF release for Docker" default="publish">
     <target name="init">
     	<property name="apaf.version" value="1.8.0"/>
     	<property name="export.dir" value="G:/APAF/build"/>
