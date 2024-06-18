@@ -351,6 +351,41 @@
 				}
 			}
 		},
+		"schedulerDataManager": {
+		    "id":"schedulerManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+				"query": {
+					"type": "local",
+					"uri": "/apaf-scheduler/query",
+					"payload": {"selector": {}},
+					"method": "POST",
+			        "adapter": "@.data"
+				},
+				"create": {
+					"type": "local",
+					"uri": "/apaf-scheduler",
+					"method": "POST",
+					"payload": "@",
+			        "adapter": "@.data"
+				},
+				"update": {
+					"type": "local",
+					"uri": "/apaf-scheduler",
+					"method": "PUT",
+					"payload": "@",
+			        "adapter": "@.data"
+				},
+				"delete": {
+					"type": "local",
+					"uri": "/apaf-scheduler/@.id",
+					"method": "DELETE",
+					"payload": "{}",
+			        "adapter": "@.data"
+				}
+			}
+		},
 		"genericDataManager": {
 		    "id":"genericManager",
 		    "version": "1.0.0",

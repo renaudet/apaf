@@ -1,0 +1,153 @@
+{
+  "id": "apaf.scheduler",
+  "name": "Scheduling provider for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.scheduler.logger",
+  		"dir": "apaf.scheduler"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.scheduler.router",
+  		"path": "/apaf-scheduler"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.scheduler.datatype",
+  		"datatype": {
+  			"id": "scheduler",
+  			"name": "Scheduling Rule",
+  			"builtIn": true,
+  			"persistent": true,
+  			"database": "apaf_scheduler",
+  			"fields": [
+	    		{
+	    			"name": "name",
+	    			"label": "@apaf.scheduler.datatype.name",
+	    			"required": true,
+	    			"size": 7
+	    		},
+	    		{
+	    			"name": "type",
+	    			"label": "@apaf.scheduler.datatype.type",
+	    			"type": "select",
+	    			"required": true,
+	    			"size": 3,
+	    			"values": ["startup","recurrent","fixed time"]
+	    		},
+	    		{
+	    			"name": "active",
+	    			"label": "@apaf.scheduler.datatype.active",
+	    			"type": "check",
+    				"default": false
+	    		},
+	    		{
+	    			"name": "description",
+	    			"label": "@apaf.scheduler.datatype.description",
+	    			"required": false,
+	    			"size": 8
+	    		},
+	    		{
+	    			"name": "servlet",
+	    			"label": "@apaf.scheduler.datatype.fragment",
+	    			"type": "reference",
+	    			"multiple": false,
+	    			"required": true,
+	    			"rows": 10,
+			    	"datasource": {
+			            "type": "managed",
+			            "manager": "fragmentManager"
+			        },
+			        "renderer": {
+			        	"title": {
+				        	"type": "FieldItemRenderer",
+				        	"processor": "@.description"
+			        	},
+			        	"value": {
+				        	"type": "FieldItemRenderer",
+				        	"processor": "@.name+'&nbsp;<small><small>('+@.version+')</small></small>'"
+			        	}
+			        }
+	    		},
+	    		{
+	    			"name": "delay",
+	    			"label": "@apaf.scheduler.datatype.delay",
+	    			"required": false,
+	    			"type": "integer",
+	    			"size": 2,
+	    			"constraint": "if('recurrent'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+	    		},
+	    		{
+	    			"name": "time",
+	    			"label": "@apaf.scheduler.datatype.time",
+	    			"required": false,
+	    			"size": 3,
+	    			"default": "12:00:00",
+	    			"constraint": "if('fixed time'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.scheduler.query.handler",
+  		"router": "apaf.scheduler.router",
+  		"method": "POST",
+  		"schema": "/query",
+  		"handler": "querySchedulersHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.scheduler.create.handler",
+  		"router": "apaf.scheduler.router",
+  		"method": "POST",
+  		"schema": "/",
+  		"handler": "createSchedulerHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.scheduler.update.handler",
+  		"router": "apaf.scheduler.router",
+  		"method": "PUT",
+  		"schema": "/",
+  		"handler": "updateSchedulerHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.scheduler.delete.handler",
+  		"router": "apaf.scheduler.router",
+  		"method": "DELETE",
+  		"schema": "/:id",
+  		"handler": "deleteSchedulerHandler",
+  		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.scheduler.menu.item",
+  		"menu": "adminMenuPlaceholder",
+  		"securityRole": "administrator",
+  		"item": {
+			"id": "manageSchedulers",
+    		"label": "@apaf.page.scheduler.title",
+    		"actionId": "redirect",
+    		"icon": "/uiTools/img/silk/clock.png",
+    		"uri": "/resources/html/manageSchedulers.html"
+		}
+  	}
+  ],
+  "provides": [
+  ]
+}

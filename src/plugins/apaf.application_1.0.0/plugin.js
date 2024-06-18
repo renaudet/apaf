@@ -14,6 +14,8 @@ plugin.start = function(){
 	this.info('Application '+this.name+' starting...');
 	// make sure the datatype plugin is loaded
 	this.runtime.getPlugin('apaf.datatype');
+	// make sure the scheduler plugin is loaded
+	this.runtime.getPlugin('apaf.scheduler');
 	// starts the HTTP Listener
 	var httpServer = plugin.getService('http');
 	if(typeof process.env[ENV_APPLICATION_PORT]!='undefined'){

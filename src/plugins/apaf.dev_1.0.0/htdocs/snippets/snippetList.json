@@ -9,5 +9,6 @@
 	{"label":"Send a mail","location":"/dev/snippets/sendMail.txt"},
 	{"label":"Implement a custom Workflow Node","location":"/dev/snippets/workflowNode.txt"},
 	{"label":"Execute a Workflow","location":"/dev/snippets/executeWorkflow.txt"},
-	{"label":"Servlet executing a Workflow","location":"/dev/snippets/workflowServletImpl.txt"}
+	{"label":"Servlet executing a Workflow","location":"/dev/snippets/workflowServletImpl.txt"},
+	{"label":"Snippet implementation for a Scheduled task","location":"/dev/snippets/scheduledSnippet.txt"}
 ]

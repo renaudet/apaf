@@ -1,0 +1,125 @@
+{
+    "id":"schedulerEditForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "schedulingRulesTable",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.scheduler.datatype.name",
+    			"required": true,
+    			"size": 4
+    		},
+    		{
+    			"name": "type",
+    			"label": "@apaf.scheduler.datatype.type",
+    			"type": "select",
+    			"required": true,
+    			"size": 2,
+    			"values": ["startup","recurrent","fixed"]
+    		},
+    		{
+    			"name": "active",
+    			"label": "@apaf.scheduler.datatype.active",
+    			"type": "check",
+				"default": false
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.scheduler.datatype.description",
+    			"required": false,
+    			"size": 8
+    		},
+    		{
+    			"name": "servlet",
+    			"label": "@apaf.scheduler.datatype.servlet",
+    			"type": "reference",
+    			"multiple": false,
+    			"required": false,
+    			"rows": 10,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "fragmentManager",
+		            "payload": {"selector": {"type": {"$eq": "snippet"}}}
+		        },
+		        "renderer": {
+		        	"title": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.name+'&nbsp;<small><small>('+@.version+')</small></small>'"
+		        	}
+		        },
+    			"size": 4
+    		},
+    		{
+    			"name": "workflow",
+    			"label": "@apaf.scheduler.datatype.workflow",
+    			"type": "reference",
+    			"multiple": false,
+    			"required": false,
+    			"rows": 10,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "workflowManager",
+		            "payload": {"selector": {"serverSide": {"$eq": true}}}
+		        },
+		        "renderer": {
+		        	"title": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.name+'&nbsp;<small><small>('+@.version+')</small></small>'"
+		        	}
+		        },
+    			"size": 6
+    		},
+    		{
+    			"name": "runAs",
+    			"label": "@apaf.scheduler.datatype.runAs",
+    			"type": "reference",
+    			"multiple": false,
+    			"required": true,
+    			"rows": 1,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "userManager"
+		        },
+		        "renderer": {
+		        	"title": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.lastname+'&nbsp;'+@.firstname+'&nbsp;<small><small>('+@.login+')</small></small>'"
+		        	}
+		        },
+    			"size": 3
+    		},
+    		{
+    			"name": "delay",
+    			"label": "@apaf.scheduler.datatype.delay",
+    			"required": false,
+    			"type": "integer",
+    			"size": 2,
+    			"constraint": "if('recurrent'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+    		},
+    		{
+    			"name": "time",
+    			"label": "@apaf.scheduler.datatype.time",
+    			"required": false,
+    			"size": 3,
+    			"default": "12:00:00",
+    			"constraint": "if('fixed time'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+    		}
+    	]
+	}
+}

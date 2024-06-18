@@ -1,0 +1,11 @@
+{
+    "id":"manageSchedulersCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon_": "/resources/img/apaf-schedulers.png",
+        "icon": "/uiTools/img/silk/clock.png",
+        "label": "@apaf.page.scheduler.title",
+        "stylesheet": "/apaf-branding/css/apafCard.css"
+    }
+}

@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="All-Purpose-Application-Framework Manage Schedulers Page">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2024 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link rel="icon" type="image/png" href="/apaf-branding/img/apaf-logo.png?version=1.0"/>
+		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<title>All Purpose Application Framework</title>
+	</head>
+	<body>
+		<div id="dataManager" class="npaUi" data-ref="schedulerDataManager"></div>
+		<div id="dataManager2" class="npaUi" data-ref="fragmentDataManager"></div>
+		<div id="dataManager3" class="npaUi" data-ref="workflowDataManager"></div>
+		<div id="dataManager4" class="npaUi" data-ref="userDataManager"></div>
+		<div id="navBar" class="npaUi" data-ref="menu"></div>
+		<div id="card" class="npaUi" data-config="/resources/json/manageSchedulersCardConfig.json">
+			<div>
+				<div id="datatable" class="npaUi" data-config="/resources/json/schedulersTableConfig.json"></div>
+				<div id="toolbar" class="npaUi" data-config="/resources/json/schedulerToolbar.json"></div>
+				<div id="form" class="npaUi" data-config="/resources/json/schedulerEditForm.json"></div>
+			</div>
+		</div>
+		<div id="notifier" class="npaUi" data-ref="notifier"></div>
+		<script src="/js/jquery-3.6.3.min.js"></script>
+		<script src="/js/bootstrap.bundle.min.js"></script>
+		<script src="/uiTools/js/npaUiCore.js"></script>
+		<script src="/resources/js/utils/apafUtils.js"></script>
+		<script src="/resources/js/manageSchedulers.js"></script>
+	</body>
+</html>

@@ -1,0 +1,50 @@
+{
+    "id":"schedulerToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+    	"selectionListener": true,
+    	"selectionProvider": "schedulingRulesTable",
+    	"actions": [
+    		{
+                "label": "@apaf.toolbar.item.edit",
+                "actionId": "edit",
+                "icon": "/uiTools/img/silk/clock_edit.png",
+                "enabled": false,
+                "enableOnSelection": true
+            },
+    		{
+                "label": "@apaf.toolbar.item.save",
+                "actionId": "save",
+		        "icon": "/uiTools/img/silk/disk.png",
+                "enabled": false,
+                "enableOnSelection": false
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "label": "@apaf.toolbar.item.delete",
+                "actionId": "delete",
+                "icon": "/uiTools/img/silk/clock_delete.png",
+                "enabled": false,
+                "enableOnSelection": true
+            },
+    		{
+                "label": "@apaf.toolbar.item.new",
+                "actionId": "insert",
+                "icon": "/uiTools/img/silk/clock_add.png"
+            }
+    	],
+    	"pluggableActionHandlers": [
+    		{
+    			"actionId": "insert",
+    			"handlerExpr": "@.setEnabled('save',true);@.setEnabled('edit',false);@.setEnabled('delete',false);"
+    		},
+    		{
+    			"actionId": "edit",
+    			"handlerExpr": "@.setEnabled('save',true);@.setEnabled('edit',false);$('editForm').setEditMode(true);"
+    		}
+    	]
+    }
+}

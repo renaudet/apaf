@@ -1,0 +1,46 @@
+{
+    "id":"schedulingRulesTable",
+    "version": "1.0.0",
+    "type": "Datatable",
+    "configuration": {
+        "datasource": {
+            "type": "managed",
+            "manager": "schedulerManager"
+        },
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "type",
+        	"ascending": true
+        },
+    	"maxHeight": 600,
+        "columns": [
+            {
+                "label": "@apaf.scheduler.datatype.name",
+                "field": "name"
+            },
+            {
+                "label": "@apaf.scheduler.datatype.type",
+                "field": "type"
+            },
+            {
+                "label": "@apaf.scheduler.datatype.description",
+                "field": "description"
+            },
+            {
+                "label": "@apaf.scheduler.datatype.runAs",
+                "field": "runAs",
+    			"type": "reference",
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "userManager"
+		        },
+		        "processor": "@.lastname+' '+@.firstname+'&nbsp;<small><small>('+@.login+')</small></small>'"
+            },
+            {
+                "label": "@apaf.scheduler.datatype.active",
+                "field": "active",
+                "type": "boolean"
+            }
+        ]
+    }
+}

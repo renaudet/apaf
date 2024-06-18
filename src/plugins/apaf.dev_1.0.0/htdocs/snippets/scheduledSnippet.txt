@@ -1,0 +1,3 @@
+//available variables:
+//-logger: a logger feature providing info(msg), debug(msg), trace(msg), error(msg) functions
+//-asUser: the runAs user for this task

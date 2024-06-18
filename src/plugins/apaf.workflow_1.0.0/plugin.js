@@ -265,12 +265,13 @@ plugin.executeWorkflow = function(workflowName,workflowVersion,owner,runtimeCont
 	this.trace('workflowName: '+workflowName);
 	this.trace('workflowVersion: '+workflowVersion);
 	this.trace('owner: '+owner.login);
+	this.trace('runtimeContext: '+JSON.stringify(runtimeContext));
 	let datatypePlugin = this.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 	let query = {"selector": {"name": {"$eq": workflowName}}};
 	if(workflowVersion!=null && workflowVersion.length>0){
 		query =  {"selector": {"$and": [{"name": {"$eq": workflowName}}, {"version": {"$eq": workflowVersion}}]}};
 	}
-	datatypePlugin.query(WORKFLOW_DATATYPE,query,function(err,workflows){
+	/*datatypePlugin.query(WORKFLOW_DATATYPE,query,function(err,workflows){
 		if(err){
 			plugin.debug('<-executeWorkflow() - error looking up for workflow');
 			then(err,null);
@@ -311,6 +312,61 @@ plugin.executeWorkflow = function(workflowName,workflowVersion,owner,runtimeCont
 					engine.start(workflow,runtimeContext);
 				});
 			}else{
+				then('unknown Workflow',null);
+			}
+		}
+	});*/
+	this.queryAndExecuteWorkflow(query,owner,runtimeContext,then);
+}
+
+plugin.queryAndExecuteWorkflow = function(query,owner,runtimeContext,then){
+	this.debug('->queryAndExecuteWorkflow()');
+	this.trace('query: '+JSON.stringify(query));
+	this.trace('owner: '+owner.login);
+	this.trace('runtimeContext: '+JSON.stringify(runtimeContext));
+	let datatypePlugin = this.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+	datatypePlugin.query(WORKFLOW_DATATYPE,query,function(err,workflows){
+		if(err){
+			plugin.debug('<-queryAndExecuteWorkflow() - error looking up for workflow');
+			then(err,null);
+		}else{
+			if(workflows && workflows.length>0){
+				let sortedResultSet = workflows.length==1?workflows:sortOn(workflows,'version',false);
+				let workflow = sortedResultSet[0];
+				plugin.debug('found Workflow "'+workflow.name+'" v'+workflow.version+' with #ID: '+workflow.id);
+				let engine = new WorkflowEngine(plugin,owner,{"global.timeout": WORKFLOW_TIMEOUT});
+				plugin.loadCustomNodeFragments(function(fragments){
+					for(var i=0;i<fragments.length;i++){
+						engine.registerCustomNode(fragments[i]);
+					}
+					engine.setEventListener(function(event){
+						runtimeContext['_console'].push(event);
+						if('stop'==event.type){
+							plugin.debug('<-queryAndExecuteWorkflow() - stop event received');
+							then(null,engine.runtimeContext);
+						}
+						if('debug'==event.type){
+							plugin.debug(event.source+' '+event.data);
+						}
+						if('warning'==event.type){
+							plugin.info(event.source+' '+event.data);
+						}
+						if('log'==event.type){
+							plugin.info(event.source+' '+event.data);
+						}
+						if('error'==event.type){
+							plugin.error(event.source+' '+event.data);
+						}
+					});
+					if(typeof runtimeContext=='undefined' || runtimeContext==null){
+						runtimeContext = {};
+					}
+					runtimeContext['_console'] = [];
+					engine.start(workflow,runtimeContext);
+					plugin.debug('<-queryAndExecuteWorkflow() - workflow started');
+				});
+			}else{
+				plugin.debug('<-queryAndExecuteWorkflow() - no workflow found matching query parameters');
 				then('unknown Workflow',null);
 			}
 		}
