@@ -108,6 +108,7 @@ apaf.application.published=Visible (pour les utilisateurs APAF)
 apaf.application.restrictedToRole=Autorisation d'acc&egrave;s
 apaf.application.fragments=Fragments associ&eacute;s
 apaf.application.menuIcon=Ic&ocirc;ne de menu
+apaf.application.requiresGraphicSupport=Cette application utilise des graphiques
 apaf.page.applications.delete.confirm=Voulez-vous vraiment supprimer l'application "{0}" ?
 apaf.page.applications.delete.flash=Application supprim&eacute; !
 apaf.page.applications.action.execute=Executer

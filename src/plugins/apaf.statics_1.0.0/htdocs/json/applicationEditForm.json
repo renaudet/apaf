@@ -80,6 +80,11 @@
     			"label": "@apaf.application.menuIcon",
     			"required": false,
     			"size": 6
+    		},
+    		{
+    			"name": "requiresGraphicSupport",
+    			"label": "@apaf.application.requiresGraphicSupport",
+				"type": "switch"
     		}
     	]
     }

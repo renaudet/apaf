@@ -45,6 +45,9 @@ loadApplication = function(){
 }
 
 loadApplicationDeps = function(){
+	if(application.requiresGraphicSupport){
+		$.loadScript('/js/graphicUtils.js');
+	}
 	let loadFragments = function(list,index,then){
 		if(index<list.length){
 			let fragmentId = list[index];

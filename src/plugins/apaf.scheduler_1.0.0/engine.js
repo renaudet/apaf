@@ -107,7 +107,7 @@ class SchedulerEngine {
 			if(err){
 				engine.error('an error occured loading the code snippet: '+err);
 			}else{
-				engine.info('executing code snippet "'+fragment.name+' v'+fragment.version+'"');
+				engine.info('executing code snippet "'+fragment.name+' v'+fragment.version+'" as User '+asUser.login);
 				let moduleSrc = 'var executeFunction = function(logger,asUser){'+fragment.source+'}';
 				xeval(moduleSrc);
 				executeFunction(engine,asUser);
@@ -123,6 +123,7 @@ class SchedulerEngine {
 		let engine = this;
 		let workflowPlugin = this.schedulerPlugin.runtime.getPlugin(WORKFLOW_PLUGIN_ID);
 		let query = {"selector": {"id": {"$eq": workflowId}}};
+		engine.info('executing workflow #'+workflowId+' as User '+asUser.login);
 		workflowPlugin.queryAndExecuteWorkflow(query,asUser,{"status": "pending"},function(){
 			engine.debug('<-executeWorkflow()');
 			then();
@@ -138,7 +139,7 @@ class SchedulerEngine {
 				engine.error('unable to load records from the scheduler table');
 				engine.error(err);
 			}else{
-				engine.info('retrieved '+tasks.length+' rules from the datasource');
+				engine.debug('retrieved '+tasks.length+' rules from the datasource');
 				if(tasks.length>0){
 					var recurrentTasks = [];
 					var fixedTimeTasks = [];
@@ -166,14 +167,14 @@ class SchedulerEngine {
 					}
 					
 					if(recurrentTasks.length>0){
-						engine.info('found '+recurrentTasks.length+' recurrent tasks ready to execute');
+						engine.debug('found '+recurrentTasks.length+' recurrent tasks ready to execute');
 						for(var i=0;i<recurrentTasks.length;i++){
 							let task = recurrentTasks[i];
 							engine.executeTask(task);
 						}
 					}
 					if(fixedTimeTasks.length>0){
-						engine.info('found '+fixedTimeTasks.length+' fixed-time tasks ready to execute');
+						engine.debug('found '+fixedTimeTasks.length+' fixed-time tasks ready to execute');
 						for(var i=0;i<fixedTimeTasks.length;i++){
 							let task = fixedTimeTasks[i];
 							engine.executeTask(task);

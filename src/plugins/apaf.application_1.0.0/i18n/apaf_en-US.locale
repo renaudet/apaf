@@ -108,6 +108,7 @@ apaf.application.published=Visible to Users
 apaf.application.restrictedToRole=Restricted to
 apaf.application.fragments=Fragments
 apaf.application.menuIcon=Menu icon
+apaf.application.requiresGraphicSupport=Add graphic support library
 apaf.page.applications.delete.confirm=Are you sure you really want to delete Application "{0}"?
 apaf.page.applications.delete.flash=Application deleted!
 apaf.page.applications.action.execute=Execute
