@@ -49,6 +49,9 @@ plugin.invokeDynamicApiHandler = function(req,res){
 		}else{
 			let alias = req.params.alias;
 			let payload = req.body;
+			if(typeof payload=='undefined' || payload==null || Object.keys(payload).length==0){
+				payload = req.query;
+			}
 			plugin.lookupServletByAlias(alias,function(err,servlet){
 				if(err){
 					plugin.debug('<-invokeDynamicApiHandler() - error check servlet');
