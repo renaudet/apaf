@@ -10,6 +10,7 @@ apaf.menu.admin.group.label=G&eacute;rer les Groupes
 apaf.menu.admin.role.label=G&eacute;rer les R&ocirc;les de S&eacute;curit&eacute;
 apaf.menu.admin.profile.label=G&eacute;rer mon Profil...
 apaf.page.login.title=Ouvrir une session APAF
+apaf.page.login.error.tooMany=Nombre maximum de tentative infructueuse ateint. Merci de r&eacute;-essayer dans 3 minutes
 apaf.page.login.error.invalid=Identification invalide - merci de v&eacute;rifier le nom d'utilisateur et le mot de passe
 apaf.page.login.error.internal=Erreur interne au serveur
 apaf.page.login.error.unauthorized=Utilisateur inconnu

@@ -10,6 +10,7 @@ apaf.menu.admin.group.label=Manage Groups
 apaf.menu.admin.role.label=Manage Security Roles
 apaf.menu.admin.profile.label=Manage User's Profile
 apaf.page.login.title=Login to APAF
+apaf.page.login.error.tooMany=Too many invalid attempts - wait 3 mn before any retry
 apaf.page.login.error.invalid=Invalid credential - please check login and password
 apaf.page.login.error.internal=Internal error
 apaf.page.login.error.unauthorized=Unknown user
