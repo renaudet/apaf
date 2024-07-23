@@ -30,8 +30,9 @@ helper.palette.contribute = function(editor){
 
 helper.engine.addCustomNode = function(engine){
 	let nodeHandler = function(node,inputTerminalName,executionContext){
-		if('input01'==inputTerminalName){
+		if('input'==inputTerminalName){
 			executionContext['propertyName'] = node.getProperty('propertyName');
+            node.log('Value: '+executionContext['propertyName']);
 			node.fire('output',executionContext);
 		}else{
 			node.error('Invalid input terminal "'+inputTerminalName+'" for '+NODE_TYPE+' node #'+node.id());

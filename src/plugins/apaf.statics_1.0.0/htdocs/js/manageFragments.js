@@ -157,13 +157,25 @@ openSnippetLibrary = function(){
 	$.loadJson('/dev/snippets/snippetList.json',function(snippetConfig){
 		for(var i=0;i<snippetConfig.length;i++){
 			let snippet = snippetConfig[i];
-			let option = '';
-			option += '<option value="';
-			option += snippet.location;
-			option += '">';
-			option += snippet.label;
-			option += '</option>';
-			$('#snippetSelector').append(option);
+			if(typeof snippet.ifExists=='undefined'){
+				let option = '';
+				option += '<option value="';
+				option += snippet.location;
+				option += '">';
+				option += snippet.label;
+				option += '</option>';
+				$('#snippetSelector').append(option);
+			}else{
+				checkCondition(snippet.ifExists,snippet,function(snp){
+					let option = '';
+					option += '<option value="';
+					option += snp.location;
+					option += '">';
+					option += snp.label;
+					option += '</option>';
+					$('#snippetSelector').append(option);
+				});
+			}
 		}
 		dialog.open();
 	});
@@ -187,5 +199,18 @@ openSnippetLibrary = function(){
 			});
 	    }
 	});
-	//dialog.open();
+}
+
+checkCondition = function(pluginId,snippet,ifExists){
+	apaf.call({
+		"method": "POST",
+		"uri": "/npa-admin/checkInstallation",
+		"payload": {"pluginId": pluginId}
+	}).then(function(data){
+		if(data && data.length>0){
+			ifExists(snippet);
+		}
+	}).onError(function(msg){
+		showError(msg);
+	});
 }

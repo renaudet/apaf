@@ -1,0 +1,14 @@
+let payload = {
+}
+apaf.call({
+	"method": "<method>",
+	"uri": "<apaf-api-uri>",
+	"payload": payload
+}).then(function(data){
+	let html = '<div style="font-family: lucida console;">';
+	html += JSON.stringify(data,null,'\t').replace(/\n/g,'<br>').replace(/\t/g,'&nbsp;&nbsp;&nbsp;');
+	html += '</div>';
+	showInfo(html);
+}).onError(function(msg){
+	showError(msg);
+});

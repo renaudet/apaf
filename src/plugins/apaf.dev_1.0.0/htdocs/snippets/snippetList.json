@@ -1,5 +1,6 @@
 [
 	{"label":"Main endpoint for an APAF application","location":"/dev/snippets/main.txt"},
+	{"label":"Perform an APAF API call","location":"/dev/snippets/apiCall.txt"},
 	{"label":"Query the user-defined database for datatype \"type1\"","location":"/dev/snippets/queryDatatype.txt"},
 	{"label":"Create a two-column layout with a 1/3-2/3 ratio","location":"/dev/snippets/layout.txt"},
 	{"label":"Small NPA-UI Application with a Form","location":"/dev/snippets/smallApplication.txt"},
@@ -10,5 +11,8 @@
 	{"label":"Implement a custom Workflow Node","location":"/dev/snippets/workflowNode.txt"},
 	{"label":"Execute a Workflow","location":"/dev/snippets/executeWorkflow.txt"},
 	{"label":"Servlet executing a Workflow","location":"/dev/snippets/workflowServletImpl.txt"},
-	{"label":"Snippet implementation for a Scheduled task","location":"/dev/snippets/scheduledSnippet.txt"}
+	{"label":"Snippet implementation for a Scheduled task","location":"/dev/snippets/scheduledSnippet.txt"},
+	{"label":"Open an SQLite database","location":"/dev/snippets/sqliteOpen.txt","ifExists": "apaf.utils.sqlite"},
+	{"label":"Get a (filtered) list of Workspace projects","location":"/dev/snippets/getWorkspaceProjects.txt"},
+	{"label":"Read the content of a Workspace folder","location":"/dev/snippets/getFolderContent.txt"}
 ]

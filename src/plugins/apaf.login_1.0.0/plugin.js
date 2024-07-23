@@ -70,7 +70,7 @@ plugin.checkCacheLoop = function(){
 	}
 	for(var i=0;i<cacheDataToRemove.length;i++){
 		let ip = cacheDataToRemove[i];
-		this.debug('deleting evicted IP data from the cache: '+JSON.stringify(this.ipCache[ip]));
+		this.debug('deleting evicted IP data from cache: '+JSON.stringify(this.ipCache[ip]));
 		delete this.ipCache[ip];
 	}
 	setTimeout(function(){ plugin.checkCacheLoop(); },CACHE_EVICTION_LOOP_TIMEOUT);
@@ -126,7 +126,7 @@ plugin.loginHandler = function(req,res){
 	res.set('Content-Type','application/json');
 	if(plugin.available){
 		let userIp = req.ip;
-		console.log('User IP: '+userIp);
+		plugin.debug('User IP: '+userIp);
 		let userId = req.body.userid;
 		let password = req.body.passwd;
 		let md5Pwd = md5(password);
@@ -136,6 +136,7 @@ plugin.loginHandler = function(req,res){
 			let tooManyLoginAttempts = false;
 			if(userConnectionData){
 				if(userConnectionData.attemptCount>2){
+					plugin.debug('too many login attempts detected for remote IP '+userIp);
 					tooManyLoginAttempts = true;
 					userConnectionData.lastAttempt = moment();
 				}
