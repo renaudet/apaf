@@ -14,5 +14,7 @@
 	{"label":"Snippet implementation for a Scheduled task","location":"/dev/snippets/scheduledSnippet.txt"},
 	{"label":"Open an SQLite database","location":"/dev/snippets/sqliteOpen.txt","ifExists": "apaf.utils.sqlite"},
 	{"label":"Get a (filtered) list of Workspace projects","location":"/dev/snippets/getWorkspaceProjects.txt"},
-	{"label":"Read the content of a Workspace folder","location":"/dev/snippets/getFolderContent.txt"}
+	{"label":"Read the content of a Workspace folder","location":"/dev/snippets/getFolderContent.txt"},
+	{"label":"Load resource dependencies","location":"/dev/snippets/loadDependencies.txt"},
+	{"label":"Generate files using templates","location":"/dev/snippets/templateUsage.txt"}
 ]

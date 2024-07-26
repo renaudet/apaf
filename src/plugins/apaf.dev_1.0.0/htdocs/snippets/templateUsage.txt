@@ -1,0 +1,36 @@
+const RESOURCE_DEPS = [
+   {"type": "js","uri": "/template/js/templateEngineSupportLib.js"}
+]
+
+/*
+Sample JTP file:
+
+<jtp:template type="text" extension="txt"/>
+<jtp:property name="someProperty" type="string" default="someValue"/>
+[...]
+<jtp:getProperty name="someProperty"/>
+[...]
+<%    out.print(executionContext.someProperty);  %>
+[...]
+
+*/
+
+loadDeps(RESOURCE_DEPS,function(){
+  let context = {
+  	"_targetFilename": "someFilename",
+  	"_targetProject": "someProjectName",
+  	"someProperty": "someValue"
+  };
+  let proxy = new TemplateEngineProxy('<workspace-project-containing-templates>','<project-relative-path-to-template>');
+  proxy.process(context,function(err,data){
+     if(err){
+        showError(err);
+     }else{
+        if(data && typeof data=='string'){
+     	   showInfo(data.replace(/\n/g,'<br>').replace(/ /g,'&nbsp;'));
+        }else{
+           showInfo('File '+context._targetFilename+' generation completed!');
+        }
+     }
+  });
+});
