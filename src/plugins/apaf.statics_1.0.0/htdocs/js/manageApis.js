@@ -32,6 +32,7 @@ initializeUi = function(){
 			npaUi.on('newFolder',newFolder);
 			npaUi.on('saveFile',saveEditorFile);
 			npaUi.on('uploadResource',uploadResource);
+			npaUi.on('createFile',createNewTextFile);
 			npaUi.on('downloadResource',downloadResource);
 			npaUi.on('deleteResource',deleteResource);
 			npaUi.on('menu.item.selected',onPageChanged)
@@ -145,14 +146,15 @@ const FILE_ICON = {
 	"ppt": "/uiTools/img/silk/page_white_powerpoint.png",
 	"pptx": "/uiTools/img/silk/page_white_powerpoint.png",
 	"doc": "/uiTools/img/silk/page_white_word.png",
-	"docx": "/uiTools/img/silk/.png",
+	"docx": "/uiTools/img/silk/page_word.png",
 	"xls": "/uiTools/img/silk/page_white_excel.png",
-	"xlsx": "/uiTools/img/silk/page_white_excel.png",
+	"xlsx": "/uiTools/img/silk/page_excel.png",
 	"cmd": "/uiTools/img/silk/page_white_gear.png",
 	"ps": "/uiTools/img/silk/page_white_gear.png",
 	"log": "/uiTools/img/silk/page_white_text.png.png",
 	"js": "/uiTools/img/silk/page_white_csharp.png",
-	"default": "/uiTools/img/silk/page_white.png"
+	"default": "/uiTools/img/silk/page_white.png",
+	"jtp": "/uiTools/img/silk/page_code.png"
 }
 
 fileToIcon = function(filename){
@@ -200,6 +202,7 @@ var filesystemEventListener = {
 			currentContainerNode = node;
 			toolbar.setEnabled('newFolder',true);
 			toolbar.setEnabled('uploadResource',true);
+			toolbar.setEnabled('createFile',true);
 			if(!fsObject.loaded){
 				let project = '';
 				let folderPath = '';
@@ -233,6 +236,7 @@ var filesystemEventListener = {
 			fsObject.name.endsWith('.txt') ||
 			fsObject.name.endsWith('.log') ||
 			fsObject.name.endsWith('.project') ||
+			fsObject.name.endsWith('.jtp') ||
 			fsObject.name.endsWith('.json') ||
 			fsObject.name.endsWith('.js') ||
 			fsObject.name.endsWith('.cmd') ||
@@ -398,6 +402,44 @@ deleteResource = function(){
 	}
 }
 
+createNewTextFile = function(){
+	let textFileName = prompt(apaf.localize('@apaf.workspace.new.file.prompt'));
+	let folderPath = '';
+	let project = '';
+	let absolutePath = '';
+	if('directory'==selectedFolder.type){
+		project = selectedFolder.project;
+		folderPath = selectedFolder.path;
+		absolutePath = selectedFolder.project+'/'+selectedFolder.path;
+	}else{
+		project = selectedFolder.name;
+		folderPath = '';
+		absolutePath = selectedFolder.name;
+	}
+	let encrypted = btoa(absolutePath+'/'+textFileName);
+	var actionUrl = '/apaf-workspace/file/'+encrypted;
+	let callContext = {
+		"method": "PUT",
+		"uri": actionUrl,
+		"payload": "",
+	  	"contentType": "text/plain"
+	}
+	let filePath = folderPath+'/'+textFileName;
+	apaf.put(callContext)
+	.then(function(response){
+		let entry = {"name": textFileName,"type": "file","project": project,"path": filePath};
+		let treeNode = currentContainerNode.tree.createTreeStructure(currentContainerNode.id+'_child_'+Math.floor(Math.random() * 100000),entry);
+		currentContainerNode.addChild(treeNode);
+		currentContainerNode.open();
+		selectedFolder.children.push(entry);
+	    treeViewer.refreshTree();
+		showConfirm(response.message);
+	})
+	.onError(function(errorMsg){
+		showError(errorMsg);
+	});
+}
+
 var uploadDialogInitialized = false;
 uploadResource = function(){
 	let dialog = $apaf(EMPTY_DIALOG_ID);
@@ -434,9 +476,10 @@ uploadResource = function(){
 				folderPath = '';
 				absolutePath = selectedFolder.name;
 			}
+			let filePath = folderPath+'/'+file.name;
 			apaf.upload(absolutePath,'newFile.bin',formdata)
 			.then(function(response){
-				let entry = {"name": file.name,"type": "file","project": project,"path": folderPath};
+				let entry = {"name": file.name,"type": "file","project": project,"path": filePath};
 				let treeNode = currentContainerNode.tree.createTreeStructure(currentContainerNode.id+'_child_'+Math.floor(Math.random() * 100000),entry);
 				currentContainerNode.addChild(treeNode);
 				currentContainerNode.open();

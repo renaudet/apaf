@@ -6,6 +6,7 @@
 const ApafPlugin = require('../../apafUtil.js');
 const APAF_DATATYPE_DB_REF = 'apaf_datatypes';
 const COUCH_SERVICE_ID = 'couchdb';
+const INITIALIZER_DELAY = 5000;
 
 var plugin = new ApafPlugin();
 plugin.cacheById = {};
@@ -45,9 +46,11 @@ plugin.onConfigurationLoaded = function(){
 				then();
 			}
 		}
-		executeCommandLst(this.commands,0,function(){
-			delete this.commands;
-		});
+		setTimeout(function(){
+			executeCommandLst(plugin.commands,0,function(){
+				delete plugin.commands;
+			});
+		},INITIALIZER_DELAY);
 	}
 	this.trace('<-onConfigurationLoaded()');
 }
@@ -278,6 +281,7 @@ plugin.deleteRecord = function(datatypeId,data,callback){
 
 plugin.initializeObject = function(datatype,data,then){
 	this.trace('->initializeObject('+datatype+')');
+	this.debug('object to initialize: '+JSON.stringify(data));
 	let query = {};
 	let selector = {"$and": []};
 	for(var fieldName in data){
@@ -296,20 +300,19 @@ plugin.initializeObject = function(datatype,data,then){
 			then();
 		}else{
 			if(resultSet && resultSet.length==0){
-				plugin.info('object not found');
-				plugin.debug(JSON.stringify(resultSet));
+				plugin.debug('object not found in database! - creating');
 				plugin.createRecord(datatype,data,function(err,createdRecord){
 					if(err){
 						plugin.error('An error occured creating a new "'+datatype+'" record');
 						plugin.error(JSON.stringify(err));
 					}else{
-						plugin.info('A new record of type "'+datatype+'" was created - ID#: '+createdRecord.id);
+						plugin.info('A new record of type "'+datatype+'" was created: '+JSON.stringify(createdRecord));
 					}
 					plugin.trace('<-initializeObject()');
 					then();
 				});
 			}else{
-				plugin.info('object already exists');
+				plugin.debug('object already exists');
 				plugin.trace('<-initializeObject()');
 				then();
 			}

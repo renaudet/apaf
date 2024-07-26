@@ -29,6 +29,13 @@
                 "enableOnSelection": true
             },
     		{
+                "label": "@apaf.workspace.toolbar.action.create",
+                "actionId": "createFile",
+                "icon": "/uiTools/img/silk/page_add.png",
+                "enabled": false,
+                "enableOnSelection": true
+            },
+    		{
                 "label": "@apaf.workspace.toolbar.action.export",
                 "actionId": "downloadResource",
                 "icon": "/uiTools/img/silk/folder_go.png",
