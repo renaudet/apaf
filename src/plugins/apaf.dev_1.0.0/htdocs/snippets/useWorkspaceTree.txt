@@ -1,0 +1,30 @@
+const MAIN_CARD_ID = 'genericApplicationsCard';
+
+const TREEVIEWER_CONFIG = {
+    "id":"workspaceTree",
+    "version": "1.0.0",
+    "type": "apafUtils.WorkspaceTreeViewer",
+    "configuration": {
+    }
+}
+
+var fileSelectionHandler = {
+  onItemSelected: function(fileObject){
+    showInfo('Selected: '+fileObject.path);
+  }
+}
+
+main = function(){
+   let card = npaUi.getComponent(MAIN_CARD_ID);
+   let html = '';
+   html += '<div class="row" style="">';
+   html += '  <div class="col-3" style="">';
+   html += '    <div id="treeViewerArea" class="user-app" data-ref="workspaceTree"></div>';
+   html += '  </div>';
+   html += '  <div class="col-9">&nbsp;</div>';
+   html += '</div>';
+   $('#'+card.getContentDivId()).html(html);
+   npaUi.registerComponentConfig('workspaceTree',TREEVIEWER_CONFIG);
+   npaUi.registerSelectionListener('workspaceTree',fileSelectionHandler);
+   npaUi.render('user-app');
+}

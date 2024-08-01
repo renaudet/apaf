@@ -11,6 +11,7 @@ const SECURITY_SERVICE_NAME = 'apaf-security';
 const USER_DATATYPE = 'user';
 const GROUP_DATATYPE = 'group';
 const ROLE_DATATYPE = 'role';
+const TIMESTAMP_FORMAT = 'YYYY/MM/DD HH:mm:ss';
 
 var plugin = new ApafPlugin();
 plugin.userPrefs = {};
@@ -100,7 +101,7 @@ plugin.createUserHandler = function(req,res){
 		}else{
 			let record = req.body;
 			//record.password = md5(record.password);
-			record.created = moment().format('YYYY/MM/DD HH:mm:ss');
+			record.created = moment().format(TIMESTAMP_FORMAT);
 			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 			datatypePlugin.createRecord(USER_DATATYPE,record,function(err,data){
 				if(err){
@@ -125,7 +126,7 @@ plugin.updateUserHandler = function(req,res){
 			res.json({"status": 500,"message": err,"data": []});
 		}else{
 			let record = req.body;
-			record.lastUpdated = moment().format('YYYY/MM/DD HH:mm:ss');
+			record.lastUpdated = moment().format(TIMESTAMP_FORMAT);
 			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 			datatypePlugin.updateRecord(USER_DATATYPE,record,function(err,data){
 				if(err){
@@ -509,7 +510,7 @@ plugin.updateProfileHandler = function(req,res){
 								userRecord.preferences[pref] = profileData.preferences[pref];
 							}
 						}
-						userRecord.lastUpdated = moment().format('YYYY/MM/DD HH:mm:ss');
+						userRecord.lastUpdated = moment().format(TIMESTAMP_FORMAT);
 						datatypePlugin.updateRecord(USER_DATATYPE,userRecord,function(err,data){
 							if(err){
 								plugin.debug('<-updateProfileHandler() - error');

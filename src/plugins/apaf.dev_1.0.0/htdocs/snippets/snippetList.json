@@ -16,5 +16,6 @@
 	{"label":"Get a (filtered) list of Workspace projects","location":"/dev/snippets/getWorkspaceProjects.txt"},
 	{"label":"Read the content of a Workspace folder","location":"/dev/snippets/getFolderContent.txt"},
 	{"label":"Load resource dependencies","location":"/dev/snippets/loadDependencies.txt"},
-	{"label":"Generate files using templates","location":"/dev/snippets/templateUsage.txt"}
+	{"label":"Generate files using templates","location":"/dev/snippets/templateUsage.txt","ifExists": "apaf.utils.template"},
+	{"label":"NPA-UI Application using the Workspace","location":"/dev/snippets/useWorkspaceTree.txt","ifExists": "apaf.utils.components"}
 ]

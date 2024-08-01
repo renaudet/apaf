@@ -13,6 +13,12 @@ Sample JTP file:
 <%    out.print(executionContext.someProperty);  %>
 [...]
 
+Sample JTP Set of files:
+
+<jtp:template type="set" description="<someDescription>" baseDir="./"/>
+[...]
+<jtp:call template="<someTemplateName>" targetFilename="<someName>" targetFolder="./"/>
+
 */
 
 loadDeps(RESOURCE_DEPS,function(){
