@@ -50,7 +50,8 @@
   		"method": "GET",
   		"schema": "/menu",
   		"handler": "generateAppsMenuHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Get the list of visible APAF Applications for the connected user"
   	},
   	{
   		"point": "apaf.datatype.object.initializer",

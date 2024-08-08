@@ -209,6 +209,7 @@ apaf.token.datatype.uri=URI
 apaf.token.datatype.created=Created
 apaf.token.datatype.token=Token
 apaf.page.apis.title=Manage APIs
+apaf.apis.menu.apis=APAF APIs
 apaf.apis.menu.tokens=Security Tokens
 apaf.apis.menu.workspace=Workspace
 apaf.page.apis.tokens.form.title=Create a new Security Token

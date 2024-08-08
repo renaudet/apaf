@@ -87,10 +87,14 @@ apaf.call = function(callContext){
 		console.log('apaf.call():');
 		console.log(callContext);
 		console.log(response);
-		if(200==response.status){
-			callWrapper.onSuccessCallback(response.data);
+		if(typeof response=='object' && response.status){
+			if(200==response.status){
+				callWrapper.onSuccessCallback(response.data);
+			}else{
+				callWrapper.onErrorCallback(response.message);
+			}
 		}else{
-			callWrapper.onErrorCallback(response.message);
+			callWrapper.onSuccessCallback(response);
 		}
 	},function(errorMsg){
 		if(errorMsg.httpStatus==404){

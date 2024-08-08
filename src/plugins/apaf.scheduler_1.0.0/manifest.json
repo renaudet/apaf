@@ -105,7 +105,8 @@
   		"method": "POST",
   		"schema": "/query",
   		"handler": "querySchedulersHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Query the list of registered Schedulers"
   	},
   	{
   		"point": "npa.http.handler",
@@ -114,7 +115,8 @@
   		"method": "POST",
   		"schema": "/",
   		"handler": "createSchedulerHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Create a new Scheduler record"
   	},
   	{
   		"point": "npa.http.handler",
@@ -123,7 +125,8 @@
   		"method": "PUT",
   		"schema": "/",
   		"handler": "updateSchedulerHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Update a given SCheduler record"
   	},
   	{
   		"point": "npa.http.handler",
@@ -132,7 +135,8 @@
   		"method": "DELETE",
   		"schema": "/:id",
   		"handler": "deleteSchedulerHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Delete an existing Scheduler record given its uuid"
   	},
   	{
   		"point": "apaf.menu.item.provider",

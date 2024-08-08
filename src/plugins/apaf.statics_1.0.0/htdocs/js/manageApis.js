@@ -12,6 +12,7 @@ const DATATABLE_ID = 'tokenTable';
 const WORKSPACE_TOOLBAR_ID = 'workspaceTreeToolbar';
 const WORKSPACE_EDITOR_ID = 'workspaceFileEditor';
 const CARD_ID = 'manageApisCard';
+const API_TEST_FORM_ID = 'apiTestForm';
 
 let treeViewer = null;
 let selectedFolder = null;
@@ -46,6 +47,7 @@ onPageChanged = function(){
 }
 
 initComponents = function(){
+	initApiBrowser();
 	initWorkspaceViewer();
 }
 
@@ -521,4 +523,167 @@ function download(url) {
 downloadResource = function(){
 	let file = selectedNode.data;
 	download(createDownloadUrl(file));
+}
+
+var apiVisitor = {
+	getLabel(element){
+		return element.name;
+	},
+	getChildren(element){
+		if(element.type){
+			if('root'==element.type){
+				return element.plugins;
+			}
+			if('plugin'==element.type){
+				return element.apis;
+			}
+		}
+		return [];
+	},
+	isParent(element){
+		if(element.type){
+			if('root'==element.type){
+				return true;
+			}
+			if('plugin'==element.type){
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
+var apiDecorator = {
+	decorate(element,label){
+		if(element.type){
+			if('root'==element.type){
+				return '<img src="/uiTools/img/silk/server_connect.png">&nbsp;<b>'+label+'</b>';
+			}
+			if('plugin'==element.type){
+				return '<img src="/uiTools/img/silk/disconnect.png">&nbsp;<b>'+label+'</b>';
+			}
+			if('api'==element.type){
+				if('POST'==element.method){
+					return '<img src="/uiTools/img/silk/transmit.png">&nbsp;<b>'+label+'</b>&nbsp;&nbsp;<b>'+element.method+'</b>&nbsp;<i>'+element.uri+'</i>';
+				}
+				if('GET'==element.method){
+					return '<img src="/uiTools/img/silk/transmit_blue.png">&nbsp;<b>'+label+'</b>&nbsp;&nbsp;<b>'+element.method+'</b>&nbsp;<i>'+element.uri+'</i>';
+				}
+				if('PUT'==element.method){
+					return '<img src="/uiTools/img/silk/transmit_add.png">&nbsp;<b>'+label+'</b>&nbsp;&nbsp;<b>'+element.method+'</b>&nbsp;<i>'+element.uri+'</i>';
+				}
+				if('DELETE'==element.method){
+					return '<img src="/uiTools/img/silk/transmit_delete.png">&nbsp;<b>'+label+'</b>&nbsp;&nbsp;<b>'+element.method+'</b>&nbsp;<i>'+element.uri+'</i>';
+				}
+			}
+		}
+		return label;
+	}
+}
+
+var apiEventListener = {
+	onNodeSelected(node){
+		setStatus('');
+		$('#payload').val('');
+		$('#testUri').val('');
+		$('#testRestCallResult').html('');
+		$('#testRestCallBtn').off('.apitest');
+		//console.log(node);
+		let apiTestForm = $apaf(API_TEST_FORM_ID);
+		if('api'==node.data.type){
+			setStatus('Selected API: '+node.data.name);
+			apiTestForm.setData(node.data);
+			$('#testUri').val(node.data.uri);
+			if('POST'==node.data.method || 'PUT'==node.data.method){
+				$('#payload').val('{\n}');
+				$('#testRestCallResult').html('{<br>}');
+			}else{
+				$('#payload').val('');
+			}
+			$('#testRestCallBtn').on('click.apitest',function(){
+				$('#testRestCallResult').html('');
+				let targetUri = $('#testUri').val();
+				let method = node.data.method;
+				let payload = ('POST'==method || 'PUT'==method)?JSON.parse($('#payload').val()):{};
+				setStatus('Performing Rest call...');
+				apaf.call({
+					"method": method,
+					"uri": targetUri,
+					"payload": payload
+				}).then(function(data){
+					$('#testRestCallResult').html(JSON.stringify(data,null,'\t').replace(/\n/g,'<br>').replace(/\t/g,'&nbsp;&nbsp;&nbsp;'));
+					setStatus('Rest call execution completed!');
+				}).onError(function(errorMsg){
+					showError(errorMsg?(errorMsg.message?errorMsg.message:errorMsg):'An exception was caught!');
+				});
+			});
+		}else{
+			apiTestForm.setData({});
+		}
+	}
+}
+var apiBrowser = null;
+initApiBrowser = function(){
+	let height = $('#workArea').height()-10;
+	$('#apiTreeArea').height(height);
+	$('#apiTreeArea').css('max-height',height);
+	$('#apiTreeArea').css('overflow','auto');
+	$(window).on('resize',function(){
+		height = $('#workArea').height()-10;
+		$('#apiTreeArea').height(height);
+		$('#apiTreeArea').css('max-height',height);
+		$('#apiTreeArea').css('overflow','auto');
+	});
+
+	$('#apiTreeArea').empty();
+	apiBrowser = new TreeViewer('apiBrowser',$('#apiTreeArea')[0]);
+	apiBrowser.init();
+    apiBrowser.setVisitor(apiVisitor);
+    apiBrowser.setDecorator(apiDecorator);
+    apiBrowser.setEventListener(apiEventListener);
+
+    apaf.call({
+		"method": "GET",
+		"uri": "/apaf-api-management/find",
+		"payload": {}
+	}).then(function(data){
+		let model = createApiModel(data);
+		apiBrowser.addRootData(model);
+		apiBrowser.refreshTree();
+	}).onError(function(errorMsg){
+		showError(errorMsg.message?errorMsg.message:errorMsg);
+	});
+}
+
+createApiModel = function(apiData){
+	let apafRoot = {"name": "APAF Runtime","type": "root","plugins": []};
+	let plugins = {};
+	let apis = sortOn(apiData.apis,'pluginId');
+	for(var i=0;i<apis.length;i++){
+		let api = apis[i];
+		if(!plugins[api.pluginId]){
+			plugins[api.pluginId] = {"name": api.pluginId,"type": "plugin","version": "1.0.0","apis": []};
+		}
+		let fullPath = apiData.routers[api.api.router];
+		if(typeof fullPath!='undefined'){
+			let uri = fullPath+api.api.schema;
+			let item = {"name": api.api.id,"type": "api","method": api.api.method,"uri": uri};
+			if(api.api.securityRole){
+				item.securityRole = api.api.securityRole;
+			}else{
+				item.securityRole = 'n/a';
+			}
+			if(api.api.description){
+				item.description = api.api.description;
+			}else{
+				item.description = 'no description available';
+			}
+			plugins[api.pluginId].apis.push(item);
+		}
+	}
+	for(var pluginId in plugins){
+		let pluginEntry = plugins[pluginId];
+		apafRoot.plugins.push(pluginEntry);
+	}
+	return apafRoot;
 }

@@ -125,7 +125,8 @@
   		"method": "POST",
   		"schema": "/query",
   		"handler": "queryWorkflowHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Query the list of Workflows"
   	},
   	{
   		"point": "npa.http.handler",
@@ -134,7 +135,8 @@
   		"method": "POST",
   		"schema": "/",
   		"handler": "createWorkflowHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Create a new Workflow definition"
   	},
   	{
   		"point": "npa.http.handler",
@@ -143,7 +145,8 @@
   		"method": "PUT",
   		"schema": "/",
   		"handler": "updateWorkflowHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Update an existing Workflow definition"
   	},
   	{
   		"point": "npa.http.handler",
@@ -152,7 +155,8 @@
   		"method": "DELETE",
   		"schema": "/:id",
   		"handler": "deleteWorkflowHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Delete an existing Workflow definition given its uuid"
   	},
   	{
   		"point": "npa.http.handler",
@@ -161,7 +165,8 @@
   		"method": "GET",
   		"schema": "/:workflowName/:workflowVersion",
   		"handler": "getByNameHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Get an existing Workflow definition gievn its name and version"
   	},
   	{
   		"point": "apaf.datatype.object.initializer",
@@ -193,7 +198,8 @@
   		"method": "POST",
   		"schema": "/execute/:id",
   		"handler": "executeWorkflowHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Execute an existing Workflow given its definition uuid"
   	}
   ],
   "provides": [

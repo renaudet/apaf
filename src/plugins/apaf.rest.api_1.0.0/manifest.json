@@ -27,7 +27,8 @@
   		"method": "POST",
   		"schema": "/invoke",
   		"handler": "invokeRestApiHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Invoke a distant REST Service from the APAF runtime"
   	},
   	{
   		"point": "apaf.datatype.object.initializer",

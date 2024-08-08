@@ -34,7 +34,8 @@
   		"method": "POST",
   		"schema": "/publish",
   		"handler": "publishFeatureHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Publish the given feature to the configured Registry"
   	},
   	{
   		"point": "npa.http.handler",
@@ -43,7 +44,8 @@
   		"method": "GET",
   		"schema": "/catalog",
   		"handler": "getCatalogHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Get the catalog of published features from the configured Registry"
   	},
   	{
   		"point": "npa.http.handler",
@@ -52,7 +54,8 @@
   		"method": "GET",
   		"schema": "/feature/:id",
   		"handler": "getFeatureHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Get a feature given its unique ID"
   	},
   	{
   		"point": "npa.http.handler",
@@ -61,7 +64,8 @@
   		"method": "PUT",
   		"schema": "/install",
   		"handler": "installFeatureHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Install a given feature on the current APAF instance"
   	},
   	{
   		"point": "apaf.menu.item.provider",
@@ -144,7 +148,8 @@
   		"router": "apaf.registry.application.router",
   		"method": "POST",
   		"schema": "/v1",
-  		"handler": "storeFeatureHandler"
+  		"handler": "storeFeatureHandler",
+		"description": "Register and store a feature within the Registry (Registry Application only)"
   	},
   	{
   		"point": "npa.http.handler",
@@ -152,7 +157,8 @@
   		"router": "apaf.registry.application.router",
   		"method": "GET",
   		"schema": "/v1",
-  		"handler": "searchFeatureHandler"
+  		"handler": "searchFeatureHandler",
+		"description": "Get a list of features filtered by name, category and description (Registry Application only)"
   	},
   	{
   		"point": "npa.http.handler",
@@ -160,7 +166,8 @@
   		"router": "apaf.registry.application.router",
   		"method": "GET",
   		"schema": "/feature/:id",
-  		"handler": "getFeatureByIdHandler"
+  		"handler": "getFeatureByIdHandler",
+		"description": "Get a feature by its unique ID (Registry Application only)"
   	}
   ],
   "provides": [

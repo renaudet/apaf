@@ -49,7 +49,8 @@
   		"method": "POST",
   		"schema": "/datatype/query",
   		"handler": "queryDatatypeHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Query the list of registered User Datatypes"
   	},
   	{
   		"point": "npa.http.handler",
@@ -58,7 +59,8 @@
   		"method": "POST",
   		"schema": "/datatype",
   		"handler": "createDatatypeHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Create a new User Datatype record"
   	},
   	{
   		"point": "npa.http.handler",
@@ -67,7 +69,8 @@
   		"method": "PUT",
   		"schema": "/datatype",
   		"handler": "updateDatatypeHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Update an existing User Datatype record"
   	},
   	{
   		"point": "npa.http.handler",
@@ -76,7 +79,8 @@
   		"method": "DELETE",
   		"schema": "/datatype/:id",
   		"handler": "deleteDatatypeHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Delete an existing User Datatype record given its uuid"
   	},
   	{
   		"point": "npa.http.handler",
@@ -85,7 +89,8 @@
   		"method": "GET",
   		"schema": "/datatype/:id",
   		"handler": "findDatatypeByPrimaryKeyHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Get an existing User Datatype given its uuid"
   	},
   	{
   		"point": "npa.http.handler",
@@ -94,7 +99,8 @@
   		"method": "GET",
   		"schema": "/datatype",
   		"handler": "findDatatypeByNameHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Get an existing User Datatype given its datatype name"
   	},
   	{
   		"point": "apaf.menu.item.provider",
@@ -116,7 +122,8 @@
   		"method": "POST",
   		"schema": "/:datatypeName/query",
   		"handler": "queryUserDataHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Query the instances of a given User Datatype given the Datatype name"
   	},
   	{
   		"point": "npa.http.handler",
@@ -125,7 +132,8 @@
   		"method": "POST",
   		"schema": "/:datatypeName",
   		"handler": "createUserDataHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Create a record for a User Datatype given the Datatype name"
   	},
   	{
   		"point": "npa.http.handler",
@@ -134,7 +142,8 @@
   		"method": "PUT",
   		"schema": "/:datatypeName",
   		"handler": "updateUserDataHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Update an existing instance of a User Datatype given the Datatype name"
   	},
   	{
   		"point": "npa.http.handler",
@@ -143,7 +152,8 @@
   		"method": "DELETE",
   		"schema": "/:datatypeName/:id",
   		"handler": "deleteUserDataHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Delete an existing instance of a User Datatype gievn its uuid and Datatype name"
   	}
   ],
   "provides": [

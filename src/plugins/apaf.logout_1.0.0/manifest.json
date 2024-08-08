@@ -27,7 +27,8 @@
   		"router": "apaf.logout.router",
   		"method": "GET",
   		"schema": "/",
-  		"handler": "logoutHandler"
+  		"handler": "logoutHandler",
+		"description": "Logout from APAF and destroy any existing User session"
   	}
   ],
   "provides": [

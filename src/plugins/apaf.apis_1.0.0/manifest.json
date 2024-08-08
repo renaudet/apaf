@@ -1,0 +1,49 @@
+{
+  "id": "apaf.apis",
+  "name": "Apis management for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.apis.logger",
+  		"dir": "apaf.apis"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.apis.router",
+  		"path": "/apaf-api-management"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.apis.query.handler",
+  		"router": "apaf.apis.router",
+  		"method": "GET",
+  		"schema": "/find",
+  		"handler": "getApisHandler",
+  		"securityRole": "administrator",
+		"description": "Get the list of discovered APAF APIs"
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.apis.menu.item",
+  		"menu": "adminMenuPlaceholder",
+  		"securityRole": "administrator",
+  		"item": {
+			"id": "manageApis",
+    		"label": "@apaf.page.apis.title",
+    		"actionId": "redirect",
+    		"icon": "/uiTools/img/silk/plugin.png",
+    		"uri": "/resources/html/manageApis.html"
+		}
+  	}
+  ],
+  "provides": [
+  ]
+}

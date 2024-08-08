@@ -209,6 +209,7 @@ apaf.token.datatype.uri=URI
 apaf.token.datatype.created=Cre&eacute; le
 apaf.token.datatype.token=Jeton de S&eacute;curit&eacute;
 apaf.page.apis.title=G&eacute;rer les APIs
+apaf.apis.menu.apis=API Studio
 apaf.apis.menu.tokens=Jetons de S&eacute;curit&eacute;
 apaf.apis.menu.workspace=Espace de travail
 apaf.page.apis.tokens.form.title=Cr&eacute;er un nouveau jeton de s&eacute;curit&eacute;

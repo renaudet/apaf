@@ -27,7 +27,8 @@
   		"method": "POST",
   		"schema": "/send",
   		"handler": "sendMailHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Send a mail using the registered mail provider"
   	},
   	{
   		"point": "npa.mail.provider",

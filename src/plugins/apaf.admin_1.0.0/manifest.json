@@ -28,7 +28,8 @@
   		"router": "apaf.admin.router",
   		"method": "GET",
   		"schema": "/session",
-  		"handler": "checkSessionHandler"
+  		"handler": "checkSessionHandler",
+		"description": "Check if a User session is active or not"
   	},
   	{
   		"point": "npa.http.handler",
@@ -36,7 +37,8 @@
   		"router": "apaf.admin.router",
   		"method": "PUT",
   		"schema": "/session",
-  		"handler": "maintainSessionHandler"
+  		"handler": "maintainSessionHandler",
+		"description": "Ping an active session so that it stay alive"
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
@@ -145,7 +147,8 @@
   		"method": "POST",
   		"schema": "/user/query",
   		"handler": "queryUserHandler",
-  		"securityRole": "manageUser"
+  		"securityRole": "manageUser",
+		"description": "Query the list of registered APAF users"
   	},
   	{
   		"point": "npa.http.handler",
@@ -154,7 +157,8 @@
   		"method": "POST",
   		"schema": "/user",
   		"handler": "createUserHandler",
-  		"securityRole": "manageUser"
+  		"securityRole": "manageUser",
+		"description": "Register a new User within APAF"
   	},
   	{
   		"point": "npa.http.handler",
@@ -163,7 +167,8 @@
   		"method": "PUT",
   		"schema": "/user",
   		"handler": "updateUserHandler",
-  		"securityRole": "manageUser"
+  		"securityRole": "manageUser",
+		"description": "Update an APAF User record"
   	},
   	{
   		"point": "npa.http.handler",
@@ -172,7 +177,8 @@
   		"method": "DELETE",
   		"schema": "/user/:id",
   		"handler": "deleteUserHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Delete an APAF User record"
   	},
   	{
   		"point": "npa.http.handler",
@@ -181,7 +187,8 @@
   		"method": "GET",
   		"schema": "/user/:id",
   		"handler": "findUserHandler",
-  		"securityRole": "manageUser"
+  		"securityRole": "manageUser",
+		"description": "Get an APAF User given its userid"
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
@@ -246,7 +253,8 @@
   		"method": "POST",
   		"schema": "/group/query",
   		"handler": "queryGroupHandler",
-  		"securityRole": "manageGroup"
+  		"securityRole": "manageGroup",
+		"description": "Query the list of existing user groups"
   	},
   	{
   		"point": "npa.http.handler",
@@ -255,7 +263,8 @@
   		"method": "POST",
   		"schema": "/group",
   		"handler": "createGroupHandler",
-  		"securityRole": "manageGroup"
+  		"securityRole": "manageGroup",
+		"description": "Create a Group of APAF users"
   	},
   	{
   		"point": "npa.http.handler",
@@ -264,7 +273,8 @@
   		"method": "PUT",
   		"schema": "/group",
   		"handler": "updateGroupHandler",
-  		"securityRole": "manageGroup"
+  		"securityRole": "manageGroup",
+		"description": "Update a Group of APAF users"
   	},
   	{
   		"point": "npa.http.handler",
@@ -273,7 +283,8 @@
   		"method": "DELETE",
   		"schema": "/group/:id",
   		"handler": "deleteGroupHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Delete an existing Group of APAF users"
   	},
   	{
   		"point": "npa.http.handler",
@@ -282,7 +293,8 @@
   		"method": "GET",
   		"schema": "/group/:id",
   		"handler": "findGroupHandler",
-  		"securityRole": "manageGroup"
+  		"securityRole": "manageGroup",
+		"description": "Get a Group of APAF users given its uuid"
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
@@ -328,7 +340,8 @@
   		"method": "POST",
   		"schema": "/role/query",
   		"handler": "queryRoleHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Query the list of APAF Security Roles"
   	},
   	{
   		"point": "npa.http.handler",
@@ -337,7 +350,8 @@
   		"method": "POST",
   		"schema": "/role",
   		"handler": "createRoleHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Create a new APAF Security Role"
   	},
   	{
   		"point": "npa.http.handler",
@@ -346,7 +360,8 @@
   		"method": "PUT",
   		"schema": "/role",
   		"handler": "updateRoleHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Update an existing APAF Security Role"
   	},
   	{
   		"point": "npa.http.handler",
@@ -355,7 +370,8 @@
   		"method": "DELETE",
   		"schema": "/role/:id",
   		"handler": "deleteRoleHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Delete an existing APAF Security Role"
   	},
   	{
   		"point": "npa.http.handler",
@@ -364,7 +380,8 @@
   		"method": "GET",
   		"schema": "/role/:id",
   		"handler": "findRoleHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"description": "Get an APAF Security Role given its uuid"
   	},
   	{
   		"point": "apaf.menu.item.provider",
@@ -395,7 +412,8 @@
   		"method": "GET",
   		"schema": "/profile",
   		"handler": "getProfileHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Get the connected user's Profile record"
   	},
   	{
   		"point": "npa.http.handler",
@@ -404,7 +422,8 @@
   		"method": "GET",
   		"schema": "/preferences",
   		"handler": "getPreferencesHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Get the connected user's preference records"
   	},
   	{
   		"point": "npa.http.handler",
@@ -413,7 +432,8 @@
   		"method": "PUT",
   		"schema": "/profile",
   		"handler": "updateProfileHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Update the connected user's Profile record"
   	},
   	{
   		"point": "apaf.menu.item.provider",

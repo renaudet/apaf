@@ -6,6 +6,10 @@
     	"expandsTo": "workArea",
     	"items": [
     		{
+    			"id": "apis",
+    			"label": "@apaf.apis.menu.apis"
+    		},
+    		{
     			"id": "securityTokens",
     			"label": "@apaf.apis.menu.tokens"
     		},

@@ -20,7 +20,8 @@
   		"router": "apaf.branding.router",
   		"method": "GET",
   		"schema": "/:category/:resourceId",
-  		"handler": "getBrandingResourceHandler"
+  		"handler": "getBrandingResourceHandler",
+		"description": "Load a branded resource by category and resource ID"
   	}
   ],
   "provides": [

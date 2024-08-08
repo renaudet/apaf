@@ -1,0 +1,39 @@
+{
+    "id":"apiTestForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "Selected API",
+    	"class": "form-frame-noborder",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "API #ID",
+    			"size": 5
+    		},
+    		{
+    			"name": "description",
+    			"label": "Description",
+    			"size": 9
+    		},
+    		{
+    			"name": "method",
+    			"label": "Method",
+    			"required": true,
+    			"type": "select",
+    			"size": 3,
+    			"values": ["GET","POST","PUT","DELETE"]
+    		},
+    		{
+    			"name": "uri",
+    			"label": "URI",
+    			"size": 8
+    		},
+    		{
+    			"name": "securityRole",
+    			"label": "Restricted to",
+    			"size": 7
+    		}
+        ]
+    }
+}

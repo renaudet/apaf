@@ -28,7 +28,8 @@
   		"method": "POST",
   		"schema": "/project",
   		"handler": "createProjectHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Create a new Project within the Workspace"
   	},
   	{
   		"point": "npa.http.handler",
@@ -37,7 +38,8 @@
   		"method": "POST",
   		"schema": "/project/find",
   		"handler": "findProjectHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Find Projects within the Workspace"
   	},
   	{
   		"point": "npa.http.handler",
@@ -46,7 +48,8 @@
   		"method": "POST",
   		"schema": "/folder",
   		"handler": "createFolderHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Create a Folder within an existing Project in the Workspace"
   	},
   	{
   		"point": "npa.http.handler",
@@ -55,7 +58,8 @@
   		"method": "GET",
   		"schema": "/folder",
   		"handler": "readFolderContentHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Get the content of an existing Folder within the Workspace"
   	},
   	{
   		"point": "npa.http.handler",
@@ -64,7 +68,8 @@
   		"method": "GET",
   		"schema": "/file/:encrypted",
   		"handler": "readFileContentHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Get the content of an existing file within the Workspace given its Base64-encoded relative Path"
   	},
   	{
   		"point": "npa.http.handler",
@@ -73,7 +78,8 @@
   		"method": "GET",
   		"schema": "/binaryFile/:encrypted",
   		"handler": "readBinaryFileContentHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Get the content of a File within the Workspace as binary data"
   	},
   	{
   		"point": "npa.http.handler",
@@ -82,7 +88,8 @@
   		"method": "PUT",
   		"schema": "/file/:encrypted",
   		"handler": "writeFileHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Update the content of a File within the Workspace"
   	},
   	{
   		"point": "npa.http.handler",
@@ -91,7 +98,8 @@
   		"method": "DELETE",
   		"schema": "/:encrypted",
   		"handler": "deleteResourceHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Delete an existing File / Folder / Project from the Workspace"
   	},
   	{
   		"point": "npa.http.handler",
@@ -100,7 +108,8 @@
   		"method": "POST",
   		"schema": "/file/:encrypted",
   		"handler": "uploadFileHandler",
-  		"securityRole": "coreServices"
+  		"securityRole": "coreServices",
+		"description": "Upload a file to the Workspace as binary data"
   	},
   	{
   		"point": "apaf.datatype.object.initializer",

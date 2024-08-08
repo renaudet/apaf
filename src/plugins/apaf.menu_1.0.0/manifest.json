@@ -26,7 +26,8 @@
   		"router": "apaf.menu.router",
   		"method": "GET",
   		"schema": "/global",
-  		"handler": "getGlobalMenuHandler"
+  		"handler": "getGlobalMenuHandler",
+		"description": "Get the global menu for the connected APAF User"
   	}
   ],
   "provides": [

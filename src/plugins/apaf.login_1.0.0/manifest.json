@@ -27,7 +27,8 @@
   		"router": "apaf.login.router",
   		"method": "POST",
   		"schema": "/login",
-  		"handler": "loginHandler"
+  		"handler": "loginHandler",
+		"description": "Login to APAF and create a User session"
   	}
   ],
   "provides": [

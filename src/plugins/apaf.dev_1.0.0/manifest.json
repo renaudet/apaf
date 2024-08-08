@@ -102,7 +102,8 @@
   		"method": "POST",
   		"schema": "/fragment/query",
   		"handler": "queryFragmentHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Query the list of code fragments"
   	},
   	{
   		"point": "npa.http.handler",
@@ -111,7 +112,8 @@
   		"method": "POST",
   		"schema": "/fragment",
   		"handler": "createFragmentHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Create a new code fragment record"
   	},
   	{
   		"point": "npa.http.handler",
@@ -120,7 +122,8 @@
   		"method": "PUT",
   		"schema": "/fragment",
   		"handler": "updateFragmentHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Update an existing code fragment record"
   	},
   	{
   		"point": "npa.http.handler",
@@ -129,7 +132,8 @@
   		"method": "DELETE",
   		"schema": "/fragment/:id",
   		"handler": "deleteFragmentHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Delete an existing code fragment given its uuid"
   	},
   	{
   		"point": "npa.http.handler",
@@ -138,7 +142,8 @@
   		"method": "GET",
   		"schema": "/fragment/:id",
   		"handler": "findFragmentHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Get an existing code fragment given its uuid"
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
@@ -196,7 +201,8 @@
   		"method": "POST",
   		"schema": "/application/query",
   		"handler": "queryApplicationHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Query the list of APAF Application records"
   	},
   	{
   		"point": "npa.http.handler",
@@ -205,7 +211,8 @@
   		"method": "POST",
   		"schema": "/application",
   		"handler": "createApplicationHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Create a new APAF Application record"
   	},
   	{
   		"point": "npa.http.handler",
@@ -214,7 +221,8 @@
   		"method": "PUT",
   		"schema": "/application",
   		"handler": "updateApplicationHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Update an existing APAF Application record"
   	},
   	{
   		"point": "npa.http.handler",
@@ -223,7 +231,8 @@
   		"method": "DELETE",
   		"schema": "/application/:id",
   		"handler": "deleteApplicationHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+		"description": "Delete an existing APAF Application record"
   	},
   	{
   		"point": "npa.http.handler",
@@ -232,7 +241,8 @@
   		"method": "GET",
   		"schema": "/application/:id",
   		"handler": "findApplicationHandler",
-  		"securityRole": ""
+  		"securityRole": "",
+		"description": "Get an APAF Application record given its uuid"
   	},
   	{
   		"point": "apaf.menu.item.provider",
