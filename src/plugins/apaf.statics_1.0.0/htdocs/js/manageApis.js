@@ -13,11 +13,14 @@ const WORKSPACE_TOOLBAR_ID = 'workspaceTreeToolbar';
 const WORKSPACE_EDITOR_ID = 'workspaceFileEditor';
 const CARD_ID = 'manageApisCard';
 const API_TEST_FORM_ID = 'apiTestForm';
+const JOB_TABLE_ID = 'jobTable';
+const JOB_TOOLBAR_ID = 'jobTableToolbar';
 
 let treeViewer = null;
 let selectedFolder = null;
 let currentContainerNode = null;
 let selectedNode = null;
+let doRefreshJobs = true;
 
 $(document).ready(function(){
 	checkSessionStatus(initializeUi);
@@ -36,14 +39,21 @@ initializeUi = function(){
 			npaUi.on('createFile',createNewTextFile);
 			npaUi.on('downloadResource',downloadResource);
 			npaUi.on('deleteResource',deleteResource);
-			npaUi.on('menu.item.selected',onPageChanged)
+			npaUi.on('menu.item.selected',onPageChanged);
+			npaUi.on('refreshJobs',refreshJobTable);
+			npaUi.on('terminate',terminateJob);
 			npaUi.render();
 		});
 	});
 }
 
-onPageChanged = function(){
+onPageChanged = function(menuEvent){
 	setStatus('');
+	doRefreshJobs = false;
+	if('jobs'==menuEvent.menu){
+		doRefreshJobs = true;
+		refreshJobTable();
+	}
 }
 
 initComponents = function(){
@@ -595,10 +605,18 @@ var apiEventListener = {
 			apiTestForm.setData(node.data);
 			$('#testUri').val(node.data.uri);
 			if('POST'==node.data.method || 'PUT'==node.data.method){
-				$('#payload').val('{\n}');
+				if(typeof node.data.input=='object' || typeof node.data.input=='array'){
+					let inputAsTxt = JSON.stringify(node.data.input,null,'\t').replace(/\t/g,'  ');
+					$('#payload').val(inputAsTxt);
+				}else{
+					$('#payload').val('{\n}');
+				}
 				$('#testRestCallResult').html('{<br>}');
 			}else{
 				$('#payload').val('');
+				if(node.data.input && node.data.input.length>0){
+					$('#testUri').val(node.data.uri+'?'+node.data.input);
+				}
 			}
 			$('#testRestCallBtn').on('click.apitest',function(){
 				$('#testRestCallResult').html('');
@@ -678,6 +696,9 @@ createApiModel = function(apiData){
 			}else{
 				item.description = 'no description available';
 			}
+			if(api.api.input){
+				item.input = api.api.input;
+			}
 			plugins[api.pluginId].apis.push(item);
 		}
 	}
@@ -686,4 +707,36 @@ createApiModel = function(apiData){
 		apafRoot.plugins.push(pluginEntry);
 	}
 	return apafRoot;
+}
+
+refreshJobTable = function(){
+	if(doRefreshJobs){
+		apaf.call({
+			"method": "GET",
+			"uri": "/apaf-api-management/jobs",
+			"payload": {}
+		}).then(function(data){
+			let jobTable = $apaf(JOB_TABLE_ID);
+			jobTable.renderData(data);
+			setTimeout(function(){ refreshJobTable(); },3000);
+		}).onError(function(errorMsg){
+			showError(errorMsg.message?errorMsg.message:errorMsg);
+		});
+	}
+}
+
+terminateJob = function(event){
+	let jobData = event.item;
+	if(jobData.status=='pending' || jobData.status=='ongoing'){
+		let job = {"id": jobData.id,"status": "setRollbackOnly"}
+		apaf.call({
+			"method": "PUT",
+			"uri": "/apaf-jobs/",
+			"payload": job
+		}).then(function(data){
+			refreshJobTable();
+		}).onError(function(errorMsg){
+			showError(errorMsg.message?errorMsg.message:errorMsg);
+		});
+	}
 }

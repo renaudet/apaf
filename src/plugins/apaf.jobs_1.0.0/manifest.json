@@ -1,0 +1,59 @@
+{
+  "id": "apaf.jobs",
+  "name": "Job API REST service for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.jobs","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.jobs.logger",
+  		"dir": "apaf.jobs"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.jobs.router",
+  		"path": "/apaf-jobs"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.job.create.handler",
+  		"router": "apaf.jobs.router",
+  		"method": "POST",
+  		"schema": "/",
+  		"handler": "createJobHandler",
+  		"securityRole": "operator",
+		"description": "Create and return a new managed-job server-side",
+		"input": {"description": "abcd"}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.job.get.handler",
+  		"router": "apaf.jobs.router",
+  		"method": "GET",
+  		"schema": "/:id",
+  		"handler": "getJobHandler",
+  		"securityRole": "operator",
+		"description": "Get a server-side job given its id",
+		"input": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.job.update.handler",
+  		"router": "apaf.jobs.router",
+  		"method": "PUT",
+  		"schema": "/",
+  		"handler": "updateJobHandler",
+  		"securityRole": "operator",
+		"description": "Update a server-side job given its id",
+		"input": {"id": "abcd-abcd-abcd-abcd","status": "completed/setRollbackOnly","progress": 50}
+  	}
+  ],
+  "provides": [
+  ]
+}

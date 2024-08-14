@@ -28,7 +28,8 @@
   		"method": "POST",
   		"schema": "/login",
   		"handler": "loginHandler",
-		"description": "Login to APAF and create a User session"
+		"description": "Login to APAF and create a User session",
+		"input": {"userid": "abcd","passwd": "xxx"}
   	}
   ],
   "provides": [

@@ -29,7 +29,8 @@
   		"method": "GET",
   		"schema": "/session",
   		"handler": "checkSessionHandler",
-		"description": "Check if a User session is active or not"
+		"description": "Check if a User session is active or not",
+		"input": ""
   	},
   	{
   		"point": "npa.http.handler",
@@ -38,7 +39,8 @@
   		"method": "PUT",
   		"schema": "/session",
   		"handler": "maintainSessionHandler",
-		"description": "Ping an active session so that it stay alive"
+		"description": "Ping an active session so that it stay alive",
+		"input": ""
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
@@ -148,7 +150,8 @@
   		"schema": "/user/query",
   		"handler": "queryUserHandler",
   		"securityRole": "manageUser",
-		"description": "Query the list of registered APAF users"
+		"description": "Query the list of registered APAF users",
+		"input": {"selector": {"login": {"$regex": "abcd"}}}
   	},
   	{
   		"point": "npa.http.handler",
@@ -158,7 +161,8 @@
   		"schema": "/user",
   		"handler": "createUserHandler",
   		"securityRole": "manageUser",
-		"description": "Register a new User within APAF"
+		"description": "Register a new User within APAF",
+		"input": {"login": "abcd","password": "md5:abcd","firstname": "abcd","lastname": "abcd","isAdmin": false,"domain": "local","mail":"abcd@efgh.com","preferences": {},"groups": [],"roles": []}
   	},
   	{
   		"point": "npa.http.handler",
@@ -168,7 +172,8 @@
   		"schema": "/user",
   		"handler": "updateUserHandler",
   		"securityRole": "manageUser",
-		"description": "Update an APAF User record"
+		"description": "Update an APAF User record",
+		"input": {"id": "abcd-abcd-abcd-abcd","login": "abcd","password": "md5:abcd","firstname": "abcd","lastname": "abcd","isAdmin": false,"domain": "local","mail":"abcd@efgh.com","preferences": {},"groups": [],"roles": []}
   	},
   	{
   		"point": "npa.http.handler",
@@ -178,7 +183,8 @@
   		"schema": "/user/:id",
   		"handler": "deleteUserHandler",
   		"securityRole": "administrator",
-		"description": "Delete an APAF User record"
+		"description": "Delete an APAF User record",
+		"input": {}
   	},
   	{
   		"point": "npa.http.handler",
@@ -188,7 +194,8 @@
   		"schema": "/user/:id",
   		"handler": "findUserHandler",
   		"securityRole": "manageUser",
-		"description": "Get an APAF User given its userid"
+		"description": "Get an APAF User given its userid",
+		"input": ""
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
@@ -254,7 +261,8 @@
   		"schema": "/group/query",
   		"handler": "queryGroupHandler",
   		"securityRole": "manageGroup",
-		"description": "Query the list of existing user groups"
+		"description": "Query the list of existing user groups",
+		"input": {"selector": {"description": {"$regex": "abcd"}}}
   	},
   	{
   		"point": "npa.http.handler",
@@ -264,7 +272,8 @@
   		"schema": "/group",
   		"handler": "createGroupHandler",
   		"securityRole": "manageGroup",
-		"description": "Create a Group of APAF users"
+		"description": "Create a Group of APAF users",
+		"input": {"name": "abcd","description": "efgh","roles": []}
   	},
   	{
   		"point": "npa.http.handler",
@@ -274,7 +283,8 @@
   		"schema": "/group",
   		"handler": "updateGroupHandler",
   		"securityRole": "manageGroup",
-		"description": "Update a Group of APAF users"
+		"description": "Update a Group of APAF users",
+		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","description": "efgh","roles": []}
   	},
   	{
   		"point": "npa.http.handler",
@@ -284,7 +294,8 @@
   		"schema": "/group/:id",
   		"handler": "deleteGroupHandler",
   		"securityRole": "administrator",
-		"description": "Delete an existing Group of APAF users"
+		"description": "Delete an existing Group of APAF users",
+		"input": {}
   	},
   	{
   		"point": "npa.http.handler",
@@ -294,7 +305,8 @@
   		"schema": "/group/:id",
   		"handler": "findGroupHandler",
   		"securityRole": "manageGroup",
-		"description": "Get a Group of APAF users given its uuid"
+		"description": "Get a Group of APAF users given its uuid",
+		"input": ""
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
@@ -341,7 +353,8 @@
   		"schema": "/role/query",
   		"handler": "queryRoleHandler",
   		"securityRole": "administrator",
-		"description": "Query the list of APAF Security Roles"
+		"description": "Query the list of APAF Security Roles",
+		"input": {"selector": {"description": {"$regex": "abcd"}}}
   	},
   	{
   		"point": "npa.http.handler",
@@ -351,7 +364,8 @@
   		"schema": "/role",
   		"handler": "createRoleHandler",
   		"securityRole": "administrator",
-		"description": "Create a new APAF Security Role"
+		"description": "Create a new APAF Security Role",
+		"input": {"name": "abcd","description": "efgh"}
   	},
   	{
   		"point": "npa.http.handler",
@@ -361,7 +375,8 @@
   		"schema": "/role",
   		"handler": "updateRoleHandler",
   		"securityRole": "administrator",
-		"description": "Update an existing APAF Security Role"
+		"description": "Update an existing APAF Security Role",
+		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","description": "efgh"}
   	},
   	{
   		"point": "npa.http.handler",
@@ -371,7 +386,8 @@
   		"schema": "/role/:id",
   		"handler": "deleteRoleHandler",
   		"securityRole": "administrator",
-		"description": "Delete an existing APAF Security Role"
+		"description": "Delete an existing APAF Security Role",
+		"input": {}
   	},
   	{
   		"point": "npa.http.handler",
@@ -381,7 +397,8 @@
   		"schema": "/role/:id",
   		"handler": "findRoleHandler",
   		"securityRole": "administrator",
-		"description": "Get an APAF Security Role given its uuid"
+		"description": "Get an APAF Security Role given its uuid",
+		"input": ""
   	},
   	{
   		"point": "apaf.menu.item.provider",
@@ -413,7 +430,8 @@
   		"schema": "/profile",
   		"handler": "getProfileHandler",
   		"securityRole": "",
-		"description": "Get the connected user's Profile record"
+		"description": "Get the connected user's Profile record",
+		"input": "preferences=false"
   	},
   	{
   		"point": "npa.http.handler",
@@ -423,7 +441,8 @@
   		"schema": "/preferences",
   		"handler": "getPreferencesHandler",
   		"securityRole": "",
-		"description": "Get the connected user's preference records"
+		"description": "Get the connected user's preference records",
+		"input": ""
   	},
   	{
   		"point": "npa.http.handler",
@@ -433,7 +452,8 @@
   		"schema": "/profile",
   		"handler": "updateProfileHandler",
   		"securityRole": "",
-		"description": "Update the connected user's Profile record"
+		"description": "Update the connected user's Profile record",
+		"input": {"id": "abcd-abcd-abcd-abcd","password": "md5:abcd","firstname": "abcd","lastname": "abcd","mail":"abcd@efgh.com","preferences": {"namespace": {"key": "value"}}}
   	},
   	{
   		"point": "apaf.menu.item.provider",

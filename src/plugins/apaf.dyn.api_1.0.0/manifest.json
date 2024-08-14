@@ -29,7 +29,8 @@
   		"schema": "/servlet/:alias",
   		"handler": "invokeDynamicApiHandler",
   		"securityRole": "coreServices",
-		"description": "Invoke a Servlet using a GET method"
+		"description": "Invoke a Servlet using a GET method",
+		"input": "someParam=someValue"
   	},
   	{
   		"point": "npa.http.handler",
@@ -39,7 +40,8 @@
   		"schema": "/servlet/:alias",
   		"handler": "invokeDynamicApiHandler",
   		"securityRole": "coreServices",
-		"description": "Invoke a Servlet using a POST method"
+		"description": "Invoke a Servlet using a POST method",
+		"input": {"someParam": "someValue"}
   	},
   	{
   		"point": "npa.http.handler",
@@ -49,7 +51,8 @@
   		"schema": "/servlet/:alias",
   		"handler": "invokeDynamicApiHandler",
   		"securityRole": "coreServices",
-		"description": "Invoke a Servlet using a PUT method"
+		"description": "Invoke a Servlet using a PUT method",
+		"input": {"someParam": "someValue"}
   	},
   	{
   		"point": "npa.http.handler",
@@ -59,7 +62,8 @@
   		"schema": "/servlet/:alias",
   		"handler": "invokeDynamicApiHandler",
   		"securityRole": "coreServices",
-		"description": "Invoke a Servlet using a DELETE method"
+		"description": "Invoke a Servlet using a DELETE method",
+		"input": {}
   	},
   	{
   		"point": "apaf.datatype.object.initializer",

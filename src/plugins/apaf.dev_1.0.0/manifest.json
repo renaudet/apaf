@@ -103,7 +103,8 @@
   		"schema": "/fragment/query",
   		"handler": "queryFragmentHandler",
   		"securityRole": "developer",
-		"description": "Query the list of code fragments"
+		"description": "Query the list of code fragments",
+		"input": {"selector": {"$and": [{"name": {"$regex": "abcd"}},{"version": {"$eq": "1.0.0"}}]}}
   	},
   	{
   		"point": "npa.http.handler",
@@ -113,7 +114,8 @@
   		"schema": "/fragment",
   		"handler": "createFragmentHandler",
   		"securityRole": "developer",
-		"description": "Create a new code fragment record"
+		"description": "Create a new code fragment record",
+		"input": {"name": "abcd","version": "1.0.0","description": "abcd","type": "snippet/servlet/library/workflowNode","source": "abcd"}
   	},
   	{
   		"point": "npa.http.handler",
@@ -123,7 +125,8 @@
   		"schema": "/fragment",
   		"handler": "updateFragmentHandler",
   		"securityRole": "developer",
-		"description": "Update an existing code fragment record"
+		"description": "Update an existing code fragment record",
+		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","version": "1.0.0","description": "abcd","type": "snippet/servlet/library/workflowNode","source": "abcd"}
   	},
   	{
   		"point": "npa.http.handler",
@@ -133,7 +136,8 @@
   		"schema": "/fragment/:id",
   		"handler": "deleteFragmentHandler",
   		"securityRole": "developer",
-		"description": "Delete an existing code fragment given its uuid"
+		"description": "Delete an existing code fragment given its uuid",
+		"input": {}
   	},
   	{
   		"point": "npa.http.handler",
@@ -143,7 +147,8 @@
   		"schema": "/fragment/:id",
   		"handler": "findFragmentHandler",
   		"securityRole": "",
-		"description": "Get an existing code fragment given its uuid"
+		"description": "Get an existing code fragment given its uuid",
+		"input": ""
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
@@ -202,7 +207,8 @@
   		"schema": "/application/query",
   		"handler": "queryApplicationHandler",
   		"securityRole": "developer",
-		"description": "Query the list of APAF Application records"
+		"description": "Query the list of APAF Application records",
+		"input": {"selector": {"$and": [{"name": {"$regex": "abcd"}},{"version": {"$eq": "1.0.0"}},{"published": {"$eq": true}}]}}
   	},
   	{
   		"point": "npa.http.handler",
@@ -212,7 +218,8 @@
   		"schema": "/application",
   		"handler": "createApplicationHandler",
   		"securityRole": "developer",
-		"description": "Create a new APAF Application record"
+		"description": "Create a new APAF Application record",
+		"input": {"name": "abcd","version": "1.0.0","description": "abcd","published": false,"restrictedToRole": "","menuIcon": "/uiTools/img/silk/application.png","fragments": []}
   	},
   	{
   		"point": "npa.http.handler",
@@ -222,7 +229,8 @@
   		"schema": "/application",
   		"handler": "updateApplicationHandler",
   		"securityRole": "developer",
-		"description": "Update an existing APAF Application record"
+		"description": "Update an existing APAF Application record",
+		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","version": "1.0.0","description": "abcd","published": false,"restrictedToRole": "","menuIcon": "/uiTools/img/silk/application.png","fragments": []}
   	},
   	{
   		"point": "npa.http.handler",
@@ -232,7 +240,8 @@
   		"schema": "/application/:id",
   		"handler": "deleteApplicationHandler",
   		"securityRole": "developer",
-		"description": "Delete an existing APAF Application record"
+		"description": "Delete an existing APAF Application record",
+		"input": {}
   	},
   	{
   		"point": "npa.http.handler",
@@ -242,7 +251,8 @@
   		"schema": "/application/:id",
   		"handler": "findApplicationHandler",
   		"securityRole": "",
-		"description": "Get an APAF Application record given its uuid"
+		"description": "Get an APAF Application record given its uuid",
+		"input": ""
   	},
   	{
   		"point": "apaf.menu.item.provider",

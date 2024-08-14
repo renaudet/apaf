@@ -50,7 +50,8 @@
   		"schema": "/datatype/query",
   		"handler": "queryDatatypeHandler",
   		"securityRole": "developer",
-		"description": "Query the list of registered User Datatypes"
+		"description": "Query the list of registered User Datatypes",
+		"input": {"selector": {"name": {"$eq": "abcd"}}}
   	},
   	{
   		"point": "npa.http.handler",
@@ -60,7 +61,8 @@
   		"schema": "/datatype",
   		"handler": "createDatatypeHandler",
   		"securityRole": "developer",
-		"description": "Create a new User Datatype record"
+		"description": "Create a new User Datatype record",
+		"input": {"name": "abcd","label": "abcd","description": "abcd","persistent": false,"database": "abcd","fields": [{"name": "fieldName","label": "abcd","type": "text","size": 5,"isIdField": true,"required": true,"default": "abcd"}]}
   	},
   	{
   		"point": "npa.http.handler",
@@ -70,7 +72,8 @@
   		"schema": "/datatype",
   		"handler": "updateDatatypeHandler",
   		"securityRole": "developer",
-		"description": "Update an existing User Datatype record"
+		"description": "Update an existing User Datatype record",
+		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","label": "abcd","description": "abcd","persistent": false,"database": "abcd","fields": [{"name": "fieldName","label": "abcd","type": "text","size": 5,"isIdField": true,"required": true,"default": "abcd"}]}
   	},
   	{
   		"point": "npa.http.handler",
@@ -100,7 +103,8 @@
   		"schema": "/datatype",
   		"handler": "findDatatypeByNameHandler",
   		"securityRole": "",
-		"description": "Get an existing User Datatype given its datatype name"
+		"description": "Get an existing User Datatype given its datatype name",
+		"input": "name=datatypeName"
   	},
   	{
   		"point": "apaf.menu.item.provider",
@@ -123,7 +127,8 @@
   		"schema": "/:datatypeName/query",
   		"handler": "queryUserDataHandler",
   		"securityRole": "",
-		"description": "Query the instances of a given User Datatype given the Datatype name"
+		"description": "Query the instances of a given User Datatype given the Datatype name",
+		"input": {"selector": {"active": {"$eq": true}}}
   	},
   	{
   		"point": "npa.http.handler",
@@ -133,7 +138,8 @@
   		"schema": "/:datatypeName",
   		"handler": "createUserDataHandler",
   		"securityRole": "",
-		"description": "Create a record for a User Datatype given the Datatype name"
+		"description": "Create a record for a User Datatype given the Datatype name",
+		"input": {"name": "abcd","label": "abcd","description": "abcd","persistent": true,"database": "abcd","fields": [{"name":"abcd","label":"abcd","description":"abcd","required": true,"isIdField": false,"type": "text","size": 5,"help":"some help for this field"}]}
   	},
   	{
   		"point": "npa.http.handler",
@@ -143,7 +149,8 @@
   		"schema": "/:datatypeName",
   		"handler": "updateUserDataHandler",
   		"securityRole": "",
-		"description": "Update an existing instance of a User Datatype given the Datatype name"
+		"description": "Update an existing instance of a User Datatype given the Datatype name",
+		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","label": "abcd","description": "abcd","persistent": true,"database": "abcd","fields": [{"name":"abcd","label":"abcd","description":"abcd","required": true,"isIdField": false,"type": "text","size": 5,"help":"some help for this field"}]}
   	},
   	{
   		"point": "npa.http.handler",

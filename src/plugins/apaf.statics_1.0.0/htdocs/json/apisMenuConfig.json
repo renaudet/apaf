@@ -16,6 +16,10 @@
     		{
     			"id": "workspace",
     			"label": "@apaf.apis.menu.workspace"
+    		},
+    		{
+    			"id": "jobs",
+    			"label": "@apaf.apis.menu.jobs"
     		}
     	]
     }

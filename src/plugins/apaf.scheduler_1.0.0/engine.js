@@ -2,20 +2,19 @@
  * engine.js - APAF Scheduler engine runtime
  * Copyright 2024 Nicolas Renaudet - All rights reserved
  */
+const { v4: uuidv4 } = require('uuid');
+const moment = require('moment');
+
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const WORKFLOW_PLUGIN_ID = 'apaf.workflow';
+const JOB_SERVICE_NAME = 'jobs';
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const USER_DATATYPE_NAME = 'user';
 const SCHEDULER_DATATYPE_NAME = 'scheduler';
 const FRAGMENT_DATATYPE_NAME = 'fragment';
 const TICK_TIMEOUT = 30000;
 const DATE_TIME_FORMAT = 'YYYY/MM/DD HH:mm:ss';
-/*const TASK_STATE_LOADED = 0;
-const TASK_STATE_INITIALIZED = 1;
-const TASK_STATE_ERROR = 4;
-const TASK_STATE_PENDING = 2;
-const TASK_STATE_RUNNING = 3;*/
-const moment = require('moment');
+const TIMESTAMP_FORMAT = 'HH:mm:ss';
 
 var xeval = eval;
  
@@ -107,10 +106,35 @@ class SchedulerEngine {
 			if(err){
 				engine.error('an error occured loading the code snippet: '+err);
 			}else{
-				engine.info('executing code snippet "'+fragment.name+' v'+fragment.version+'" as User '+asUser.login);
-				let moduleSrc = 'var executeFunction = function(logger,asUser){'+fragment.source+'}';
+				engine.info('evaluating code snippet "'+fragment.name+' v'+fragment.version+'" as User '+asUser.login);
+				let moduleSrc = 'var executeFunction = function(ctx){'+fragment.source+'}';
 				xeval(moduleSrc);
-				executeFunction(engine,asUser);
+				let jobService = engine.schedulerPlugin.getService(JOB_SERVICE_NAME);
+				let job = jobService.createJob(asUser.login,fragment.name+' v'+fragment.version+'_'+moment().format(TIMESTAMP_FORMAT));
+				engine.info('evaluation successfull - job ID# is '+job.id);
+				var context = {};
+				context.id = job.id;
+				context.user = asUser;
+				context.info = function(msg){
+					engine.info('from job #'+this.id+' '+msg);
+				}
+				context.debug = function(msg){
+					engine.debug('from job #'+this.id+' '+msg);
+				}
+				context.trace = function(msg){
+					engine.trace('from job #'+this.id+' '+msg);
+				}
+				context.error = function(msg){
+					engine.error('from job #'+this.id+' '+msg);
+				}
+				context.setProgress = function(percent){
+					jobService.updateJob({"id": this.id,"progress": percent});
+				}
+				context.checkStatus = function(){
+					let theJob = jobService.getJob(this.id);
+					return theJob.status == 'ongoing';
+				}
+				executeFunction(context);
 			}
 			engine.debug('<-executeSnippet()');
 			then();

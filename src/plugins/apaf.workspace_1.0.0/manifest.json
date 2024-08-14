@@ -29,7 +29,8 @@
   		"schema": "/project",
   		"handler": "createProjectHandler",
   		"securityRole": "coreServices",
-		"description": "Create a new Project within the Workspace"
+		"description": "Create a new Project within the Workspace",
+		"input": {"name": "abcd","displayName": "abcd","type": "general"}
   	},
   	{
   		"point": "npa.http.handler",
@@ -39,7 +40,8 @@
   		"schema": "/project/find",
   		"handler": "findProjectHandler",
   		"securityRole": "coreServices",
-		"description": "Find Projects within the Workspace"
+		"description": "Find Projects within the Workspace",
+		"input": {"name": "abcd","type": "abcd"}
   	},
   	{
   		"point": "npa.http.handler",
@@ -49,7 +51,8 @@
   		"schema": "/folder",
   		"handler": "createFolderHandler",
   		"securityRole": "coreServices",
-		"description": "Create a Folder within an existing Project in the Workspace"
+		"description": "Create a Folder within an existing Project in the Workspace",
+		"input": {"project": "abcd","folder": "abcd"}
   	},
   	{
   		"point": "npa.http.handler",
@@ -59,7 +62,8 @@
   		"schema": "/folder",
   		"handler": "readFolderContentHandler",
   		"securityRole": "coreServices",
-		"description": "Get the content of an existing Folder within the Workspace"
+		"description": "Get the content of an existing Folder within the Workspace",
+		"input": "project=abcd&folder=abcd&hidden=true"
   	},
   	{
   		"point": "npa.http.handler",
@@ -89,7 +93,8 @@
   		"schema": "/file/:encrypted",
   		"handler": "writeFileHandler",
   		"securityRole": "coreServices",
-		"description": "Update the content of a File within the Workspace"
+		"description": "Update the content of a File within the Workspace",
+		"input": "some file content..."
   	},
   	{
   		"point": "npa.http.handler",
@@ -109,7 +114,8 @@
   		"schema": "/file/:encrypted",
   		"handler": "uploadFileHandler",
   		"securityRole": "coreServices",
-		"description": "Upload a file to the Workspace as binary data"
+		"description": "Upload a file to the Workspace as binary data (encrypted as multipart/form-data)",
+		"input": "some file content..."
   	},
   	{
   		"point": "apaf.datatype.object.initializer",

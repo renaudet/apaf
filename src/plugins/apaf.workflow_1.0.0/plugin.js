@@ -10,7 +10,7 @@ const SECURITY_SERVICE_NAME = 'apaf-security';
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const FRAGMENT_DATATYPE = 'fragment';
 const WORKFLOW_DATATYPE = 'workflow';
-const WORKFLOW_TIMEOUT = 60*1000;
+const WORKFLOW_TIMEOUT = 5*60*1000;
 
 function sortOn(list,attributeName,descending=true){
 	if(typeof attributeName=='undefined'){

@@ -28,7 +28,8 @@
   		"schema": "/invoke",
   		"handler": "invokeRestApiHandler",
   		"securityRole": "coreServices",
-		"description": "Invoke a distant REST Service from the APAF runtime"
+		"description": "Invoke a distant REST Service from the APAF runtime",
+		"input": {"host": "abcd","port": 9080,"secured": true,"acceptCertificate": true,"method": "GET/POST/PUT/DELETE","uri": "/abcd","username": "abcd","password": "abcd","options": {},"payload": {}}
   	},
   	{
   		"point": "apaf.datatype.object.initializer",

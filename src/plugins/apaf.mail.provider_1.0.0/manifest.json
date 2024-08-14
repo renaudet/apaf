@@ -28,7 +28,8 @@
   		"schema": "/send",
   		"handler": "sendMailHandler",
   		"securityRole": "coreServices",
-		"description": "Send a mail using the registered mail provider"
+		"description": "Send a mail using the registered mail provider",
+		"input": {"from": "abcd","to": "abcd", "subject": "abcd","content": "abcd","asText": true}
   	},
   	{
   		"point": "npa.mail.provider",

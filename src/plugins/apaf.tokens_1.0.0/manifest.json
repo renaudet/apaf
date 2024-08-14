@@ -69,7 +69,8 @@
   		"method": "POST",
   		"schema": "/token/query",
   		"handler": "queryTokensHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		"input": {"selector": {"uri": {"$regex": "abcd"}}}
   	},
   	{
   		"point": "npa.http.handler",
@@ -78,7 +79,8 @@
   		"method": "POST",
   		"schema": "/token",
   		"handler": "createTokenHandler",
-  		"securityRole": "administrator"
+  		"securityRole": "administrator",
+		  "input": {"login": "abcd","password": "xxxx","uri": "abcd"}
   	},
   	{
   		"point": "npa.http.handler",

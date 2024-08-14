@@ -7,6 +7,7 @@
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.jobs","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.admin","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
@@ -126,7 +127,8 @@
   		"schema": "/query",
   		"handler": "queryWorkflowHandler",
   		"securityRole": "developer",
-		"description": "Query the list of Workflows"
+		"description": "Query the list of Workflows",
+		"input": {"selector": {"name": {"$regex": "abcd"}}}
   	},
   	{
   		"point": "npa.http.handler",
@@ -136,7 +138,8 @@
   		"schema": "/",
   		"handler": "createWorkflowHandler",
   		"securityRole": "developer",
-		"description": "Create a new Workflow definition"
+		"description": "Create a new Workflow definition",
+		"input": {"name": "abcd","version":"1.0.0","description":"abcd","serverSide": false,"data": {"nodes":[],"connections":[]}}
   	},
   	{
   		"point": "npa.http.handler",
@@ -146,7 +149,8 @@
   		"schema": "/",
   		"handler": "updateWorkflowHandler",
   		"securityRole": "developer",
-		"description": "Update an existing Workflow definition"
+		"description": "Update an existing Workflow definition",
+		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","version":"1.0.0","description":"abcd","serverSide": false,"data": {"nodes":[],"connections":[]}}
   	},
   	{
   		"point": "npa.http.handler",
@@ -199,7 +203,8 @@
   		"schema": "/execute/:id",
   		"handler": "executeWorkflowHandler",
   		"securityRole": "coreServices",
-		"description": "Execute an existing Workflow given its definition uuid"
+		"description": "Execute an existing Workflow given its definition uuid",
+		"input": {"prop1": "value1"}
   	}
   ],
   "provides": [

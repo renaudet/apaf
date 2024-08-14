@@ -9,7 +9,7 @@ const moment = require('moment');
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const SCHEDULER_DATATYPE_NAME = 'scheduler';
-const ENGINE_STARTUP_DELAY = 10000;
+const ENGINE_STARTUP_DELAY = 8000;
 
 var plugin = new ApafPlugin();
 plugin.engine = null;

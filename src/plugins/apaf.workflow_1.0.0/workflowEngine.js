@@ -4,10 +4,13 @@
  */
 
 const { v4: uuidv4 } = require('uuid');
+const moment = require('moment');
+const TIMESTAMP_FORMAT = 'HH:mm:ss';
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const WORKFLOW_PLUGIN_ID = 'apaf.workflow';
 const USER_DATATYPE_DATATYPE = 'datatype';
 const FRAGMENT_DATATYPE = 'fragment';
+const JOB_SERVICE_NAME = 'jobs';
  
 const START_NODE_TYPE = 'Start';
 const STOP_NODE_TYPE = 'Stop';
@@ -127,6 +130,12 @@ class WorkflowNodeWrapper{
 			}
 		}else{
 			return undefined;
+		}
+	}
+	setProgress(percent){
+		if(percent && Number.isInteger(percent) && percent >=0 && percent <=100){
+			let jobService = this.engine.plugin.getService(JOB_SERVICE_NAME);
+			jobService.updateJob({"id": this.engine.runtimeContext._jobId,"progress": percent});
 		}
 	}
 	log(msg){
@@ -525,7 +534,7 @@ class WorkflowEngine{
 				});
 			}
 		}
-		engine.registerNodeType(DB_DELETE_NODE_TYPE,nodeHandler);
+		this.registerNodeType(DB_DELETE_NODE_TYPE,nodeHandler);
 		nodeHandler = function(node,inputTerminalName,executionContext){
 			if('input'!=inputTerminalName && 'loopBack'!=inputTerminalName){
 				node.error('Invalid input terminal "'+inputTerminalName+'" activation for For_Loop node #'+node.id());
@@ -685,6 +694,9 @@ class WorkflowEngine{
 	}
 	start(workflow,runtimeContext){
 		this.debug('->WorkflowEngine#start("'+workflow.name+'",ctx)');
+		let jobService = this.plugin.getService(JOB_SERVICE_NAME);
+		let job = jobService.createJob(this.owner.login,workflow.name+' v'+workflow.version+' '+moment().format(TIMESTAMP_FORMAT));
+		runtimeContext._jobId = job.id;
 		this.startNode = null;
 		this.workflowWrappers = {};
 		this.links = {};
@@ -709,6 +721,8 @@ class WorkflowEngine{
 	stop(msg){
 		this.debug('->WorkflowEngine#stop()');
 		if(this.nodeActivationEnabled){
+			let jobService = this.plugin.getService(JOB_SERVICE_NAME);
+			jobService.updateJob({"id": this.runtimeContext._jobId,"progress": 100});
 			this.fireEvent('stop','engine',msg);
 			this.nodeActivationEnabled = false;
 			this.debug('workflow execution process ID#'+this.executionId+' is now stopped!');
@@ -722,27 +736,33 @@ class WorkflowEngine{
 	}
 	activateLink(sourceNodeId,terminalName,context){
 		this.debug('->WorkflowEngine#activateLink('+sourceNodeId+','+terminalName+',ctx)');
+		let jobService = this.plugin.getService(JOB_SERVICE_NAME);
+		let job = jobService.getJob(this.runtimeContext._jobId);
 		if(this.nodeActivationEnabled){
-			let terminalId = sourceNodeId+'#'+terminalName;
-			let link = this.links[terminalId];
-			if(typeof link!='undefined'){
-				let target = link.target;
-				let targetTerminal = link.terminal;
-				this.fireEvent('debug','engine','activating terminal "'+target.id()+'#'+targetTerminal+'" from "'+terminalId+'"');
-				if(typeof this.options['activation.delay']!='undefined'){
-					setTimeout(function(){ target.handler(target,targetTerminal,context); },this.options['activation.delay']);
+			if(job.status=='ongoing'){
+				let terminalId = sourceNodeId+'#'+terminalName;
+				let link = this.links[terminalId];
+				if(typeof link!='undefined'){
+					let target = link.target;
+					let targetTerminal = link.terminal;
+					this.fireEvent('debug','engine','activating terminal "'+target.id()+'#'+targetTerminal+'" from "'+terminalId+'"');
+					if(typeof this.options['activation.delay']!='undefined'){
+						setTimeout(function(){ target.handler(target,targetTerminal,context); },this.options['activation.delay']);
+					}else{
+						target.handler(target,targetTerminal,context);
+					}
 				}else{
-					target.handler(target,targetTerminal,context);
+					this.fireEvent('warning','engine','activation requested from unbound terminal "'+terminalId+'"');
 				}
 			}else{
-				this.fireEvent('warning','engine','activation requested from unbound terminal "'+terminalId+'"');
+				this.stop('Workflow terminated - job status is '+job.status);
 			}
 		}
 		this.debug('<-WorkflowEngine#activateLink()');
 	}
 	setTimeout(delayMsec){
 		let engine = this;
-		setTimeout(function(){ engine.stop('Workflow completed - global timeout reached'); },delayMsec);
+		setTimeout(function(){ engine.stop('Workflow terminated - global timeout reached'); },delayMsec);
 	}
 	debug(txt){
 		this.plugin.debug(txt);

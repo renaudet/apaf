@@ -1,3 +1,7 @@
-//available variables:
-//-logger: a logger feature providing info(msg), debug(msg), trace(msg), error(msg) functions
-//-asUser: the runAs user for this task
+/*
+ * Snippet environment can use the ctx variable
+ *  ctx.user: the user executing the Snippet
+ *  ctx.info(msg) / ctx.debug(msg) / ctx.trace(msg) / ctx.error(msg): to log msg
+ *  ctx.setProgress(percentage): to set the achieved percentage of the underlying job
+ *  ctx.checkStatus(): true / false - to check if the underlying job is still ongoing
+ */

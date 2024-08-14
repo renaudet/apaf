@@ -7,6 +7,7 @@
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.jobs","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
   ],
@@ -106,7 +107,8 @@
   		"schema": "/query",
   		"handler": "querySchedulersHandler",
   		"securityRole": "administrator",
-		"description": "Query the list of registered Schedulers"
+		"description": "Query the list of registered Schedulers",
+		"input": {"selector": {"active": {"$eq": true}}}
   	},
   	{
   		"point": "npa.http.handler",
@@ -116,7 +118,8 @@
   		"schema": "/",
   		"handler": "createSchedulerHandler",
   		"securityRole": "administrator",
-		"description": "Create a new Scheduler record"
+		"description": "Create a new Scheduler record",
+		"input": {"name": "abcd","type": "startup/recurrent/fixed","active": false,"description": "abcd","servlet": "abcd-abcd-abcd-abcd","workflow": "abcd-abcd-abcd-abcd","runAs": "abcd-abcd-abcd-abcd","delay": 123,"time": "12:00:00"}
   	},
   	{
   		"point": "npa.http.handler",
@@ -126,7 +129,8 @@
   		"schema": "/",
   		"handler": "updateSchedulerHandler",
   		"securityRole": "administrator",
-		"description": "Update a given SCheduler record"
+		"description": "Update a given SCheduler record",
+		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","type": "startup/recurrent/fixed","active": false,"description": "abcd","servlet": "abcd-abcd-abcd-abcd","workflow": "abcd-abcd-abcd-abcd","runAs": "abcd-abcd-abcd-abcd","delay": 123,"time": "12:00:00"}
   	},
   	{
   		"point": "npa.http.handler",

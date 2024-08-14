@@ -35,7 +35,8 @@
   		"schema": "/publish",
   		"handler": "publishFeatureHandler",
   		"securityRole": "administrator",
-		"description": "Publish the given feature to the configured Registry"
+		"description": "Publish the given feature to the configured Registry",
+		"input": {"name": "New Feature","version": "1.0.0","category": "Tool","roles": [],"datatypes": [],"workflows": [],"fragments": [],"applications": []}
   	},
   	{
   		"point": "npa.http.handler",
@@ -45,7 +46,8 @@
   		"schema": "/catalog",
   		"handler": "getCatalogHandler",
   		"securityRole": "",
-		"description": "Get the catalog of published features from the configured Registry"
+		"description": "Get the catalog of published features from the configured Registry",
+		"input": "category=someCategory&name=featureName&summary=someFeatureDescription"
   	},
   	{
   		"point": "npa.http.handler",
@@ -65,7 +67,8 @@
   		"schema": "/install",
   		"handler": "installFeatureHandler",
   		"securityRole": "administrator",
-		"description": "Install a given feature on the current APAF instance"
+		"description": "Install a given feature on the current APAF instance",
+		"input": {"name": "Feature Name","version": "1.0.0","category": "Tool","roles": [],"datatypes": [],"workflows": [],"fragments": [],"applications": []}
   	},
   	{
   		"point": "apaf.menu.item.provider",
@@ -149,7 +152,8 @@
   		"method": "POST",
   		"schema": "/v1",
   		"handler": "storeFeatureHandler",
-		"description": "Register and store a feature within the Registry (Registry Application only)"
+		"description": "Register and store a feature within the Registry (Registry Application only)",
+		"input": {"name": "New Feature","version": "1.0.0","category": "Tool","roles": [],"datatypes": [],"workflows": [],"fragments": [],"applications": []}
   	},
   	{
   		"point": "npa.http.handler",
@@ -158,7 +162,8 @@
   		"method": "GET",
   		"schema": "/v1",
   		"handler": "searchFeatureHandler",
-		"description": "Get a list of features filtered by name, category and description (Registry Application only)"
+		"description": "Get a list of features filtered by name and/or category - a summary only can be requested (Registry Application only)",
+		"input": "category=abcd&name=abcd&summary=false"
   	},
   	{
   		"point": "npa.http.handler",

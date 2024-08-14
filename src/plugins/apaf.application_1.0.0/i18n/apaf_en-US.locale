@@ -212,6 +212,7 @@ apaf.page.apis.title=Manage APIs
 apaf.apis.menu.apis=APAF APIs
 apaf.apis.menu.tokens=Security Tokens
 apaf.apis.menu.workspace=Workspace
+apaf.apis.menu.jobs=Jobs
 apaf.page.apis.tokens.form.title=Create a new Security Token
 apaf.page.apis.confirm.delete=Delete selected token?
 apaf.page.apis.deleted=Deleted!

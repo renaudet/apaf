@@ -28,7 +28,8 @@
   		"method": "GET",
   		"schema": "/",
   		"handler": "logoutHandler",
-		"description": "Logout from APAF and destroy any existing User session"
+		"description": "Logout from APAF and destroy any existing User session",
+		"input": ""
   	}
   ],
   "provides": [
