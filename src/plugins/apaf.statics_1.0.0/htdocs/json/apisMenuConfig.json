@@ -20,6 +20,10 @@
     		{
     			"id": "jobs",
     			"label": "@apaf.apis.menu.jobs"
+    		},
+    		{
+    			"id": "properties",
+    			"label": "@apaf.apis.menu.properties"
     		}
     	]
     }

@@ -1,0 +1,58 @@
+{
+  "id": "apaf.runtime.properties",
+  "name": "Runtime properties handler for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.runtime.props","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.runtime.properties.logger",
+  		"dir": "apaf.runtime.properties"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.runtime.properties.router",
+  		"path": "/runtime-properties"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.runtime.properties.getProperties.handler",
+  		"router": "apaf.runtime.properties.router",
+  		"method": "GET",
+  		"schema": "/",
+  		"handler": "getPropertiesHandler",
+		"description": "Get the list of maintained runtime properties",
+		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.runtime.properties.getProperty.handler",
+  		"router": "apaf.runtime.properties.router",
+  		"method": "GET",
+  		"schema": "/:name",
+  		"handler": "getPropertyHandler",
+		"description": "Get the value of a registered runtime property given its name",
+		"securityRole": "operator"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.runtime.properties.setProperty.handler",
+  		"router": "apaf.runtime.properties.router",
+  		"method": "PUT",
+  		"schema": "/",
+  		"handler": "setPropertyHandler",
+		"description": "Set a runtime property if possible - if the property doesn't exists, create it",
+		"securityRole": "operator",
+		"input": {"name": "abcd","type": "string/int/boolean/percentage","value": "some value","description": "abcd"}
+  	}
+  ],
+  "provides": [
+  ]
+}

@@ -1,0 +1,37 @@
+{
+    "id":"propertiesTable",
+    "version": "1.0.0",
+    "type": "Datatable",
+    "configuration": {
+    	"contentAdapter": "@.fields",
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "name",
+        	"ascending": true
+        },
+        "maxHeight": 800,
+        "columns": [
+            {
+                "label": "Property Name",
+                "field": "name"
+            },
+            {
+                "label": "Description",
+                "field": "description"
+            },
+            {
+                "label": "Type",
+                "field": "type"
+            },
+            {
+                "label": "Value",
+                "field": "value"
+            },
+            {
+                "label": "Locked",
+                "field": "locked",
+                "renderer": "@.locked?'<img src=\"/uiTools/img/silk/lock.png\">':'<img src=\"/uiTools/img/silk/lock_open.png\">'"
+            }
+        ]
+    }
+}

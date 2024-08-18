@@ -15,6 +15,7 @@ const CARD_ID = 'manageApisCard';
 const API_TEST_FORM_ID = 'apiTestForm';
 const JOB_TABLE_ID = 'jobTable';
 const JOB_TOOLBAR_ID = 'jobTableToolbar';
+const PROPERTIES_TABLE_ID = 'propertiesTable';
 
 let treeViewer = null;
 let selectedFolder = null;
@@ -53,6 +54,9 @@ onPageChanged = function(menuEvent){
 	if('jobs'==menuEvent.menu){
 		doRefreshJobs = true;
 		refreshJobTable();
+	}
+	if('properties'==menuEvent.menu){
+		refreshPropertiesTable();
 	}
 }
 
@@ -739,4 +743,17 @@ terminateJob = function(event){
 			showError(errorMsg.message?errorMsg.message:errorMsg);
 		});
 	}
+}
+
+refreshPropertiesTable = function(){
+	apaf.call({
+		"method": "GET",
+		"uri": "/runtime-properties",
+		"payload": {}
+	}).then(function(data){
+		let propertiesTable = $apaf(PROPERTIES_TABLE_ID);
+		propertiesTable.renderData(data);
+	}).onError(function(errorMsg){
+		showError(errorMsg.message?errorMsg.message:errorMsg);
+	});
 }
