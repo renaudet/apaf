@@ -8,6 +8,7 @@
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
   	{"type": "plugin","id": "npa.jobs","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.runtime.props","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
   ],
@@ -98,6 +99,15 @@
 	    		}
   			]
   		}
+  	},
+  	{
+  		"point": "npa.runtime.property.provider",
+  		"id": "apaf.scheduler.property.tick.timeout",
+		"name": "scheduler.tick.timeout",
+		"description": "Tick value for the Scheduler Engine (delay in msec. between two execution loops)",
+		"type": "int",
+		"value": 30000,
+		"locked": false
   	},
   	{
   		"point": "npa.http.handler",

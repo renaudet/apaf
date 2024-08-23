@@ -22,6 +22,8 @@ plugin.start = function(){
 	this.name = 'APAF Registry v'+this.config.version;
 	this.info('APAF Registry starting...');
 	this.registryMode = true;
+	let propService = this.getService(RUNTIME_PROPERTIES_SERVICE_NAME);
+	propService.setProperty('npa.application.name','registry');
 	// make sure the datatype plugin is loaded
 	this.runtime.getPlugin('apaf.datatype');
 	// starts the HTTP Listener

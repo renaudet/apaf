@@ -10,7 +10,8 @@ const SECURITY_SERVICE_NAME = 'apaf-security';
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const FRAGMENT_DATATYPE = 'fragment';
 const WORKFLOW_DATATYPE = 'workflow';
-const WORKFLOW_TIMEOUT = 5*60*1000;
+const GLOBAL_TIMEOUT_PROPERTY = 'workflow.global.timeout';
+const RUNTIME_PROPERTIES_SERVICE_NAME = 'properties';
 
 function sortOn(list,attributeName,descending=true){
 	if(typeof attributeName=='undefined'){
@@ -210,6 +211,8 @@ plugin.executeWorkflowHandler = function(req,res){
 	plugin.debug('->executeWorkflowHandler()');
 	let requiredRole = plugin.getRequiredSecurityRole('apaf.workflow.execute.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+    let propService = plugin.getService(RUNTIME_PROPERTIES_SERVICE_NAME);
+    let timeout = propService.getProperty(GLOBAL_TIMEOUT_PROPERTY);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
 			plugin.debug('<-executeWorkflowHandler() - error');
@@ -223,7 +226,7 @@ plugin.executeWorkflowHandler = function(req,res){
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					plugin.debug('execution requested for Workflow "'+workflow.name+'" v'+workflow.version);
-					let engine = new WorkflowEngine(plugin,user,{"global.timeout": WORKFLOW_TIMEOUT});
+					let engine = new WorkflowEngine(plugin,user,{"global.timeout": timeout});
 					plugin.loadCustomNodeFragments(function(fragments){
 						for(var i=0;i<fragments.length;i++){
 							engine.registerCustomNode(fragments[i]);
@@ -324,6 +327,8 @@ plugin.queryAndExecuteWorkflow = function(query,owner,runtimeContext,then){
 	this.trace('query: '+JSON.stringify(query));
 	this.trace('owner: '+owner.login);
 	this.trace('runtimeContext: '+JSON.stringify(runtimeContext));
+    let propService = this.getService(RUNTIME_PROPERTIES_SERVICE_NAME);
+    let timeout = propService.getProperty(GLOBAL_TIMEOUT_PROPERTY);
 	let datatypePlugin = this.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 	datatypePlugin.query(WORKFLOW_DATATYPE,query,function(err,workflows){
 		if(err){
@@ -334,7 +339,7 @@ plugin.queryAndExecuteWorkflow = function(query,owner,runtimeContext,then){
 				let sortedResultSet = workflows.length==1?workflows:sortOn(workflows,'version',false);
 				let workflow = sortedResultSet[0];
 				plugin.debug('found Workflow "'+workflow.name+'" v'+workflow.version+' with #ID: '+workflow.id);
-				let engine = new WorkflowEngine(plugin,owner,{"global.timeout": WORKFLOW_TIMEOUT});
+				let engine = new WorkflowEngine(plugin,owner,{"global.timeout": timeout});
 				plugin.loadCustomNodeFragments(function(fragments){
 					for(var i=0;i<fragments.length;i++){
 						engine.registerCustomNode(fragments[i]);

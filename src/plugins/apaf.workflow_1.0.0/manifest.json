@@ -8,6 +8,7 @@
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
   	{"type": "plugin","id": "npa.jobs","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.runtime.props","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.admin","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
@@ -118,6 +119,15 @@
     			"default": false
     		}
   		]
+  	},
+  	{
+  		"point": "npa.runtime.property.provider",
+  		"id": "apaf.workflow.property.timeout",
+		"name": "workflow.global.timeout",
+		"description": "Global execution timeout for server-side Workflows",
+		"type": "int",
+		"value": 300000,
+		"locked": false
   	},
   	{
   		"point": "npa.http.handler",

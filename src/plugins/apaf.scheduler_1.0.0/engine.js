@@ -12,9 +12,10 @@ const SECURITY_SERVICE_NAME = 'apaf-security';
 const USER_DATATYPE_NAME = 'user';
 const SCHEDULER_DATATYPE_NAME = 'scheduler';
 const FRAGMENT_DATATYPE_NAME = 'fragment';
-const TICK_TIMEOUT = 30000;
 const DATE_TIME_FORMAT = 'YYYY/MM/DD HH:mm:ss';
 const TIMESTAMP_FORMAT = 'HH:mm:ss';
+const RUNTIME_PROPERTIES_SERVICE_NAME = 'properties';
+const TICK_TIMEOUT_PROPERTY_NAME = 'scheduler.tick.timeout';
 
 var xeval = eval;
  
@@ -34,6 +35,10 @@ class SchedulerEngine {
 	}
 	error(msg){
 		this.schedulerPlugin.error(msg);
+	}
+	getTickValue(){
+	    let propService = this.schedulerPlugin.getService(RUNTIME_PROPERTIES_SERVICE_NAME);
+	    return propService.getProperty('scheduler.tick.timeout');
 	}
 	start(){
 		this.info('SchedulerEngine starting...');
@@ -184,7 +189,7 @@ class SchedulerEngine {
 								var dateFormatted = now.format('YYYY/MM/DD');
 								taskMoment = moment(dateFormatted+' '+task.time,DATE_TIME_FORMAT);
 							}
-							if(now.isAfter(taskMoment) && now.diff(taskMoment)<TICK_TIMEOUT){
+							if(now.isAfter(taskMoment) && now.diff(taskMoment)<engine.getTickValue()){
 								fixedTimeTasks.push(task);
 							}
 						}
@@ -209,7 +214,7 @@ class SchedulerEngine {
 				}
 			}
 		});
-		setTimeout(function(){ engine.checkLoop(); },TICK_TIMEOUT);
+		setTimeout(function(){ engine.checkLoop(); },engine.getTickValue());
 	}
 }
 

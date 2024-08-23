@@ -6,12 +6,16 @@
 const ApafPlugin = require('../../apafUtil.js');
 const ENV_NAME = 'APPLICATION_NAME';
 const ENV_APPLICATION_PORT = 'APPLICATION_PORT';
+const RUNTIME_PROPERTIES_SERVICE_NAME = 'properties';
 
 var plugin = new ApafPlugin();
 
 plugin.start = function(){
 	this.name = process.env[ENV_NAME];
 	this.info('Application '+this.name+' starting...');
+	let propService = this.getService(RUNTIME_PROPERTIES_SERVICE_NAME);
+	propService.setProperty('npa.application.name','apaf');
+	propService.lockProperty('npa.application.name');
 	// make sure the datatype plugin is loaded
 	this.runtime.getPlugin('apaf.datatype');
 	// make sure the scheduler plugin is loaded
