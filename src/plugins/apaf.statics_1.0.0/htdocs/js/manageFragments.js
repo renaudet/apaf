@@ -154,7 +154,7 @@ openSnippetLibrary = function(){
 	html += '<div id="snippet" style="min-height: 400px;overflow: auto;font-family: lucida console;font-size: 0.9rem;background-color: #000000;color: #00ff00;">';
 	html += '</div>';
 	dialog.setBody(html);
-	$.loadJson('/dev/snippets/snippetList.json',function(snippetConfig){
+	/*$.loadJson('/dev/snippets/snippetList.json',function(snippetConfig){
 		for(var i=0;i<snippetConfig.length;i++){
 			let snippet = snippetConfig[i];
 			if(typeof snippet.ifExists=='undefined'){
@@ -178,6 +178,28 @@ openSnippetLibrary = function(){
 			}
 		}
 		dialog.open();
+	});*/
+	apaf.call({
+		"method": "GET",
+		"uri": "/apaf-dev/snippets",
+		"payload": {}
+	}).then(function(data){
+		if(data && data.length>0){
+			let snippets = sortOn(data,'category');
+			for(var i=0;i<snippets.length;i++){
+				let snippetEntry = snippets[i];
+				let option = '';
+				option += '<option value="';
+				option += snippetEntry.location;
+				option += '">';
+				option += snippetEntry.label;
+				option += '</option>';
+				$('#snippetSelector').append(option);
+			}
+		}
+		dialog.open();
+	}).onError(function(msg){
+		showError(msg);
 	});
 	dialog.onClose(function(){
 		let selectedSnippet = $('#snippet pre').text();

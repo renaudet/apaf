@@ -10,6 +10,23 @@ const FRAGMENT_DATATYPE = 'fragment';
 const APPLICATION_DATATYPE = 'application';
 
 var plugin = new ApafPlugin();
+plugin.snippetRegistry = [];
+
+/*
+ * expected extension point format:
+  {
+	"id": <extension-id>,
+	"point": "apaf.dev.snippet.provider",
+	"category": <snippet-category>,
+	"label": <snippet description>,
+	"location": <snippet-source-uri>,
+  }
+ */
+plugin.lazzyPlug = function(extenderId,extensionPointConfig){
+	if('apaf.dev.snippet.provider'==extensionPointConfig.point){
+		this.snippetRegistry.push(extensionPointConfig);
+	}
+}
 
 plugin.queryFragmentHandler = function(req,res){
 	plugin.debug('->queryFragmentHandler()');
@@ -283,20 +300,11 @@ plugin.getSnippetsHandler = function(req,res){
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
-			plugin.debug('<-findApplicationHandler() - error');
+			plugin.debug('<-getSnippetsHandler() - error authorization');
 			res.json({"status": 500,"message": err,"data": []});
 		}else{
-			let recordId = req.params.id;
-			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
-			datatypePlugin.findByPrimaryKey(APPLICATION_DATATYPE,{"id": recordId},function(err,data){
-				if(err){
-					plugin.debug('<-findApplicationHandler() - error');
-					res.json({"status": 500,"message": err,"data": []});
-				}else{
-					plugin.debug('<-findApplicationHandler() - success');
-					res.json({"status": 200,"message": "found","data": data});
-				}
-			});
+			plugin.debug('<-findApplicationHandler() - success');
+			res.json({"status": 200,"message": "ok","data": plugin.snippetRegistry});
 		}
 	});
 }
