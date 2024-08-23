@@ -14,7 +14,7 @@ var plugin = new ApafPlugin();
 plugin.queryFragmentHandler = function(req,res){
 	plugin.debug('->queryFragmentHandler()');
 	res.set('Content-Type','application/json');
-	let requiredRole = plugin.getRequiredSecurityRole('apaf.admin.query.fragment.handler');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.query.fragment.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
@@ -41,7 +41,7 @@ plugin.queryFragmentHandler = function(req,res){
 
 plugin.createFragmentHandler = function(req,res){
 	plugin.debug('->createFragmentHandler()');
-	let requiredRole = plugin.getRequiredSecurityRole('apaf.admin.create.fragment.handler');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.create.fragment.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
@@ -66,7 +66,7 @@ plugin.createFragmentHandler = function(req,res){
 
 plugin.updateFragmentHandler = function(req,res){
 	plugin.debug('->updateFragmentHandler()');
-	let requiredRole = plugin.getRequiredSecurityRole('apaf.admin.update.fragment.handler');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.update.fragment.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
@@ -91,7 +91,7 @@ plugin.updateFragmentHandler = function(req,res){
 
 plugin.deleteFragmentHandler = function(req,res){
 	plugin.debug('->deleteFragmentHandler()');
-	let requiredRole = plugin.getRequiredSecurityRole('apaf.admin.delete.fragment.handler');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.delete.fragment.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
@@ -115,7 +115,7 @@ plugin.deleteFragmentHandler = function(req,res){
 
 plugin.findFragmentHandler = function(req,res){
 	plugin.debug('->findFragmentHandler()');
-	let requiredRole = plugin.getRequiredSecurityRole('apaf.admin.find.fragment.handler');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.find.fragment.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
@@ -142,7 +142,7 @@ plugin.findFragmentHandler = function(req,res){
 plugin.queryApplicationHandler = function(req,res){
 	plugin.debug('->queryApplicationHandler()');
 	res.set('Content-Type','application/json');
-	let requiredRole = plugin.getRequiredSecurityRole('apaf.admin.query.application.handler');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.query.application.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
@@ -169,7 +169,7 @@ plugin.queryApplicationHandler = function(req,res){
 
 plugin.createApplicationHandler = function(req,res){
 	plugin.debug('->createApplicationHandler()');
-	let requiredRole = plugin.getRequiredSecurityRole('apaf.admin.create.application.handler');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.create.application.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
@@ -194,7 +194,7 @@ plugin.createApplicationHandler = function(req,res){
 
 plugin.updateApplicationHandler = function(req,res){
 	plugin.debug('->updateApplicationHandler()');
-	let requiredRole = plugin.getRequiredSecurityRole('apaf.admin.update.application.handler');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.update.application.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
@@ -219,7 +219,7 @@ plugin.updateApplicationHandler = function(req,res){
 
 plugin.deleteApplicationHandler = function(req,res){
 	plugin.debug('->deleteApplicationHandler()');
-	let requiredRole = plugin.getRequiredSecurityRole('apaf.admin.delete.application.handler');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.delete.application.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
@@ -255,7 +255,31 @@ plugin.deleteApplicationHandler = function(req,res){
 
 plugin.findApplicationHandler = function(req,res){
 	plugin.debug('->findApplicationHandler()');
-	let requiredRole = plugin.getRequiredSecurityRole('apaf.admin.find.application.handler');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.find.application.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-findApplicationHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let recordId = req.params.id;
+			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+			datatypePlugin.findByPrimaryKey(APPLICATION_DATATYPE,{"id": recordId},function(err,data){
+				if(err){
+					plugin.debug('<-findApplicationHandler() - error');
+					res.json({"status": 500,"message": err,"data": []});
+				}else{
+					plugin.debug('<-findApplicationHandler() - success');
+					res.json({"status": 200,"message": "found","data": data});
+				}
+			});
+		}
+	});
+}
+
+plugin.getSnippetsHandler = function(req,res){
+	plugin.debug('->getSnippetsHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.snippet.query.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
