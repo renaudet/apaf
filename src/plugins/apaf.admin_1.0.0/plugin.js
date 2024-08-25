@@ -15,11 +15,16 @@ const TIMESTAMP_FORMAT = 'YYYY/MM/DD HH:mm:ss';
 
 var plugin = new ApafPlugin();
 plugin.userPrefs = {};
+plugin.profilePageContributors = [];
 
 plugin.lazzyPlug = function(extenderId,extensionPointConfig){
 	if('apaf.admin.user.preference'==extensionPointConfig.point){
 		plugin.debug('adding User Preference "'+extensionPointConfig.preference+'" from #'+extenderId);
 		this.userPrefs[extensionPointConfig.preference] = extensionPointConfig;
+	}
+	if('apaf.admin.profile.provider'==extensionPointConfig.point){
+		plugin.debug('adding Profile page contributor "'+extensionPointConfig.id+'" from #'+extenderId);
+		plugin.profilePageContributors.push(extensionPointConfig);
 	}
 }
 
@@ -543,6 +548,20 @@ plugin.getPreferencesHandler = function(req,res){
 		}else{
 			plugin.debug('<-getPreferencesHandler() - success');
 			res.json({"status": 200,"message": "ok","data": plugin.userPrefs });
+		}
+	});
+}
+
+plugin.getProfilePageContributionsHandler = function(req,res){
+	plugin.debug('->getProfilePageContributionsHandler()');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,null,function(err,user){
+		if(err){
+			plugin.debug('<-getProfilePageContributionsHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			plugin.debug('<-getProfilePageContributionsHandler() - success');
+			res.json({"status": 200,"message": "ok","data": plugin.profilePageContributors });
 		}
 	});
 }

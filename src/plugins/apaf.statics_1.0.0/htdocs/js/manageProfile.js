@@ -8,28 +8,29 @@ const USER_EDIT_FORM_ID = 'profileEditForm';
 const WORKFLOW_PREFERENCE_EDIT_FORM_ID = 'workflowEditorPrefsEditForm';
 
 let userProfile = null;
+let menuEventMap = {};
+
 $(document).ready(function(){
 	checkSessionStatus(initializeUi);
 });
 
 initializeUi = function(){
+	menuEventMap['preferences'] = openMenuPreferences;
+	menuEventMap['all.preferences'] = openMenuAllPreferences;
 	npaUi.loadConfigFrom(GLOBAL_CONFIGURATION_FILE,function(){
 		npaUi.initialize(function(){
 			npaUi.onComponentLoaded = getUserProfile;
 			npaUi.on('save',saveUserData);
 			npaUi.on('menu.item.selected',onMenuSelected);
-			//npaUi.on('saveWorkflowPrefs',saveWorkflowPrefs);
 			npaUi.render();
 		});
 	});
 }
 
 onMenuSelected = function(event){
-	if('preferences'==event.menu){
-		openMenuPreferences();
-	}
-	if('all.preferences'==event.menu){
-		openMenuAllPreferences();
+	let handlerFunction = menuEventMap[event.menu];
+	if(typeof handlerFunction!='undefined'){
+		handlerFunction();
 	}
 }
 
@@ -42,12 +43,28 @@ getUserProfile = function(){
 			delete formData.password;
 			form.setData(formData);
 			form.setEditMode(true);
+			loadContributions();
 		}else{
 			showWarning(response.message);
 		}
 	},function(error){
 		showError(error.message);
 	});
+}
+
+loadContributions = function(){
+	apaf.call({"method": "GET","uri": "/apaf-admin/profilePageContributions","payload": {}})
+	    .then(function(contributions){
+			for(var i=0;i<contributions.length;i++){
+				let contribution = contributions[i];
+				if(contribution.script){
+					$.loadScript(contribution.script);
+				}
+			}
+		})
+	    .onError(function(errorMessage){
+			showError(errorMessage);
+	    });
 }
 
 saveUserData = function(){

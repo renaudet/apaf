@@ -491,9 +491,21 @@
   			"name": "manageGroup",
   			"description": "Grant permission to read, create or update a user Group"
   		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.profile.page.extension.handler",
+  		"router": "apaf.admin.router",
+  		"method": "GET",
+  		"schema": "/profilePageContributions",
+  		"handler": "getProfilePageContributionsHandler",
+  		"securityRole": "",
+		"description": "Get the list of registered extensions for the Profile page",
+		"input": ""
   	}
   ],
   "provides": [
-  	{"id": "apaf.admin.user.preference"}
+  	{"id": "apaf.admin.user.preference"},
+  	{"id": "apaf.admin.profile.provider"}
   ]
 }
