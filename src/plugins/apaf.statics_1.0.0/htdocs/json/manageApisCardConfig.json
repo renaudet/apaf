@@ -5,6 +5,7 @@
     "configuration": {
         "icon": "/uiTools/img/silk/plugin.png",
         "label": "@apaf.page.apis.title",
+        "headerClass": "bg-secondary bg-gradient bg-opacity-10",
         "stylesheet": "/apaf-branding/css/apafCard.css"
     }
 }

@@ -6,6 +6,7 @@
         "icon_": "/resources/img/apaf-schedulers.png",
         "icon": "/uiTools/img/silk/clock.png",
         "label": "@apaf.page.scheduler.title",
+        "headerClass": "bg-secondary bg-gradient bg-opacity-10",
         "stylesheet": "/apaf-branding/css/apafCard.css"
     }
 }

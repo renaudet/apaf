@@ -5,6 +5,7 @@
     "configuration": {
         "icon": "/resources/img/apaf-applications.png",
         "label": "@apaf.page.applications.title",
+        "headerClass": "bg-secondary bg-gradient bg-opacity-10",
         "stylesheet": "/apaf-branding/css/apafCard.css"
     }
 }
