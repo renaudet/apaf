@@ -702,6 +702,7 @@ class WorkflowEngine{
 		this.links = {};
 		this.nodeActivationEnabled = true;
 		this.runtimeContext = runtimeContext;
+		this.runtimeContext._engine = this;
 		this.fireEvent('start.requested','engine','Workflow name is "'+workflow.name+'"');
 		this.loadWorkflow(workflow);
 		if(this.startNode!=null){

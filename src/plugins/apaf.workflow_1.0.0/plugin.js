@@ -235,6 +235,7 @@ plugin.executeWorkflowHandler = function(req,res){
 							runtimeContext['_console'].push(event);
 							if('stop'==event.type){
 								plugin.debug('<-executeWorkflowHandler()');
+								delete engine.runtimeContext._engine;
 								res.json({"status": 200,"message": "executed","data": engine.runtimeContext});
 							}
 							if('debug'==event.type){
@@ -269,7 +270,7 @@ plugin.executeWorkflow = function(workflowName,workflowVersion,owner,runtimeCont
 	this.trace('workflowVersion: '+workflowVersion);
 	this.trace('owner: '+owner.login);
 	this.trace('runtimeContext: '+JSON.stringify(runtimeContext));
-	let datatypePlugin = this.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+	//let datatypePlugin = this.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 	let query = {"selector": {"name": {"$eq": workflowName}}};
 	if(workflowVersion!=null && workflowVersion.length>0){
 		query =  {"selector": {"$and": [{"name": {"$eq": workflowName}}, {"version": {"$eq": workflowVersion}}]}};
@@ -348,6 +349,7 @@ plugin.queryAndExecuteWorkflow = function(query,owner,runtimeContext,then){
 						runtimeContext['_console'].push(event);
 						if('stop'==event.type){
 							plugin.debug('<-queryAndExecuteWorkflow() - stop event received');
+							delete engine.runtimeContext._engine;
 							then(null,engine.runtimeContext);
 						}
 						if('debug'==event.type){
