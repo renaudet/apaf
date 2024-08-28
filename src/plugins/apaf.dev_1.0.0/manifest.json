@@ -358,9 +358,16 @@
   	},
   	{
   		"point": "apaf.dev.snippet.provider",
-  		"id": "apaf.dev.snippet.10",
+  		"id": "apaf.dev.snippet.10.1",
   		"label": "Implement a custom Workflow Node",
   		"location": "/dev/snippets/workflowNode.txt",
+  		"category": "Runtime"
+  	},
+  	{
+  		"point": "apaf.dev.snippet.provider",
+  		"id": "apaf.dev.snippet.10.2",
+  		"label": "Implement a long-running Workflow Node (server-side only)",
+  		"location": "/dev/snippets/longRunningWorkflowNode.txt",
   		"category": "Runtime"
   	},
   	{

@@ -58,6 +58,9 @@ onPageChanged = function(menuEvent){
 	if('properties'==menuEvent.menu){
 		refreshPropertiesTable();
 	}
+	if('apis'==menuEvent.menu){
+		initializeApiCallResultArea();
+	}
 }
 
 initComponents = function(){
@@ -537,6 +540,18 @@ function download(url) {
 downloadResource = function(){
 	let file = selectedNode.data;
 	download(createDownloadUrl(file));
+}
+
+initializeApiCallResultArea = function(){
+	console.log('initializeApiCallResultArea()');
+	let height = $('#workArea').height()-500;
+	$('#testRestCallResult').height(height);
+	$('#testRestCallResult').css('max-height',height+'px');
+	$(window).on('resize',function(){
+		height = $('#workArea').height()-500;
+		$('#testRestCallResult').height(height);
+		$('#testRestCallResult').css('max-height',height+'px');
+	});
 }
 
 var apiVisitor = {
