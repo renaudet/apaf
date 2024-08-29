@@ -91,7 +91,7 @@ apaf.call = function(callContext){
 			if(200==response.status){
 				callWrapper.onSuccessCallback(response.data);
 			}else{
-				callWrapper.onErrorCallback(response.message);
+				callWrapper.onErrorCallback(response.message,response.data);
 			}
 		}else{
 			callWrapper.onSuccessCallback(response);
@@ -262,6 +262,22 @@ apaf.savePreferences = function(preferences,then){
 			},function(error){
 				showError(error.message);
 			});
+		}else{
+			showWarning(response.message);
+		}
+	},function(error){
+		showError(error.message);
+	});
+}
+apaf.loadContributions = function(uri){
+	makeRESTCall('GET',uri,{},function(response){
+		if(response.status==200){
+			for(var i=0;i<response.data.length;i++){
+				let contribution = response.data[i];
+				if(contribution.script){
+					$.loadScript(contribution.script);
+				}
+			}
 		}else{
 			showWarning(response.message);
 		}

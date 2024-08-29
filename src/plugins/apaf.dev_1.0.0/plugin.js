@@ -11,6 +11,7 @@ const APPLICATION_DATATYPE = 'application';
 
 var plugin = new ApafPlugin();
 plugin.snippetRegistry = [];
+plugin.wizardProviders = [];
 
 /*
  * expected extension point format:
@@ -25,6 +26,9 @@ plugin.snippetRegistry = [];
 plugin.lazzyPlug = function(extenderId,extensionPointConfig){
 	if('apaf.dev.snippet.provider'==extensionPointConfig.point){
 		this.snippetRegistry.push(extensionPointConfig);
+	}
+	if('apaf.dev.editor.wizard.provider'==extensionPointConfig.point){
+		this.wizardProviders.push(extensionPointConfig);
 	}
 }
 
@@ -305,6 +309,21 @@ plugin.getSnippetsHandler = function(req,res){
 		}else{
 			plugin.debug('<-findApplicationHandler() - success');
 			res.json({"status": 200,"message": "ok","data": plugin.snippetRegistry});
+		}
+	});
+}
+
+plugin.getWizardsHandler = function(req,res){
+	plugin.debug('->getWizardsHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.wizard.query.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-getWizardsHandler() - error authorization');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			plugin.debug('<-getWizardsHandler() - success');
+			res.json({"status": 200,"message": "ok","data": plugin.wizardProviders});
 		}
 	});
 }

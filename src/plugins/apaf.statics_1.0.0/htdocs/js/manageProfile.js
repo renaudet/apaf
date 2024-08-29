@@ -43,7 +43,8 @@ getUserProfile = function(){
 			delete formData.password;
 			form.setData(formData);
 			form.setEditMode(true);
-			loadContributions();
+			//loadContributions();
+			apaf.loadContributions('/apaf-admin/profilePageContributions');
 		}else{
 			showWarning(response.message);
 		}
@@ -52,7 +53,7 @@ getUserProfile = function(){
 	});
 }
 
-loadContributions = function(){
+/*loadContributions = function(){
 	apaf.call({"method": "GET","uri": "/apaf-admin/profilePageContributions","payload": {}})
 	    .then(function(contributions){
 			for(var i=0;i<contributions.length;i++){
@@ -65,7 +66,7 @@ loadContributions = function(){
 	    .onError(function(errorMessage){
 			showError(errorMessage);
 	    });
-}
+}*/
 
 saveUserData = function(){
 	let form = npaUi.getComponent(USER_EDIT_FORM_ID);

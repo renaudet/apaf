@@ -294,6 +294,17 @@
 		"input": ""
   	},
   	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.wizard.query.handler",
+  		"router": "apaf.dev.router",
+  		"method": "GET",
+  		"schema": "/wizards",
+  		"handler": "getWizardsHandler",
+  		"securityRole": "developer",
+		"description": "Get the list of registered code wizards",
+		"input": ""
+  	},
+  	{
   		"point": "apaf.dev.snippet.provider",
   		"id": "apaf.dev.snippet.1",
   		"label": "Main endpoint for an APAF application",
@@ -414,6 +425,7 @@
   	}
   ],
   "provides": [
-  	{"id": "apaf.dev.snippet.provider"}
+  	{"id": "apaf.dev.snippet.provider"},
+  	{"id": "apaf.dev.editor.wizard.provider"}
   ]
 }

@@ -19,6 +19,7 @@ $(document).ready(function(){
 initializeUi = function(){
 	npaUi.loadConfigFrom(GLOBAL_CONFIGURATION_FILE,function(){
 		npaUi.initialize(function(){
+			npaUi.onComponentLoaded = onStandardComponentsLoaded;
 			npaUi.on('insert',initNewRecord);
 			npaUi.on('save',saveRecord);
 			npaUi.on('delete',deleteRecord);
@@ -27,6 +28,10 @@ initializeUi = function(){
 			npaUi.render();
 		});
 	});
+}
+
+onStandardComponentsLoaded = function(){
+	apaf.loadContributions('/apaf-dev/wizards');
 }
 
 updateVersion = function(record){
@@ -154,31 +159,6 @@ openSnippetLibrary = function(){
 	html += '<div id="snippet" style="min-height: 400px;overflow: auto;font-family: lucida console;font-size: 0.9rem;background-color: #000000;color: #00ff00;">';
 	html += '</div>';
 	dialog.setBody(html);
-	/*$.loadJson('/dev/snippets/snippetList.json',function(snippetConfig){
-		for(var i=0;i<snippetConfig.length;i++){
-			let snippet = snippetConfig[i];
-			if(typeof snippet.ifExists=='undefined'){
-				let option = '';
-				option += '<option value="';
-				option += snippet.location;
-				option += '">';
-				option += snippet.label;
-				option += '</option>';
-				$('#snippetSelector').append(option);
-			}else{
-				checkCondition(snippet.ifExists,snippet,function(snp){
-					let option = '';
-					option += '<option value="';
-					option += snp.location;
-					option += '">';
-					option += snp.label;
-					option += '</option>';
-					$('#snippetSelector').append(option);
-				});
-			}
-		}
-		dialog.open();
-	});*/
 	apaf.call({
 		"method": "GET",
 		"uri": "/apaf-dev/snippets",

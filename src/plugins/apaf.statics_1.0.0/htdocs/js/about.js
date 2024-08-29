@@ -48,6 +48,7 @@ displayCopyrightInfo = function(parent){
 	html += '   <small>Git repositories:</small><br>';
 	html += '   <small><a href="https://github.com/renaudet/Node-Plugin-Architecture">https://github.com/renaudet/Node-Plugin-Architecture</a></small><br>';
 	html += '   <small><a href="https://github.com/renaudet/npa-ui-tools">https://github.com/renaudet/npa-ui-tools</a></small><br>';
+	html += '   <small><a href="https://github.com/renaudet/apaf">https://github.com/renaudet/apaf</a></small><br>';
 	html += '</div>';
 	html += '<div style="margin-top: 20px;">&nbsp;</div>';
 	parent.append(html);
