@@ -24,6 +24,10 @@
     		{
     			"id": "properties",
     			"label": "@apaf.apis.menu.properties"
+    		},
+    		{
+    			"id": "logs",
+    			"label": "@apaf.apis.menu.logs"
     		}
     	]
     }

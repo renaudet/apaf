@@ -1,0 +1,43 @@
+{
+  "id": "apaf.logs",
+  "name": "Log level management for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.logs.router",
+  		"path": "/apaf-logs"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.logs.query.handler",
+  		"router": "apaf.logs.router",
+  		"method": "GET",
+  		"schema": "/",
+  		"handler": "getLoggersHandler",
+  		"securityRole": "operator",
+		"description": "Get the current list of plugin using the log API",
+		"input": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.logs.query.plugin.handler",
+  		"router": "apaf.logs.router",
+  		"method": "GET",
+  		"schema": "/plugin/:id",
+  		"handler": "getLogLevelHandler",
+  		"securityRole": "operator",
+		"description": "Get the current log levels for a given plugin",
+		"input": ""
+  	}
+  ],
+  "provides": [
+  ]
+}

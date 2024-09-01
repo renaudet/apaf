@@ -214,6 +214,7 @@ apaf.apis.menu.tokens=Security Tokens
 apaf.apis.menu.workspace=Workspace
 apaf.apis.menu.jobs=Jobs
 apaf.apis.menu.properties=Properties
+apaf.apis.menu.logs=Traces levels
 apaf.page.apis.tokens.form.title=Create a new Security Token
 apaf.page.apis.confirm.delete=Delete selected token?
 apaf.page.apis.deleted=Deleted!

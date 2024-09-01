@@ -5,7 +5,8 @@
   "requires": [
   	{"type": "plugin","id": "apaf.branding","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.application","version": "1.0.0"},
-  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"}
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+	{"type": "plugin","id": "apaf.branding","version": "1.0.0"}
   ],
  "extends": [
   	{

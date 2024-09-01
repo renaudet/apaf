@@ -66,6 +66,7 @@ onPageChanged = function(menuEvent){
 initComponents = function(){
 	initApiBrowser();
 	initWorkspaceViewer();
+	initLogsBrowser();
 }
 
 addToken = function(){
@@ -353,18 +354,18 @@ updateEditorContent = function(file){
 	   console.log('toEncrypt: '+toEncrypt);
 	   let encrypted = btoa(toEncrypt);
 	   apaf.call({
-	      "method": "GET",
-	      "uri": "/apaf-workspace/file/"+encrypted,
-	      "payload": {}
-	   }).then(function(data){
-		 let editor = $apaf(WORKSPACE_EDITOR_ID);
-		 editor.setText(data);
-		 editor.setEnabled('editFile',true);
-		 editor.setEnabled('saveFile',false);
-		 editor.setReadonly(true);
-	   }).onError(function(msg){
-	      showError(msg);
-	   });
+			"method": "GET",
+			"uri": "/apaf-workspace/file/"+encrypted,
+			"payload": {}
+		}).then(function(data){
+			let editor = $apaf(WORKSPACE_EDITOR_ID);
+			editor.setText(data);
+			editor.setEnabled('editFile',true);
+			editor.setEnabled('saveFile',false);
+			editor.setReadonly(true);
+		}).onError(function(msg){
+			showError(msg);
+		});
 	}else{
 		let editor = $apaf(WORKSPACE_EDITOR_ID);
 		editor.setText('');
@@ -380,17 +381,17 @@ saveEditorFile = function(){
    let toEncrypt = selectedFile.project+'/'+selectedFile.path; 
    let encrypted = btoa(toEncrypt);
    apaf.put({
-      "uri": "/apaf-workspace/file/"+encrypted,
-      "payload": content,
-	  "contentType": "text/plain"
-   }).then(function(data){
-	 editor.setEnabled('editFile',true);
-	 editor.setEnabled('saveFile',false);
-	 editor.setReadonly(true);
-	 showConfirm('@apaf.workspace.editor.save.confirmation',[toEncrypt]);
-   }).onError(function(msg){
-      showError(msg);
-   });
+		"uri": "/apaf-workspace/file/"+encrypted,
+		"payload": content,
+		"contentType": "text/plain"
+	}).then(function(data){
+		editor.setEnabled('editFile',true);
+		editor.setEnabled('saveFile',false);
+		editor.setReadonly(true);
+		showConfirm('@apaf.workspace.editor.save.confirmation',[toEncrypt]);
+	}).onError(function(msg){
+		showError(msg);
+	});
 }
 
 deleteResource = function(){
@@ -411,14 +412,14 @@ deleteResource = function(){
 	if(confirm(confirmTxt)){
 		let encrypted = btoa(toEncrypt);
 		apaf.call({
-	      "method": "DELETE",
-	      "uri": "/apaf-workspace/"+encrypted,
-	      "payload": {}
-	   }).then(function(data){
-		 initWorkspaceViewer();
-	   }).onError(function(msg){
-	      showError(msg);
-	   });
+			"method": "DELETE",
+			"uri": "/apaf-workspace/"+encrypted,
+			"payload": {}
+		}).then(function(data){
+			initWorkspaceViewer();
+		}).onError(function(msg){
+			showError(msg);
+		});
 	}
 }
 
@@ -771,4 +772,97 @@ refreshPropertiesTable = function(){
 	}).onError(function(errorMsg){
 		showError(errorMsg.message?errorMsg.message:errorMsg);
 	});
+}
+
+var logsVisitor = {
+	getLabel(element){
+		if('root'==element.type){
+			return element.name;
+		}
+		if('plugin'==element.type){
+			return element.pluginId;
+		}
+	},
+	getChildren(element){
+		if('root'==element.type){
+			return element.plugins;
+		}
+		return [];
+	},
+	isParent(element){
+		if('root'==element.type){
+			return true;
+		}
+		return false;
+	}
+}
+
+var logsDecorator = {
+	decorate(element,label){
+		if(element.type){
+			if('root'==element.type){
+				return '<img src="/uiTools/img/silk/server_connect.png">&nbsp;<b>'+label+'</b>';
+			}
+			if('plugin'==element.type){
+				return '<img src="/uiTools/img/silk/disconnect.png">&nbsp;<b>'+label+'</b>';
+			}
+		}
+		return label;
+	}
+}
+
+var logsEventListener = {
+	onNodeSelected(node){
+		setStatus('');
+		if('plugin'==node.data.type){
+			setStatus('Selected Plugin: '+node.data.pluginId);
+		}
+	}
+}
+
+var logsBrowser = null;
+initLogsBrowser = function(){
+	let height = $('#workArea').height()-10;
+	$('#logsTreeArea').height(height);
+	$('#logsTreeArea').css('max-height',height);
+	$('#logsTreeArea').css('overflow','auto');
+	$(window).on('resize',function(){
+		height = $('#workArea').height()-10;
+		$('#logsTreeArea').height(height);
+		$('#logsTreeArea').css('max-height',height);
+		$('#logsTreeArea').css('overflow','auto');
+	});
+
+	$('#logsTreeArea').empty();
+	logsBrowser = new TreeViewer('logsBrowserTree',$('#logsTreeArea')[0]);
+	logsBrowser.init();
+    logsBrowser.setVisitor(logsVisitor);
+    logsBrowser.setDecorator(logsDecorator);
+    logsBrowser.setEventListener(logsEventListener);
+
+    apaf.call({
+		"method": "GET",
+		"uri": "/apaf-logs/",
+		"payload": {}
+	}).then(function(data){
+		let model = createLogModel(data);
+		logsBrowser.addRootData(model);
+		logsBrowser.refreshTree();
+	}).onError(function(errorMsg){
+		showError(errorMsg.message?errorMsg.message:errorMsg);
+	});
+}
+
+createLogModel = function(list){
+	let apafRoot = {"name": "APAF Runtime","type": "root","plugins": []};
+	let items = [];
+	for(var i=0;i<list.length;i++){
+		let pluginId = list[i];
+		items.push({"type": "plugin","pluginId": pluginId,"level": "unknown","loaded": false});
+	}
+	items = sortOn(items,'pluginId');
+	for(var i=0;i<items.length;i++){
+		apafRoot.plugins.push(items[i]);
+	}
+	return apafRoot;
 }
