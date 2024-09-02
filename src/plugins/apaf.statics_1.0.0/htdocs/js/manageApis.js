@@ -811,13 +811,47 @@ var logsDecorator = {
 	}
 }
 
+var selectedPlugin = null;
 var logsEventListener = {
 	onNodeSelected(node){
 		setStatus('');
 		if('plugin'==node.data.type){
-			setStatus('Selected Plugin: '+node.data.pluginId);
+			let pluginObj = node.data;
+			selectedPlugin = pluginObj;
+			getPluginLogLevel(node.data.pluginId,function(level){
+				pluginObj.logLevel = level;
+				setStatus('Selected Plugin: '+pluginObj.pluginId+' log level is '+level);
+				refreshLogLevelControlArea(pluginObj);
+			});
 		}
 	}
+}
+
+const formLevelFromLogLevel = {
+	"error": 0,
+	"info": 1,
+	"fine": 2,
+	"finest": 3
+}
+
+refreshLogLevelControlArea = function(pluginObj){
+	let form = $apaf('logLevelForm');
+	let levelAsInt = formLevelFromLogLevel[pluginObj.logLevel];
+	form.setData({"level": levelAsInt});
+	form.setEditMode(true);
+}
+
+getPluginLogLevel = function(pluginId,then){
+	let uri = '/apaf-logs/plugin/'+pluginId;
+	apaf.call({
+		"method": "GET",
+		"uri": uri,
+		"payload": {}
+	}).then(function(level){
+		then(level);
+	}).onError(function(errorMsg){
+		showError(errorMsg.message?errorMsg.message:errorMsg);
+	});
 }
 
 var logsBrowser = null;
@@ -851,6 +885,65 @@ initLogsBrowser = function(){
 	}).onError(function(errorMsg){
 		showError(errorMsg.message?errorMsg.message:errorMsg);
 	});
+	
+	const LOG_LEVEL_FORM_CONFIG = {
+		"id":"logLevelForm",
+	    "version": "1.0.0",
+	    "type": "Form",
+	    "configuration": {
+	    	"title": "Log Level configuration",
+	    	"class": "form-frame-noborder",
+	    	"selectionListener": false,
+	    	"fields": [
+	    		{
+	    			"name": "level",
+	    			"label": "Level",
+	    			"type": "range",
+	    			"default": 0,
+	    			"size": 9,
+	    			"min": 0,
+	    			"max": 3,
+	    			"step": 1,
+	    			"renderer": "@==\"0\"?\"error\":(@==\"1\"?\"info\":(@==\"2\"?\"fine\":(@==\"3\"?\"finest\":\"n/a\")))"
+	    		}
+	    	]
+	    }
+	};
+	let html = '';
+	html += '<div id="logLevelControlArea" class="apaf-logs" data-ref="logLevelForm"></div>';
+	//html += '';
+	$('#logLevelArea').html(html);
+	npaUi.registerComponentConfig('logLevelForm',LOG_LEVEL_FORM_CONFIG);
+	npaUi.onComponentLoaded = function(){};
+    npaUi.render('apaf-logs');
+    let form =  $apaf('logLevelForm');
+    form.registerEventListener({"onFormEvent": function(event){ onLogLevelChanged(event); }});
+}
+
+const logLevelFromFormLevel = {
+	0: "error",
+	1: "info",
+	2: "fine",
+	3: "finest"
+}
+
+onLogLevelChanged = function(event){
+	let form =  $apaf('logLevelForm');
+	let newLevel = form.getData().level;
+	let newLogLevel = logLevelFromFormLevel[newLevel];
+	if(selectedPlugin.logLevel!=newLogLevel){
+		let uri = '/apaf-logs/plugin/'+selectedPlugin.pluginId;
+		apaf.call({
+			"method": "PUT",
+			"uri": uri,
+			"payload": {"level": newLogLevel}
+		}).then(function(data){
+			selectedPlugin.logLevel = newLogLevel;
+			flash('Plugin '+selectedPlugin.pluginId+' trace level set to '+newLogLevel);
+		}).onError(function(errorMsg){
+			showError(errorMsg.message?errorMsg.message:errorMsg);
+		});
+	}
 }
 
 createLogModel = function(list){
@@ -858,7 +951,7 @@ createLogModel = function(list){
 	let items = [];
 	for(var i=0;i<list.length;i++){
 		let pluginId = list[i];
-		items.push({"type": "plugin","pluginId": pluginId,"level": "unknown","loaded": false});
+		items.push({"type": "plugin","pluginId": pluginId});
 	}
 	items = sortOn(items,'pluginId');
 	for(var i=0;i<items.length;i++){

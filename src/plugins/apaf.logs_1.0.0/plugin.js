@@ -38,4 +38,24 @@ plugin.getLogLevelHandler = function(req,res){
 	});
 }
 
+plugin.setLogLevelHandler = function(req,res){
+	res.set('Content-Type','application/json');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.logs.set.plugin.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let pluginId = req.params.id;
+			let level = req.body.level;
+			let loggingPlugin = plugin.runtime.getPlugin(NPA_LOGGIN_PLUGIN_ID);
+			if(loggingPlugin.setLogLevel(pluginId,level)){
+				res.json({"status": 200,"message": "ok","data": level});
+			}else{
+				res.json({"status": 404,"message": "not found","data": pluginId});
+			}
+		}
+	});
+}
+
 module.exports = plugin;

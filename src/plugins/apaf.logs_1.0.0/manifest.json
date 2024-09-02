@@ -36,6 +36,17 @@
   		"securityRole": "operator",
 		"description": "Get the current log levels for a given plugin",
 		"input": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.logs.set.plugin.handler",
+  		"router": "apaf.logs.router",
+  		"method": "PUT",
+  		"schema": "/plugin/:id",
+  		"handler": "setLogLevelHandler",
+  		"securityRole": "administrator",
+		"description": "Set the current log levels for a given plugin",
+		"input": {"level": "error/info/fine/finest"}
   	}
   ],
   "provides": [
