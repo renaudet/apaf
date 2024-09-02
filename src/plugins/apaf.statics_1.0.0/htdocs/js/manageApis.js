@@ -822,7 +822,8 @@ var logsEventListener = {
 				pluginObj.logLevel = level;
 				setStatus('Selected Plugin: '+pluginObj.pluginId+' log level is '+level);
 				refreshLogLevelControlArea(pluginObj);
-				$('#logFileContent').empty();
+				let tty = $apaf('console');
+				tty.clear();
 				getLogFileContent('out',function(lines){
 					displayLogFileContent(lines);
 				});
@@ -832,11 +833,11 @@ var logsEventListener = {
 }
 
 displayLogFileContent = function(lines){
+	let tty = $apaf('console');
 	for(var i=0;i<lines.length;i++){
-		let line = lines[i]+'<br>';
-		$('#logFileContent').append(line);
+		let line = lines[i];
+		tty.println(line);
 	}
-	$('#logFileContent').scrollTop($('#logFileContent').prop('scrollHeight'));
 }
 
 const formLevelFromLogLevel = {
@@ -855,8 +856,9 @@ refreshLogLevelControlArea = function(pluginObj){
 
 refreshLogContent = function(){
 	let form = $apaf('logLevelForm');
+	let tty = $apaf('console');
 	let logType = form.getData().logType;
-	$('#logFileContent').empty();
+	tty.clear();
 	getLogFileContent(logType,function(lines){
 		displayLogFileContent(lines);
 	});
@@ -944,18 +946,29 @@ initLogsBrowser = function(){
 	    	]
 	    }
 	};
+	let consoleHeight = $('#workArea').height()-300;
+	const CONSOLE_CONFIG = {
+		"id":"console",
+	    "version": "1.0.0",
+	    "type": "Console",
+	    "configuration": {
+			"height": consoleHeight,
+			"style": "margin-top: 15px;background-color: #eeeeee;color: #000000;"
+		}
+	}
 	let html = '';
 	html += '<div id="logLevelControlArea" class="apaf-logs" data-ref="logLevelForm"></div>';
-	html += '<div id="logFileContent" style="margin-top: 15px;background-color: #eeeeee;padding: 10px;font-family: courier;font-size: 0.8rem;max-height: 200px;overflow: auto;"></div>';
+	html += '<div id="consoleArea" class="apaf-logs" data-ref="console"></div>';
 	$('#logLevelArea').html(html);
 	npaUi.registerComponentConfig('logLevelForm',LOG_LEVEL_FORM_CONFIG);
+	npaUi.registerComponentConfig('console',CONSOLE_CONFIG);
 	npaUi.onComponentLoaded = function(){};
 	npaUi.on('refreshLog',refreshLogContent);
     npaUi.render('apaf-logs');
     let form =  $apaf('logLevelForm');
     form.registerEventListener({"onFormEvent": function(event){ onLogFormValuesChanged(event); }});
-    $('#logFileContent').height($('#workArea').height()-300);
-    $('#logFileContent').css('max-height',$('#workArea').height()-300+'px');
+    let tty = $apaf('console');
+    tty.setHeight($('#workArea').height()-300);
 }
 
 const logLevelFromFormLevel = {
@@ -984,7 +997,8 @@ onLogFormValuesChanged = function(event){
 	}
 	if(event.source=='logType'){
 		let logType = form.getData().logType;
-		$('#logFileContent').empty();
+		let tty = $apaf('console');
+		tty.clear();
 		getLogFileContent(logType,function(lines){
 			displayLogFileContent(lines);
 		});
