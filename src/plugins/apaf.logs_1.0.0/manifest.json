@@ -47,6 +47,28 @@
   		"securityRole": "administrator",
 		"description": "Set the current log levels for a given plugin",
 		"input": {"level": "error/info/fine/finest"}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.logs.query.out.log.handler",
+  		"router": "apaf.logs.router",
+  		"method": "GET",
+  		"schema": "/out/:id",
+  		"handler": "getStandardLogHandler",
+  		"securityRole": "operator",
+		"description": "Get the current standard log for a given plugin",
+		"input": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.logs.query.err.log.handler",
+  		"router": "apaf.logs.router",
+  		"method": "GET",
+  		"schema": "/err/:id",
+  		"handler": "getErrorLogHandler",
+  		"securityRole": "operator",
+		"description": "Get the current error log for a given plugin",
+		"input": ""
   	}
   ],
   "provides": [

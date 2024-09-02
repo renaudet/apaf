@@ -822,9 +822,21 @@ var logsEventListener = {
 				pluginObj.logLevel = level;
 				setStatus('Selected Plugin: '+pluginObj.pluginId+' log level is '+level);
 				refreshLogLevelControlArea(pluginObj);
+				$('#logFileContent').empty();
+				getLogFileContent('out',function(lines){
+					displayLogFileContent(lines);
+				});
 			});
 		}
 	}
+}
+
+displayLogFileContent = function(lines){
+	for(var i=0;i<lines.length;i++){
+		let line = lines[i]+'<br>';
+		$('#logFileContent').append(line);
+	}
+	$('#logFileContent').scrollTop($('#logFileContent').prop('scrollHeight'));
 }
 
 const formLevelFromLogLevel = {
@@ -837,8 +849,17 @@ const formLevelFromLogLevel = {
 refreshLogLevelControlArea = function(pluginObj){
 	let form = $apaf('logLevelForm');
 	let levelAsInt = formLevelFromLogLevel[pluginObj.logLevel];
-	form.setData({"level": levelAsInt});
+	form.setData({"level": levelAsInt,"logType": "out"});
 	form.setEditMode(true);
+}
+
+refreshLogContent = function(){
+	let form = $apaf('logLevelForm');
+	let logType = form.getData().logType;
+	$('#logFileContent').empty();
+	getLogFileContent(logType,function(lines){
+		displayLogFileContent(lines);
+	});
 }
 
 getPluginLogLevel = function(pluginId,then){
@@ -905,19 +926,36 @@ initLogsBrowser = function(){
 	    			"max": 3,
 	    			"step": 1,
 	    			"renderer": "@==\"0\"?\"error\":(@==\"1\"?\"info\":(@==\"2\"?\"fine\":(@==\"3\"?\"finest\":\"n/a\")))"
-	    		}
+	    		},
+	    		{
+					"name": "logType",
+					"label": "Log file",
+					"type": "radio",
+					"default": "out",
+					"choices": [{"label": "Standard log","value": "out"},{"label": "Standard error log","value": "err"}]
+				},
+	    		{
+					"name": "refresh",
+					"label": "Refresh",
+					"type": "button",
+					"buttonType": "secondary",
+					"actionId": "refreshLog"
+				}
 	    	]
 	    }
 	};
 	let html = '';
 	html += '<div id="logLevelControlArea" class="apaf-logs" data-ref="logLevelForm"></div>';
-	//html += '';
+	html += '<div id="logFileContent" style="margin-top: 15px;background-color: #eeeeee;padding: 10px;font-family: courier;font-size: 0.8rem;max-height: 200px;overflow: auto;"></div>';
 	$('#logLevelArea').html(html);
 	npaUi.registerComponentConfig('logLevelForm',LOG_LEVEL_FORM_CONFIG);
 	npaUi.onComponentLoaded = function(){};
+	npaUi.on('refreshLog',refreshLogContent);
     npaUi.render('apaf-logs');
     let form =  $apaf('logLevelForm');
-    form.registerEventListener({"onFormEvent": function(event){ onLogLevelChanged(event); }});
+    form.registerEventListener({"onFormEvent": function(event){ onLogFormValuesChanged(event); }});
+    $('#logFileContent').height($('#workArea').height()-300);
+    $('#logFileContent').css('max-height',$('#workArea').height()-300+'px');
 }
 
 const logLevelFromFormLevel = {
@@ -927,7 +965,7 @@ const logLevelFromFormLevel = {
 	3: "finest"
 }
 
-onLogLevelChanged = function(event){
+onLogFormValuesChanged = function(event){
 	let form =  $apaf('logLevelForm');
 	let newLevel = form.getData().level;
 	let newLogLevel = logLevelFromFormLevel[newLevel];
@@ -944,6 +982,13 @@ onLogLevelChanged = function(event){
 			showError(errorMsg.message?errorMsg.message:errorMsg);
 		});
 	}
+	if(event.source=='logType'){
+		let logType = form.getData().logType;
+		$('#logFileContent').empty();
+		getLogFileContent(logType,function(lines){
+			displayLogFileContent(lines);
+		});
+	}
 }
 
 createLogModel = function(list){
@@ -958,4 +1003,17 @@ createLogModel = function(list){
 		apafRoot.plugins.push(items[i]);
 	}
 	return apafRoot;
+}
+
+getLogFileContent = function(logType,then){
+	let uri = '/apaf-logs/'+logType+'/'+selectedPlugin.pluginId;
+	apaf.call({
+		"method": "GET",
+		"uri": uri,
+		"payload": {}
+	}).then(function(lines){
+		then(lines)
+	}).onError(function(errorMsg){
+		showError(errorMsg.message?errorMsg.message:errorMsg);
+	});
 }

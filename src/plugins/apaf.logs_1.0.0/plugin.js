@@ -58,4 +58,38 @@ plugin.setLogLevelHandler = function(req,res){
 	});
 }
 
+plugin.getStandardLogHandler = function(req,res){
+	res.set('Content-Type','application/json');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.logs.query.out.log.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let pluginId = req.params.id;
+			let loggingPlugin = plugin.runtime.getPlugin(NPA_LOGGIN_PLUGIN_ID);
+			loggingPlugin.readStandardLogContent(pluginId,function(lines){
+				res.json({"status": 200,"message": "ok","data": lines});
+			});
+		}
+	});
+}
+
+plugin.getErrorLogHandler = function(req,res){
+	res.set('Content-Type','application/json');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.logs.query.err.log.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let pluginId = req.params.id;
+			let loggingPlugin = plugin.runtime.getPlugin(NPA_LOGGIN_PLUGIN_ID);
+			loggingPlugin.readErrorLogContent(pluginId,function(lines){
+				res.json({"status": 200,"message": "ok","data": lines});
+			});
+		}
+	});
+}
+
 module.exports = plugin;
