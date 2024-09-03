@@ -422,6 +422,13 @@
   		"label": "Load resource dependencies",
   		"location": "/dev/snippets/loadDependencies.txt",
   		"category": "Application"
+  	},
+  	{
+  		"point": "apaf.dev.snippet.provider",
+  		"id": "apaf.dev.snippet.17",
+  		"label": "Sample npaUi Form config using data from a Rule Data record",
+  		"location": "/dev/snippets/formUsingRuleData.txt",
+  		"category": "Application"
   	}
   ],
   "provides": [

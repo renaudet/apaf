@@ -1,0 +1,32 @@
+{
+    "id":"editForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.ruledata.form.name",
+    			"required": true,
+    			"size": 5
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.ruledata.form.description",
+    			"required": false,
+    			"size": 9
+    		},
+    		{
+    			"name": "values",
+    			"label": "@apaf.ruledata.form.values",
+    			"type": "array",
+    			"datatype": "text",
+    			"rows": 10,
+    			"editable": true
+    		}
+    	]
+    }
+}

@@ -1,0 +1,140 @@
+{
+  "id": "apaf.rule.data",
+  "name": "Rule Data support plugin for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.rule.data.logger",
+  		"dir": "apaf.rule.data"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.rule.data.router",
+  		"path": "/apaf-rule-data"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.rule.data.datatype",
+  		"datatype": {
+  			"id": "ruleData",
+  			"name": "Rule Data",
+  			"builtIn": true,
+  			"persistent": true,
+  			"database": "apaf_rule_data",
+  			"fields": [
+	    		{
+	    			"name": "name",
+	    			"label": "Name",
+	    			"required": true,
+	    			"size": 4,
+	    			"help": "This Rule-data name - used to retrieve the rule-data values"
+	    		},
+	    		{
+	    			"name": "description",
+	    			"label": "Description",
+	    			"size": 8
+	    		},
+	    		{
+	    			"name": "values",
+	    			"label": "Values",
+	    			"type": "array",
+	    			"datatype": "text",
+	    			"rows": 10,
+	    			"editable": true
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.rule.data.menu.item",
+  		"menu": "developmentMenuPlaceholder",
+  		"securityRole": "",
+  		"item": {
+			"id": "ruleDataEditor",
+    		"label": "@apaf.page.ruledata.menu",
+    		"actionId": "redirect",
+    		"icon": "/resources/img/ruleDataEditor.png",
+    		"uri": "/resources/html/manageRuleData.html"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.rule.data.query.handler",
+  		"router": "apaf.rule.data.router",
+  		"method": "POST",
+  		"schema": "/query",
+  		"handler": "queryRuleHandler",
+  		"securityRole": "",
+		"description": "Query the list of Rule Data",
+		"input": {"selector": {"name": {"$regex": "abcd"}}}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.rule.data.find.by.id.handler",
+  		"router": "apaf.rule.data.router",
+  		"method": "GET",
+  		"schema": "/:id",
+  		"handler": "findRuleByPrimaryKeyHandler",
+  		"securityRole": "developer",
+		"description": "Get a Rule Data record given its uuid",
+		"input": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.rule.data.find.by.name.handler",
+  		"router": "apaf.rule.data.router",
+  		"method": "GET",
+  		"schema": "/rule/:name",
+  		"handler": "getRuleByNameHandler",
+  		"securityRole": "",
+		"description": "Get a Rule Data record given its rule's name",
+		"input": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.rule.data.create.handler",
+  		"router": "apaf.rule.data.router",
+  		"method": "POST",
+  		"schema": "/",
+  		"handler": "createRuleHandler",
+  		"securityRole": "developer",
+		"description": "Create a new Rule Data record",
+		"input": {"name": "abcd","description": "abcd","values": ["abcd","efgh"]}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.rule.data.update.handler",
+  		"router": "apaf.rule.data.router",
+  		"method": "PUT",
+  		"schema": "/",
+  		"handler": "updateRuleHandler",
+  		"securityRole": "developer",
+		"description": "Update an existing Rule Data record",
+		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","description": "abcd","values": ["abcd","efgh"]}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.rule.data.delete.handler",
+  		"router": "apaf.rule.data.router",
+  		"method": "DELETE",
+  		"schema": "/:id",
+  		"handler": "deleteRuleHandler",
+  		"securityRole": "administrator",
+		"description": "Delete an existing Rule Data record",
+		"input": {}
+  	}
+  ],
+  "provides": [
+  ]
+}
