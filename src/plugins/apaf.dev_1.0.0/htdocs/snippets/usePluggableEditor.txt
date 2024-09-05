@@ -1,0 +1,47 @@
+/*
+Form's field definition'
+ {
+   "name": "pluggable",
+   "label": "My Pluggable",
+   "type": "pluggable",
+   "siteId": "pluggableArea",
+   "requires": [
+     {"type": "js","uri": "/apaf-workspace/binaryFile/<some-binary-file-encoded-path>"}
+   ],
+   "editor": "someNamespace.MyPluggableEditor"
+ }
+
+*/
+
+if(typeof someNamespace=='undefined'){
+	someNamespace = {};
+}
+
+someNamespace.MyPluggableEditor = class MyPluggableEditor extends PluggableEditor {
+  render(){
+    let html = '';
+    html += '<input id="'+this.getInputFieldId()+'" class="form-control">';
+    this.getSite().append(html);
+  }
+  getInputFieldId(){
+    return this.field.form.getId()+'_'+this.field.config.name+'_editor';
+  }
+  getValue(){
+    return $('#'+this.getInputFieldId()).val();
+  }
+  setValue(someValue){
+    $('#'+this.getInputFieldId()).val(someValue);
+  }
+  setEnabled(enabledValue){
+	let inputFieldId = this.getInputFieldId();
+	if(enabledValue){
+		$('#'+inputFieldId).addClass('form-control');
+		$('#'+inputFieldId).removeClass('form-control-plaintext');
+		$('#'+inputFieldId).removeAttr('readonly');
+	}else{
+		$('#'+inputFieldId).removeClass('form-control');
+		$('#'+inputFieldId).addClass('form-control-plaintext');
+		$('#'+inputFieldId).attr('readonly');
+	}
+  }
+}

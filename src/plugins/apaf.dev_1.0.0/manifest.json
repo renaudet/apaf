@@ -429,6 +429,13 @@
   		"label": "Sample npaUi Form config using data from a Rule Data record",
   		"location": "/dev/snippets/formUsingRuleData.txt",
   		"category": "Application"
+  	},
+  	{
+  		"point": "apaf.dev.snippet.provider",
+  		"id": "apaf.dev.snippet.18",
+  		"label": "Use a pluggable Editor in npaUi's Form",
+  		"location": "/dev/snippets/usePluggableEditor.txt",
+  		"category": "Application"
   	}
   ],
   "provides": [
