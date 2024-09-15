@@ -7,6 +7,7 @@ const ApafPlugin = require('../../apafUtil.js');
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const REST_CALL_SUPPORT_PLUGIN_ID = 'npa.rest';
+const RUNTIME_PROPERTIES_SERVICE_NAME = 'properties';
 const FEATURE_DATATYPE = 'feature';
 const ROLE_DATATYPE = 'role';
 const FRAGMENT_DATATYPE = 'fragment';
