@@ -64,8 +64,9 @@ setStatus = function(txt){
 }
 
 loadCustomNodes = function(workflowEditor,workflowEngine){
-	var query = {"selector": {"type": {"$eq": "workflowNode"}}};
-	makeRESTCall('POST','/apaf-dev/fragment/query',query,function(response){
+	//var query = {"selector": {"type": {"$eq": "workflowNode"}}};
+	//makeRESTCall('POST','/apaf-dev/fragment/query',query,function(response){
+	makeRESTCall('GET','/apaf-workflow/customNodes',{},function(response){
 		if(response.status==200){
 			let fragments = response.data;
 			for(var i=0;i<fragments.length;i++){

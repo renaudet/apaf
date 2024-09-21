@@ -215,8 +215,20 @@
   		"securityRole": "coreServices",
 		"description": "Execute an existing Workflow given its definition uuid",
 		"input": {"prop1": "value1"}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.get.custom.nodes.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "GET",
+  		"schema": "/customNodes",
+  		"handler": "getCustomeNodesHandler",
+  		"securityRole": "coreServices",
+		"description": "Returns user-defined and extension-defined custom nodes",
+		"input": ""
   	}
   ],
   "provides": [
+  	{"id": "apaf.workflow.node.provider"}
   ]
 }

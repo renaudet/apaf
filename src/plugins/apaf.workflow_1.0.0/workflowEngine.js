@@ -645,6 +645,9 @@ class WorkflowEngine{
 		}
 		this.debug('<-WorkflowEngine#registerCustomNode()');
 	}
+	getPlugin(pluginId){
+		return this.plugin.runtime.getPlugin(pluginId);
+	}
 	setEventListener(eventListenerFunction){
 		this.debug('->WorkflowEngine#setEventListener()');
 		this.eventListener.setEventHandler(eventListenerFunction);

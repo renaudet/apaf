@@ -53,6 +53,19 @@ function sortOn(list,attributeName,descending=true){
 }
 
 var plugin = new ApafPlugin();
+plugin.nodeExtensions = [];
+
+plugin.lazzyPlug = function(extenderId,extensionPointConfig){
+    this.trace('->lazzyPlug('+extenderId+','+extensionPointConfig.point+')');
+    if('apaf.workflow.node.provider'==extensionPointConfig.point){
+        this.debug('contribution: '+JSON.stringify(extensionPointConfig));
+		let contributorPlugin = this.runtime.getPlugin(extenderId);
+		let nodeSrc = contributorPlugin.getNodeExtensionSrc(extensionPointConfig);
+		let nodeFragment = {"name": extensionPointConfig.name,"version": contributorPlugin.config.version,"source": nodeSrc};
+		this.nodeExtensions.push(nodeFragment);
+    }
+    this.trace('<-lazzyPlug()');
+}
 
 plugin.queryWorkflowHandler = function(req,res){
 	plugin.debug('->queryWorkflowHandler()');
@@ -199,10 +212,28 @@ plugin.loadCustomNodeFragments = function(then){
 		if(err){
 			plugin.error('Error loading custom node fragments: '+err);
 			plugin.debug('<-loadCustomNodeFragments() - error');
-			then([]);
+			then(plugin.nodeExtensions);
 		}else{
+			let allFragments = plugin.nodeExtensions.concat(fragments);
 			plugin.debug('<-loadCustomNodeFragments() - success');
-			then(fragments);
+			then(allFragments);
+		}
+	});
+}
+
+plugin.getCustomeNodesHandler = function(req,res){
+	plugin.debug('->executeWorkflowHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.workflow.get.custom.nodes.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-executeWorkflowHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			plugin.loadCustomNodeFragments(function(customNodeFragments){
+				plugin.debug('<-executeWorkflowHandler() - success');
+				res.json({"status": 200,"message": "ok","data": customNodeFragments});
+			});
 		}
 	});
 }
@@ -270,59 +301,16 @@ plugin.executeWorkflow = function(workflowName,workflowVersion,owner,runtimeCont
 	this.trace('workflowVersion: '+workflowVersion);
 	this.trace('owner: '+owner.login);
 	this.trace('runtimeContext: '+JSON.stringify(runtimeContext));
-	//let datatypePlugin = this.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 	let query = {"selector": {"name": {"$eq": workflowName}}};
 	if(workflowVersion!=null && workflowVersion.length>0){
 		query =  {"selector": {"$and": [{"name": {"$eq": workflowName}}, {"version": {"$eq": workflowVersion}}]}};
 	}
-	/*datatypePlugin.query(WORKFLOW_DATATYPE,query,function(err,workflows){
-		if(err){
-			plugin.debug('<-executeWorkflow() - error looking up for workflow');
-			then(err,null);
-		}else{
-			if(workflows && workflows.length>0){
-				let sortedResultSet = workflows.length==1?workflows:sortOn(workflows,'version',false);
-				let workflow = sortedResultSet[0];
-				//let workflow = workflows[0];
-				plugin.debug('found Workflow "'+workflow.name+'" v'+workflow.version+' with #ID: '+workflow.id);
-				let engine = new WorkflowEngine(plugin,owner,{"global.timeout": WORKFLOW_TIMEOUT});
-				plugin.loadCustomNodeFragments(function(fragments){
-					for(var i=0;i<fragments.length;i++){
-						engine.registerCustomNode(fragments[i]);
-					}
-					engine.setEventListener(function(event){
-						runtimeContext['_console'].push(event);
-						if('stop'==event.type){
-							plugin.debug('<-executeWorkflow() - stop event received');
-							then(null,engine.runtimeContext);
-						}
-						if('debug'==event.type){
-							plugin.debug(event.source+' '+event.data);
-						}
-						if('warning'==event.type){
-							plugin.info(event.source+' '+event.data);
-						}
-						if('log'==event.type){
-							plugin.info(event.source+' '+event.data);
-						}
-						if('error'==event.type){
-							plugin.error(event.source+' '+event.data);
-						}
-					});
-					if(typeof runtimeContext=='undefined' || runtimeContext==null){
-						runtimeContext = {};
-					}
-					runtimeContext['_console'] = [];
-					engine.start(workflow,runtimeContext);
-				});
-			}else{
-				then('unknown Workflow',null);
-			}
-		}
-	});*/
 	this.queryAndExecuteWorkflow(query,owner,runtimeContext,then);
 }
 
+/*
+ * queryAndExecuteWorkflow() may be called by a Servlet through plugin.executeWorkflow() or by the Scheduler Engine
+ */
 plugin.queryAndExecuteWorkflow = function(query,owner,runtimeContext,then){
 	this.debug('->queryAndExecuteWorkflow()');
 	this.trace('query: '+JSON.stringify(query));
