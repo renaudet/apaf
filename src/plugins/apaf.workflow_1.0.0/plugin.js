@@ -60,8 +60,8 @@ plugin.lazzyPlug = function(extenderId,extensionPointConfig){
     if('apaf.workflow.node.provider'==extensionPointConfig.point){
         this.debug('contribution: '+JSON.stringify(extensionPointConfig));
 		let contributorPlugin = this.runtime.getPlugin(extenderId);
-		let nodeSrc = contributorPlugin.getNodeExtensionSrc(extensionPointConfig);
-		let nodeFragment = {"name": extensionPointConfig.name,"version": contributorPlugin.config.version,"source": nodeSrc};
+		let contributedNodeSrc = contributorPlugin.getResourceContent(extensionPointConfig.resourcePath);
+		let nodeFragment = {"name": extensionPointConfig.name,"version": contributorPlugin.config.version,"source": contributedNodeSrc};
 		this.nodeExtensions.push(nodeFragment);
     }
     this.trace('<-lazzyPlug()');
