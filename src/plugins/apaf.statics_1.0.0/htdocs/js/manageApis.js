@@ -170,11 +170,15 @@ const FILE_ICON = {
 	"xls": "/uiTools/img/silk/page_white_excel.png",
 	"xlsx": "/uiTools/img/silk/page_excel.png",
 	"cmd": "/uiTools/img/silk/page_white_gear.png",
+	"bat": "/uiTools/img/silk/page_white_gear.png",
 	"ps": "/uiTools/img/silk/page_white_gear.png",
 	"log": "/uiTools/img/silk/page_white_text.png.png",
 	"js": "/uiTools/img/silk/page_white_csharp.png",
+	"java": "/uiTools/img/silk/page_code.png",
+	"py": "/uiTools/img/silk/page_code.png",
 	"default": "/uiTools/img/silk/page_white.png",
-	"jtp": "/uiTools/img/silk/page_code.png"
+	"jtp": "/uiTools/img/silk/page_code.png",
+	"db": "/uiTools/img/silk/database_save.png"
 }
 
 fileToIcon = function(filename){
@@ -199,8 +203,8 @@ var filesystemDecorator = {
 		}
 		if(element.type){
 			if('file'==element.type){
-				let size = element.size<1024?(element.size+' o'):(element.size<1048576?((element.size/1024).toFixed(1)+' Ko'):(element.size/1048576).toFixed(1)+' Mo');
-				if(Number.isInteger(size)){
+				if(Number.isInteger(element.size)){
+					let size = element.size<1024?(element.size+' o'):(element.size<1048576?((element.size/1024).toFixed(1)+' Ko'):(element.size/1048576).toFixed(1)+' Mo');
 					return '<img src="'+fileToIcon(label)+'">&nbsp;'+label+'&nbsp;<small><i>'+size+'</i></small>';
 				}else{
 					return '<img src="'+fileToIcon(label)+'">&nbsp;'+label+'&nbsp;<small><i>(unknown size)</i></small>';
@@ -265,6 +269,10 @@ var filesystemEventListener = {
 			fsObject.name.endsWith('.json') ||
 			fsObject.name.endsWith('.js') ||
 			fsObject.name.endsWith('.cmd') ||
+			fsObject.name.endsWith('.sh') ||
+			fsObject.name.endsWith('.bat') ||
+			fsObject.name.endsWith('.py') ||
+			fsObject.name.endsWith('.java') ||
 			fsObject.name.endsWith('.csv') ||
 			fsObject.name.endsWith('.html') ||
 			fsObject.name.endsWith('.css')
