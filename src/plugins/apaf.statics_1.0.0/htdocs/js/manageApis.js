@@ -199,8 +199,12 @@ var filesystemDecorator = {
 		}
 		if(element.type){
 			if('file'==element.type){
-				let size = element.size<1024?(element.size+' o'):(element.size<1048576?((element.size/1024).toFixed(1)+' Ko'):(element.size/1048576).toFixed(1)+' Mo')
-				return '<img src="'+fileToIcon(label)+'">&nbsp;'+label+'&nbsp;<small><i>'+size+'</i></small>';
+				let size = element.size<1024?(element.size+' o'):(element.size<1048576?((element.size/1024).toFixed(1)+' Ko'):(element.size/1048576).toFixed(1)+' Mo');
+				if(Number.isInteger(size)){
+					return '<img src="'+fileToIcon(label)+'">&nbsp;'+label+'&nbsp;<small><i>'+size+'</i></small>';
+				}else{
+					return '<img src="'+fileToIcon(label)+'">&nbsp;'+label+'&nbsp;<small><i>(unknown size)</i></small>';
+				}
 			}
 			if('directory'==element.type){
 				return '<img src="/uiTools/img/silk/folder.png">&nbsp;<b>'+label+'</b>';
