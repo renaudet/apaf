@@ -45,8 +45,8 @@ metadata:
 spec:
   ports:
       - protocol: TCP
-        port: 5010
-        targetPort: 5010
+        port: 5000
+        targetPort: 5000
         
 ---
 apiVersion: discovery.k8s.io/v1
@@ -61,10 +61,10 @@ ports:
   - name: ''
     appProtocol: http
     protocol: TCP
-    port: 5010
+    port: 5000
 endpoints:
   - addresses:
-      - "192.168.2.140"
+      - "192.168.2.138"
       
 ---
 apiVersion: apps/v1
@@ -90,7 +90,7 @@ spec:
           claimName: workspace-claim
       containers:
       - name: apaf
-        image: 192.168.2.218:5000/apaf:1.8
+        image: 192.168.2.218:5000/apaf:1.9
         ports:
         - containerPort: 9080
           name: apaf-web-port
@@ -98,18 +98,44 @@ spec:
         - mountPath: "/opt/workspace"
           name: workspace-storage
         env:
+        - name: NODE_PATH
+          value: "/opt/NPA/node_modules"
+        - name: APAF_COUCH_DB_HOST
+          value: "192.168.2.204"
+        - name: APAF_COUCH_DB_PORT
+          value: "5984"
+        - name: APAF_COUCH_DB_USER
+          value: "admin"
+        - name: APAF_COUCH_DB_USER_PASSWD
+          value: "admin4couch"
+        - name: COUCH_DATABASE_PREFIX
+          value: ""
+        - name: ENABLE_SSL
+          value: "false"
+        - name: HTTP_SESSION_TIMEOUT
+          value: "900"
+        - name: PERSIST_HTTP_SESSION
+          value: "true"
+        - name: NPA_SESSIONS_COUCH_DB_HOST
+          value: "192.168.2.204"
+        - name: NPA_SESSIONS_COUCH_DB_PORT
+          value: "5984"
+        - name: NPA_SESSIONS_COUCH_DB_USER
+          value: "admin"
+        - name: NPA_SESSIONS_COUCH_DB_USER_PASSWD
+          value: "admin4couch"
         - name: WORKSPACE_LOC
           value: "/opt/workspace"
-        - name: SMTP_USER
-          value: "user"
-        - name: SMTP_PASSWD
-          value: "password"
         - name: REGISTRY_HOST
           value: "apaf-registry"
         - name: REGISTRY_PORT
-          value: "5010"
-        - name: ENABLE_SSL
-          value: "false"
+          value: "5000"
+        - name: REGISTRY_SSL_ENABLED
+          value: "true"
+        - name: SMTP_USER
+          value: "user"
+        - name: SMTP_PASSWD
+          value: "change.me"
 
 ---
 apiVersion: v1
