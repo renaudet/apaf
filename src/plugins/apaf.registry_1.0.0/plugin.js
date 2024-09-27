@@ -455,6 +455,9 @@ plugin.searchFeatureHandler = function(req,res){
 		if(typeof summary!='undefined' && 'true'==summary){
 			query.fields = ['id','name','version','category','copyright','description','icon'];
 		}
+		if(query.selector['$and'].length==0){
+			query.selector['$and'].push({"name": {"$regex": "."}});
+		}
 		let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 		datatypePlugin.query(FEATURE_DATATYPE,query,function(err,data){
 			if(err){
