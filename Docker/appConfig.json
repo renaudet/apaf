@@ -11,6 +11,14 @@
 		{
 			"id": "apaf",
 			"location": "./apaf/plugins"
+		},
+		{
+			"id": "apaf.utils",
+			"location": "./apaf-utils/plugins"
+		},
+		{
+			"id": "npa.messaging",
+			"location": "./npa-messaging/plugins"
 		}
 	]
 }
