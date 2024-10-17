@@ -62,7 +62,7 @@
   		"handler": "createDatatypeHandler",
   		"securityRole": "developer",
 		"description": "Create a new User Datatype record",
-		"input": {"name": "abcd","label": "abcd","description": "abcd","persistent": false,"database": "abcd","fields": [{"name": "fieldName","label": "abcd","type": "text","size": 5,"isIdField": true,"required": true,"default": "abcd"}]}
+		"input": {"name": "abcd","label": "abcd","description": "abcd","private": false,"persistent": false,"database": "abcd","fields": [{"name": "fieldName","label": "abcd","type": "text","size": 5,"isIdField": true,"required": true,"default": "abcd"}]}
   	},
   	{
   		"point": "npa.http.handler",
@@ -73,7 +73,7 @@
   		"handler": "updateDatatypeHandler",
   		"securityRole": "developer",
 		"description": "Update an existing User Datatype record",
-		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","label": "abcd","description": "abcd","persistent": false,"database": "abcd","fields": [{"name": "fieldName","label": "abcd","type": "text","size": 5,"isIdField": true,"required": true,"default": "abcd"}]}
+		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","label": "abcd","description": "abcd","private": false,"persistent": false,"database": "abcd","fields": [{"name": "fieldName","label": "abcd","type": "text","size": 5,"isIdField": true,"required": true,"default": "abcd"}]}
   	},
   	{
   		"point": "npa.http.handler",
@@ -139,7 +139,7 @@
   		"handler": "createUserDataHandler",
   		"securityRole": "",
 		"description": "Create a record for a User Datatype given the Datatype name",
-		"input": {"name": "abcd","label": "abcd","description": "abcd","persistent": true,"database": "abcd","fields": [{"name":"abcd","label":"abcd","description":"abcd","required": true,"isIdField": false,"type": "text","size": 5,"help":"some help for this field"}]}
+		"input": {}
   	},
   	{
   		"point": "npa.http.handler",
@@ -150,7 +150,7 @@
   		"handler": "updateUserDataHandler",
   		"securityRole": "",
 		"description": "Update an existing instance of a User Datatype given the Datatype name",
-		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","label": "abcd","description": "abcd","persistent": true,"database": "abcd","fields": [{"name":"abcd","label":"abcd","description":"abcd","required": true,"isIdField": false,"type": "text","size": 5,"help":"some help for this field"}]}
+		"input": {}
   	},
   	{
   		"point": "npa.http.handler",

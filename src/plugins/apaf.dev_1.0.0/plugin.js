@@ -12,9 +12,10 @@ const APPLICATION_DATATYPE = 'application';
 var plugin = new ApafPlugin();
 plugin.snippetRegistry = [];
 plugin.wizardProviders = [];
+plugin.docProviders = [];
 
 /*
- * expected extension point format:
+ * expected extension point format for apaf.dev.snippet.provider:
   {
 	"id": <extension-id>,
 	"point": "apaf.dev.snippet.provider",
@@ -22,6 +23,20 @@ plugin.wizardProviders = [];
 	"label": <snippet description>,
 	"location": <snippet-source-uri>,
   }
+  expected extension point format for apaf.dev.editor.wizard.provider:
+  {
+	"id": <extension-id>,
+	"point": "apaf.dev.snippet.provider",
+	"script": "javascript file url",
+  }
+  expected extension point format for apaf.dev.editor.documentation.provider:
+  {
+	"id": <extension-id>,
+	"point": "apaf.dev.snippet.provider",
+	"description": "This documentation page title/description",
+	"page": "html file url",
+  }
+}
  */
 plugin.lazzyPlug = function(extenderId,extensionPointConfig){
 	if('apaf.dev.snippet.provider'==extensionPointConfig.point){
@@ -29,6 +44,9 @@ plugin.lazzyPlug = function(extenderId,extensionPointConfig){
 	}
 	if('apaf.dev.editor.wizard.provider'==extensionPointConfig.point){
 		this.wizardProviders.push(extensionPointConfig);
+	}
+	if('apaf.dev.editor.documentation.provider'==extensionPointConfig.point){
+		this.docProviders.push(extensionPointConfig);
 	}
 }
 
@@ -324,6 +342,21 @@ plugin.getWizardsHandler = function(req,res){
 		}else{
 			plugin.debug('<-getWizardsHandler() - success');
 			res.json({"status": 200,"message": "ok","data": plugin.wizardProviders});
+		}
+	});
+}
+
+plugin.getDocsHandler = function(req,res){
+	plugin.debug('->getDocsHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.docs.query.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-getDocsHandler() - error authorization');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			plugin.debug('<-getDocsHandler() - success');
+			res.json({"status": 200,"message": "ok","data": plugin.docProviders});
 		}
 	});
 }

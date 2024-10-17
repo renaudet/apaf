@@ -58,7 +58,7 @@
     			"buttons": [
     				{
     					"label": "Snippets Library",
-    					"icon": "/uiTools/img/silk/book_open.png",
+    					"icon": "/uiTools/img/silk/folder_page_white.png",
     					"actionId": "openSnippetLibrary"
     				}
     			]

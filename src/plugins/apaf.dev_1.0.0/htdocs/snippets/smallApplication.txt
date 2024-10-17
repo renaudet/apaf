@@ -38,10 +38,10 @@ const MYFORM_CONFIG = {
 
 // main APAF endpoint for this application
 main = function(){
-   let card = npaUi.getComponent(MAIN_CARD_ID);
+   let card = $apaf(MAIN_CARD_ID);
    let html = '';
    html += '<div id="myFormDiv" class="user-app" data-ref="myForm"></div>';
-   $('#'+card.getContentDivId()).html(html);
+   card.setContent(html);
    npaUi.registerComponentConfig('myForm',MYFORM_CONFIG);
    npaUi.onComponentLoaded = initializeForm;
    npaUi.on('createRecord',createUserRecord);

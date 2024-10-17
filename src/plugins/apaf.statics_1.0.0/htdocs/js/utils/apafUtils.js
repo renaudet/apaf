@@ -275,6 +275,7 @@ apaf.loadContributions = function(uri){
 			for(var i=0;i<response.data.length;i++){
 				let contribution = response.data[i];
 				if(contribution.script){
+					console.log('loading contribution script '+contribution.script);
 					$.loadScript(contribution.script);
 				}
 			}

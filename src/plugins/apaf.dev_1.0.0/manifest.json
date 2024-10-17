@@ -436,10 +436,33 @@
   		"label": "Use a pluggable Editor in npaUi's Form",
   		"location": "/dev/snippets/usePluggableEditor.txt",
   		"category": "Application"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.docs.query.handler",
+  		"router": "apaf.dev.router",
+  		"method": "GET",
+  		"schema": "/docs",
+  		"handler": "getDocsHandler",
+  		"securityRole": "developer",
+		"description": "Get the list of registered documentation providers",
+		"input": ""
+  	},
+  	{
+  		"point": "apaf.dev.editor.wizard.provider",
+  		"id": "apaf.dev.editor.documentation.wizard",
+  		"script": "/dev/js/documentationWizardContribution.js"
+  	},
+  	{
+  		"point": "apaf.dev.editor.documentation.provider",
+  		"id": "apaf.dev.docs.1",
+  		"description": "APAF Development Guide",
+  		"page": "/dev/docs/apafDevGuide.html"
   	}
   ],
   "provides": [
   	{"id": "apaf.dev.snippet.provider"},
-  	{"id": "apaf.dev.editor.wizard.provider"}
+  	{"id": "apaf.dev.editor.wizard.provider"},
+  	{"id": "apaf.dev.editor.documentation.provider"}
   ]
 }

@@ -1,0 +1,48 @@
+/***
+ * apafDocumentation.css - CSS file for APAF Documentation pages
+ * Copyright 2024 Nicolas Renaudet - All rights reserved
+ *
+ ***/
+ 
+body {
+	border: 1px solid #293c4f;
+	margin: 3px;
+	padding: 10px;
+	font-family: arial;
+	font-size: 0.9rem;
+}
+
+h1 {
+	font-family: arial;
+	color: #293c4f;
+}
+
+h2 {
+	font-family: arial;
+	color: #466787;
+}
+
+h3 {
+	font-family: arial;
+	color: #5f8cb8;
+}
+
+img {
+	margin-top: 10px;
+	margin-bottom: 20px;
+	border: 1px solid #eeeeee;
+	padding: 3px;
+	box-shadow: 2px 2px 5px #a0a0a0;
+}
+
+.code {
+	font-family: courier;
+	font-size: 0.85rem;
+	color: #2a3e52;
+	background-color: #eeeeee;
+	margin-left: 30px;
+	padding: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-right: 50px;
+}

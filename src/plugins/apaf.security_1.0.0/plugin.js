@@ -71,14 +71,41 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 plugin.checkAuthorizationToken = function(req){
 	this.trace('->checkAuthorizationToken()');
 	if(typeof req.headers.authorization!='undefined'){
-		this.trace('Authorization header found');
-		const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
-		const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':');
-		if(login && login.length>0){
-			this.trace('->checkAuthorizationToken() token found');
-			return {"login": login,"password": password};
+		this.debug('Authorization header: '+req.headers.authorization);
+		let authorization = req.headers.authorization;
+		if(authorization.startsWith('Basic ')){
+			const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
+			const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':');
+			if(login && login.length>0){
+				this.trace('->checkAuthorizationToken() Basic token found');
+				return {"login": login,"password": password};
+			}else{
+				this.trace('->checkAuthorizationToken() invalid token for Basic auth');
+				return null;
+			}
+		}else
+		if(authorization.startsWith('Bearer ')){
+			const token = (req.headers.authorization || '').split(' ')[1] || '';
+			let cryptoService = this.getService(CRYPTOGRAPHY_SERVICE_NAME);
+			let decrypted = cryptoService.decrypt(token).split(':');
+			if(decrypted && decrypted.length==3){
+				let login = decrypted[0];
+				let password = decrypted[1];
+				let uri = decrypted[2];
+				let path = req.baseUrl+req.path;
+				if(uri==path){
+					this.trace('->checkAuthorizationToken() valid Bearer token found');
+					return {"login": login,"password": password};
+				}else{
+					this.trace('->checkAuthorizationToken() invalid Bearer token for path '+path);
+					return null;
+				}
+			}else{
+				this.trace('->checkAuthorizationToken() invalid Bearer token');
+				return null;
+			}
 		}else{
-			this.trace('->checkAuthorizationToken() invalid token');
+			this.trace('->checkAuthorizationToken() unsupported auth method detected');
 			return null;
 		}
 	}else{
@@ -93,14 +120,14 @@ plugin.checkAuthorizationToken = function(req){
 				let uri = decrypted[2];
 				let path = req.baseUrl+req.path;
 				if(uri==path){
-					this.trace('->checkAuthorizationToken() valid token found');
+					this.trace('->checkAuthorizationToken() valid query parameter token found');
 					return {"login": login,"password": password};
 				}else{
-					this.trace('->checkAuthorizationToken() invalid token for this request path '+path);
+					this.trace('->checkAuthorizationToken() invalid query parameter token for path '+path);
 					return null;
 				}
 			}else{
-				this.trace('->checkAuthorizationToken() invalid token');
+				this.trace('->checkAuthorizationToken() invalid query parameter token');
 				return null;
 			}
 		}else
