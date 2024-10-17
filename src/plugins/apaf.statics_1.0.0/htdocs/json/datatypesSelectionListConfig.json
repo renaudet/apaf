@@ -13,7 +13,7 @@
         },
         "renderer": {
         	"type": "FieldItemRenderer",
-        	"processor": "'<span><img src=\"/uiTools/img/silk/table.png\">&nbsp;'+@.label+'&nbsp;<small>('+@.name+')</small></span><span>'+(@.persistent?'<img src=\"/uiTools/img/silk/database.png\" title=\"persistent on database '+@.database+'\">':'')+'</span>'"
+        	"processor": "'<span><img src=\"/uiTools/img/silk/table.png\">&nbsp;'+@.label+'&nbsp;<small>('+@.name+')</small></span><span>'+(@.persistent?'<img src=\"/uiTools/img/silk/database.png\" title=\"persistent on database '+@.database+'\">':(@.private?'<img src=\"/uiTools/img/silk/lock.png\" title=\"Private\">':''))+'</span>'"
         },
         "sorter": {
         	"type": "FieldItemSorter",

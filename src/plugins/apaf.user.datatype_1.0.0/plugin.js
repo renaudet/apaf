@@ -7,6 +7,8 @@ const ApafPlugin = require('../../apafUtil.js');
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const USER_DATATYPE_DATATYPE = 'datatype';
+const moment = require('moment');
+const TIMESTAMP_FORMAT = 'YYYY/MM/DD HH:mm:ss';
 
 var plugin = new ApafPlugin();
 
@@ -194,13 +196,28 @@ plugin.queryUserDataHandler = function(req,res){
 						let datatypeRecord = data[0];
 						if(user.isAdmin || datatypeRecord.readRole.length==0 ||
 						   typeof user.roles[datatypeRecord.readRole]!='undefined'){
-							datatypePlugin.query(datatypeRecord.name,{},function(err,data){
+							let selector = {};
+							if(req.body && typeof req.body=='object' && req.body.selector){
+								selector = req.body;
+							}
+							datatypePlugin.query(datatypeRecord.name,selector,function(err,data){
 								if(err){
 									plugin.debug('<-queryUserDataHandler() - error database');
 									res.json({"status": 500,"message": err,"data": []});
 								}else{
+									let result = [];
+									if(datatypeRecord.private && !user.isAdmin){
+										for(var i=0;i<data.length;i++){
+											let item = data[i];
+											if(item['createdBy']==user.login){
+												result.push(item);
+											}
+										}
+									}else{
+										result = data;
+									}
 									plugin.debug('<-queryUserDataHandler() - success');
-									res.json({"status": 200,"message": "found","data": data});
+									res.json({"status": 200,"message": "found","data": result});
 								}
 							});
 						}else{
@@ -242,7 +259,10 @@ plugin.createUserDataHandler = function(req,res){
 						let datatypeRecord = data[0];
 						if(user.isAdmin || datatypeRecord.writeRole.length==0 ||
 						   typeof user.roles[datatypeRecord.writeRole]!='undefined'){
-							datatypePlugin.createRecord(datatypeRecord.name,req.body,function(err,data){
+							let record = req.body;
+							record['createdBy'] = user.login;
+							record['created'] = moment().format(TIMESTAMP_FORMAT);
+							datatypePlugin.createRecord(datatypeRecord.name,record,function(err,data){
 								if(err){
 									plugin.debug('<-createUserDataHandler() - error');
 									res.json({"status": 500,"message": err,"data": []});

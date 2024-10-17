@@ -50,6 +50,7 @@
     			"values": [
     				{"label": "@apaf.user.datatype.field.type.text", "value": "text"},
     				{"label": "@apaf.user.datatype.field.type.password", "value": "password"},
+    				{"label": "@apaf.user.datatype.field.type.url", "value": "url"},
     				{"label": "@apaf.user.datatype.field.type.integer", "value": "integer"},
     				{"label": "@apaf.user.datatype.field.type.date", "value": "date"},
     				{"label": "@apaf.user.datatype.field.type.check", "value": "check"},

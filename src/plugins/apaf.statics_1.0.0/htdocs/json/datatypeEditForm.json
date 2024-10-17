@@ -29,6 +29,12 @@
     			"size": 9
     		},
     		{
+    			"name": "private",
+    			"label": "@apaf.user.datatype.private",
+    			"type": "check",
+    			"help": "@apaf.user.datatype.private.help"
+    		},
+    		{
     			"name": "persistent",
     			"label": "@apaf.user.datatype.persistent",
     			"type": "check",
