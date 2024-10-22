@@ -54,6 +54,7 @@ var selectedDatatype = null;
 var datatypeSelectionHandler = {
 	onItemSelected: function(datatype){
 		selectedDatatype = datatype;
+		console.log('selected Datatype:');
 		console.log(datatype);
 		updateDataManagerConfiguration();
 		createCustomDatatable();
@@ -67,7 +68,6 @@ $(document).ready(function(){
 initializeUi = function(){
 	npaUi.loadConfigFrom(GLOBAL_CONFIGURATION_FILE,function(){
 		npaUi.initialize(function(){
-			/*npaUi.onComponentLoaded = initComponents;*/
 			npaUi.on('add',addRecord);
 			npaUi.on('editRecord',editRecord);
 			npaUi.on('deleteRecord',deleteRecord);
@@ -80,7 +80,7 @@ initializeUi = function(){
 }
 
 createDatamanagerConfig = function(){
-	let config = Object.assign({},baseGenericDataManagerConfig);
+	let config = JSON.parse(JSON.stringify(baseGenericDataManagerConfig));
 	config.query.uri = config.query.uri.replace(/datatype/g,selectedDatatype.name);
 	config.create.uri = config.create.uri.replace(/datatype/g,selectedDatatype.name);
 	config.update.uri = config.update.uri.replace(/datatype/g,selectedDatatype.name);
