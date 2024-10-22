@@ -71,6 +71,7 @@ initializeUi = function(){
 			npaUi.on('add',addRecord);
 			npaUi.on('editRecord',editRecord);
 			npaUi.on('deleteRecord',deleteRecord);
+			npaUi.on('editAsJSON',editRecordAsJSON);
 			npaUi.on('filter',filterData);
 			npaUi.registerSelectionListener(ITEM_SELECTION_LIST_ID,datatypeSelectionHandler);
 			npaUi.render();
@@ -119,6 +120,7 @@ createCustomDatatable = function(){
 	}
 	let actionColumn = {"label": "Actions","type": "rowActions","actions": []};
 	actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.edit.label","actionId": "editRecord","icon": "/uiTools/img/silk/page_edit.png"});
+	actionColumn.actions.push({"label": "@apaf.page.user.data.table.json.edit.label","actionId": "editAsJSON","icon": "/uiTools/img/silk/page_white_code_red.png"});
 	actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.delete.label","actionId": "deleteRecord","icon": "/uiTools/img/silk/page_delete.png"});
 	datatableConfig.configuration.columns.push(actionColumn);
 	npaUi.renderSingleComponent(selectedDatatype.name+'_table',datatableConfig,function(){
@@ -174,7 +176,7 @@ addRecord = function(){
 
 editRecord = function(event){
 	let dialog = npaUi.getComponent(EMPTY_DIALOG_ID);
-	let dialogTitle = npaUi.getLocalizedString('@apaf.page.user.data.empty.dialog.title',[selectedDatatype.label]);
+	let dialogTitle = npaUi.getLocalizedString('@apaf.page.user.data.edit.dialog.title',[selectedDatatype.label]);
 	dialog.setTitle(dialogTitle);
 	let html = '';
 	html += '<div id="'+selectedDatatype.name+'_form"></div>';
@@ -183,13 +185,13 @@ editRecord = function(event){
 	let formConfig = {"id": formId,"version": "1.0.0","type": "Form","configuration": {"class": "form-frame-noborder"}};
 	formConfig.configuration.fields = selectedDatatype.fields;
 	npaUi.renderSingleComponent(selectedDatatype.name+'_form',formConfig,function(){
-		let form = npaUi.getComponent(formId);
+		let form = $apaf(formId);
 		form.setData(event.item);
 		form.setEditMode(true);
 		dialog.open();
 	});
 	dialog.onClose(function(){
-		let form = npaUi.getComponent(formId);
+		let form = $apaf(formId);
 		let record = form.getData();
 		console.log(record);
 		let manager = npaUi.getComponent(GENERIC_DATA_MANAGER_ID);
@@ -202,6 +204,42 @@ editRecord = function(event){
 			}else
 				showError(errorMsg.message?errorMsg.message:errorMsg);
 		});
+	});
+}
+
+editRecordAsJSON = function(event){
+	let dialog = npaUi.getComponent(EMPTY_DIALOG_ID);
+	let dialogTitle = npaUi.getLocalizedString('@apaf.page.user.data.edit.dialog.title',[selectedDatatype.label]);
+	dialog.setTitle(dialogTitle);
+	let html = '';
+	html += '<div id="'+selectedDatatype.name+'_form"></div>';
+	dialog.setBody(html);
+	npaUi.renderSingleComponent(selectedDatatype.name+'_form',npaUi.globalConfig.components['jsonEditor'],function(){
+		let editor = $apaf('jsonEditor');
+		editor.setText(JSON.stringify(event.item,null,'\t'));
+		editor.setReadonly(false);
+		dialog.open();
+	});
+	dialog.onClose(function(){
+		let editor = $apaf('jsonEditor');
+		try{
+			let record = JSON.parse(editor.getText());
+			console.log(record);
+			let manager = $apaf(GENERIC_DATA_MANAGER_ID);
+			manager.update(record).then(function(data){
+				console.log(data);
+				refreshUserDataTable();
+			}).onError(function(errorMsg){
+				if(errorMsg.httpStatus==404){
+					showError('@apaf.error.http.not.found');
+				}else
+					showError(errorMsg.message?errorMsg.message:errorMsg);
+			});
+			return true;
+		}catch(pe){
+			flash('Bad JSON syntax in editor!');
+			return false;
+		}
 	});
 }
 
