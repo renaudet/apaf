@@ -160,7 +160,17 @@
   		"schema": "/:datatypeName/:id",
   		"handler": "deleteUserDataHandler",
   		"securityRole": "",
-		"description": "Delete an existing instance of a User Datatype gievn its uuid and Datatype name"
+		"description": "Delete an existing instance of a User Datatype given its uuid and Datatype name"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.datatype.get.user.data.by.id.handler",
+  		"router": "apaf.user.data.router",
+  		"method": "GET",
+  		"schema": "/:datatypeName/:id",
+  		"handler": "getUserDataByIdHandler",
+  		"securityRole": "",
+		"description": "Get an existing instance of a User Datatype given its uuid and Datatype name"
   	}
   ],
   "provides": [

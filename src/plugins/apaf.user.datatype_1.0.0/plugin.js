@@ -375,4 +375,58 @@ plugin.deleteUserDataHandler = function(req,res){
 	});
 }
 
+plugin.getUserDataByIdHandler = function(req,res){
+	plugin.debug('->getUserDataByIdHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.datatype.get.user.data.by.id.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-getUserDataByIdHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let datatypeName = req.params.datatypeName;
+			let id = req.params.id;
+			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+			datatypePlugin.query(USER_DATATYPE_DATATYPE,{"selector": {"name": {"$eq": datatypeName}}},function(err,data){
+				if(err){
+					plugin.debug('<-getUserDataByIdHandler() - error datatype');
+					res.json({"status": 500,"message": err,"data": []});
+				}else{
+					if(data && data.length>0){
+						let datatypeRecord = data[0];
+						if(user.isAdmin || datatypeRecord.readRole.length==0 ||
+						   typeof user.roles[datatypeRecord.readRole]!='undefined'){
+							datatypePlugin.findByPrimaryKey(datatypeRecord.name,{"id": id},function(err,record){
+								if(err){
+									plugin.debug('<-getUserDataByIdHandler() - error database');
+									res.json({"status": 500,"message": err,"data": []});
+								}else{
+									if(user.isAdmin || (datatypeRecord.private && record['createdBy']==user.login)){
+										plugin.debug('<-getUserDataByIdHandler() - success');
+										res.json({"status": 200,"message": "found","data": record});
+									}else{
+										plugin.debug('<-getUserDataByIdHandler() - private');
+										res.json({"status": 404,"message": "Not Found","data": {}});
+									}
+								}
+							});
+						}else{
+							plugin.debug('<-getUserDataByIdHandler() - error unauthorized');
+							plugin.debug('datatype:');
+							plugin.debug(JSON.stringify(datatypeRecord,null,'\t'));
+							plugin.debug('user:');
+							plugin.debug(JSON.stringify(user,null,'\t'));
+							res.json({"status": 401,"message": "unauthorized","data": []});
+						}
+					}else{
+						plugin.debug('<-getUserDataByIdHandler() - error not found');
+						let msg = 'datatype '+datatypeName+' not found';
+						res.json({"status": 404,"message": "Not Found","data": msg});
+					}
+				}
+			});
+		}
+	});
+}
+
 module.exports = plugin;
