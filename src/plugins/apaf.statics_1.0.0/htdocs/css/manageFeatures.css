@@ -37,6 +37,7 @@
 .feature-version {
 	font-size: 0.9rem;
 	color: #474c4f;
+	font-weight: normal;
 }
 .feature-description {
 	background-color: #ebf1f5;

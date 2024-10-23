@@ -423,6 +423,7 @@ addDependency = function(){
 
 removeDependency = function(){
 	console.log(selectedResource);
+	showError('Not yet implemented!');
 }
 
 publishFeature = function(){
@@ -461,6 +462,9 @@ resetFeature = function(){
 }
 
 initImportPage = function(){
+	let maxHeight = $('#workArea').height()-80;
+	$('#searchResult').height(maxHeight);
+	$('#searchResult').css('max-height',maxHeight+'px');
 	$('#searchBtn').on('click',function(){
 		let name = $('#searchName').val();
 		let category = $('#searchCategory').val();
@@ -526,17 +530,17 @@ initImportPage = function(){
 						html += '<div class="search-result">';
 						html += '  <div class="row">';
 						html += '    <div class="col-1">&nbsp;</div>';
-						html += '    <div class="col-5 feature-title">'+feature.name+'</div>';
+						html += '    <div class="col-7 feature-title">'+feature.name+'&nbsp;<span class="feature-version">v'+feature.version+'</span></div>';
 						//html += '    <div class="col-1">&nbsp;</div>';
-						html += '    <div class="col-2 feature-version">v'+feature.version+'</div>';
+						//html += '    <div class="col-2 feature-version">v'+feature.version+'</div>';
 						html += '    <div class="col-4">&nbsp;</div>';
 						html += '  </div>';
 						html += '  <div class="row">';
 						html += '    <div class="col-1">&nbsp;</div>';
 						html += '    <div class="col-4 feature-copyright"><b>&copy;Copyright:</b>&nbsp;'+feature.copyright+'</div>';
 						//html += '    <div class="col-1">&nbsp;</div>';
-						html += '    <div class="col-3 feature-category"><b>'+apaf.localize('@apaf.page.features.import.category')+'</b>&nbsp;'+feature.category+'</div>';
-						html += '    <div class="col-4"><button type="button" id="'+installBtnId+'" class="btn btn-sm btn-secondary">'+apaf.localize('@apaf.page.features.import.install')+'</button></div>';
+						html += '    <div class="col-5 feature-category"><b>'+apaf.localize('@apaf.page.features.import.category')+'</b>&nbsp;'+feature.category+'</div>';
+						html += '    <div class="col-2"><button type="button" id="'+installBtnId+'" class="btn btn-sm btn-secondary">'+apaf.localize('@apaf.page.features.import.install')+'</button></div>';
 						html += '  </div>';
 						html += '  <div class="row" style="margin-top: 20px;">';
 						html += '    <div class="col-1">&nbsp;</div>';
