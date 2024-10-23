@@ -116,6 +116,9 @@ createCustomDatatable = function(){
 		if(typeof field.renderer!='undefined'){
 			column.renderer = field.renderer;
 		}
+		if(typeof field.altRenderer!='undefined'){
+			column.altRenderer = field.altRenderer;
+		}
 		datatableConfig.configuration.columns.push(column);
 	}
 	let actionColumn = {"label": "Actions","type": "rowActions","actions": []};
