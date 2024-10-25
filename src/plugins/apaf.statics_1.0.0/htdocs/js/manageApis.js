@@ -974,13 +974,14 @@ initLogsBrowser = function(){
 	$('#logLevelArea').html(html);
 	npaUi.registerComponentConfig('logLevelForm',LOG_LEVEL_FORM_CONFIG);
 	npaUi.registerComponentConfig('console',CONSOLE_CONFIG);
-	npaUi.onComponentLoaded = function(){};
+	npaUi.onComponentLoaded = function(){
+		let tty = $apaf('console');
+    	tty.setHeight($('#workArea').height()-300);
+	};
 	npaUi.on('refreshLog',refreshLogContent);
     npaUi.render('apaf-logs');
     let form =  $apaf('logLevelForm');
     form.registerEventListener({"onFormEvent": function(event){ onLogFormValuesChanged(event); }});
-    let tty = $apaf('console');
-    tty.setHeight($('#workArea').height()-300);
 }
 
 const logLevelFromFormLevel = {
