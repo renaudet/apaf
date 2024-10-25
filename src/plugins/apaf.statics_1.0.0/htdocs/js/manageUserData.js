@@ -74,8 +74,20 @@ initializeUi = function(){
 			npaUi.on('editAsJSON',editRecordAsJSON);
 			npaUi.on('filter',filterData);
 			npaUi.registerSelectionListener(ITEM_SELECTION_LIST_ID,datatypeSelectionHandler);
+			npaUi.onComponentLoaded = onComponentLoaded;
 			npaUi.render();
 		});
+	});
+}
+
+onComponentLoaded = function(){
+	let manager = npaUi.getComponent(GENERIC_DATA_MANAGER_ID);
+	manager.addNotificationListener({
+		onNotification: function(dataEvent){
+			console.log('Notification listener:');
+			console.log(dataEvent);
+			refreshUserDataTable();
+		}
 	});
 }
 
@@ -92,6 +104,7 @@ createDatamanagerConfig = function(){
 updateDataManagerConfiguration = function(){
 	let manager = npaUi.getComponent(GENERIC_DATA_MANAGER_ID);
 	manager.setConfiguration(createDatamanagerConfig());
+	manager.setDatatype(selectedDatatype.name);
 }
 
 createCustomDatatable = function(){

@@ -389,7 +389,7 @@
 		"genericDataManager": {
 		    "id":"genericManager",
 		    "version": "1.0.0",
-		    "type": "DataManager",
+		    "type": "ReactiveDataManager",
 		    "configuration": {
 		    }
 		},
