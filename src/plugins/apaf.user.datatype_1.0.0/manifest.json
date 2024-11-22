@@ -171,6 +171,27 @@
   		"handler": "getUserDataByIdHandler",
   		"securityRole": "",
 		"description": "Get an existing instance of a User Datatype given its uuid and Datatype name"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.datatype.htdocs",
+  		"path": "/datatype",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.datatype.component.datasource",
+  		"namespace": "npaUiCore",
+  		"name": "DatatypeManager",
+  		"version": "1.0.0",
+  		"dependency": "/datatype/js/components/userDatatypeManager.js"
+  	},
+  	{
+  		"point": "apaf.dev.snippet.provider",
+  		"id": "apaf.datatype.snippet.1",
+  		"label": "Datatype records management",
+  		"location": "/datatype/snippets/manageDatatypeRecords.txt",
+  		"category": "Application"
   	}
   ],
   "provides": [
