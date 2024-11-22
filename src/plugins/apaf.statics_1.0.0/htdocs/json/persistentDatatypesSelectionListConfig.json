@@ -20,6 +20,11 @@
         	"type": "FieldItemSorter",
         	"field": "label",
         	"ascending": false
-        }
+        },
+        "constraints": {
+        	"height": {
+        		"processor": "$('#workArea').height()-40"
+        	}
+        } 
     }
 }
