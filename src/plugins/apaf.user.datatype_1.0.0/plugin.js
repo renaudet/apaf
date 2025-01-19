@@ -401,7 +401,7 @@ plugin.getUserDataByIdHandler = function(req,res){
 									plugin.debug('<-getUserDataByIdHandler() - error database');
 									res.json({"status": 500,"message": err,"data": []});
 								}else{
-									if(user.isAdmin || (datatypeRecord.private && record['createdBy']==user.login)){
+									if(!datatypeRecord.private || user.isAdmin || record['createdBy']==user.login){
 										plugin.debug('<-getUserDataByIdHandler() - success');
 										res.json({"status": 200,"message": "found","data": record});
 									}else{
