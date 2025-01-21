@@ -315,3 +315,5 @@ apaf.scheduler.datatype.time=Time
 apaf.page.scheduler.title=Manage Schedulers
 apaf.page.scheduler.confirmation=Ok to delete rule '{0}'?
 apaf.page.scheduler.error.exclusiv.check=Either a Servlet OR a Workflow should be selected. Not both!
+apaf.component.upload.message=Drop files to upload here!
+apaf.component.upload.uploading=Uploading file {0}...

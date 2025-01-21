@@ -438,6 +438,20 @@
   		"category": "Application"
   	},
   	{
+  		"point": "apaf.dev.snippet.provider",
+  		"id": "apaf.dev.snippet.19",
+  		"label": "Use a relationship Editor in npaUi's Form",
+  		"location": "/dev/snippets/formWithAdvancedEditor.txt",
+  		"category": "Application"
+  	},
+  	{
+  		"point": "apaf.dev.snippet.provider",
+  		"id": "apaf.dev.snippet.20",
+  		"label": "Use the UploadManager to upload documents",
+  		"location": "/dev/snippets/useUploadManager.txt",
+  		"category": "Application"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.dev.docs.query.handler",
   		"router": "apaf.dev.router",

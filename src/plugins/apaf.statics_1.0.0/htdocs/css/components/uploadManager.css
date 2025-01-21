@@ -1,0 +1,24 @@
+/***
+ * uploadManager.css - CSS file for the UploadManager advanced NPAUI component
+ * Copyright 2025 Nicolas Renaudet - All rights reserved
+ *
+ ***/
+ 
+ .uploadComponent {
+ 	background-color: #f7e8fa;
+ 	border:1px solid transparent;
+ }
+ 
+ .uploadArea {
+ 	height: 300px;
+ 	margin: 10px;
+ 	border: 2px dashed #c597cf;
+ 	padding: 10px;
+ 	text-align: center;
+ 	vertical-align: middle;
+ 	line-height: 300px;  
+ }
+ 
+ .uploadArea:hover {
+ 	background-color: #ffffff;
+ }

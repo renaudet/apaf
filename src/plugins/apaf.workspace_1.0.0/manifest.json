@@ -8,7 +8,8 @@
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
   	{"type": "plugin","id": "npa.workspace","version": "1.0.0"},
-  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -125,6 +126,14 @@
   			"name": "coreServices",
   			"description": "Grant permission to use APAF Core services"
   		}
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.workspace.component.upload.manager",
+  		"namespace": "apaf",
+  		"name": "UploadManager",
+  		"version": "1.0.0",
+  		"dependency": "/resources/js/components/uploadManager.js"
   	}
   ],
   "provides": [
