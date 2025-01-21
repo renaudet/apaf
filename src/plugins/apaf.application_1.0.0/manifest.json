@@ -44,6 +44,12 @@
   		"id": "apaf.application.locale.provider.fr",
   		"path": "i18n/apaf_fr-FR.locale",
   		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.locale.provider.fr",
+  		"path": "i18n/apaf_fr-FR.locale",
+  		"locale": "fr"
   	}
   ],
   "provides": [

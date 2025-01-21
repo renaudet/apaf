@@ -10,7 +10,8 @@
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.dev","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
-  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -192,6 +193,15 @@
   		"label": "Datatype records management",
   		"location": "/datatype/snippets/manageDatatypeRecords.txt",
   		"category": "Application"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.editor",
+  		"id": "apaf.datatype.relationship.editor",
+  		"datatype": "relationship",
+  		"libraries": [
+  			{"type": "js","uri": "/datatype/js/editors/relationshipEditor.js"}
+  		],
+  		"editor": "apafUi.DatatypeRelationshipEditor"
   	}
   ],
   "provides": [
