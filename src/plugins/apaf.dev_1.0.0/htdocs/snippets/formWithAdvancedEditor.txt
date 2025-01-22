@@ -34,7 +34,7 @@ const MYFORM_CONFIG = {
 				"multiple": false,
 				"required": true,
 				"datatype": USER_DATATYPE,
-				"siteId": "anotherFieldSiteId",
+				"siteId_": "optional",
 				"renderer": "/* use @ in the rendering expression to represent the data object */",
 				"sortOn": "sort-field-name",
 				"unique": true
@@ -43,13 +43,23 @@ const MYFORM_CONFIG = {
 				"name": "myPluggable",
 				"label": "My Pluggable",
 				"type": "pluggable",
-				"siteId": "pluggableAreaId",
+				"siteId_": "optional",
 				"size": 7,
 				"requires": [
 					{"type": "js","uri": "/apaf-workspace/binaryFile/Q3VzdG9taXphdGlvbnMvL215UGx1Z2dhYmxlRWRpdG9yLmpz"}
 				],
 				"editor": "custom.MyPluggableEditor"
-			}
+			},
+			{
+				"name": "fieldName",
+				"label": "fieldLabel",
+				"type": "ruleDataReference",
+				"ruleData": RULE_DATA_NAME,
+				"required": false,
+				"size": 3,
+				"siteId_": "optional",
+				"sortStrategy": "desc"
+	         }
  		]
     }
 }
