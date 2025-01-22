@@ -9,6 +9,11 @@
  	border:1px solid transparent;
  }
  
+ .uploadComponentDisabled {
+ 	background-color: #d1d1d1;
+ 	border:1px solid transparent;
+ }
+ 
  .uploadArea {
  	height: 300px;
  	margin: 10px;

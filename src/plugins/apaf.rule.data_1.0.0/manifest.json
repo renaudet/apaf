@@ -9,7 +9,8 @@
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
-  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -133,6 +134,21 @@
   		"securityRole": "administrator",
 		"description": "Delete an existing Rule Data record",
 		"input": {}
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.rule.data.htdocs",
+  		"path": "/ruleData",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.editor",
+  		"id": "apaf.rule.data.reference.editor",
+  		"datatype": "ruleDataReference",
+  		"libraries": [
+  			{"type": "js","uri": "/ruleData/js/editors/ruleDataReferenceEditor.js"}
+  		],
+  		"editor": "apafUi.RuleDataReferenceEditor"
   	}
   ],
   "provides": [

@@ -12,6 +12,7 @@
  */
 apaf.UploadManager = class UploadManager extends NpaUiComponent{
 	uploadLocation = null;
+	enabled = true;
 	initialize(then){
 		$.loadCss('/resources/css/components/uploadManager.css',then);
 	}
@@ -20,7 +21,7 @@ apaf.UploadManager = class UploadManager extends NpaUiComponent{
 		if(this.parentDiv().data('loaded')!='true'){
 			let component = this;
 			// rely on the container to provide width
-			let html = '<div class="uploadComponent">';
+			let html = '<div id="'+this.getId()+'_component" class="uploadComponent">';
 			html += '  <div id="'+this.getId()+'" class="uploadArea">';
 			html += this.getLocalizedString('@apaf.component.upload.message');
 			html += '  </div>';
@@ -43,15 +44,15 @@ apaf.UploadManager = class UploadManager extends NpaUiComponent{
 			$(jQueryId).on('drop',function(ev){
 				ev.stopPropagation();
 				ev.preventDefault();
-				var dt = event.dataTransfer;
+				var dt = ev.dataTransfer;
 				var files = dt.files;
-				if(files && files.length>0){
+				if(files && files.length>0 && component.enabled){
 					if(config.allowMultiple){
 						let uploadList = function(list,index,then){
 							if(index<list.length){
 								let file = list[index];
 								$(jQueryId).html(component.getLocalizedString('@apaf.component.upload.uploading',[file.name]));
-								component.uploadFile(component.getFilePath(),file,function(response){
+								component.uploadFile(component.getFilePath(),file,function(){
 									uploadList(list,index+1,then);
 								});
 							}else{
@@ -64,7 +65,7 @@ apaf.UploadManager = class UploadManager extends NpaUiComponent{
 					}else{
 						let file = files[0];
 						$(jQueryId).html(component.getLocalizedString('@apaf.component.upload.uploading',[file.name]));
-						component.uploadFile(component.getFilePath(),file,function(response){
+						component.uploadFile(component.getFilePath(),file,function(){
 							$(jQueryId).html(component.getLocalizedString('@apaf.component.upload.message'));
 						});
 					}
@@ -94,5 +95,18 @@ apaf.UploadManager = class UploadManager extends NpaUiComponent{
 	}
 	setPath(path){
 		this.uploadLocation = path;
+	}
+	setEnabled(enabledState){
+		this.enabled = enabledState;
+		let jQueryId = '#'+this.getId();
+		if(this.enabled){
+			$(jQueryId+'_component').removeClass('uploadComponentDisabled');
+			$(jQueryId+'_component').addClass('uploadComponent');
+			$(jQueryId).html(this.getLocalizedString('@apaf.component.upload.message'));
+		}else{
+			$(jQueryId+'_component').removeClass('uploadComponent');
+			$(jQueryId+'_component').addClass('uploadComponentDisabled');
+			$(jQueryId).html(this.getLocalizedString('@apaf.component.upload.disabled'));
+		}
 	}
 }
