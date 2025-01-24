@@ -202,6 +202,14 @@
   			{"type": "js","uri": "/datatype/js/editors/relationshipEditor.js"}
   		],
   		"editor": "apafUi.DatatypeRelationshipEditor"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.datatype.component.form",
+  		"namespace": "apaf",
+  		"name": "DatatypeForm",
+  		"version": "1.0.0",
+  		"dependency": "/datatype/js/components/datatypeForm.js"
   	}
   ],
   "provides": [
