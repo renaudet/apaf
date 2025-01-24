@@ -67,7 +67,9 @@
     				{"label": "@apaf.user.datatype.field.type.button", "value": "button"},
     				{"label": "@apaf.user.datatype.field.type.placeholder", "value": "placeholder"},
     				{"label": "@apaf.user.datatype.field.type.richText", "value": "richText"},
-    				{"label": "@apaf.user.datatype.field.type.reference", "value": "reference"}
+    				{"label": "@apaf.user.datatype.field.type.reference", "value": "reference"},
+    				{"label": "@apaf.user.datatype.field.type.relationship", "value": "relationship"},
+    				{"label": "@apaf.user.datatype.field.type.ruleDataRef", "value": "ruleDataReference"}
     			]
     		},
     		{
@@ -86,7 +88,7 @@
     			"name": "multiple",
     			"label": "@apaf.user.datatype.field.multiple.label",
     			"type": "switch",
-				"constraint": "if(@.type=='reference'){#.show();#.setEditMode(true)}else{#.hide();}",
+				"constraint": "if(@.type=='reference' || @.type=='relationship'){#.show();#.setEditMode(true)}else{#.hide();}",
 				"constrainedBy": "type"
     		},
     		{
@@ -99,7 +101,7 @@
     			"max": 10,
     			"step": 1,
     			"help": "@apaf.user.datatype.field.size.help",
-				"constraint": "if(@.type=='text'||@.type=='password'||@.type=='integer'||@.type=='date'||@.type=='range'||@.type=='select'){#.setEditMode(true)}else{#.val(5);#.setEditMode(false);}",
+				"constraint": "if(@.type=='text'||@.type=='password'||@.type=='integer'||@.type=='date'||@.type=='range'||@.type=='select'||@.type=='url'||@.type=='relationship'||@.type=='ruleDataReference'){#.setEditMode(true)}else{#.val(5);#.setEditMode(false);}",
 				"constrainedBy": "type"
     		},
     		{
@@ -168,15 +170,49 @@
     		{
     			"name": "datatype",
     			"label": "@apaf.user.datatype.field.datatype.label",
-    			"type": "select",
+    			"type_": "select",
+    			"type": "text",
     			"size": 3,
     			"required": true,
-				"default": "text",
-				"values": [
+				"default": "datatype",
+				"values_": [
     				{"label": "@apaf.user.datatype.field.datatype.text", "value": "text"},
     				{"label": "@apaf.user.datatype.field.datatype.object", "value": "object"}
     			],
-				"constraint": "if(@.type=='array'){#.show();#.setEditMode(true);}else{#.hide();}",
+				"constraint": "if(@.type=='array' || @.type=='relationship'){#.show();#.setEditMode(true);}else{#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "ruleData",
+    			"label": "@apaf.user.datatype.field.ruleData.label",
+    			"type": "text",
+    			"size": 4,
+    			"required": true,
+				"default": "ruleDataTable",
+				"constraint": "if(@.type=='ruleDataReference'){#.show();#.setEditMode(true);}else{#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "sortOn",
+    			"label": "@apaf.user.datatype.field.sortOn.label",
+    			"type": "text",
+    			"size": 5,
+    			"required": false,
+				"constraint": "if(@.type=='relationship'){#.show();#.setEditMode(true);}else{#.val('');#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "sortStrategy",
+    			"label": "@apaf.user.datatype.field.sortStrategy.label",
+    			"type": "select",
+    			"size": 3,
+    			"values": [
+    				{"label": "Ascending", "value": "asc"},
+    				{"label": "Descending", "value": "desc"},
+    				{"label": "None", "value": "none"}
+    			],
+    			"required": false,
+				"constraint": "if(@.type=='ruleDataReference'){#.show();#.setEditMode(true);}else{#.val('');#.hide();}",
 				"constrainedBy": "type"
     		},
     		{

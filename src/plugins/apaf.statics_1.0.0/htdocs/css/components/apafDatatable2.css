@@ -1,0 +1,77 @@
+/***
+ * datatable.css - default CSS file for the NPA UI Datatable
+ * Copyright 2023 Nicolas Renaudet - All rights reserved
+ *
+ ***/
+.datatableAction{
+	cursor: pointer;
+}
+
+.datatableAction:hover{
+	border: 1px solid #000000;
+	padding: 1px;
+}
+
+.toolbar {
+	border: 1px solid #c3c3c3;
+	border-radius: 0.2rem;
+	box-shadow: 1px 1px 3px #a0a0a0;
+	background-color: #ffffff;
+	margin-bottom: 1px;
+	padding: 2px;
+}
+
+.toolbar-btn {
+	margin-left: 4px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.toolbar-btn:hover {
+	border: 1px solid #000000;
+}
+
+.toolbar-icon {
+	vertical-align: top;
+	padding-top: 2px;
+}
+
+.column-type-color {
+	border: 1px solid #b3b3b3;
+	border-radius: 0.3rem;
+	box-shadow: 1px 1px 3px #a0a0a0;
+	padding-left: 10px;
+	padding-right: 10px;
+	cursor: pointer;
+	position: relative;
+	display: inline-block;
+}
+
+.column-type-color-tooltip {
+	visibility: hidden;
+    background-color: #fffedb;
+    color: #000;
+    text-align: center;
+    padding: 5px;
+    margin-top: 10px;
+    border-radius: 8px;
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 125%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.column-type-color:hover .column-type-color-tooltip {
+   visibility: visible;
+   opacity: 1;
+}
+
+.column-type-numeric {
+	text-align: right;
+	padding-right: 15px;
+}

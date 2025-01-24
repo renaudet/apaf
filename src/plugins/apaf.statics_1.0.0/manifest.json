@@ -20,6 +20,22 @@
   		"name": "SessionMonitor",
   		"version": "1.0.0",
   		"dependency": "/resources/js/components/sessionMonitor.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.component.dataTable",
+  		"namespace": "apaf",
+  		"name": "Datatable",
+  		"version": "1.0.0",
+  		"dependency": "/resources/js/components/apafDatatable.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.component.dataTable.v2",
+  		"namespace": "apaf",
+  		"name": "DatatableV2",
+  		"version": "1.0.0",
+  		"dependency": "/resources/js/components/apafDatatable2.js"
   	}
   ],
   "provides": [

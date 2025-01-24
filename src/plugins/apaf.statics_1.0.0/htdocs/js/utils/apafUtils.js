@@ -104,6 +104,10 @@ apaf.call = function(callContext){
 	});
 	return callWrapper;
 }
+apaf.loadDatatypeInstance = function(id,datatype){
+	let uri = '/user-data/'+datatype+'/'+id;
+	return this.call({"method": "GET","uri": uri});
+}
 apaf.put = function(putContext){
 	if(typeof putContext.contentType=='undefined' || 'application/json'==putContext.contentType){
 		putContext.method = 'PUT';

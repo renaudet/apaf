@@ -114,27 +114,34 @@ createCustomDatatable = function(){
 	$('#'+DATATABLE_AREA_ID).html(html);
 	let datatableId = selectedDatatype.name+'_tmpTable';
 	let maxHeight = $('#workArea').height()-50;
-	let datatableConfig = {"id": datatableId,"version": "1.0.0","type": "Datatable","configuration": {"maxHeight": maxHeight,"columns": []}};
-	datatableConfig.configuration.datasource = {
+	//let datatableConfig = {"id": datatableId,"version": "1.0.0","type": "apaf.Datatable","configuration": {"maxHeight": maxHeight,"columns": []}};
+	let datatableConfig = {"id": datatableId,"version": "1.0.0","type": "apaf.DatatableV2","configuration": {"datatype": selectedDatatype.name,"maxHeight": maxHeight,"columns": []}};
+	/*datatableConfig.configuration.datasource = {
 		"type": "managed",
 		"manager": "genericManager"
-	};
+	};*/
 	let fields = sortOn(selectedDatatype.fields,'displayIndex');
 	for(var i=0;i<fields.length && i<10;i++){
 		let field = fields[i];
-		let column = {"label": field.label,"field": field.name};
+		/*let column = {"label": field.label,"field": field.name};
 		if(typeof field.type!='undefined'){
 			column.type = field.type;
+			if('relationship'==field.type){
+				column.datatype = field.datatype;
+				column.multiple = field.multiple;
+			}
 		}
 		if(typeof field.renderer!='undefined'){
 			column.renderer = field.renderer;
 		}
 		if(typeof field.altRenderer!='undefined'){
 			column.altRenderer = field.altRenderer;
-		}
+		}*/
+		let column = {"type": "field","name": field.name};
 		datatableConfig.configuration.columns.push(column);
 	}
-	let actionColumn = {"label": "Actions","type": "rowActions","actions": []};
+	//let actionColumn = {"label": "Actions","type": "rowActions","actions": []};
+	let actionColumn = {"label": "Actions","type": "action","actions": []};
 	actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.edit.label","actionId": "editRecord","icon": "/uiTools/img/silk/page_edit.png"});
 	actionColumn.actions.push({"label": "@apaf.page.user.data.table.json.edit.label","actionId": "editAsJSON","icon": "/uiTools/img/silk/page_white_code_red.png"});
 	actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.delete.label","actionId": "deleteRecord","icon": "/uiTools/img/silk/page_delete.png"});

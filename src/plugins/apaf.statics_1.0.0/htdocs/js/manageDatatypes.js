@@ -15,10 +15,17 @@ const DATATABLE_ID = 'datatypeFieldsTable';
 const EMPTY_DIALOG_ID = 'emptyDialog';
 
 var dialogNotOpenYet = true;
+var selectedDatatype = null;
 
 $(document).ready(function(){
 	checkSessionStatus(initializeUi);
 });
+
+var customDatatypeSelectionHandler = {
+	onItemSelected: function(datatype){
+		selectedDatatype = datatype;
+	}
+}
 
 initializeUi = function(){
 	npaUi.loadConfigFrom(GLOBAL_CONFIGURATION_FILE,function(){
@@ -33,6 +40,7 @@ initializeUi = function(){
 			npaUi.on('editField',editDatatypeField);
 			npaUi.on('deleteField',deleteDatatypeField);
 			npaUi.on('testForm',testForm);
+			npaUi.registerSelectionListener(ITEM_SELECTION_LIST_ID,customDatatypeSelectionHandler);
 			npaUi.render();
 		});
 	});
@@ -93,6 +101,7 @@ saveRecord = function(){
 			selectList.refresh();
 			let datatable = npaUi.getComponent(DATATABLE_ID);
 			datatable.setEditable(false);
+			selectedDatatype = data;
 		}).onError(function(errorMsg){
 			if(errorMsg.httpStatus==404){
 				showError('@apaf.error.http.not.found');
@@ -121,6 +130,7 @@ saveJson = function(){
 			selectList.refresh();
 			let datatable = npaUi.getComponent(DATATABLE_ID);
 			datatable.setEditable(false);
+			selectedDatatype = data;
 		}).onError(function(errorMsg){
 			if(errorMsg.httpStatus==404){
 				showError('@apaf.error.http.not.found');
@@ -154,6 +164,7 @@ deleteRecord = function(){
 			let datatable = npaUi.getComponent(DATATABLE_ID);
 			datatable.renderData([]);
 			datatable.setEditable(false);
+			selectedDatatype = null;
 		}).onError(function(errorMsg){
 			if(errorMsg.httpStatus==404){
 				showError('@apaf.error.http.not.found');
@@ -171,6 +182,10 @@ addDatatypeField = function(){
 	newField.label = 'A Field';
 	newField.type = 'text';
 	newField.isIdField = true;
+	newField.displayIndex = 1;
+	if(selectedDatatype!=null){
+		newField.displayIndex = selectedDatatype.fields.length+1;
+	}
 	fieldEditForm.setData(newField);
 	if(dialogNotOpenYet){
 		dialog.setTitle('@apaf.page.datatypes.dialog.title');
