@@ -133,7 +133,7 @@ npaUiCore.DatatypeManager = class DatatypeManager extends NpaUiComponent{
 	delete(record){
 		console.log('DatatypeManager#delete()');
 		var dataManagerWrapper = new DatatypeManagerWrapper(this);
-		makeRESTCall('POST',this.getRootUri()+'/'+record.id,{},function(response){
+		makeRESTCall('DELETE',this.getRootUri()+'/'+record.id,{},function(response){
 			if(response.status==200){
 					dataManagerWrapper.interactionCallback(response.data);
 			}else{

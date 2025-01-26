@@ -70,6 +70,7 @@ initializeUi = function(){
 		npaUi.initialize(function(){
 			npaUi.on('add',addRecord);
 			npaUi.on('editRecord',editRecord);
+			npaUi.on('duplicateRecord',duplicateRecord);
 			npaUi.on('deleteRecord',deleteRecord);
 			npaUi.on('editAsJSON',editRecordAsJSON);
 			npaUi.on('filter',filterData);
@@ -143,6 +144,7 @@ createCustomDatatable = function(){
 	//let actionColumn = {"label": "Actions","type": "rowActions","actions": []};
 	let actionColumn = {"label": "Actions","type": "action","actions": []};
 	actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.edit.label","actionId": "editRecord","icon": "/uiTools/img/silk/page_edit.png"});
+	actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.duplicate.label","actionId": "duplicateRecord","icon": "/uiTools/img/silk/page_copy.png"});
 	actionColumn.actions.push({"label": "@apaf.page.user.data.table.json.edit.label","actionId": "editAsJSON","icon": "/uiTools/img/silk/page_white_code_red.png"});
 	actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.delete.label","actionId": "deleteRecord","icon": "/uiTools/img/silk/page_delete.png"});
 	datatableConfig.configuration.columns.push(actionColumn);
@@ -194,6 +196,32 @@ addRecord = function(){
 			console.log('returning false');
 			return false;
 		}
+	});
+}
+
+duplicateRecord = function(event){
+	let selectedRecord = event.item;
+	let duplicatedRecord = Object.assign({},selectedRecord);
+	delete duplicatedRecord.id;
+	delete duplicatedRecord._id;
+	delete duplicatedRecord.rev;
+	delete duplicatedRecord._rev;
+	for(var i=0;i<selectedDatatype.fields.length;i++){
+		let field = selectedDatatype.fields[i];
+		if(field.isIdField){
+			if('text'==field.type || typeof field.type=='undefined'){
+				duplicatedRecord[field.name] = duplicatedRecord[field.name]+' [1]';
+			}
+		}
+	}
+	let manager = npaUi.getComponent(GENERIC_DATA_MANAGER_ID);
+	manager.create(duplicatedRecord).then(function(data){
+		refreshUserDataTable();
+	}).onError(function(errorMsg){
+		if(errorMsg.httpStatus==404){
+			showError('@apaf.error.http.not.found');
+		}else
+			showError(errorMsg.message?errorMsg.message:errorMsg);
 	});
 }
 
