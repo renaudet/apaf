@@ -302,6 +302,7 @@ apaf.page.features.form.datatypes=Datatypes
 apaf.page.features.form.workflows=Workflows
 apaf.page.features.form.fragments=Fragments
 apaf.page.features.form.applications=Applications
+apaf.page.features.form.ruleData=Tables r&eacute;glementaires
 apaf.page.features.form.submit=Publier
 apaf.page.features.form.reset=R&eacute;initialiser
 apaf.page.features.form.copyright=Copyright

@@ -14,7 +14,7 @@ let selectedFolder = null;
 let currentContainerNode = null;
 let selectedNode = null;
 let selectedResource = null;
-let feature = {"name": "New Feature","version": "1.0.0","category": "Tool","roles": [],"datatypes": [],"workflows": [],"fragments": [],"applications": []};
+let feature = {"name": "New Feature","version": "1.0.0","category": "Tool","roles": [],"datatypes": [],"workflows": [],"fragments": [],"applications": [],"ruleData":[]};
 let roleCache = {};
 let fragmentCache = {};
 let editMode = true;
@@ -99,6 +99,9 @@ var resourceDecorator = {
 			if('role'==element['_type']){
 				return '<img src="/uiTools/img/silk/lock.png">&nbsp;'+label;
 			}
+			if('ruleData'==element['_type']){
+				return '<img src="/uiTools/img/silk/table_key.png">&nbsp;'+label;
+			}
 		}
 		return label;
 	}
@@ -143,6 +146,12 @@ var resourceEventListener = {
 				toolbar.setEnabled('removeDep',true);
 				selectedResource = selectedItem;
 			}
+			if('ruleData'==selectedItem['_type']){
+				setStatus('RuleData Table: '+selectedItem.name);
+				toolbar.setEnabled('addDep',true);
+				toolbar.setEnabled('removeDep',true);
+				selectedResource = selectedItem;
+			}
 			
 		}
 	}
@@ -160,6 +169,7 @@ initResourceTree = function(){
     loadWorkflows();
     loadFragments();
     loadApplications();
+    loadRuleData();
 }
 
 loadDatatypes = function(){
@@ -180,6 +190,25 @@ loadDatatypes = function(){
 		showError(errorMsg.message?errorMsg.message:errorMsg);
 	});
 }
+
+loadRuleData = function(){
+	apaf.call({
+		"method": "POST",
+		"uri": "/apaf-rule-data/query",
+		"payload": {}
+	}).then(function(data){
+		let datatypeSection = {"name": "RuleData Tables","_type": "resourceType",['_children']: []};
+		for(var i=0;i<data.length;i++){
+			let ruleData = data[i];
+			ruleData['_type'] = 'ruleData';
+			datatypeSection['_children'].push(ruleData);
+		}
+		treeViewer.addRootData(datatypeSection);
+		treeViewer.refreshTree();
+	}).onError(function(errorMsg){
+		showError(errorMsg.message?errorMsg.message:errorMsg);
+	});
+} 
 
 loadWorkflows = function(){
 	apaf.call({
@@ -269,10 +298,24 @@ initFeatureForm = function(){
 	form.setEditMode(true);
 	let html = '';
 	html += '<div style="margin-left: 15px;">';
-	html += '<div class="row form-row" style="">';
-	html += '  <div class="col-2 form-row-label">'+apaf.localize('@apaf.page.features.form.roles')+':</div>';
+	html += '<div class="row form-row" style="margin-top: 5px;">';
+	html += '  <div class="col-2 form-row-label">'+apaf.localize('@apaf.page.features.form.applications')+':</div>';
 	html += '  <div class="col-5">';
-	html += '    <select id="roleLst" class="form-select" size="3"></select>';
+	html += '    <select id="applicationLst" class="form-select" size="2"></select>';
+	html += '  </div>';
+	html += '  <div class="col-5">&nbsp;</div>';
+	html += '</div>';
+	html += '<div class="row form-row" style="margin-top: 5px;">';
+	html += '  <div class="col-2 form-row-label">'+apaf.localize('@apaf.page.features.form.fragments')+':</div>';
+	html += '  <div class="col-5">';
+	html += '    <select id="fragmentLst" class="form-select" size="3"></select>';
+	html += '  </div>';
+	html += '  <div class="col-5">&nbsp;</div>';
+	html += '</div>';
+	html += '<div class="row form-row" style="margin-top: 5px;">';
+	html += '  <div class="col-2 form-row-label">'+apaf.localize('@apaf.page.features.form.workflows')+':</div>';
+	html += '  <div class="col-5">';
+	html += '    <select id="workflowLst" class="form-select" size="2"></select>';
 	html += '  </div>';
 	html += '  <div class="col-5">&nbsp;</div>';
 	html += '</div>';
@@ -284,23 +327,16 @@ initFeatureForm = function(){
 	html += '  <div class="col-5">&nbsp;</div>';
 	html += '</div>';
 	html += '<div class="row form-row" style="margin-top: 5px;">';
-	html += '  <div class="col-2 form-row-label">'+apaf.localize('@apaf.page.features.form.workflows')+':</div>';
+	html += '  <div class="col-2 form-row-label">'+apaf.localize('@apaf.page.features.form.ruleData')+':</div>';
 	html += '  <div class="col-5">';
-	html += '    <select id="workflowLst" class="form-select" size="3"></select>';
+	html += '    <select id="ruleDataLst" class="form-select" size="3"></select>';
 	html += '  </div>';
 	html += '  <div class="col-5">&nbsp;</div>';
 	html += '</div>';
 	html += '<div class="row form-row" style="margin-top: 5px;">';
-	html += '  <div class="col-2 form-row-label">'+apaf.localize('@apaf.page.features.form.fragments')+':</div>';
+	html += '  <div class="col-2 form-row-label">'+apaf.localize('@apaf.page.features.form.roles')+':</div>';
 	html += '  <div class="col-5">';
-	html += '    <select id="fragmentLst" class="form-select" size="4"></select>';
-	html += '  </div>';
-	html += '  <div class="col-5">&nbsp;</div>';
-	html += '</div>';
-	html += '<div class="row form-row" style="margin-top: 5px;">';
-	html += '  <div class="col-2 form-row-label">'+apaf.localize('@apaf.page.features.form.applications')+':</div>';
-	html += '  <div class="col-5">';
-	html += '    <select id="applicationLst" class="form-select" size="2"></select>';
+	html += '    <select id="roleLst" class="form-select" size="2"></select>';
 	html += '  </div>';
 	html += '  <div class="col-5">&nbsp;</div>';
 	html += '</div>';
@@ -417,6 +453,9 @@ addDependency = function(){
 		if('role'==selectedResource['_type']){
 			addUnique(resource,feature.roles,$('#roleLst'));
 		}
+		if('ruleData'==selectedResource['_type']){
+			addUnique(resource,feature.ruleData,$('#ruleDataLst'));
+		}
 		
 	}
 }
@@ -453,7 +492,8 @@ resetFeature = function(){
 	$('#roleLst').empty();
 	$('#workflowLst').empty();
 	$('#datatypeLst').empty();
-	feature = {"name": "New Feature","version": "1.0.0","category": "Tool","roles": [],"datatypes": [],"workflows": [],"fragments": [],"applications": []};
+	$('#ruleDataLst').empty();
+	feature = {"name": "New Feature","version": "1.0.0","category": "Tool","roles": [],"datatypes": [],"workflows": [],"fragments": [],"applications": [],"ruleData": []};
 	let form = $apaf(FEATURE_FORM_ID);
 	form.setData(feature);
 	form.setEditMode(true);

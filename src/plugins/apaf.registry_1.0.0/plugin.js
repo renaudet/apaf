@@ -13,6 +13,7 @@ const ROLE_DATATYPE = 'role';
 const FRAGMENT_DATATYPE = 'fragment';
 const APPLICATION_DATATYPE = 'application';
 const USER_DATATYPE_DATATYPE = 'datatype';
+const RULE_DATA_DATATYPE = 'ruleData';
 const WORKFLOW_DATATYPE = 'workflow';
 
 var plugin = new ApafPlugin();
@@ -243,6 +244,44 @@ plugin.installDatatypes = function(feature,ctx,then){
 	installDatatype(feature.datatypes,0,then);
 }
 
+plugin.installRuleDataTable = function(feature,ctx,then){
+	this.debug('->installRuleDataTable()');
+	let installRuleDataTable = function(dataTableLst,index,thenDo){
+		if(index<dataTableLst.length){
+			let ruleData = dataTableLst[index];
+			plugin.debug('checking ruleData '+ruleData.name);
+			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+			let query = {"selector": {"name": {"$eq": ruleData.name}}};
+			datatypePlugin.query(RULE_DATA_DATATYPE,query,function(err,data){
+				if(err){
+					plugin.debug('<-installRuleDataTable() - error querying database');
+					then('unable to query the RuleData database',null);
+				}else{
+					if(typeof data=='undefined' || data==null || data.length==0){
+						delete ruleData.id;
+						plugin.debug('creating ruleData table "'+ruleData.name+'"');
+						datatypePlugin.createRecord(RULE_DATA_DATATYPE,ruleData,function(err,data){
+							if(err){
+								plugin.debug('<-installRuleDataTable() - error creating ruleData table "'+ruleData.name+'"');
+								then('unable to create ruleData table "'+ruleData.name+'"',null);
+							}else{
+								installRuleDataTable(dataTableLst,index+1,thenDo);
+							}
+						});
+					}else{
+						plugin.debug('ruleData table "'+ruleData.name+'" already defined!');
+						installRuleDataTable(dataTableLst,index+1,thenDo);
+					}
+				}
+			});
+		}else{
+			plugin.debug('<-installRuleDataTable() - success');
+			thenDo(null,'success');
+		}
+	}
+	installRuleDataTable(feature.ruleData,0,then);
+}
+
 plugin.installWorkflows = function(feature,ctx,then){
 	this.debug('->installWorkflows()');
 	let installWorkflow = function(workflowLst,index,thenDo){
@@ -404,7 +443,13 @@ plugin.install = function(feature,then){
 										if(err){
 											then(err,null);
 										}else{
-											then(null,'success');
+											plugin.installRuleDataTable(feature,installContext,function(err,status){
+												if(err){
+													then(err,null);
+												}else{
+													then(null,'success');
+												}
+											});
 										}
 									});
 								}

@@ -37,7 +37,8 @@
     			"name": "description",
     			"label": "@apaf.page.features.form.description",
     			"type": "richText",
-    			"required": false
+    			"required": false,
+    			"height": 200
     		},
     		{
     			"name": "icon",
