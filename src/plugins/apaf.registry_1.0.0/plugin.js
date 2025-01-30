@@ -227,6 +227,7 @@ plugin.installDatatypes = function(feature,ctx,then){
 								plugin.debug('<-installDatatypes() - error creating datatype "'+datatype.name+'"');
 								then('unable to create datatype "'+datatype.name+'"',null);
 							}else{
+								datatypePlugin.refreshDatatype(data);
 								installDatatype(datatypeLst,index+1,thenDo);
 							}
 						});
