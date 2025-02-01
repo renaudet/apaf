@@ -26,6 +26,7 @@
     			"multiple": true,
     			"required": false,
     			"rows": 10,
+    			"sortField": "name",
 		    	"datasource": {
 		            "type": "managed",
 		            "manager": "roleManager"
