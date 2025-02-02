@@ -25,6 +25,16 @@ apaf.UploadManager = class UploadManager extends NpaUiComponent{
 			html += '  <div id="'+this.getId()+'" class="uploadArea">';
 			html += this.getLocalizedString('@apaf.component.upload.message');
 			html += '  </div>';
+			html += '  <div class="uploadSelector">';
+			html += '    <div class="row">';
+			html += '      <div class="col-10"><input id="'+this.getId()+'_manual" type="file" class="form-control form-control-sm"></div>';
+			html += '      <div class="col-2">';
+			html += '        <div class="d-grid gap-2 d-md-flex justify-content-md-end">';
+			html += '          <button id="'+this.getId()+'_btn" type="button" class="btn btn-sm btn-secondary">'+this.getLocalizedString('@apaf.component.upload.manual')+'</button>';
+			html += '        </div>';
+			html += '      </div>';
+			html += '    </div">';
+			html += '  </div>';
 			html += '</div>';
 			this.parentDiv().html(html);
 			
@@ -71,6 +81,14 @@ apaf.UploadManager = class UploadManager extends NpaUiComponent{
 					}
 				}
 		   });
+		   $(jQueryId+'_btn').on('click',function(ev){
+			 var file = $(jQueryId+'_manual').get(0).files[0];
+			 $(jQueryId).html(component.getLocalizedString('@apaf.component.upload.uploading',[file.name]));
+			 component.uploadFile(component.getFilePath(),file,function(){
+				$(jQueryId).html(component.getLocalizedString('@apaf.component.upload.message'));
+				$(jQueryId+'_manual').val('');
+			 });
+		   });
 		}
 	}
 	getFilePath(){
@@ -103,10 +121,14 @@ apaf.UploadManager = class UploadManager extends NpaUiComponent{
 			$(jQueryId+'_component').removeClass('uploadComponentDisabled');
 			$(jQueryId+'_component').addClass('uploadComponent');
 			$(jQueryId).html(this.getLocalizedString('@apaf.component.upload.message'));
+			$(jQueryId+'_manual').prop('disabled',false);
+			$(jQueryId+'_btn').prop('disabled',false);
 		}else{
 			$(jQueryId+'_component').removeClass('uploadComponent');
 			$(jQueryId+'_component').addClass('uploadComponentDisabled');
 			$(jQueryId).html(this.getLocalizedString('@apaf.component.upload.disabled'));
+			$(jQueryId+'_manual').prop('disabled',true);
+			$(jQueryId+'_btn').prop('disabled',true);
 		}
 	}
 }
