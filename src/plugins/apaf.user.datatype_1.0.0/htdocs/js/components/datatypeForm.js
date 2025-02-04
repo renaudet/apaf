@@ -545,7 +545,11 @@ class CheckField extends FormField{
 		html += '<div class="row form-row" id="'+inputFieldId+'_row">';
 		html += '  <div class="col-2">&nbsp;</div>';
 		html += '  <div class="col-9'+divClass+'">';
-		html += '    <input type="checkbox" id="'+inputFieldId+'"'+role+' disabled class="form-check-input'+checkClass+'" style="margin-left: -10px;margin-right: 8px;" value="true"'+(this.config.default?' checked>':'>');
+		let marginLeft = -10;
+		if('switch'==this.config.type){
+			marginLeft = -25;
+		}
+		html += '    <input type="checkbox" id="'+inputFieldId+'"'+role+' disabled class="form-check-input'+checkClass+'" style="margin-left: '+marginLeft+'px;margin-right: 8px;" value="true"'+(this.config.default?' checked>':'>');
 		html += '    <label class="form-check-label" for="'+inputFieldId+'">';
 		html += this.getLocalizedString(this.config.label);
 		if(this.config.help){
@@ -2351,13 +2355,13 @@ class PluggableEditorField extends LabeledFormField{
 		this.innerEditor.setFocus();
 	}
 	setData(parentObj){
-		if(typeof parentObj[this.config.name]!='undefined'){
+		//if(typeof parentObj[this.config.name]!='undefined'){
 			if(this.innerEditor){
-			this.innerEditor.setValue(parentObj[this.config.name]);
+				this.innerEditor.setValue(parentObj[this.config.name]);
 			}else{
 				this.pendingValue = parentObj[this.config.name];
 			}
-		}
+		//}
 	}
 	assignData(parentObj){
 		if(this.innerEditor){

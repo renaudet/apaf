@@ -95,7 +95,8 @@ apafUi.DatatypeRelationshipEditor = class DatatypeRelationshipEditor extends Plu
 			html += '</div>';
 		}
 	}
-    this.getSite().append(html);
+    //this.getSite().append(html);
+    this.getSite().html(html);
     if(this.field.config.multiple){
 		this.loadData(function(dataset){
 			let inputFieldId = editor.inputFieldId();
@@ -215,6 +216,13 @@ apafUi.DatatypeRelationshipEditor = class DatatypeRelationshipEditor extends Plu
 			}
 		}else{
 			$('#'+this.inputFieldId()).val(value);
+		}
+	}else{
+		if(this.field.config.multiple){
+			let inputFieldId = this.inputFieldId();
+			$('#'+inputFieldId).empty();
+		}else{
+			$('#'+this.inputFieldId()).val('');
 		}
 	}
   }
