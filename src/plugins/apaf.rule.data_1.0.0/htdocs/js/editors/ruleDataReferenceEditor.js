@@ -51,6 +51,9 @@ apafUi.RuleDataReferenceEditor = class RuleDataReferenceEditor extends Pluggable
   inputFieldId(){
 	return this.field.form.getId()+'_'+this.field.config.name;
   }
+  resetList(){
+		$('#'+this.inputFieldId()).empty();
+  }
   render(){
     let editor = this;
 	let html = '';
@@ -64,8 +67,9 @@ apafUi.RuleDataReferenceEditor = class RuleDataReferenceEditor extends Pluggable
 		html += '  <div class="card card-body form-help">'+this.field.config.help+'</div>';
 		html += '</div>';
 	}
-    this.getSite().append(html);
+    this.getSite().html(html);
 	this.loadData(function(dataset){
+		editor.resetList();
 		for(var i=0;i<dataset.length;i++){
 			let value = dataset[i];
 			editor.createOptionFromValue(value);

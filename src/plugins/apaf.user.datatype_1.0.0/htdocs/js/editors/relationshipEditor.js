@@ -33,6 +33,7 @@ apafUi.DatatypeRelationshipEditor = class DatatypeRelationshipEditor extends Plu
 	return '/user-data/'+this.field.config.datatype;
   }
   loadData(then){
+	console.log('DatatypeRelationshipEditor#loadData()');
 	let payload = {};
 	if(typeof this.field.config.filter!='undefined'){
 		payload = this.field.config.filter;
@@ -57,6 +58,7 @@ apafUi.DatatypeRelationshipEditor = class DatatypeRelationshipEditor extends Plu
 	return this.field.form.getId()+'_'+this.field.config.name;
   }
   render(){
+	console.log('DatatypeRelationshipEditor#render()');
     let editor = this;
 	this.uuid = (apafUi.relationshipEditorCount++);
 	let html = '';
@@ -99,6 +101,7 @@ apafUi.DatatypeRelationshipEditor = class DatatypeRelationshipEditor extends Plu
     this.getSite().html(html);
     if(this.field.config.multiple){
 		this.loadData(function(dataset){
+    		editor.resetSourceList();
 			let inputFieldId = editor.inputFieldId();
 			for(var i=0;i<dataset.length;i++){
 				let record = dataset[i];
@@ -137,6 +140,7 @@ apafUi.DatatypeRelationshipEditor = class DatatypeRelationshipEditor extends Plu
 		}
 	}else{
 		this.loadData(function(dataset){
+    		editor.resetSourceList();
 			for(var i=0;i<dataset.length;i++){
 				let record = dataset[i];
 				editor.createOptionFromRecord(record,editor.inputFieldId());
@@ -148,7 +152,17 @@ apafUi.DatatypeRelationshipEditor = class DatatypeRelationshipEditor extends Plu
 		});
 	}
   }
+  resetSourceList(){
+	if(this.field.config.multiple){
+		let selectId = 	this.inputFieldId()+'_source';
+		$('#'+selectId).empty();
+	}else{
+		let selectId = 	this.inputFieldId();
+		$('#'+selectId).empty();
+	}
+  }
   createOptionFromRecord(record,selectId){
+	console.log('DatatypeRelationshipEditor#createOptionFromRecord()');
 	if(this.field.config.renderer){
 		let value = '';
 		let toEval = 'value = '+this.field.config.renderer.replace(/@/g,'record');
