@@ -8,11 +8,12 @@ apaf.SessionMonitor = class SessionMonitor extends NpaUiComponent{
 	initialize(then){
 		then();
 	}
-	render(){
+	render(then){
 		let config = this.getConfiguration();
 		if(this.parentDiv().data('loaded')!='true'){
 			this.startMonitoringLoop(typeof config.monitoringInterval!='undefined'?config.monitoringInterval*1000:DEFAULT_MONITORING_INTERVAL);
 		}
+		then();
 	}
 	startMonitoringLoop(interval){
 		let monitor = this;

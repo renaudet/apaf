@@ -18,10 +18,11 @@ if(typeof someNamespace=='undefined'){
 }
 
 someNamespace.MyPluggableEditor = class MyPluggableEditor extends PluggableEditor {
-  render(){
+  render(then){
     let html = '';
     html += '<input id="'+this.getInputFieldId()+'" class="form-control">';
     this.getSite().append(html);
+    then();
   }
   getInputFieldId(){
     return this.field.form.getId()+'_'+this.field.config.name+'_editor';

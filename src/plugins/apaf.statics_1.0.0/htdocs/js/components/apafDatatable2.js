@@ -300,7 +300,7 @@ apaf.DatatableV2 = class DatatableV2 extends NpaUiComponent{
 			});
 		});
 	}
-	render(){
+	render(then){
 		let config = this.getConfiguration();
 		if($('#'+this.getId()+'_table').length==0){
 			let html = '';
@@ -339,12 +339,15 @@ apaf.DatatableV2 = class DatatableV2 extends NpaUiComponent{
 			html += '</div>';
 			this.parentDiv().html(html);
 		}
-		this.refresh();
+		this.refresh(then);
 	}
-	refresh(){
+	refresh(then){
 		var datatable = this;
 		this.loadData(function(dataSet){
 			datatable.renderData(dataSet);
+			if(then){
+				then();
+			}
 		});
 	}
 	loadData(then){

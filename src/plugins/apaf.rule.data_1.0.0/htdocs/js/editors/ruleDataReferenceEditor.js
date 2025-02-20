@@ -54,7 +54,7 @@ apafUi.RuleDataReferenceEditor = class RuleDataReferenceEditor extends Pluggable
   resetList(){
 		$('#'+this.inputFieldId()).empty();
   }
-  render(){
+  render(then){
     let editor = this;
 	let html = '';
 	html += '    <select id="'+this.inputFieldId()+'" class="form-select" disabled>';
@@ -78,6 +78,7 @@ apafUi.RuleDataReferenceEditor = class RuleDataReferenceEditor extends Pluggable
 			editor.setValue(editor.field.pendingValue);
 			delete editor.field.pendingValue;
 		}
+		then();
 	});
   }
   createOptionFromValue(value){

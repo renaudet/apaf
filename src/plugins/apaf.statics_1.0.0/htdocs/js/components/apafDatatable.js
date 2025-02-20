@@ -76,7 +76,7 @@ apaf.Datatable = class Datatable extends NpaUiComponent{
 		console.log('datatable.js#adaptFormat(inputData) - no adapter configured for datasource type '+dsType);
 		return [];
 	}
-	render(){
+	render(then){
 		let config = this.getConfiguration();
 		if($('#'+this.getId()+'_table').length==0){
 			let html = '';
@@ -109,9 +109,9 @@ apaf.Datatable = class Datatable extends NpaUiComponent{
 			html += '</div>';
 			this.parentDiv().html(html);
 		}
-		this.refresh();
+		this.refresh(then);
 	}
-	refresh(){
+	refresh(then){
 		console.log('Datatable#refresh()');
 		var datatable = this;
 		let config = this.getConfiguration();
@@ -119,10 +119,16 @@ apaf.Datatable = class Datatable extends NpaUiComponent{
 			this.fetchDataFromDatasource(function(data){
 				console.log('received '+data.length+' rows from datasource');
 				console.log(data);
-				datatable.renderData(data)
+				datatable.renderData(data);
+				if(then){
+					then();
+				}
 			});
 		}else{
 			this.renderData(this.dataset);
+			if(then){
+				then();
+			}
 		}
 	}
 	renderData(data){

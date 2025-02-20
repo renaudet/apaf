@@ -33,7 +33,8 @@ npaUiCore.DatatypeManager = class DatatypeManager extends NpaUiComponent{
 	setConfiguration(config){
 		this.config.configuration = config;
 	}
-	render(){
+	render(then){
+		then();
 	}
 	getRootUri(){
 		return '/user-data/'+this.getConfiguration().datatype;

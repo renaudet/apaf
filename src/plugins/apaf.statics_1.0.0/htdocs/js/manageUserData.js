@@ -115,33 +115,13 @@ createCustomDatatable = function(){
 	$('#'+DATATABLE_AREA_ID).html(html);
 	let datatableId = selectedDatatype.name+'_tmpTable';
 	let maxHeight = $('#workArea').height()-50;
-	//let datatableConfig = {"id": datatableId,"version": "1.0.0","type": "apaf.Datatable","configuration": {"maxHeight": maxHeight,"columns": []}};
 	let datatableConfig = {"id": datatableId,"version": "1.0.0","type": "apaf.DatatableV2","configuration": {"datatype": selectedDatatype.name,"maxHeight": maxHeight,"columns": []}};
-	/*datatableConfig.configuration.datasource = {
-		"type": "managed",
-		"manager": "genericManager"
-	};*/
 	let fields = sortOn(selectedDatatype.fields,'displayIndex');
 	for(var i=0;i<fields.length && i<10;i++){
 		let field = fields[i];
-		/*let column = {"label": field.label,"field": field.name};
-		if(typeof field.type!='undefined'){
-			column.type = field.type;
-			if('relationship'==field.type){
-				column.datatype = field.datatype;
-				column.multiple = field.multiple;
-			}
-		}
-		if(typeof field.renderer!='undefined'){
-			column.renderer = field.renderer;
-		}
-		if(typeof field.altRenderer!='undefined'){
-			column.altRenderer = field.altRenderer;
-		}*/
 		let column = {"type": "field","name": field.name};
 		datatableConfig.configuration.columns.push(column);
 	}
-	//let actionColumn = {"label": "Actions","type": "rowActions","actions": []};
 	let actionColumn = {"label": "Actions","type": "action","actions": []};
 	actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.edit.label","actionId": "editRecord","icon": "/uiTools/img/silk/page_edit.png"});
 	actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.duplicate.label","actionId": "duplicateRecord","icon": "/uiTools/img/silk/page_copy.png"});
@@ -149,7 +129,6 @@ createCustomDatatable = function(){
 	actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.delete.label","actionId": "deleteRecord","icon": "/uiTools/img/silk/page_delete.png"});
 	datatableConfig.configuration.columns.push(actionColumn);
 	npaUi.renderSingleComponent(selectedDatatype.name+'_table',datatableConfig,function(){
-		//then();
 	});
 }
 
@@ -159,17 +138,20 @@ refreshUserDataTable = function(){
 	datatable.refresh();
 }
 
+let dialogCount = 0;
+
 addRecord = function(){
 	let dialog = npaUi.getComponent(EMPTY_DIALOG_ID);
 	let dialogTitle = npaUi.getLocalizedString('@apaf.page.user.data.empty.dialog.title',[selectedDatatype.label]);
 	dialog.setTitle(dialogTitle);
 	let html = '';
-	html += '<div id="'+selectedDatatype.name+'_form"></div>';
+	let divId = selectedDatatype.name+'_form_'+(dialogCount++);
+	html += '<div id="'+divId+'"></div>';
 	dialog.setBody(html);
 	let formId = selectedDatatype.name+'_tmpForm';
 	let formConfig = {"id": formId,"version": "1.0.0","type": "Form","configuration": {"class": "form-frame-noborder"}};
 	formConfig.configuration.fields = selectedDatatype.fields;
-	npaUi.renderSingleComponent(selectedDatatype.name+'_form',formConfig,function(){
+	npaUi.renderSingleComponent(divId,formConfig,function(){
 		let form = npaUi.getComponent(formId);
 		form.setData({});
 		form.setEditMode(true);
@@ -230,12 +212,13 @@ editRecord = function(event){
 	let dialogTitle = npaUi.getLocalizedString('@apaf.page.user.data.edit.dialog.title',[selectedDatatype.label]);
 	dialog.setTitle(dialogTitle);
 	let html = '';
-	html += '<div id="'+selectedDatatype.name+'_form"></div>';
+	let divId = selectedDatatype.name+'_form_'+(dialogCount++);
+	html += '<div id="'+divId+'"></div>';
 	dialog.setBody(html);
-	let formId = selectedDatatype.name+'_tmpForm';
+	let formId = selectedDatatype.name+'_form';
 	let formConfig = {"id": formId,"version": "1.0.0","type": "Form","configuration": {"class": "form-frame-noborder"}};
 	formConfig.configuration.fields = selectedDatatype.fields;
-	npaUi.renderSingleComponent(selectedDatatype.name+'_form',formConfig,function(){
+	npaUi.renderSingleComponent(divId,formConfig,function(){
 		let form = $apaf(formId);
 		form.setData(event.item);
 		form.setEditMode(true);
@@ -263,9 +246,10 @@ editRecordAsJSON = function(event){
 	let dialogTitle = npaUi.getLocalizedString('@apaf.page.user.data.edit.dialog.title',[selectedDatatype.label]);
 	dialog.setTitle(dialogTitle);
 	let html = '';
-	html += '<div id="'+selectedDatatype.name+'_form"></div>';
+	let divId = selectedDatatype.name+'_form_'+(dialogCount++);
+	html += '<div id="'+divId+'"></div>';
 	dialog.setBody(html);
-	npaUi.renderSingleComponent(selectedDatatype.name+'_form',npaUi.globalConfig.components['jsonEditor'],function(){
+	npaUi.renderSingleComponent(divId,npaUi.globalConfig.components['jsonEditor'],function(){
 		let editor = $apaf('jsonEditor');
 		editor.setText(JSON.stringify(event.item,null,'\t'));
 		editor.setReadonly(false);

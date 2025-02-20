@@ -57,7 +57,7 @@ apafUi.DatatypeRelationshipEditor = class DatatypeRelationshipEditor extends Plu
   inputFieldId(){
 	return this.field.form.getId()+'_'+this.field.config.name;
   }
-  render(){
+  render(then){
 	console.log('DatatypeRelationshipEditor#render()');
     let editor = this;
 	this.uuid = (apafUi.relationshipEditorCount++);
@@ -133,6 +133,7 @@ apafUi.DatatypeRelationshipEditor = class DatatypeRelationshipEditor extends Plu
 				var selectedOption =  $('#'+inputFieldId+' option[value=\''+selectedId+'\']');
 				selectedOption.remove();
 			});
+			then();
 		});
 		if(this.field.pendingValue){
 			this.setValue(editor.field.pendingValue);
@@ -149,6 +150,7 @@ apafUi.DatatypeRelationshipEditor = class DatatypeRelationshipEditor extends Plu
 				editor.setValue(editor.field.pendingValue);
 				delete editor.field.pendingValue;
 			}
+			then();
 		});
 	}
   }

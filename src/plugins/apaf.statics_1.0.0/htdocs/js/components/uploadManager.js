@@ -16,7 +16,7 @@ apaf.UploadManager = class UploadManager extends NpaUiComponent{
 	initialize(then){
 		$.loadCss('/resources/css/components/uploadManager.css',then);
 	}
-	render(){
+	render(then){
 		let config = this.getConfiguration();
 		if(this.parentDiv().data('loaded')!='true'){
 			let component = this;
@@ -90,6 +90,7 @@ apaf.UploadManager = class UploadManager extends NpaUiComponent{
 			 });
 		   });
 		}
+		then();
 	}
 	getFilePath(){
 		if(this.uploadLocation){
