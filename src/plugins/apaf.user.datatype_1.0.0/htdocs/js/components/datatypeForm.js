@@ -1596,9 +1596,27 @@ const UPLOAD_FIELD_DEPTS = [
 	{"type": "css","uri": "/datatype/css/uploadField.css"}
 ];
 
+const FILE_ICON = {
+	"txt": "/uiTools/img/silk/page_white_text.png",
+	"png": "/uiTools/img/silk/page_white_picture.png",
+	"jpg": "/uiTools/img/silk/page_white_camera.png",
+	"jpeg": "/uiTools/img/silk/page_white_camera.png",
+	"gif": "/uiTools/img/silk/page_white_picture.png",
+	"pdf": "/uiTools/img/silk/page_white_acrobat.png",
+	"zip": "/uiTools/img/silk/page_white_compressed.png",
+	"ppt": "/uiTools/img/silk/page_white_powerpoint.png",
+	"pptx": "/uiTools/img/silk/page_white_powerpoint.png",
+	"doc": "/uiTools/img/silk/page_white_word.png",
+	"docx": "/uiTools/img/silk/page_word.png",
+	"xls": "/uiTools/img/silk/page_white_excel.png",
+	"xlsx": "/uiTools/img/silk/page_excel.png"
+}
+
 class UploadField extends LabeledFormField{
 	uploadFolder = null;
 	enabled = false;
+	filename = null;
+	filenames = [];
 	constructor(config,form){
 		super(config,form);
 	}
@@ -1623,6 +1641,8 @@ class UploadField extends LabeledFormField{
 				size = this.config.size;
 			}
 			html += '<div class="col-'+size+' uploadComponent">';
+			html += '  <div class="row">';
+			html += '    <div class="col-10">';
 			html += '  <div id="'+inputFieldId+'" class="uploadArea">';
 			html += this.getLocalizedString('@apaf.component.upload.message');
 			html += '  </div>';
@@ -1635,6 +1655,9 @@ class UploadField extends LabeledFormField{
 			html += '        </div>';
 			html += '      </div>';
 			html += '    </div>';
+			html += '  </div>';
+			html += '    </div>';
+			html += '    <div id="'+inputFieldId+'_linksArea" class="col-2"></div>';
 			html += '  </div>';
 			html += '</div>';
 			if(size<10){
@@ -1718,14 +1741,50 @@ class UploadField extends LabeledFormField{
 	getFolder(){
 		return this.uploadFolder;
 	}
+	getFileIcon(filename){
+		if(this.config.fileIcon){
+			return this.config.fileIcon;
+		}else{
+			try{
+				let ext = filename.split('.')[1];
+				let fileIcon = FILE_ICON[ext];
+				if(typeof fileIcon!='undefined'){
+					return fileIcon;
+				}
+			}catch(e){
+				
+			}
+			return '/uiTools/img/silk/attach.png';
+		}
+	}
+	addLinks(filePath){
+		let filename = filePath.substring(filePath.lastIndexOf('/')+1);
+		let smallFilename = filename.length<8?filename:filename.substring(0,7)+'...';
+		let inputFieldId = this.baseId+'_'+this.config.name;
+		let html = '';
+		html += '<a href="/apaf-workspace/binaryFile/'+btoa(filePath)+'" title="'+filename+'"><img src="'+this.getFileIcon(filename)+'">&nbsp;'+smallFilename+'</a><br>';
+		if(this.config.allowMultiple){
+			$('#'+inputFieldId+'_linksArea').append(html);
+		}else{
+			$('#'+inputFieldId+'_linksArea').html(html);
+		}
+	}
 	uploadFile(path,file,then){
 		let fieldId = this.baseId+'_'+this.config.name;
 		var formdata = new FormData();
 		formdata.append('data', file);
+		var editor = this;
 		apaf.upload(path,file.name,formdata)
 			.then(function(res){
 				if(200==res.status){
 					npaUi.fireEvent('upload',{"source": fieldId,"filename": file.name});
+					let fullPathname = editor.getFolder()+'/'+file.name;
+					if(editor.config.allowMultiple){
+						editor.filenames.push(fullPathname);
+					}else{
+						editor.filename = fullPathname;
+					}
+					editor.addLinks(fullPathname);
 					then();
 				}else{
 					showError(JSON.stringify(res.message));
@@ -1770,6 +1829,35 @@ class UploadField extends LabeledFormField{
 				$('#'+inputFieldId).prop('disabled',true);
 				$('#'+inputFieldId+'_submit').prop('disabled',true);
 			}
+		}
+	}
+	setData(parentObj){
+		let inputFieldId = this.baseId+'_'+this.config.name;
+		$('#'+inputFieldId+'_linksArea').empty();
+		let fieldValue = parentObj[this.config.name];
+		if(this.config.allowMultiple){
+			if(typeof fieldValue!='undefined' && Array.isArray(fieldValue)){
+				this.filenames = fieldValue;
+				for(var i=0;i<this.filenames.length;i++){
+					this.addLinks(this.filenames[i]);
+				}
+			}else{
+				this.filenames = [];
+			}
+		}else{
+			if(typeof fieldValue!='undefined'){
+				this.filename = fieldValue;
+				this.addLinks(this.filename);
+			}else{
+				this.filenames = null;
+			}
+		}
+	}
+	assignData(parentObj){
+		if(this.config.allowMultiple){
+			parentObj[this.config.name] = this.filenames;
+		}else{
+			parentObj[this.config.name] = this.filename;
 		}
 	}
 	setFocus(){
@@ -2725,17 +2813,6 @@ apaf.DatatypeForm = class DatatypeForm extends NpaUiComponent{
 		$('#'+this.getId()+'_form').append(html);
 		var parent = $('#'+this.getId());
 		let orderedFieldList = sortOn(this.datatype.fields,'displayIndex');
-		/*for(var i=0;i<orderedFieldList.length;i++){
-			var fieldId = orderedFieldList[i].name;
-			console.log('looking for helper class for field #'+fieldId+' ('+orderedFieldList[i].type+')');
-			var field = this.fieldCache[fieldId];
-			if(typeof field!='undefined'){
-				console.log('calling '+field.config.type+' rendering');
-				field.render(parent);
-			}else{
-				console.log('helper class not found in cache');
-			}
-		}*/
 		let form = this;
 		let renderFieldList = function(list,index,next){
 			if(index<list.length){
@@ -2772,7 +2849,7 @@ apaf.DatatypeForm = class DatatypeForm extends NpaUiComponent{
 		}
 	}
 	setData(data){
-		console.log('form#setData()');
+		console.log('->datatypeForm#setData()');
 		this.formData = data;
 		if(this.formData==null){
 			this.formData = {};
@@ -2780,9 +2857,11 @@ apaf.DatatypeForm = class DatatypeForm extends NpaUiComponent{
 		if(typeof this.formData!='undefined'){
 			for(var fieldId in this.fieldCache){
 				let field = this.fieldCache[fieldId];
+				console.log('setData(field='+fieldId+')');
 				field.setData(this.formData);
 			}
 		}
+		console.log('<-datatypeForm#setData()');
 	}
 	getData(){
 		console.log('form#getData()');

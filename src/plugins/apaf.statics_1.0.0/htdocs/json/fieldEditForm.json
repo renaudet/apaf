@@ -92,6 +92,14 @@
 				"constrainedBy": "type"
     		},
     		{
+    			"name": "dragEnabled",
+    			"label": "@apaf.user.datatype.field.dragEnabled.label",
+    			"type": "switch",
+    			"value": true,
+				"constraint": "if(@.type=='upload'){#.show();#.setEditMode(true)}else{#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
     			"name": "size",
     			"label": "@apaf.user.datatype.field.size.label",
     			"required": false,
@@ -101,7 +109,21 @@
     			"max": 10,
     			"step": 1,
     			"help": "@apaf.user.datatype.field.size.help",
-				"constraint": "if(@.type=='text'||@.type=='password'||@.type=='integer'||@.type=='date'||@.type=='range'||@.type=='select'||@.type=='url'||@.type=='relationship'||@.type=='ruleDataReference'){#.setEditMode(true)}else{#.val(5);#.setEditMode(false);}",
+				"constraint": "if(@.type=='text'||@.type=='password'||@.type=='integer'||@.type=='date'||@.type=='range'||@.type=='select'||@.type=='url'||@.type=='textarea'||@.type=='upload'||@.type=='relationship'||@.type=='ruleDataReference'){#.setEditMode(true)}else{#.val(5);#.setEditMode(false);}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "rows",
+    			"label": "@apaf.user.datatype.field.rows.label",
+    			"required": false,
+    			"type": "range",
+    			"size": 7,
+    			"min": 1,
+    			"max": 30,
+    			"step": 1,
+    			"value": 3,
+    			"help": "@apaf.user.datatype.field.rows.help",
+				"constraint": "if(@.type=='textarea'){#.setEditMode(true)}else{#.val(5);#.setEditMode(false);}",
 				"constrainedBy": "type"
     		},
     		{
@@ -275,6 +297,27 @@
     			"value": "YYYY/MM/DD",
     			"help": "Y = 'Year', M = 'Month', D = 'Day'",
 				"constraint": "if(@.type=='date'){#.setEditMode(true);#.show();}else{#.val('');#.setEditMode(false);#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "folder",
+    			"label": "@apaf.user.datatype.field.remoteFolder.label",
+    			"required": true,
+    			"type": "text",
+    			"size": 5,
+    			"value": "Temp",
+    			"help": "The Workspace folder path where to store the uploaded file",
+				"constraint": "if(@.type=='upload'){#.setEditMode(true);#.show();}else{#.val('');#.setEditMode(false);#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "height",
+    			"label": "@apaf.user.datatype.field.height.label",
+    			"required": false,
+    			"size": 2,
+    			"type": "integer",
+    			"default": 200,
+    			"constraint": "if(@.type=='upload'){#.setEditMode(true);#.show();}else{#.val(0);#.setEditMode(false);#.hide();}",
 				"constrainedBy": "type"
     		}
     	]
