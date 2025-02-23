@@ -8,11 +8,15 @@
     	"contentAdapter": "@.fields",
         "sorter": {
         	"type": "FieldItemSorter",
-        	"field": "name",
+        	"field": "displayIndex",
         	"ascending": true
         },
         "maxHeight": 300,
         "columns": [
+            {
+                "label": "&num;",
+                "field": "displayIndex"
+            },
             {
                 "label": "Name",
                 "field": "name"
