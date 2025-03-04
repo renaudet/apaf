@@ -215,12 +215,17 @@ onNodeSelected = function(node){
 
 createPropertyEditor = function(property,node){
 	var propertyEditorId = 'edit_'+property.name.replace(/\./g,'_');
-	if(property.type=='string' || property.type=='int'){
+	if(property.type=='string'){
 		let html = '<input type="text" id="'+propertyEditorId+'" class="form-control form-control-sm">';
 		return html;
 	}
+	if(property.type=='int'){
+		let html = '<input type="number" id="'+propertyEditorId+'" class="form-control form-control-sm form-control-plaintext">';
+		return html;
+	}
 	if(property.type=='boolean'){
-		let html = '<select id="'+propertyEditorId+'" class="form-control form-control-sm" style="appearance : menulist;width: 100px"><option value="true">True</option><option value="false">False</option></select>';
+		//let html = '<select id="'+propertyEditorId+'" class="form-control form-control-sm" style="appearance : menulist;width: 100px"><option value="true">True</option><option value="false">False</option></select>';
+		let html = '<div class="form-check form-switch"><input type="checkbox" id="'+propertyEditorId+'" role="switch" class="form-check-input" value="true"></div>';
 		return html;
 	}
 	if(property.type=='code'){
@@ -262,6 +267,21 @@ addJsonEditorChangedHandler = function(componentId,node,property){
 	});
 }
 
+addBooleanEditorChangeHandler = function(componentId,node,property){
+	$('#'+componentId).on('change.editor',function(){
+		//let currentVal = $(this).val();
+		var currentVal = $(this).prop('checked');
+		node.setProperty(property.name,currentVal);
+	});
+}
+
+addSelectEditorChangeHandler = function(componentId,node,property){
+	$('#'+componentId).on('change.editor',function(){
+		let currentVal = $(this).val();
+		node.setProperty(property.name,currentVal);
+	});
+}
+
 postCreatePropertyEditor = function(node){
 	let props = node.getProperties();
 	for(var i=0;i<props.length;i++){
@@ -273,10 +293,16 @@ postCreatePropertyEditor = function(node){
 			addTextInputEditorChangeHandler(propertyEditorId,node,property);
 		}else
 		if(property.type=='boolean'){
-			$('#'+propertyEditorId).val(property.value?'true':'false');
+			property.value?$('#'+propertyEditorId).prop('checked',true):$('#'+propertyEditorId).prop('checked',false);
+			//$('#'+propertyEditorId).val(property.value?'true':'false');
+			addBooleanEditorChangeHandler(propertyEditorId,node,property);
 		}else
 		if(property.type=='code'){
 			addJsonEditorChangedHandler(propertyEditorId,node,property);
+		}else
+		if(property.type=='select'){
+			$('#'+propertyEditorId).val(property.value);
+			addSelectEditorChangeHandler(propertyEditorId,node,property);
 		}
 	}
 }
