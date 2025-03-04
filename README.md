@@ -31,6 +31,8 @@ Given that npa-ui-tools is installed by convention in <install-root>/tools and t
 
 ## Starting the server
 
+### Environment variables
+
 APAF is designed to be compatible with container-based environments. Use environment variables and command-line parameters to configure the runtime.
 
 A typical environment should define the following environment variables:
@@ -75,6 +77,47 @@ where:
 * **level** (optional) the initial logging level - defaults to 'info' - one of 'info', 'fine' and 'finest' - same as setting the `LOG_LEVEL` environment variable
 * **port** (optional) the HTTP server listening port - defaults to 9080 - same as setting the `PORT` environment variable
 * **name** (optional) a name for the process that makes it easier to retrieve - same as setting the `ENV_NAME` environment variable
+
+### Using an ENV_FILE
+
+As supported by NPA, using an ENV_FILE may be a better choice to select between different types of environment (production, development, test...)
+
+Create an ENV_FILE config/devConfig.env with the following content:
+
+```bash
+APAF_COUCH_DB_HOST=<couchdb-host>
+APAF_COUCH_DB_PORT=5984
+APAF_COUCH_DB_USER=<couchdb-user>
+APAF_COUCH_DB_USER_PASSWD=<couchdb-password>
+COUCH_DATABASE_PREFIX=apaf_
+ENABLE_SSL=false
+HTTP_SESSION_TIMEOUT=900
+PERSIST_HTTP_SESSION=false
+NPA_SESSIONS_COUCH_DB_HOST=
+NPA_SESSIONS_COUCH_DB_PORT=5984
+NPA_SESSIONS_COUCH_DB_USER=
+NPA_SESSIONS_COUCH_DB_USER_PASSWD=
+WORKSPACE_LOC=<apaf-workspace-directory>
+REGISTRY_HOST=twinxeon.online
+REGISTRY_PORT=5008
+REGISTRY_SSL_ENABLED=true
+SMTP_USER=<mailbox-user>
+SMTP_PASSWD=<mailbox-user-password>
+LOG_DIR=./logs
+LOG_LEVEL=info
+SSL_CERTIFICATE=./ssl/apaf-certificate.pem
+SSL_PRIVATE_KEY=./ssl/apaf-private-key.pem
+PORT=9090
+APPLICATION_NAME=apaf
+```
+
+A typical command-line may then be:
+
+```bash
+$>export NODE_PATH=./node_modules
+$>export ENV_FILE=./config/devConfig.env
+$>node app.js 
+```
 
 ## Databases
 
