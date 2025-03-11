@@ -661,7 +661,11 @@ var apiEventListener = {
 					"uri": targetUri,
 					"payload": payload
 				}).then(function(data){
-					$('#testRestCallResult').html(JSON.stringify(data,null,'\t').replace(/\n/g,'<br>').replace(/\t/g,'&nbsp;&nbsp;&nbsp;'));
+					if(data){
+						$('#testRestCallResult').html(JSON.stringify(data,null,'\t').replace(/\n/g,'<br>').replace(/\t/g,'&nbsp;&nbsp;&nbsp;'));
+					}else{
+						$('#testRestCallResult').html('[&nbsp;]');
+					}
 					setStatus('Rest call execution completed!');
 				}).onError(function(errorMsg){
 					showError(errorMsg?(errorMsg.message?errorMsg.message:errorMsg):'An exception was caught!');
