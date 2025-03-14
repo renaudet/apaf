@@ -38,7 +38,7 @@ class WorkflowNodeWrapper{
 			return parseInt(rawProperty.value, 10);
 		}
 		if('boolean'==rawProperty.type){
-			return ('true'==rawProperty.value);
+			return ('true'==rawProperty.value || rawProperty.value);
 		}
 		return rawProperty.value;
 	}
@@ -67,7 +67,7 @@ class WorkflowNodeWrapper{
 	error(msg){
 		this.engine.fireEvent('error',this.id(),msg);
 	}
-	async fire(terminalName,context){
+	fire(terminalName,context){
 		this.engine.activateLink(this.id(),terminalName,context);
 	}
 	setHandler(handler){

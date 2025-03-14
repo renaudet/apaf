@@ -112,7 +112,7 @@ class WorkflowNodeWrapper{
 			return parseInt(rawProperty.value, 10);
 		}
 		if('boolean'==rawProperty.type){
-			return ('true'==rawProperty.value);
+			return ('true'==rawProperty.value || rawProperty.value);
 		}
 		return rawProperty.value;
 	}
