@@ -172,6 +172,9 @@ class WorkflowEngine{
 		this.options = options;
 		this.loadBuiltInNodes();
 	}
+	require(dep){
+		return require(dep);
+	}
 	loadBuiltInNodes(){
 		this.debug('->WorkflowEngine#loadBuiltInNodes()');
 		let plugin = this.plugin;

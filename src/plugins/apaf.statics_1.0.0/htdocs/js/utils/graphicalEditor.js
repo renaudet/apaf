@@ -1,7 +1,8 @@
 /*
  * graphicalEditor.js : a generic, graphical editor that can be enhanced using customizations
  */
- 
+const PALETTE_WIDTH = 120;
+
 class WorkflowEventListener {
 	eventHandler = function(event){};
 	constructor(handler=null){
@@ -837,7 +838,7 @@ function GraphicalEditor(id,parentId,properties){
 	if(properties.paletteTitle){
 		paletteTitle = properties.paletteTitle;
 	}
-	this.gcManager.palette = new GraphicNodePalette(paletteTitle,80,this.gcManager);
+	this.gcManager.palette = new GraphicNodePalette(paletteTitle,PALETTE_WIDTH,this.gcManager);
 	if(properties.paletteColor){
 		this.gcManager.palette.backgroundColor = properties.paletteColor;
 	}

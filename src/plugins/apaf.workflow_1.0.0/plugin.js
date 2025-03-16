@@ -58,11 +58,13 @@ plugin.nodeExtensions = [];
 plugin.lazzyPlug = function(extenderId,extensionPointConfig){
     this.trace('->lazzyPlug('+extenderId+','+extensionPointConfig.point+')');
     if('apaf.workflow.node.provider'==extensionPointConfig.point){
+		this.info('plugin-in contribution "'+extensionPointConfig.name+'" from '+extenderId);
         this.debug('contribution: '+JSON.stringify(extensionPointConfig));
 		let contributorPlugin = this.runtime.getPlugin(extenderId);
 		let contributedNodeSrc = contributorPlugin.getResourceContent(extensionPointConfig.resourcePath);
 		let nodeFragment = {"name": extensionPointConfig.name,"version": contributorPlugin.config.version,"source": contributedNodeSrc};
 		this.nodeExtensions.push(nodeFragment);
+		this.info('there are currently '+this.nodeExtensions.length+' custom workflow node extension(s) registered');
     }
     this.trace('<-lazzyPlug()');
 }
