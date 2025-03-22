@@ -1,0 +1,55 @@
+{
+  "id": "apaf.event.broker",
+  "name": "Event-driven patterns support plugin",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.workflow","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.event.broker.logger",
+  		"dir": "apaf.event.broker"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.event.broker.router",
+  		"path": "/apaf-event"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.event.broker.htdocs",
+  		"path": "/eventRes",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.event.broker.emit.handler",
+  		"router": "apaf.event.broker.router",
+  		"method": "POST",
+  		"schema": "/emit",
+  		"handler": "emitEventHandler",
+  		"securityRole": "operator",
+		"description": "Emit an event",
+		"input": {"name": "abcd","source": "source-id","data": {}}
+  	},
+  	{
+  		"point": "apaf.workflow.node.provider",
+  		"id": "apaf.event.broker.emit.node.provider",
+  		"name": "Emit an event",
+  		"resourcePath": "/workflow/emitEventNode.js"
+  	},
+  	{
+  		"point": "apaf.workflow.node.provider",
+  		"id": "apaf.event.broker.listener.node.provider",
+  		"name": "Listen to an event",
+  		"resourcePath": "/workflow/eventListenerNode.js"
+  	}
+  ],
+  "provides": [
+  ]
+}
