@@ -563,6 +563,7 @@ loadBuiltinNodes = function(editor,engine){
 	      return node;
 	    }
 	    editor.getPalette().addFactory(factory);
+	    factory.close();
 		
 		factory = new GraphicNodeFactory(END_NODE_TYPE,loader.getImage('endNodeIcon'));
 		factory.instanceCount = 0;
@@ -653,6 +654,7 @@ loadBuiltinNodes = function(editor,engine){
 	      return node;
 	    }
 	    editor.getPalette().addFactory(factory);
+	    factory.close();
 		
 		factory = new GraphicNodeFactory(OR_NODE_TYPE,loader.getImage('orNodeIcon'));
 		factory.instanceCount = 0;
@@ -790,6 +792,7 @@ loadBuiltinNodes = function(editor,engine){
 	      return node;
 	    }
 	    editor.getPalette().addFactory(factory);
+	    factory.close();
 		
 		factory = new GraphicNodeFactory(DB_CREATE_NODE_TYPE,loader.getImage('dbCreateNodeIcon'));
 		factory.instanceCount = 0;
