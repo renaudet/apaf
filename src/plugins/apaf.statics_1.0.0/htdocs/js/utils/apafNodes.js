@@ -83,9 +83,10 @@ addIfNode = function(engine){
 		if('input'!=inputTerminalName){
 			node.error('Invalid input terminal "'+inputTerminalName+'" activation for If node #'+node.id());
 		}else{
-			let toEval = node.getProperty('condition');
+			let toEval = 'function ifNodeEvaluation(node,ctx){ return '+node.getProperty('condition')+'; }';
 			try{
-				let booleanEvaluation = zeval(toEval);
+				zeval(toEval);
+				let booleanEvaluation = ifNodeEvaluation(node,executionContext);
 				if(booleanEvaluation){
 					node.fire('then',executionContext);
 				}else{
