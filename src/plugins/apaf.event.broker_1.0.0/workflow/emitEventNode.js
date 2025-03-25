@@ -38,6 +38,9 @@ helper.engine.addCustomNode = function(engine){
 			let eventName = node.getProperty('eventName');
 			let dataVariableName = node.getProperty('dataVariableName');
 			let eventData = executionContext[dataVariableName];
+			if(typeof eventData=='undefined'){
+				eventData = {};
+			}
 			let event = {"name": eventName,"source": node.id(),"data": eventData};
 			if(typeof engine.plugin!='undefined'){
 				// executes server-side

@@ -225,7 +225,7 @@ class WorkflowEngine{
 			}else{
 				let toEval = 'function ifNodeEvaluation(node,ctx){ return '+node.getProperty('condition')+'; }';
 				try{
-					zeval(toEval);
+					xeval(toEval);
 					let booleanEvaluation = ifNodeEvaluation(node,executionContext);
 					if(booleanEvaluation){
 						node.fire('then',executionContext);
@@ -233,6 +233,7 @@ class WorkflowEngine{
 						node.fire('else',executionContext);
 					}
 				}catch(t){
+					console.log(t);
 					node.error('Exception caught evaluating condition for If node #'+node.id());
 				}
 			}
