@@ -38,6 +38,17 @@
 		"input": {"name": "abcd","source": "source-id","data": {}}
   	},
   	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.event.broker.clean.handler",
+  		"router": "apaf.event.broker.router",
+  		"method": "POST",
+  		"schema": "/clean/:eventName",
+  		"handler": "cleanEventHandler",
+  		"securityRole": "operator",
+		"description": "Clean eventHandlers associated to the given event",
+		"input": {}
+  	},
+  	{
   		"point": "apaf.workflow.node.provider",
   		"id": "apaf.event.broker.emit.node.provider",
   		"name": "Emit an event",
@@ -48,6 +59,12 @@
   		"id": "apaf.event.broker.listener.node.provider",
   		"name": "Listen to an event",
   		"resourcePath": "/workflow/eventListenerNode.js"
+  	},
+  	{
+  		"point": "apaf.workflow.node.provider",
+  		"id": "apaf.event.broker.cleaner.node.provider",
+  		"name": "Clean unused handlers for an event",
+  		"resourcePath": "/workflow/eventCleanerNode.js"
   	}
   ],
   "provides": [

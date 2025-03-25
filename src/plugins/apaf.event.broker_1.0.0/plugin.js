@@ -33,4 +33,22 @@ plugin.emitEventHandler = function(req,res){
 	});
 }
 
+plugin.cleanEventHandler = function(req,res){
+	plugin.debug('->cleanEventHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.event.broker.clean.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-cleanEventHandler(401)');
+			res.json({"status": 401,"message": "not authorized","data": {}});
+		}else{
+			let broker = plugin.getService(EVENT_BROKER_SERVICE_NAME);
+			let eventId = req.params.eventName;
+			broker.unregisterAllHandler(eventId);
+			plugin.debug('<-cleanEventHandler(200)');
+			res.json({"status": 200,"message": "ok","data": {}});
+		}
+	});
+}
+
 module.exports = plugin;
