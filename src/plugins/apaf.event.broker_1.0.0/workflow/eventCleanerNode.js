@@ -17,8 +17,8 @@ helper.palette.contribute = function(editor){
       node.backgroundIcon = loader.getImage('backgroundIcon');
       node.foregroundIcon = loader.getImage('foregroundIcon');
       var input01 = new GraphicNodeTerminal('input');
-      var output01 = new GraphicNodeTerminal('onEvent');
-      var output02 = new GraphicNodeTerminal('next');
+      var output01 = new GraphicNodeTerminal('next');
+      var output02 = new GraphicNodeTerminal('error');
       node.addInputTerminal(input01);
       node.addOutputTerminal(output01);
       node.addOutputTerminal(output02);
