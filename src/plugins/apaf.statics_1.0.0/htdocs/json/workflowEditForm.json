@@ -28,6 +28,25 @@
     			"label": "@apaf.workflow.datatype.serverSide",
     			"type": "switch",
     			"help": "@apaf.workflow.datatype.serverSide.help"
+    		},
+    		{
+    			"name": "loggingEnabled",
+    			"label": "@apaf.workflow.datatype.log.enabled",
+    			"type": "switch",
+    			"default": false
+    		},
+    		{
+    			"name": "timeoutEnabled",
+    			"label": "@apaf.workflow.datatype.timeout.enabled",
+    			"type": "switch",
+    			"default": true
+    		},
+    		{
+    			"name": "documentation",
+    			"label": "@apaf.workflow.datatype.doc",
+    			"type": "textarea",
+    			"rows": 5,
+    			"size": 9
     		}
     	]
     }

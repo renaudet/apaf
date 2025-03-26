@@ -252,6 +252,7 @@ plugin.executeWorkflowHandler = function(req,res){
 			res.json({"status": 500,"message": err,"data": []});
 		}else{
 			let workflowId = req.params.id;
+			let runtimeContext = req.body;
 			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 			datatypePlugin.findByPrimaryKey(WORKFLOW_DATATYPE,{"id": workflowId},function(err,workflow){
 				if(err){
@@ -259,32 +260,42 @@ plugin.executeWorkflowHandler = function(req,res){
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					plugin.debug('execution requested for Workflow "'+workflow.name+'" v'+workflow.version);
-					let engine = new WorkflowEngine(plugin,user,{"global.timeout": timeout});
+					let doLogging = true;
+					if(typeof runtimeContext['_options']!='undefined'){
+						if(typeof runtimeContext['_options'].noTimeout){
+							timeout = 0;
+						}
+						if(typeof runtimeContext['_options'].noLogging){
+							doLogging = false;
+						}
+					}
+					let engine = new WorkflowEngine(plugin,user,{"global.timeout": timeout,"logEnabled": doLogging});
 					plugin.loadCustomNodeFragments(function(fragments){
 						for(var i=0;i<fragments.length;i++){
 							engine.registerCustomNode(fragments[i]);
 						}
 						engine.setEventListener(function(event){
-							runtimeContext['_console'].push(event);
+							if(doLogging){
+								runtimeContext['_console'].push(event);
+							}
 							if('stop'==event.type){
 								plugin.debug('<-executeWorkflowHandler()');
 								delete engine.runtimeContext._engine;
 								res.json({"status": 200,"message": "executed","data": engine.runtimeContext});
 							}
-							if('debug'==event.type){
+							if('debug'==event.type && doLogging){
 								plugin.debug(event.source+' '+event.data);
 							}
-							if('warning'==event.type){
+							if('warning'==event.type && doLogging){
 								plugin.info(event.source+' '+event.data);
 							}
-							if('log'==event.type){
+							if('log'==event.type && doLogging){
 								plugin.info(event.source+' '+event.data);
 							}
 							if('error'==event.type){
 								plugin.error(event.source+' '+event.data);
 							}
 						});
-						let runtimeContext = req.body;
 						if(typeof runtimeContext=='undefined' || runtimeContext==null){
 							runtimeContext = {};
 						}
@@ -330,25 +341,36 @@ plugin.queryAndExecuteWorkflow = function(query,owner,runtimeContext,then){
 				let sortedResultSet = workflows.length==1?workflows:sortOn(workflows,'version',false);
 				let workflow = sortedResultSet[0];
 				plugin.debug('found Workflow "'+workflow.name+'" v'+workflow.version+' with #ID: '+workflow.id);
+				let doLogging = true;
+				if(typeof runtimeContext!='undefined' && typeof runtimeContext['_options']!='undefined'){
+					if(typeof runtimeContext['_options'].noTimeout){
+						timeout = 0;
+					}
+					if(typeof runtimeContext['_options'].noLogging){
+						doLogging = false;
+					}
+				}
 				let engine = new WorkflowEngine(plugin,owner,{"global.timeout": timeout});
 				plugin.loadCustomNodeFragments(function(fragments){
 					for(var i=0;i<fragments.length;i++){
 						engine.registerCustomNode(fragments[i]);
 					}
 					engine.setEventListener(function(event){
-						runtimeContext['_console'].push(event);
+						if(doLogging){
+							runtimeContext['_console'].push(event);
+						}
 						if('stop'==event.type){
 							plugin.debug('<-queryAndExecuteWorkflow() - stop event received');
 							delete engine.runtimeContext._engine;
 							then(null,engine.runtimeContext);
 						}
-						if('debug'==event.type){
+						if('debug'==event.type && doLogging){
 							plugin.debug(event.source+' '+event.data);
 						}
-						if('warning'==event.type){
+						if('warning'==event.type && doLogging){
 							plugin.info(event.source+' '+event.data);
 						}
-						if('log'==event.type){
+						if('log'==event.type && doLogging){
 							plugin.info(event.source+' '+event.data);
 						}
 						if('error'==event.type){

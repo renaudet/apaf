@@ -715,7 +715,7 @@ class WorkflowEngine{
 		this.loadWorkflow(workflow);
 		if(this.startNode!=null){
 			this.debug('starting workflow execution process with ID#'+this.executionId);
-			if(typeof this.options['global.timeout']!='undefined'){
+			if(typeof this.options['global.timeout']!='undefined' && this.options['global.timeout']>0){
 				this.setTimeout(this.options['global.timeout']);
 			}
 			this.fireEvent('debug','engine','activating node #'+this.startNode.id());

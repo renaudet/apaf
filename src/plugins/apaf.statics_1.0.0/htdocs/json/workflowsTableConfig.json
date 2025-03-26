@@ -23,6 +23,16 @@
                 "field": "description"
             },
             {
+                "label": "@apaf.workflow.datatype.server.side",
+                "field": "serverSide",
+                "type": "switch"
+            },
+            {
+                "label": "@apaf.workflow.datatype.log.enabled.short",
+                "field": "loggingEnabled",
+                "type": "switch"
+            },
+            {
                 "label": "@apaf.workflow.datatype.created",
                 "field": "created"
             },

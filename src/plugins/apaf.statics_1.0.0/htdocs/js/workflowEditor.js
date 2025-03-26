@@ -403,9 +403,21 @@ executeWorkflow = function(){
 		if(confirm(npaUi.getLocalizedString('@apaf.workflow.editor.execution.server.confirmation'))){
 			flash('sending request to execute workflow "'+workflow.name+' v'+workflow.version+'" server-side');
 			let callContext = {};
+			let workflowContext = {};
+			workflowContext['_options'] = {};
+			if(workflow.loggingEnabled){
+				workflowContext['_options'].noLogging = false;
+			}else{
+				workflowContext['_options'].noLogging = true;
+			}
+			if(workflow.timeoutEnabled){
+				workflowContext['_options'].noTimeout = false;
+			}else{
+				workflowContext['_options'].noTimeout = true;
+			}
 			callContext.method = 'POST';
 			callContext.uri = '/apaf-workflow/execute/'+workflow.id;
-			callContext.payload = {};
+			callContext.payload = workflowContext;
 			apaf.call(callContext)
 			    .then(function(responseData){
 					showInfo(JSON.stringify(responseData,null,'\t').replace(/\t/g,'&nbsp;&nbsp;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;'));
