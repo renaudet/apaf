@@ -287,7 +287,61 @@ setStatus = function(status){
 	card.setStatus(status);
 }
 
+initDropTarget = function(target){
+	target.on('dragenter.draganddrop',function(ev){
+		ev.stopPropagation();
+		ev.preventDefault();
+	});
+	target.on('dragover.draganddrop',function(ev){
+		ev.stopPropagation();
+		ev.preventDefault();
+	});
+	target.on('drop.draganddrop',function(ev){
+		ev.stopPropagation();
+		ev.preventDefault();
+		var dt = ev.dataTransfer;
+		if(typeof dt=='undefined'){
+			dt = ev.originalEvent.dataTransfer;
+		}
+		var files = dt.files;
+		if(files && files.length>0 && selectedFolder!=null){
+			let file = files[0];
+			var formdata = new FormData();
+			formdata.append("data", file);
+			let folderPath = '';
+			let project = '';
+			let absolutePath = '';
+			if('directory'==selectedFolder.type){
+				project = selectedFolder.project;
+				folderPath = selectedFolder.path;
+				absolutePath = selectedFolder.project+'/'+selectedFolder.path;
+			}else{
+				project = selectedFolder.name;
+				folderPath = '';
+				absolutePath = selectedFolder.name;
+			}
+			let filePath = folderPath+'/'+file.name;
+			apaf.upload(absolutePath,'newFile',formdata)
+			.then(function(response){
+				let entry = {"name": file.name,"type": "file","project": project,"path": filePath};
+				let treeNode = currentContainerNode.tree.createTreeStructure(currentContainerNode.id+'_child_'+Math.floor(Math.random() * 100000),entry);
+				currentContainerNode.addChild(treeNode);
+				currentContainerNode.open();
+				selectedFolder.children.push(entry);
+				target.off('.draganddrop');
+			    treeViewer.refreshTree();
+				showConfirm(response.message);
+				initDropTarget(target);
+			})
+			.onError(function(errorMsg){
+				showError(errorMsg);
+			});
+		}
+   });	
+}
+
 initWorkspaceViewer = function(){
+    initDropTarget($('#treeArea'));
 	$('#treeArea').empty();
 	treeViewer = new TreeViewer('workspaceViewer',$('#treeArea')[0]);
 	treeViewer.init();
@@ -676,7 +730,9 @@ var apiEventListener = {
 		}
 	}
 }
+
 var apiBrowser = null;
+
 initApiBrowser = function(){
 	let height = $('#workArea').height()-10;
 	$('#apiTreeArea').height(height);
@@ -688,7 +744,6 @@ initApiBrowser = function(){
 		$('#apiTreeArea').css('max-height',height);
 		$('#apiTreeArea').css('overflow','auto');
 	});
-
 	$('#apiTreeArea').empty();
 	apiBrowser = new TreeViewer('apiBrowser',$('#apiTreeArea')[0]);
 	apiBrowser.init();
