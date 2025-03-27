@@ -166,15 +166,24 @@ openSnippetLibrary = function(){
 	}).then(function(data){
 		if(data && data.length>0){
 			let snippets = sortOn(data,'category');
+			let category = '';
+			let optGroupId = null;
 			for(var i=0;i<snippets.length;i++){
 				let snippetEntry = snippets[i];
+				if(snippetEntry.category!=category){
+					category = snippetEntry.category;
+					optGroupId = 'snippetCategory_'+i;
+					let optGroup = '<optgroup id="'+optGroupId+'" label="'+category+'"></optgroup>';
+					$('#snippetSelector').append(optGroup);
+				}
 				let option = '';
 				option += '<option value="';
 				option += snippetEntry.location;
 				option += '">';
 				option += snippetEntry.label;
 				option += '</option>';
-				$('#snippetSelector').append(option);
+				//$('#snippetSelector').append(option);
+				$('#'+optGroupId).append(option);
 			}
 		}
 		dialog.open();
