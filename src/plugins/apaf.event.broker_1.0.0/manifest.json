@@ -65,6 +65,20 @@
   		"id": "apaf.event.broker.cleaner.node.provider",
   		"name": "Clean unused handlers for an event",
   		"resourcePath": "/workflow/eventCleanerNode.js"
+  	},
+  	{
+  		"point": "apaf.dev.snippet.provider",
+  		"id": "apaf.event.broker.snippet.emit",
+  		"label": "Emit an internal event",
+  		"location": "/eventRes/snippets/emitEvent.txt",
+  		"category": "API"
+  	},
+  	{
+  		"point": "apaf.dev.snippet.provider",
+  		"id": "apaf.event.broker.snippet.clean",
+  		"label": "Clean event handlers associated with an eventId",
+  		"location": "/eventRes/snippets/cleanHandlers.txt",
+  		"category": "API"
   	}
   ],
   "provides": [
