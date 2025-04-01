@@ -108,7 +108,9 @@ LOG_LEVEL=info
 SSL_CERTIFICATE=./ssl/apaf-certificate.pem
 SSL_PRIVATE_KEY=./ssl/apaf-private-key.pem
 PORT=9090
-APPLICATION_NAME=apaf
+APPLICATION=apaf
+APPLICATION_NAME=APAF
+APAF_INSTALLATION=<path-to-NPA-installation-configuration-file>
 ```
 
 A typical command-line may then be:
@@ -126,9 +128,13 @@ Upon successfull startup, APAF will create the following CouchDB databases:
 * apaf_users: contains APAF user definitions - for localy authenticated users the record only contains the md5 of the password
 * apaf_groups: defines Groups of APAF Users - Groups are associated with Security Roles to grant access to APAF features
 * apaf_roles: defines APAF and User-defined Security Roles
+* apaf_rule_data: defines User-defined rule data used to populate select lists
 * apaf_datatypes: defines User-designed datatypes that may be used in custom databases, forms...
 * apaf_fragments: defines the fragments of code used to assemble APAF applications
 * apaf_applications: defines APAF User-defined applications - published ones will appear on the Applications menu
+* apaf_scheduler: defines scheduled tasks or workflows managed by the APAF runtime
+* apaf_tokens: defines User-managed security tokens associated with Servlet URLs
+* apaf_workflows: defines User-designed workflows  
 
 ## Getting Started
 
@@ -268,3 +274,11 @@ The integrated execution console enables developers to test their workflow from 
 ![The APAF Workflow execution console](https://github.com/renaudet/apaf/blob/main/screenshots/workflowExecution.png?raw=true)
  
 These workflows may then be called from custom APAF applications as reusable business components. It also greatly reduce the time needed to develop complex asynchronous applications when multiple calls to REST providers are expected for example.
+
+## Security Token
+
+An APAF fragment may be tagged as a Servlet. In this case, a Servlet `alias` is defined so that the Servlet may be invoked using the relative URI `/apaf-api/servlet/<alias>`. But as a Servlet is a secured resource, the security layer will look for an existing session or a credential in the incomming request (Authorization header with base64 encoded user/password).
+
+A convenient way to provide a self-sufficient URL is to generate a token for the Servlet URL and add this token to the request, either using the `?token=<token>` url parameter or by providing a request *Bearer* header.  
+
+Tokens are generated using the `Administration / Manage APIs / Security Tokens` page. Click the `Create a new token...` icon then provide the Servlet relative *URI* and the credential to use for this token. At runtime, the Servlet invocation will assume the identity for the provided credential.
