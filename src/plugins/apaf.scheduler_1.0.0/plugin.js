@@ -9,14 +9,16 @@ const moment = require('moment');
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const SCHEDULER_DATATYPE_NAME = 'scheduler';
-const ENGINE_STARTUP_DELAY = 8000;
+const LISTEN_TO_STATE = 'apaf.datatype.ready';
 
 var plugin = new ApafPlugin();
 plugin.engine = null;
 
 plugin.onConfigurationLoaded = function(){
 	this.engine = new Engine(this);
-	setTimeout(function(){ plugin.engine.start(); },ENGINE_STARTUP_DELAY);
+	this.registerStateListener(LISTEN_TO_STATE,function(){
+		plugin.engine.start();
+	});
 }
 
 plugin.querySchedulersHandler = function(req,res){

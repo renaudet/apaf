@@ -6,6 +6,8 @@
 const ApafPlugin = require('../../apafUtil.js');
 const APAF_DATATYPE_DB_REF = 'apaf_datatypes';
 const COUCH_SERVICE_ID = 'couchdb';
+const READY_STATE = 'apaf.datatype.ready';
+const APPLICATION_STARTED_STATE = 'application.started';
 const INITIALIZER_DELAY = 5000;
 
 var plugin = new ApafPlugin();
@@ -15,47 +17,21 @@ plugin.baseDatasourceConfig = null;
 plugin.lazzyPlug = function(extenderId,extensionPointConfig){
 	if('apaf.datatype.base.datatype'==extensionPointConfig.point){
 		let datatype = extensionPointConfig.datatype;
-		this.info('registering static Datatype '+datatype.name);
+		this.info('registering static Datatype '+datatype.name+' from '+extenderId);
 		this.trace(JSON.stringify(datatype,null,'\t'));
 		this.registerDatatype(datatype);
 	}
 	if('apaf.datatype.object.initializer'==extensionPointConfig.point){
-		if(typeof this.commands=='undefined'){
-			this.commands = [];
-		}
-		this.commands.push(function(then){
-			plugin.info('initializing object for datatype '+extensionPointConfig.datatype);
+		this.registerStateListener(READY_STATE,function(){
+			plugin.info('initializing object for datatype '+extensionPointConfig.datatype+' from '+extenderId);
 			plugin.trace('data: '+JSON.stringify(extensionPointConfig.data,null,'\t'));
-			plugin.initializeObject(extensionPointConfig.datatype,extensionPointConfig.data,then);
+			plugin.initializeObject(extensionPointConfig.datatype,extensionPointConfig.data);
 		});
 	}
 }
 
-plugin.onConfigurationLoaded = function(){
-	this.trace('->onConfigurationLoaded()');
-	if(typeof this.commands!='undefined'){
-		this.trace('found '+this.commands.length+' postponned commands to execute');
-		let executeCommandLst = function(commandLst,index,then){
-			if(index<commandLst.length){
-				let command = commandLst[index];
-				plugin.trace('executing postponned command #'+index);
-				command(function(){
-					executeCommandLst(commandLst,index+1,then);
-				});
-			}else{
-				then();
-			}
-		}
-		setTimeout(function(){
-			executeCommandLst(plugin.commands,0,function(){
-				delete plugin.commands;
-			});
-		},INITIALIZER_DELAY);
-	}
-	this.trace('<-onConfigurationLoaded()');
-}
-
 plugin.beforeExtensionPlugged = function(){
+	this.trace('->beforeExtensionPlugged()');
 	for(var i=0;i<this.config.extends.length;i++){
 		let extent = this.config.extends[i];
 		if('npa.couchdb.adapter.datasource'==extent.point){
@@ -73,14 +49,17 @@ plugin.beforeExtensionPlugged = function(){
 			if(exists){
 				plugin.info('Datatype database already exists');
 				plugin.loadCustomDatatypes();
+				plugin.trace('<-beforeExtensionPlugged()');
 			}else{
 				plugin.info('Datatype database not found - creating...');
 				couchService.createDatabase(APAF_DATATYPE_DB_REF,function(err,created){
 					if(err){
 						plugin.error('Error creating CouchDB database '+APAF_DATATYPE_DB_REF);
 						plugin.error(JSON.stringify(err));
+						plugin.trace('<-beforeExtensionPlugged()');
 					}else{
 						plugin.loadCustomDatatypes();
+						plugin.trace('<-beforeExtensionPlugged()');
 					}
 				});
 			}
@@ -102,6 +81,7 @@ plugin.loadCustomDatatypes = function(){
 				plugin.debug('found custom datatype '+customDatatype.name);
 				plugin.registerDatatype(customDatatype);
 			}
+			plugin.setState(READY_STATE);
 		}
 		plugin.trace('<-loadCustomDatatypes()');
 	});
@@ -297,7 +277,7 @@ plugin.initializeObject = function(datatype,data,then){
 			plugin.error('An error occured looking up for an existing "'+datatype+'" record with selector '+JSON.stringify(selector));
 			plugin.error(JSON.stringify(err));
 			plugin.trace('<-initializeObject()');
-			then();
+			//then();
 		}else{
 			if(resultSet && resultSet.length==0){
 				plugin.debug('object not found in database! - creating');
@@ -309,12 +289,12 @@ plugin.initializeObject = function(datatype,data,then){
 						plugin.info('A new record of type "'+datatype+'" was created: '+JSON.stringify(createdRecord));
 					}
 					plugin.trace('<-initializeObject()');
-					then();
+					//then();
 				});
 			}else{
 				plugin.debug('object already exists');
 				plugin.trace('<-initializeObject()');
-				then();
+				//then();
 			}
 		}
 	})

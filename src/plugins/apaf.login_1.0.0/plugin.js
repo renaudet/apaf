@@ -10,13 +10,16 @@ const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const USER_DATATYPE = 'user';
 const CACHE_EVICTION_LOOP_TIMEOUT = 60*1000;
+const LISTEN_TO_STATE = 'apaf.datatype.ready';
 
 var plugin = new ApafPlugin();
 plugin.available = false;
 
 plugin.beforeExtensionPlugged = function(){
-	this.info('APAF Login: initializing plugin...');
-	setTimeout(function(){ plugin.checkPreconditions(); },4000);
+	this.debug('APAF Login: initializing plugin...');
+	this.registerStateListener(LISTEN_TO_STATE,function(){
+		plugin.checkPreconditions();
+	});
 }
 
 plugin.checkPreconditions = function(){
@@ -158,7 +161,6 @@ plugin.loginHandler = function(req,res){
 							userConnectionData.lastAttempt = lastAttempt;
 							userConnectionData.attemptCount++;
 							plugin.debug('<-loginHandler(404)');
-							//res.json({"status": 404,"message": "@apaf.page.login.error.unauthorized"});
 							setTimeout(function(){ res.json({"status": 404,"message": "@apaf.page.login.error.unauthorized"}); },3000);
 						}else{
 							let registeredUser = data[0];
@@ -182,7 +184,6 @@ plugin.loginHandler = function(req,res){
 								userConnectionData.lastAttempt = lastAttempt;
 								userConnectionData.attemptCount++;
 								plugin.debug('<-loginHandler(401)');
-								//res.json({"status": 401,"message": "@apaf.page.login.error.invalid"});
 								setTimeout(function(){ res.json({"status": 401,"message": "@apaf.page.login.error.invalid"}); },5000);
 							}
 						}
