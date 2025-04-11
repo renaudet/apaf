@@ -128,7 +128,6 @@ addRestCallNode = function(engine){
 			if(typeof payload=='undefined'){
 				payload = {};
 			}
-			let secured = ('true'==node.getProperty('secured'));
 			let callContext = {};
 			callContext.method = 'POST';
 			callContext.uri = '/apaf-rest/invoke';
@@ -136,7 +135,8 @@ addRestCallNode = function(engine){
 			  "host": node.getProperty('hostname'),
 			  "port": node.getProperty('port'),
 			  "uri": node.getProperty('uri'),
-			  "secured": secured,
+			  "secured": node.getProperty('secured'),
+			  "acceptCertificate": node.getProperty('acceptCertificate'),
 			  "username": node.getProperty('username'),
 			  "password": node.getProperty('password'),
 			  "method": node.getProperty('method'),
@@ -649,6 +649,7 @@ loadBuiltinNodes = function(editor,engine){
 	      node.addProperty('method','HTTP Verb','select',true,'GET','GET,PUT,POST,DELETE');
 	      node.addProperty('payload.variable.name','Payload variable name','string',false,'payload');
 	      node.addProperty('secured','Use HTTPS','boolean',true,false);
+	      node.addProperty('acceptCertificate','Accept Self-signed certificates','boolean',true,true);
 	      node.addProperty('username','Username','string',true,'');
 	      node.addProperty('password','Password','string',true,'');
 	      node.addProperty('response.variable.name','Response variable name','string',false,'restCallData');

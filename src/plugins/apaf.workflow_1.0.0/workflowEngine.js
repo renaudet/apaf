@@ -262,12 +262,12 @@ class WorkflowEngine{
 				if(typeof payload=='undefined'){
 					payload = {};
 				}
-				let secured = ('true'==node.getProperty('secured'));
 				let callContext = {
 				  "host": node.getProperty('hostname'),
 				  "port": node.getProperty('port'),
 				  "uri": node.getProperty('uri'),
-				  "secured": secured,
+				  "secured": node.getProperty('secured'),
+			  	  "acceptCertificate": node.getProperty('acceptCertificate'),
 				  "username": node.getProperty('username'),
 				  "password": node.getProperty('password'),
 				  "method": node.getProperty('method'),
