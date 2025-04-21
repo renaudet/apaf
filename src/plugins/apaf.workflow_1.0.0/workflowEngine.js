@@ -106,6 +106,9 @@ class WorkflowNodeWrapper{
 	id(){
 		return this.workflowNode.id;
 	}
+	require(lib){
+		return require(lib);
+	}
 	internalGetPropertyValue(propertyName){
 		let rawProperty = this.workflowNode.properties[propertyName];
 		if('int'==rawProperty.type){
@@ -276,13 +279,13 @@ class WorkflowEngine{
 				node.debug('performing REST call '+node.getProperty('method')+' '+node.getProperty('uri'));
 				let restPlugin = plugin.runtime.getPlugin(REST_CALL_SUPPORT_PLUGIN_ID);
 				if(user.isAdmin || typeof user.roles['coreServices']!='undefined'){
-					restPlugin.performRestApiCall(callContext,function(err,data){
+					restPlugin.performRestApiCall(callContext,function(err,response){
 						if(err){
 							node.error('REST call failed with error '+err);
 							node.fire('error',executionContext);
 						}else{
 							node.debug('REST call was successfull');
-							executionContext[node.getProperty('response.variable.name')] = data;
+							executionContext[node.getProperty('response.variable.name')] = response.data;
 							node.fire('then',executionContext);
 						}
 					});
