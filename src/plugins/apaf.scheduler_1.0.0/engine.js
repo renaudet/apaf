@@ -88,13 +88,16 @@ class SchedulerEngine {
 						});
 					}
 					if(typeof task.workflow!='undefined' && task.workflow.length>0){
-						engine.executeWorkflow(task.workflow,updatedUser,function(){
-							task.lastExecuted = moment();
-							datatypePlugin.updateRecord(SCHEDULER_DATATYPE_NAME,task,function(err,data){
-								if(err){
-									engine.error('an error occured updating task "'+task.name+'": '+err);
-								}
-							});
+						task.lastExecuted = moment();
+						engine.debug('executing workflow '+task.workflow+'...');
+						datatypePlugin.updateRecord(SCHEDULER_DATATYPE_NAME,task,function(err,data){
+							if(err){
+								engine.error('an error occured updating task "'+task.name+'": '+err);
+							}else{
+								engine.executeWorkflow(task.workflow,updatedUser,function(){
+									engine.debug('workflow '+task.workflow+' got executed!');
+								});
+							}
 						});
 					}
 					engine.debug('<-executeTask()');
