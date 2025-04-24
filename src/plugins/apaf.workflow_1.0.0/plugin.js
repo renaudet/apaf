@@ -349,7 +349,17 @@ plugin.queryAndExecuteWorkflow = function(query,owner,runtimeContext,then){
 					if(typeof runtimeContext['_options'].noLogging){
 						doLogging = false;
 					}
+				}else{
+					if(workflow.timeoutEnabled==false){
+						timeout = 0;
+					}
+					if(workflow.loggingEnabled==false){
+						doLogging = false;
+					}
 				}
+				plugin.debug('Executing with options:');
+				plugin.debug('-timeout: '+timeout);
+				plugin.debug('-doLogging: '+doLogging);
 				let engine = new WorkflowEngine(plugin,owner,{"global.timeout": timeout});
 				plugin.loadCustomNodeFragments(function(fragments){
 					for(var i=0;i<fragments.length;i++){

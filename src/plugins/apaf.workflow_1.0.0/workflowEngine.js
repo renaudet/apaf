@@ -613,15 +613,19 @@ class WorkflowEngine{
 		        if(typeof workflowCtx=='undefined'){
 		           node.debug('workflow execution context variable "'+contextVarName+'" not found - using default context');
 		           workflowCtx = {"status": "pending"};
-		        }
+		        }else{
+					if(typeof workflowCtx.status=='undefined'){
+						workflowCtx.status = 'pending';
+					}
+				}
 		        let workflowPlugin = plugin.runtime.getPlugin(WORKFLOW_PLUGIN_ID);
 		        workflowPlugin.executeWorkflow(workflowName,null,user,workflowCtx,function(err,ctx){
 					if(err){
-		           	node.fire('error',executionContext);
-		           }else{
-		           	executionContext[contextVarName] = ctx;
-		           	node.fire('output',executionContext);
-		           }
+			           	node.fire('error',executionContext);
+			        }else{
+			           	executionContext[contextVarName] = ctx;
+			           	node.fire('output',executionContext);
+			        }
 				});
 			}
 		}
@@ -705,8 +709,12 @@ class WorkflowEngine{
 	}
 	start(workflow,runtimeContext){
 		this.debug('->WorkflowEngine#start("'+workflow.name+'",ctx)');
+		let forceJobExpiration = false;
+		if(typeof this.options['global.timeout']!='undefined' && this.options['global.timeout']>0){
+				forceJobExpiration = true;
+			}
 		let jobService = this.plugin.getService(JOB_SERVICE_NAME);
-		let job = jobService.createJob(this.owner.login,workflow.name+' v'+workflow.version+' '+moment().format(TIMESTAMP_FORMAT));
+		let job = jobService.createJob(this.owner.login,workflow.name+' v'+workflow.version+' '+moment().format(TIMESTAMP_FORMAT),!forceJobExpiration);
 		runtimeContext._jobId = job.id;
 		this.startNode = null;
 		this.workflowWrappers = {};
@@ -717,8 +725,8 @@ class WorkflowEngine{
 		this.fireEvent('start.requested','engine','Workflow name is "'+workflow.name+'"');
 		this.loadWorkflow(workflow);
 		if(this.startNode!=null){
-			this.debug('starting workflow execution process with ID#'+this.executionId);
-			if(typeof this.options['global.timeout']!='undefined' && this.options['global.timeout']>0){
+			this.debug('starting workflow "'+workflow.name+'" execution process with ID#'+this.executionId);
+			if(forceJobExpiration){
 				this.setTimeout(this.options['global.timeout']);
 			}
 			this.fireEvent('debug','engine','activating node #'+this.startNode.id());
@@ -731,12 +739,15 @@ class WorkflowEngine{
 		return this.executionId;
 	}
 	stop(msg){
-		this.debug('->WorkflowEngine#stop()');
+		this.debug('->WorkflowEngine#stop() ID: #'+this.executionId);
+		this.debug('msg: '+msg);
 		if(this.nodeActivationEnabled){
 			let jobService = this.plugin.getService(JOB_SERVICE_NAME);
 			jobService.updateJob({"id": this.runtimeContext._jobId,"progress": 100});
 			this.fireEvent('stop','engine',msg);
 			this.nodeActivationEnabled = false;
+			this.debug('workflow execution process ID#'+this.executionId+' is now stopped!');
+		}else{
 			this.debug('workflow execution process ID#'+this.executionId+' is now stopped!');
 		}
 		this.debug('<-WorkflowEngine#stop()');
@@ -747,15 +758,16 @@ class WorkflowEngine{
 		}
 	}
 	activateLink(sourceNodeId,terminalName,context){
-		this.debug('->WorkflowEngine#activateLink('+sourceNodeId+','+terminalName+',ctx)');
+		this.debug('->WorkflowEngine#activateLink('+sourceNodeId+','+terminalName+',ctx) ID: #'+this.executionId);
 		let jobService = this.plugin.getService(JOB_SERVICE_NAME);
 		let job = jobService.getJob(this.runtimeContext._jobId);
-		if(this.nodeActivationEnabled){
+		if(typeof job!='undefined' && this.nodeActivationEnabled){
 			if(job.status=='ongoing'){
 				let terminalId = sourceNodeId+'#'+terminalName;
 				let link = this.links[terminalId];
 				if(typeof link!='undefined'){
 					let target = link.target;
+					this.debug('target: '+target.id());
 					let targetTerminal = link.terminal;
 					this.fireEvent('debug','engine','activating terminal "'+target.id()+'#'+targetTerminal+'" from "'+terminalId+'"');
 					if(typeof this.options['activation.delay']!='undefined'){
@@ -773,6 +785,7 @@ class WorkflowEngine{
 		this.debug('<-WorkflowEngine#activateLink()');
 	}
 	setTimeout(delayMsec){
+		this.debug('->WorkflowEngine#setTimeout('+delayMsec+') ID: #'+this.executionId);
 		let engine = this;
 		setTimeout(function(){ engine.stop('Workflow terminated - global timeout reached'); },delayMsec);
 	}
