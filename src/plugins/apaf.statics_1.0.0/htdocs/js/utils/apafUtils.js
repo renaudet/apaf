@@ -21,11 +21,13 @@ function checkSessionStatus(then){
 			}
 		}else{
 			console.log('checkSessionStatus() -> '+response.status);
-			setTimeout(function(){ window.location.replace('/resources/html/login.html')},500);
+			//setTimeout(function(){ window.location.replace('/resources/html/login.html')},500);
+			setTimeout(function(){ window.location.replace(response.data)},500);
 		}
 	},function(errorMsg){
 		console.log('checkSessionStatus() -> error: '+errorMsg);
-		setTimeout(function(){ window.location.replace('/resources/html/login.html')},500);
+		//setTimeout(function(){ window.location.replace('/resources/html/login.html')},500);
+		setTimeout(function(){ window.location.replace(response.data)},500);
 	});
 }
 

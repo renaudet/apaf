@@ -506,6 +506,7 @@
   ],
   "provides": [
   	{"id": "apaf.admin.user.preference"},
-  	{"id": "apaf.admin.profile.provider"}
+  	{"id": "apaf.admin.profile.provider"},
+	{"id": "apaf.admin.login.page.provider"}
   ]
 }

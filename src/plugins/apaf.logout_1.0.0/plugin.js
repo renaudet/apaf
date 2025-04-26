@@ -5,7 +5,7 @@
 
 const ApafPlugin = require('../../apafUtil.js');
 const SECURITY_SERVICE_NAME = 'apaf-security';
-
+const ADMIN_PLUGIN_ID = 'apaf.admin';
 var plugin = new ApafPlugin();
 
 plugin.logoutHandler = function(req,res){
@@ -29,7 +29,9 @@ plugin.logoutHandler = function(req,res){
 			plugin.error('An error occurred - guess the session already expired!');
 		}
 		plugin.debug('<-logoutHandler(200)');
-		res.redirect('/resources/html/login.html');
+		let adminPlugin = plugin.runtime.getPlugin(ADMIN_PLUGIN_ID);
+		//res.redirect('/resources/html/login.html');
+		res.redirect(adminPlugin.loginPage);
 	});
 }
 

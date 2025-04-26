@@ -12,10 +12,12 @@ const USER_DATATYPE = 'user';
 const GROUP_DATATYPE = 'group';
 const ROLE_DATATYPE = 'role';
 const TIMESTAMP_FORMAT = 'YYYY/MM/DD HH:mm:ss';
+const DEFAULT_LOGIN_PAGE = '/resources/html/login.html';
 
 var plugin = new ApafPlugin();
 plugin.userPrefs = {};
 plugin.profilePageContributors = [];
+plugin.loginPage = DEFAULT_LOGIN_PAGE;
 
 plugin.lazzyPlug = function(extenderId,extensionPointConfig){
 	if('apaf.admin.user.preference'==extensionPointConfig.point){
@@ -25,6 +27,10 @@ plugin.lazzyPlug = function(extenderId,extensionPointConfig){
 	if('apaf.admin.profile.provider'==extensionPointConfig.point){
 		plugin.debug('adding Profile page contributor "'+extensionPointConfig.id+'" from #'+extenderId);
 		plugin.profilePageContributors.push(extensionPointConfig);
+	}
+	if('apaf.admin.login.page.provider'==extensionPointConfig.point){
+		plugin.debug('setting Login page as "'+extensionPointConfig.url+'" from #'+extenderId);
+		plugin.loginPage = extensionPointConfig.url;
 	}
 }
 
@@ -39,11 +45,11 @@ plugin.checkSessionHandler = function(req,res){
 			res.json({"status": 200,"message": "ok","data": user});
 		}else{
 			plugin.debug('<-checkSessionHandler()');
-			res.json({"status": 500,"message": "unauthenticated","data": []});
+			res.json({"status": 500,"message": "unauthenticated","data": plugin.loginPage});
 		}
 	}else{
 		plugin.debug('<-checkSessionHandler()');
-		res.json({"status": 500,"message": "no session","data": []});
+		res.json({"status": 500,"message": "no session","data": plugin.loginPage});
 	}
 }
 
@@ -59,11 +65,11 @@ plugin.maintainSessionHandler = function(req,res){
 			res.json({"status": 200,"message": "ok","data": session.lastAccess});
 		}else{
 			plugin.debug('<-checkSessionHandler()');
-			res.json({"status": 500,"message": "unauthenticated","data": []});
+			res.json({"status": 500,"message": "unauthenticated","data": plugin.loginPage});
 		}
 	}else{
 		plugin.debug('<-maintainSessionHandler()');
-		res.json({"status": 500,"message": "no session","data": []});
+		res.json({"status": 500,"message": "no session","data": plugin.loginPage});
 	}
 }
 

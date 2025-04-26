@@ -8,7 +8,8 @@
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
-  	{"type": "plugin","id": "apaf.security","version": "1.0.0"}
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.admin","version": "1.0.0"}
   ],
   "extends": [
   	{
