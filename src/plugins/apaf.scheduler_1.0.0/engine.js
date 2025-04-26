@@ -38,7 +38,7 @@ class SchedulerEngine {
 	}
 	getTickValue(){
 	    let propService = this.schedulerPlugin.getService(RUNTIME_PROPERTIES_SERVICE_NAME);
-	    return propService.getProperty('scheduler.tick.timeout');
+	    return propService.getProperty(TICK_TIMEOUT_PROPERTY_NAME);
 	}
 	start(){
 		this.info('SchedulerEngine starting...');
@@ -88,13 +88,16 @@ class SchedulerEngine {
 						});
 					}
 					if(typeof task.workflow!='undefined' && task.workflow.length>0){
-						engine.executeWorkflow(task.workflow,updatedUser,function(){
-							task.lastExecuted = moment();
-							datatypePlugin.updateRecord(SCHEDULER_DATATYPE_NAME,task,function(err,data){
-								if(err){
-									engine.error('an error occured updating task "'+task.name+'": '+err);
-								}
-							});
+						task.lastExecuted = moment();
+						engine.debug('executing workflow '+task.workflow+'...');
+						datatypePlugin.updateRecord(SCHEDULER_DATATYPE_NAME,task,function(err,data){
+							if(err){
+								engine.error('an error occured updating task "'+task.name+'": '+err);
+							}else{
+								engine.executeWorkflow(task.workflow,updatedUser,function(){
+									engine.debug('workflow '+task.workflow+' got launched / executed!');
+								});
+							}
 						});
 					}
 					engine.debug('<-executeTask()');
@@ -154,7 +157,7 @@ class SchedulerEngine {
 		let query = {"selector": {"id": {"$eq": workflowId}}};
 		engine.info('executing workflow #'+workflowId+' as User '+asUser.login);
 		workflowPlugin.queryAndExecuteWorkflow(query,asUser,{"status": "pending"},function(){
-			engine.debug('<-executeWorkflow()');
+			engine.debug('<-executeWorkflow() workflowId: '+workflowId);
 			then();
 		});
 	}

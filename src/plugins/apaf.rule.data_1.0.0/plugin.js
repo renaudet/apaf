@@ -10,6 +10,26 @@ const RULEDATA_DATATYPE_NAME = 'ruleData';
 
 var plugin = new ApafPlugin();
 
+plugin.getRuleByName = function(ruleName,next){
+	this.debug('->getRuleByName()');
+	var query = {"selector": {"name": {"$eq": ruleName}}};
+	let datatypePlugin = this.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+	datatypePlugin.query(RULEDATA_DATATYPE_NAME,query,function(err,data){
+		if(err){
+			plugin.debug('<-getRuleByName() - error');
+			next(err,null);
+		}else{
+			if(data.length>0){
+				plugin.debug('<-getRuleByNameHandler() - success');
+				next(null,data[0]);
+			}else{
+				plugin.debug('<-getRuleByNameHandler() - not found');
+				next('Not found',null);
+			}
+		}
+	});
+}
+
 plugin.queryRuleHandler = function(req,res){
 	plugin.debug('->queryRuleHandler()');
 	res.set('Content-Type','application/json');

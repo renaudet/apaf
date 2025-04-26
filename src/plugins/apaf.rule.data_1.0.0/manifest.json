@@ -10,7 +10,8 @@
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
-  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"}
+  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.workflow","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -149,6 +150,12 @@
   			{"type": "js","uri": "/ruleData/js/editors/ruleDataReferenceEditor.js"}
   		],
   		"editor": "apafUi.RuleDataReferenceEditor"
+  	},
+  	{
+  		"point": "apaf.workflow.node.provider",
+  		"id": "apaf.rule.data.read.node.provider",
+  		"name": "Read a RuleData set",
+  		"resourcePath": "/workflow/readRuleDataNode.js"
   	}
   ],
   "provides": [
