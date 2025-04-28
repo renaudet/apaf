@@ -8,7 +8,8 @@
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
   	{"type": "plugin","id": "npa.runtime.props","version": "1.0.0"},
-  	{"type": "plugin","id": "apaf.security","version": "1.0.0"}
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.workflow","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -20,6 +21,12 @@
   		"point": "npa.http.router",
   		"id": "apaf.runtime.properties.router",
   		"path": "/runtime-properties"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.runtime.properties.htdocs",
+  		"path": "/runtimeProps",
+  		"localDir": "htdocs"
   	},
   	{
   		"point": "npa.http.handler",
@@ -51,6 +58,18 @@
 		"description": "Set a runtime property if possible - if the property doesn't exists, create it",
 		"securityRole": "operator",
 		"input": {"name": "abcd","type": "string/int/boolean/percentage","value": "some value","description": "abcd"}
+  	},
+  	{
+  		"point": "apaf.workflow.node.provider",
+  		"id": "apaf.runtime.properties.setProperty.node.provider",
+  		"name": "Set Runtime Property",
+  		"resourcePath": "/workflow/setRuntimePropertyNode.js"
+  	},
+  	{
+  		"point": "apaf.workflow.node.provider",
+  		"id": "apaf.runtime.properties.getProperty.node.provider",
+  		"name": "Get Runtime Property Value",
+  		"resourcePath": "/workflow/getRuntimePropertyNode.js"
   	}
   ],
   "provides": [
