@@ -282,3 +282,11 @@ An APAF fragment may be tagged as a Servlet. In this case, a Servlet `alias` is 
 A convenient way to provide a self-sufficient URL is to generate a token for the Servlet URL and add this token to the request, either using the `?token=<token>` url parameter or by providing a request *Bearer* header.  
 
 Tokens are generated using the `Administration / Manage APIs / Security Tokens` page. Click the `Create a new token...` icon then provide the Servlet relative *URI* and the credential to use for this token. At runtime, the Servlet invocation will assume the identity for the provided credential.
+
+## API Explorer
+
+APAF features are implemented as REST calls, so that it is virtually possible to manage the APAF runtime entirely through REST calls.
+
+The APAF API Browser helps discover the provided APIs and test them :
+
+![The APAF API Browser](https://github.com/renaudet/apaf/blob/main/screenshots/apiBrowser.png?raw=true)
