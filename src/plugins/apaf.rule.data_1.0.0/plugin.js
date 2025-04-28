@@ -106,7 +106,7 @@ plugin.findRuleByPrimaryKeyHandler = function(req,res){
 					plugin.debug('<-findRuleByPrimaryKeyHandler()');
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
-					if(data.length>0){
+					if(data && data.length>0){
 						plugin.debug('<-findRuleByPrimaryKeyHandler()');
 						res.json({"status": 200,"message": "ok","data": data[0]});
 					}else{
