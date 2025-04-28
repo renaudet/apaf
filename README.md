@@ -290,3 +290,11 @@ APAF features are implemented as REST calls, so that it is virtually possible to
 The APAF API Browser helps discover the provided APIs and test them :
 
 ![The APAF API Browser](https://github.com/renaudet/apaf/blob/main/screenshots/apiBrowser.png?raw=true)
+
+## Log Browser
+
+Each APAF runtime plugin can log trace message depending on a trace level (from error-only to finest). This is useful to help solve issues server-side.
+
+The integrated Logs Browser helps set the necessary trace level and extract the latest traces from the log files :
+
+![The APAF Logs Browser](https://github.com/renaudet/apaf/blob/main/screenshots/logBrowser.png?raw=true)
