@@ -7,7 +7,8 @@
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
-  	{"type": "plugin","id": "npa.jobs","version": "1.0.0"}
+  	{"type": "plugin","id": "npa.jobs","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.workflow","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -19,6 +20,12 @@
   		"point": "npa.http.router",
   		"id": "apaf.jobs.router",
   		"path": "/apaf-jobs"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.jobs.htdocs",
+  		"path": "/jobs",
+  		"localDir": "htdocs"
   	},
   	{
   		"point": "npa.http.handler",
@@ -52,6 +59,12 @@
   		"securityRole": "operator",
 		"description": "Update a server-side job given its id",
 		"input": {"id": "abcd-abcd-abcd-abcd","status": "completed/setRollbackOnly","progress": 50}
+  	},
+  	{
+  		"point": "apaf.workflow.node.provider",
+  		"id": "apaf.jobs.setJobProgress.node.provider",
+  		"name": "Set Job Progress",
+  		"resourcePath": "/workflow/setJobProgressNode.js"
   	}
   ],
   "provides": [
