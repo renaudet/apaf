@@ -149,8 +149,9 @@ addRecord = function(){
 	html += '<div id="'+divId+'"></div>';
 	dialog.setBody(html);
 	let formId = selectedDatatype.name+'_tmpForm';
-	let formConfig = {"id": formId,"version": "1.0.0","type": "Form","configuration": {"class": "form-frame-noborder"}};
-	formConfig.configuration.fields = selectedDatatype.fields;
+	//let formConfig = {"id": formId,"version": "1.0.0","type": "Form","configuration": {"class": "form-frame-noborder"}};
+	let formConfig = {"id": formId,"version": "1.0.0","type": "apaf.DatatypeForm","configuration": {"class": "form-frame-noborder","datatype": selectedDatatype.name}};
+	//formConfig.configuration.fields = selectedDatatype.fields;
 	npaUi.renderSingleComponent(divId,formConfig,function(){
 		let form = npaUi.getComponent(formId);
 		form.setData({});
@@ -216,8 +217,9 @@ editRecord = function(event){
 	html += '<div id="'+divId+'"></div>';
 	dialog.setBody(html);
 	let formId = selectedDatatype.name+'_form';
-	let formConfig = {"id": formId,"version": "1.0.0","type": "Form","configuration": {"class": "form-frame-noborder"}};
-	formConfig.configuration.fields = selectedDatatype.fields;
+	//let formConfig = {"id": formId,"version": "1.0.0","type": "Form","configuration": {"class": "form-frame-noborder"}};
+	let formConfig = {"id": formId,"version": "1.0.0","type": "apaf.DatatypeForm","configuration": {"class": "form-frame-noborder","datatype": selectedDatatype.name}};
+	//formConfig.configuration.fields = selectedDatatype.fields;
 	npaUi.renderSingleComponent(divId,formConfig,function(){
 		let form = $apaf(formId);
 		form.setData(event.item);

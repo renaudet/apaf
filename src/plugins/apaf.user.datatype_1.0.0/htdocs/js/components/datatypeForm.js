@@ -1313,10 +1313,40 @@ class TextAreaField extends LabeledFormField{
 	}
 }
 
+let ArrayEditorFieldCount = 0;
 class ArrayEditorField extends LabeledFormField{
 	datatype = 'text';
+	datatypeDef = null;
+	canEdit = true;
+	isCustomDatatype = false;
+	dialogId = (ArrayEditorFieldCount++);
+	data = [];
 	constructor(config,form){
 		super(config,form);
+	}
+	loadDatatypeDef(next){
+		if(this.datatype=='text' || this.datatype=='string'|| this.datatype=='int' || this.datatype=='integer' || this.datatype=='boolean'){
+			next();
+		}else{
+			this.isCustomDatatype = true;
+			let uri = '/apaf-datatype/datatype?name='+this.datatype;
+			let editor = this;
+			let datatypeCallContext = {
+				"method": "GET",
+				"uri": uri,
+				"payload": {}
+			}
+			apaf.call(datatypeCallContext)
+			.then(function(record){
+				editor.datatypeDef = record;
+				next();
+			})
+			.onError(function(errorMsg){
+				editor.canEdit = false;
+				showWarning(editor.getLocalizedString('@apaf.form.arrayEditor.datatype.warning',[editor.datatype]));
+				next();
+			});
+		}
 	}
 	render(parent,then){
 		this.baseId = parent.prop('id');
@@ -1329,141 +1359,277 @@ class ArrayEditorField extends LabeledFormField{
 		if(typeof this.config.datatype!='undefined'){
 			this.datatype = this.config.datatype;
 		}
-		html += '<div class="row form-row" id="'+inputFieldId+'_row">';
-		html += this.generateLabel();
-		html += '  <div class="col-9">';
-		html += '    <div class="row form-row">';
-		if(typeof this.config.editable=='undefined' || this.config.editable){
-			html += '      <div class="col-9">';
-			html += '        <input id="'+inputFieldId+'_edit" type="text" class="form-control" readonly>';
-			html += '      </div>';
-			html += '      <div class="col-1">';
-			html += '        <button id="'+inputFieldId+'_gobtn" type="button" class="btn btn-primary" disabled>'+this.getLocalizedString('@form.arrayEditor.button.go')+'</button>';
-			html += '      </div>';
-			html += '    </div>';
-		}
-		html += '    <div class="row">';
-		html += '      <div class="col-9">';
-		html += '        <select id="'+inputFieldId+'_list" class="form-select" size="'+rows+'" disabled>';
-		html += '        </select>';
-		html += '      </div>';
-		if(typeof this.config.editable=='undefined' || this.config.editable){
-			html += '      <div class="col-1">';
-			html += '        <button type="button" id="'+inputFieldId+'_addbtn" class="btn btn-sm form-btn-icon" disabled><img src="/uiTools/img/silk/add.png" class="form-icon" title="'+this.getLocalizedString('@form.arrayEditor.button.add',[this.datatype])+'"></button>';
-			html += '        <button type="button" id="'+inputFieldId+'_editbtn" class="btn btn-sm form-btn-icon" disabled><img src="/uiTools/img/silk/pencil.png" class="form-icon" title="'+this.getLocalizedString('@form.arrayEditor.button.edit',[this.datatype])+'"></button>';
-			html += '        <button type="button" id="'+inputFieldId+'_delbtn" class="btn btn-sm form-btn-icon" disabled><img src="/uiTools/img/silk/cross.png" class="form-icon" title="'+this.getLocalizedString('@form.arrayEditor.button.delete',[this.datatype])+'"></button>';
-			html += '        <button type="button" id="'+inputFieldId+'_upbtn" class="btn btn-sm form-btn-icon" disabled><img src="/uiTools/img/silk/arrow_up.png" class="form-icon" title="'+this.getLocalizedString('@form.arrayEditor.button.up',[this.datatype])+'"></button>';
-			html += '        <button type="button" id="'+inputFieldId+'_downbtn" class="btn btn-sm form-btn-icon" disabled><img src="/uiTools/img/silk/arrow_down.png" class="form-icon" title="'+this.getLocalizedString('@form.arrayEditor.button.down',[this.datatype])+'"></button>';
-			html += '      </div>';
-		}else{
-			html += '      <div class="col-1">&nbsp;</div>';
-		}
-		html += '    </div>';
-		html += '  </div>';
-		html += '  <div class="col-1">&nbsp;</div>';
-		html += '</div>';
-		parent.append(html);
 		let arrayField = this;
-		$('#'+inputFieldId+'_addbtn').on('click',function(){
-			$('#'+inputFieldId+'_edit').removeAttr('readonly');
-			$('#'+inputFieldId+'_gobtn').prop('disabled',false);
-			$('#'+inputFieldId+'_edit').focus();
-			$('#'+inputFieldId+'_list option:selected').prop('selected', false);
-		});
-		$('#'+inputFieldId+'_gobtn').on('click',function(){
-			var value = $('#'+inputFieldId+'_edit').val();
-			var selectedValue = $('#'+inputFieldId+'_list option:selected').val();
-			if(selectedValue){
-				//update
-				if(arrayField.datatype=='object'){
-					$('#'+inputFieldId+'_list option:selected').val(value.replace(/'/g,'"'));
-				}else{
-					$('#'+inputFieldId+'_list option:selected').val(value);
-				}
-				$('#'+inputFieldId+'_list option:selected').text(value);
+		this.loadDatatypeDef(function(){
+			html += '<div class="row form-row" id="'+inputFieldId+'_row">';
+			html += arrayField.generateLabel();
+			html += '  <div class="col-9">';
+			html += '    <div class="row form-row">';
+			if(typeof arrayField.config.editable=='undefined' || arrayField.config.editable){
+				html += '      <div class="col-9">';
+				html += '        <input id="'+inputFieldId+'_edit" type="text" class="form-control" readonly>';
+				html += '      </div>';
+				html += '      <div class="col-1">';
+				html += '        <button id="'+inputFieldId+'_gobtn" type="button" class="btn btn-primary" disabled>'+arrayField.getLocalizedString('@form.arrayEditor.button.go')+'</button>';
+				html += '      </div>';
+				html += '    </div>';
+			}
+			html += '    <div class="row">';
+			html += '      <div class="col-9">';
+			html += '        <select id="'+inputFieldId+'_list" class="form-select" size="'+rows+'" disabled>';
+			html += '        </select>';
+			html += '      </div>';
+			if(typeof arrayField.config.editable=='undefined' || arrayField.config.editable){
+				html += '      <div class="col-1">';
+				html += '        <button type="button" id="'+inputFieldId+'_addbtn" class="btn btn-sm form-btn-icon" disabled><img src="/uiTools/img/silk/add.png" class="form-icon" title="'+arrayField.getLocalizedString('@form.arrayEditor.button.add',[arrayField.datatype])+'"></button>';
+				html += '        <button type="button" id="'+inputFieldId+'_editbtn" class="btn btn-sm form-btn-icon" disabled><img src="/uiTools/img/silk/pencil.png" class="form-icon" title="'+arrayField.getLocalizedString('@form.arrayEditor.button.edit',[arrayField.datatype])+'"></button>';
+				html += '        <button type="button" id="'+inputFieldId+'_delbtn" class="btn btn-sm form-btn-icon" disabled><img src="/uiTools/img/silk/cross.png" class="form-icon" title="'+arrayField.getLocalizedString('@form.arrayEditor.button.delete',[arrayField.datatype])+'"></button>';
+				html += '        <button type="button" id="'+inputFieldId+'_upbtn" class="btn btn-sm form-btn-icon" disabled><img src="/uiTools/img/silk/arrow_up.png" class="form-icon" title="'+arrayField.getLocalizedString('@form.arrayEditor.button.up',[arrayField.datatype])+'"></button>';
+				html += '        <button type="button" id="'+inputFieldId+'_downbtn" class="btn btn-sm form-btn-icon" disabled><img src="/uiTools/img/silk/arrow_down.png" class="form-icon" title="'+arrayField.getLocalizedString('@form.arrayEditor.button.down',[arrayField.datatype])+'"></button>';
+				html += '      </div>';
 			}else{
-				//create
-				let option = null;
-				if(arrayField.datatype=='object'){
-					option = '<option value="'+value.replace(/"/g,'\'')+'">'+value+'</option>';
-				}else{
-					option = '<option value="'+value+'">'+value+'</option>';
+				html += '      <div class="col-1">&nbsp;</div>';
+			}
+			html += '    </div>';
+			html += '  </div>';
+			html += '  <div class="col-1">&nbsp;</div>';
+			html += '</div>';
+			parent.append(html);
+			$('#'+inputFieldId+'_addbtn').on('click',function(){
+				$('#'+inputFieldId+'_edit').removeAttr('readonly');
+				$('#'+inputFieldId+'_gobtn').prop('disabled',false);
+				$('#'+inputFieldId+'_edit').focus();
+				$('#'+inputFieldId+'_list option:selected').prop('selected', false);
+				if(arrayField.isCustomDatatype){
+					let title = arrayField.getLocalizedString('@apaf.form.arrayEditor.datatype.dialog.title',[arrayField.datatype]);
+					let modal = apaf.createModalDialog({"title": title,"size": "XXL","buttons": [{"label": "Cancel","action": "cancel"},{"label": "Ok","action": "close"}]});
+					let bodyContent = '<div id="arrayFieldDialog_'+modal.baseId+'"></div>';
+					modal.setBody(bodyContent);
+					let formId = 'arrayFieldDialogForm_'+modal.baseId;
+					let formConfig = {"id": formId,"version": "1.0.0","type": "apaf.DatatypeForm","configuration": {"class": "form-frame-noborder","datatype": arrayField.datatype}};
+					npaUi.renderSingleComponent('arrayFieldDialog_'+modal.baseId,formConfig,function(){
+						let form = npaUi.getComponent(formId);
+						form.setData({});
+						form.setEditMode(true);
+						modal.setOnCloseCallback(function(){
+							let data = form.getData();
+							let serialVer = arrayField.serialize(data);
+							let option = '<option value="'+serialVer+'">'+serialVer+'</option>';
+							$('#'+inputFieldId+'_list').append(option);
+							arrayField.data.push(data);
+							
+							$('#'+inputFieldId+'_editbtn').prop('disabled',false);
+							$('#'+inputFieldId+'_delbtn').prop('disabled',false);
+							$('#'+inputFieldId+'_upbtn').prop('disabled',false);
+							$('#'+inputFieldId+'_downbtn').prop('disabled',false);
+							$('#'+inputFieldId+'_list option[value=\''+value+'\']').prop('selected', true);
+							$('#'+inputFieldId+'_edit').val('');
+							$('#'+inputFieldId+'_edit').attr('readonly');
+							$('#'+inputFieldId+'_gobtn').prop('disabled',true);
+						});
+						modal.open();
+					});
 				}
-				//var option = '<option value="'+value+'">'+value+'</option>';
-				$('#'+inputFieldId+'_list').append(option);
-			}
-			$('#'+inputFieldId+'_editbtn').prop('disabled',false);
-			$('#'+inputFieldId+'_delbtn').prop('disabled',false);
-			$('#'+inputFieldId+'_upbtn').prop('disabled',false);
-			$('#'+inputFieldId+'_downbtn').prop('disabled',false);
-			$('#'+inputFieldId+'_list option[value=\''+value+'\']').prop('selected', true);
-			$('#'+inputFieldId+'_edit').val('');
-			$('#'+inputFieldId+'_edit').attr('readonly');
-			$('#'+inputFieldId+'_gobtn').prop('disabled',true);
+			});
+			$('#'+inputFieldId+'_gobtn').on('click',function(){
+				var value = $('#'+inputFieldId+'_edit').val();
+				var selectedValue = $('#'+inputFieldId+'_list option:selected').val();
+				if(selectedValue){
+					//update
+					if(arrayField.datatype=='object'){
+						$('#'+inputFieldId+'_list option:selected').val(value.replace(/'/g,'"'));
+					}else{
+						$('#'+inputFieldId+'_list option:selected').val(value);
+					}
+					$('#'+inputFieldId+'_list option:selected').text(value);
+				}else{
+					//create
+					let option = null;
+					if(arrayField.datatype=='object'){
+						option = '<option value="'+value.replace(/"/g,'\'')+'">'+value+'</option>';
+					}else{
+						option = '<option value="'+value+'">'+value+'</option>';
+					}
+					//var option = '<option value="'+value+'">'+value+'</option>';
+					$('#'+inputFieldId+'_list').append(option);
+				}
+				$('#'+inputFieldId+'_editbtn').prop('disabled',false);
+				$('#'+inputFieldId+'_delbtn').prop('disabled',false);
+				$('#'+inputFieldId+'_upbtn').prop('disabled',false);
+				$('#'+inputFieldId+'_downbtn').prop('disabled',false);
+				$('#'+inputFieldId+'_list option[value=\''+value+'\']').prop('selected', true);
+				$('#'+inputFieldId+'_edit').val('');
+				$('#'+inputFieldId+'_edit').attr('readonly');
+				$('#'+inputFieldId+'_gobtn').prop('disabled',true);
+			});
+			$('#'+inputFieldId+'_delbtn').on('click',function(){
+				let selectedIndex = $('#'+inputFieldId+'_list').prop('selectedIndex');
+				var selectedValue = $('#'+inputFieldId+'_list option:selected').val();
+				var selectedOption =   $('#'+inputFieldId+'_list option[value=\''+selectedValue+'\']');
+				selectedOption.remove();
+				$('#'+inputFieldId+'_edit').val('');
+				$('#'+inputFieldId+'_edit').attr('readonly');
+				$('#'+inputFieldId+'_gobtn').prop('disabled',true);
+				$('#'+inputFieldId+'_editbtn').prop('disabled',true);
+				$('#'+inputFieldId+'_delbtn').prop('disabled',true);
+				$('#'+inputFieldId+'_upbtn').prop('disabled',true);
+				$('#'+inputFieldId+'_downbtn').prop('disabled',true);
+				if(arrayField.isCustomDatatype){
+					let newData = [];
+					for(var i=0;i<arrayField.data.length;i++){
+						if(i!=selectedIndex){
+							newData.push(arrayField.data[i]);
+						}
+					}
+					arrayField.data = newData;
+				}
+			});
+			$('#'+inputFieldId+'_editbtn').on('click',function(){
+				var selectedValue = $('#'+inputFieldId+'_list option:selected').val();
+				
+				if(arrayField.datatype=='object'){
+					$('#'+inputFieldId+'_edit').val(selectedValue.replace(/'/g,'"'));
+				}else{
+					$('#'+inputFieldId+'_edit').val(selectedValue);
+				}
+				$('#'+inputFieldId+'_edit').removeAttr('readonly');
+				$('#'+inputFieldId+'_gobtn').prop('disabled',false);
+				$('#'+inputFieldId+'_editbtn').prop('disabled',true);
+				$('#'+inputFieldId+'_delbtn').prop('disabled',false);
+				$('#'+inputFieldId+'_upbtn').prop('disabled',false);
+				$('#'+inputFieldId+'_downbtn').prop('disabled',false);
+				$('#'+inputFieldId+'_edit').focus();
+				
+				if(arrayField.isCustomDatatype){
+					let selectedIndex = $('#'+inputFieldId+'_list').prop('selectedIndex');
+					let selectedItem = arrayField.data[selectedIndex];
+					let title = arrayField.getLocalizedString('@apaf.form.arrayEditor.datatype.dialog.title',[arrayField.datatype]);
+					let modal = apaf.createModalDialog({"title": title,"size": "XXL","buttons": [{"label": "Cancel","action": "cancel"},{"label": "Ok","action": "close"}]});
+					let bodyContent = '<div id="arrayFieldDialog_'+modal.baseId+'"></div>';
+					modal.setBody(bodyContent);
+					let formId = 'arrayFieldDialogForm_'+modal.baseId;
+					let formConfig = {"id": formId,"version": "1.0.0","type": "apaf.DatatypeForm","configuration": {"class": "form-frame-noborder","datatype": arrayField.datatype}};
+					npaUi.renderSingleComponent('arrayFieldDialog_'+modal.baseId,formConfig,function(){
+						let form = npaUi.getComponent(formId);
+						form.setData(selectedItem);
+						form.setEditMode(true);
+						modal.setOnCloseCallback(function(){
+							let data = form.getData();
+							let serialVer = arrayField.serialize(data);
+							arrayField.data[selectedIndex] = data;
+							$('#'+inputFieldId+'_list option:selected').val(serialVer);
+							$('#'+inputFieldId+'_list option:selected').text(serialVer);
+						});
+						modal.open();
+					});
+				}
+			});
+			$('#'+inputFieldId+'_list').on('change',function(){
+				$('#'+inputFieldId+'_editbtn').prop('disabled',false);
+				$('#'+inputFieldId+'_delbtn').prop('disabled',false);
+				$('#'+inputFieldId+'_upbtn').prop('disabled',false);
+				$('#'+inputFieldId+'_downbtn').prop('disabled',false);
+			});
+			$('#'+inputFieldId+'_upbtn').on('click',function(){
+				var selectedIndex = $('#'+inputFieldId+'_list').prop('selectedIndex');
+				if(selectedIndex>0){//:nth-child(0)
+					var current = $('#'+inputFieldId+'_list :nth-child('+(selectedIndex+1)+')');
+					var prev = $('#'+inputFieldId+'_list :nth-child('+(selectedIndex)+')');
+					var tmp = current.val();
+					var txt = current.text();
+					current.val(prev.val());
+					current.text(prev.text());
+					prev.val(tmp);
+					prev.text(txt);
+					prev.prop('selected', true);
+					if(arrayField.isCustomDatatype){
+						let tmpData = arrayField.data[selectedIndex];
+						arrayField.data[selectedIndex] = arrayField.data[selectedIndex-1];
+						arrayField.data[selectedIndex-1] = tmpData;
+					}
+				}
+			});
+			$('#'+inputFieldId+'_downbtn').on('click',function(){
+				var selectedIndex = $('#'+inputFieldId+'_list').prop('selectedIndex');
+				var maxIndex = $('#'+inputFieldId+'_list option').length-1;
+				if(selectedIndex<maxIndex){
+					var current = $('#'+inputFieldId+'_list :nth-child('+(selectedIndex+1)+')');
+					var next = $('#'+inputFieldId+'_list :nth-child('+(selectedIndex+2)+')');
+					var tmp = current.val();
+					var txt = current.text();
+					current.val(next.val());
+					current.text(next.text());
+					next.val(tmp);
+					next.text(txt);
+					next.prop('selected', true);
+					if(arrayField.isCustomDatatype){
+						let tmpData = arrayField.data[selectedIndex];
+						arrayField.data[selectedIndex] = arrayField.data[selectedIndex+1];
+						arrayField.data[selectedIndex+1] = tmpData;
+					}
+				}
+			});
+			then();
 		});
-		$('#'+inputFieldId+'_delbtn').on('click',function(){
-			var selectedValue = $('#'+inputFieldId+'_list option:selected').val();
-			var selectedOption =   $('#'+inputFieldId+'_list option[value=\''+selectedValue+'\']');
-			selectedOption.remove();
-			$('#'+inputFieldId+'_edit').val('');
-			$('#'+inputFieldId+'_edit').attr('readonly');
-			$('#'+inputFieldId+'_gobtn').prop('disabled',true);
-			$('#'+inputFieldId+'_editbtn').prop('disabled',true);
-			$('#'+inputFieldId+'_delbtn').prop('disabled',true);
-			$('#'+inputFieldId+'_upbtn').prop('disabled',true);
-			$('#'+inputFieldId+'_downbtn').prop('disabled',true);
-		});
-		$('#'+inputFieldId+'_editbtn').on('click',function(){
-			var selectedValue = $('#'+inputFieldId+'_list option:selected').val();
-			if(arrayField.datatype=='object'){
-				$('#'+inputFieldId+'_edit').val(selectedValue.replace(/'/g,'"'));
+	}
+	serialize(record){
+		if(this.datatype=='text' || this.datatype=='string'|| this.datatype=='int' || this.datatype=='integer'){
+			if(typeof record!='undefined'){
+				return '';
 			}else{
-				$('#'+inputFieldId+'_edit').val(selectedValue);
+				return record;
 			}
-			$('#'+inputFieldId+'_edit').removeAttr('readonly');
-			$('#'+inputFieldId+'_gobtn').prop('disabled',false);
-			$('#'+inputFieldId+'_editbtn').prop('disabled',true);
-			$('#'+inputFieldId+'_delbtn').prop('disabled',false);
-			$('#'+inputFieldId+'_upbtn').prop('disabled',false);
-			$('#'+inputFieldId+'_downbtn').prop('disabled',false);
-			$('#'+inputFieldId+'_edit').focus();
-		});
-		$('#'+inputFieldId+'_list').on('change',function(){
-			$('#'+inputFieldId+'_editbtn').prop('disabled',false);
-			$('#'+inputFieldId+'_delbtn').prop('disabled',false);
-			$('#'+inputFieldId+'_upbtn').prop('disabled',false);
-			$('#'+inputFieldId+'_downbtn').prop('disabled',false);
-		});
-		$('#'+inputFieldId+'_upbtn').on('click',function(){
-			var selectedIndex = $('#'+inputFieldId+'_list').prop('selectedIndex');
-			if(selectedIndex>0){//:nth-child(0)
-				var current = $('#'+inputFieldId+'_list :nth-child('+(selectedIndex+1)+')');
-				var prev = $('#'+inputFieldId+'_list :nth-child('+(selectedIndex)+')');
-				var tmp = current.val();
-				var txt = current.text();
-				current.val(prev.val());
-				current.text(prev.text());
-				prev.val(tmp);
-				prev.text(txt);
-				prev.prop('selected', true);
+		}else if(this.datatype=='boolean'){
+			if(typeof record!='undefined'){
+				return record?'true':'false';
+			}else{
+				return '?';
 			}
-		});
-		$('#'+inputFieldId+'_downbtn').on('click',function(){
-			var selectedIndex = $('#'+inputFieldId+'_list').prop('selectedIndex');
-			var maxIndex = $('#'+inputFieldId+'_list option').length-1;
-			if(selectedIndex<maxIndex){
-				var current = $('#'+inputFieldId+'_list :nth-child('+(selectedIndex+1)+')');
-				var next = $('#'+inputFieldId+'_list :nth-child('+(selectedIndex+2)+')');
-				var tmp = current.val();
-				var txt = current.text();
-				current.val(next.val());
-				current.text(next.text());
-				next.val(tmp);
-				next.text(txt);
-				next.prop('selected', true);
+		}else if(this.canEdit){
+			if(typeof this.config.renderer!='undefined' && this.config.renderer.length>0){
+				let renderString = '';
+				let toEval = 'renderString = '+this.config.renderer.replace(/@/g,'record');
+				try{
+					eval(toEval);
+					return renderString;
+				}catch(t){
+					return '<evaluation error>';
+				}
+			}else{
+				let asText = '';
+				let fields = sortOn(this.datatypeDef.fields,'displayIndex');
+				for(var i=0;i<fields.length;i++){
+					let field = fields[i];
+					if(field.required){
+						if(typeof field.type=='undefined'){
+							asText += record[field.name];
+							asText += ' ';
+						}
+						if('text'==field.type || 
+						   'integer'==field.type ||
+						   'ruleDataReference'==field.type || 
+						   'url'==field.type || 
+						   'color'==field.type || 
+						   'range'==field.type || 
+						   'select'==field.type){
+							asText += record[field.name];
+							asText += ' ';
+						}
+						if('password'==field.type){
+							asText += '*****';
+							asText += ' ';
+						}
+						if('option'==field.type || 
+						   'check'==field.type ||  
+						   'switch'==field.type){
+							asText += record[field.name]?'true':'false';
+							asText += ' ';
+						}
+					}
+				}
+				return asText.trim();
 			}
-		});
-		then();
+		}
 	}
 	hide(){
 		super.hide();
@@ -1476,7 +1642,7 @@ class ArrayEditorField extends LabeledFormField{
 	}
 	setEnabled(editing){
 		let inputFieldId = this.baseId+'_'+this.config.name;
-		if(editing){
+		if(editing && this.canEdit){
 			$('#'+inputFieldId+'_list').prop('disabled',false);
 			$('#'+inputFieldId+'_addbtn').prop('disabled',false);
 		}else{
@@ -1495,36 +1661,43 @@ class ArrayEditorField extends LabeledFormField{
 	setData(parentObj){
 		var inputFieldId = this.baseId+'_'+this.config.name;
 		$('#'+inputFieldId+'_list').empty();
-		if(Array.isArray(parentObj[this.config.name])){
+		if(Array.isArray(parentObj[this.config.name]) && this.canEdit){
 			for(var j=0;j<parentObj[this.config.name].length;j++){
-				var value = parentObj[this.config.name][j];
-				var option = '';
-				if(this.datatype=='text' || this.datatype=='integer'){
-					option = '<option value="'+value+'">'+value+'</option>';
+				let item = parentObj[this.config.name][j];
+				if(this.isCustomDatatype){
+					this.data.push(item);
 				}
-				if(this.datatype=='object'){
+				var value = this.serialize(item);
+				var option = '<option value="'+value+'">'+value+'</option>';
+				/*if(this.datatype=='text' || this.datatype=='integer'){
+					option = '<option value="'+value+'">'+value+'</option>';
+				}*/
+				/*if(this.datatype=='object'){
 					let serialized = JSON.stringify(value);
 					option = '<option value="'+serialized.replace(/"/g,'\'')+'">'+serialized+'</option>';
-				}
+				}*/
 				$('#'+inputFieldId+'_list').append(option);
 			}
 		}
 	}
 	assignData(parentObj){
-		var inputFieldId = this.baseId+'_'+this.config.name;
 		var values = [];
-		let arrayField = this;
-		$('#'+inputFieldId+'_list option').each(function(){
-		    var value = $(this).val();
-			if(arrayField.datatype=='text' || arrayField.datatype=='integer'){
-				values.push(value);
-			}
-			if(arrayField.datatype=='object'){
-				let obj = JSON.parse(value.replace(/'/g,'"'));
-				values.push(obj);
-			}
-		});
-		console.log();
+		if(this.isCustomDatatype){
+			values = this.data;
+		}else{
+			var inputFieldId = this.baseId+'_'+this.config.name;
+			let arrayField = this;
+			$('#'+inputFieldId+'_list option').each(function(){
+			    var value = $(this).val();
+				if(arrayField.datatype=='text' || arrayField.datatype=='integer'){
+					values.push(value);
+				}
+				if(arrayField.datatype=='object'){
+					let obj = JSON.parse(value.replace(/'/g,'"'));
+					values.push(obj);
+				}
+			});
+		}
 		parentObj[this.config.name] = values;
 	}
 	vetoRaised(){

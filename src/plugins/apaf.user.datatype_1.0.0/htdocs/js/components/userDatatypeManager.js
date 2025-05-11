@@ -37,6 +37,7 @@ npaUiCore.DatatypeManager = class DatatypeManager extends NpaUiComponent{
 		then();
 	}
 	getRootUri(){
+		console.log('npaUiCore.DatatypeManager#getRootUri(): '+'/user-data/'+this.getConfiguration().datatype);
 		return '/user-data/'+this.getConfiguration().datatype;
 	}
 	findByPrimaryKey(pk){

@@ -175,13 +175,13 @@
   	},
   	{
   		"point": "npa.http.static",
-  		"id": "apaf.datatype.htdocs",
+  		"id": "apaf.user.datatype.htdocs",
   		"path": "/datatype",
   		"localDir": "htdocs"
   	},
   	{
   		"point": "npa.ui.tools.core.component",
-  		"id": "apaf.datatype.component.datasource",
+  		"id": "apaf.user.datatype.component.datasource",
   		"namespace": "npaUiCore",
   		"name": "DatatypeManager",
   		"version": "1.0.0",
@@ -189,14 +189,14 @@
   	},
   	{
   		"point": "apaf.dev.snippet.provider",
-  		"id": "apaf.datatype.snippet.1",
+  		"id": "apaf.user.datatype.snippet.1",
   		"label": "Datatype records management",
   		"location": "/datatype/snippets/manageDatatypeRecords.txt",
   		"category": "Application"
   	},
   	{
   		"point": "npa.ui.tools.core.editor",
-  		"id": "apaf.datatype.relationship.editor",
+  		"id": "apaf.user.datatype.relationship.editor",
   		"datatype": "relationship",
   		"libraries": [
   			{"type": "js","uri": "/datatype/js/editors/relationshipEditor.js"}
@@ -205,7 +205,7 @@
   	},
   	{
   		"point": "npa.ui.tools.core.component",
-  		"id": "apaf.datatype.component.form",
+  		"id": "apaf.user.datatype.component.form",
   		"namespace": "apaf",
   		"name": "DatatypeForm",
   		"version": "1.0.0",

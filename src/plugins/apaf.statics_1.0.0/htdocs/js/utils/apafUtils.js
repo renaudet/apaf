@@ -292,3 +292,81 @@ apaf.loadContributions = function(uri){
 		showError(error.message);
 	});
 }
+var modalIds = 0;
+apaf.createModalDialog = function(options={}){
+	let id = 'apafModal_'+(modalIds++);
+	const modalDiv = document.createElement('div');
+	modalDiv.id = id;
+	document.body.appendChild(modalDiv);
+	$('#'+id).addClass('modal');
+	$('#'+id).attr('data-bs-backdrop','static');
+	$('#'+id).attr('data-bs-keyboard','true');
+	$('#'+id).attr('tabindex','-1');
+	let title = '';
+	if(options.title){
+		title = options.title; 
+	}
+	let size = '';
+	if('XXL'==options.size){
+		size = ' modal-xl';
+	}
+	if('XL'==options.size){
+		size = ' modal-lg';
+	}
+	if('S'==options.size){
+		size = ' modal-sm';
+	}
+	let html = '';
+	html += '  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable'+size+'">';
+	html += '    <div class="modal-content">';
+	html += '      <div id="'+id+'_header" class="modal-header modal-dialog-header">';
+	html += '        <h1 class="modal-title fs-5" id="'+id+'_title">'+npaUi.getLocalizedString(title)+'</h1>';
+	html += '        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
+	html += '      </div>';
+	html += '      <div id="'+id+'_body" class="modal-body">';
+	html += '      </div>';
+	html += '      <div id="'+id+'_footer" class="modal-footer">';
+	if(typeof options.buttons!='undefined'){
+		for(var i=0;i<options.buttons.length;i++){
+			let button = options.buttons[i];
+			if('close'==button.action){
+				html += '<button id="'+id+'_closeBtn" type="button" class="btn btn-primary" data-bs-dismiss="modal">'+npaUi.getLocalizedString(button.label)+'</button>';
+			}
+			if('cancel'==button.action){
+				html += '<button id="'+id+'_cancelBtn" type="button" class="btn btn-warning" data-bs-dismiss="modal">'+npaUi.getLocalizedString(button.label)+'</button>';
+			}
+		}
+	}else{
+		html += '        <button id="'+id+'_closeBtn" type="button" class="btn btn-primary" data-bs-dismiss="modal">'+npaUi.getLocalizedString('@modal.button.close')+'</button>';
+	}
+	html += '      </div>';
+	html += '    </div>';
+	html += '  </div>';
+	$('#'+id).html(html);
+	let modalWrapper = {};
+	modalWrapper.clean = function(){
+		document.body.removeChild(modalDiv);
+	}
+	modalWrapper.baseId = id;
+	modalWrapper.modal = $('#'+id);
+	modalWrapper.open = function(){
+		$('#'+this.baseId+'_closeBtn').off('.'+this.baseId);
+		$('#'+this.baseId+'_closeBtn').on('click.'+this.baseId,function(event){
+			modalWrapper.modal.modal('hide');
+			if(typeof modalWrapper.onCloseCallback!='undefined'){
+				modalWrapper.onCloseCallback();
+			}
+		});
+		this.modal.modal('show');
+	}
+	modalWrapper.setBody = function(html){
+		let bodyId = this.baseId+'_body';
+		$('#'+bodyId).html(html);
+	}
+	modalWrapper.setOnCloseCallback = function(callback){
+		this.onCloseCallback = callback;
+	}
+	return modalWrapper;
+	//a.click()
+	//document.body.removeChild(a)
+}

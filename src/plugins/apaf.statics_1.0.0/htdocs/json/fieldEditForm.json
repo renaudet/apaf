@@ -150,7 +150,7 @@
     			"required": false,
     			"size": 9,
     			"help": "@apaf.user.datatype.field.renderer.help",
-    			"constraint": "if(@.type=='text'||@.type=='password'||@.type=='select'||@.type=='url'||@.type=='relationship'||@.type=='ruleDataReference'){#.show();#.setEditMode(true)}else{#.val('');#.setEditMode(false);#.hide();}",
+    			"constraint": "if(@.type=='text'||@.type=='password'||@.type=='select'||@.type=='url'||@.type=='array'||@.type=='relationship'||@.type=='ruleDataReference'){#.show();#.setEditMode(true)}else{#.val('');#.setEditMode(false);#.hide();}",
 				"constrainedBy": "type"
     		},
     		{
