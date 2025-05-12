@@ -1313,13 +1313,174 @@ class TextAreaField extends LabeledFormField{
 	}
 }
 
+class DatatypeEditorField extends LabeledFormField{
+	datatypeDef = null;
+	canEdit = true;
+	data = null;
+	constructor(config,form){
+		super(config,form);
+	}
+	loadDatatypeDef(next){
+		let uri = '/apaf-datatype/datatype?name='+this.config.datatype;
+		let editor = this;
+		let datatypeCallContext = {
+			"method": "GET",
+			"uri": uri,
+			"payload": {}
+		}
+		apaf.call(datatypeCallContext)
+		.then(function(record){
+			editor.datatypeDef = record;
+			next();
+		})
+		.onError(function(errorMsg){
+			editor.canEdit = false;
+			showWarning(editor.getLocalizedString('@apaf.form.arrayEditor.datatype.warning',[editor.config.datatype]));
+			next();
+		});
+	}
+	render(parent,then){
+		this.baseId = parent.prop('id');
+		let inputFieldId = this.baseId+'_'+this.config.name;
+		let html = '';
+		/*let rows = 7;
+		if(typeof this.config.rows!='undefined'){
+			rows = this.config.rows;
+		}*/
+		let editor = this;
+		this.loadDatatypeDef(function(){
+			html += '<div class="row form-row" id="'+inputFieldId+'_row">';
+			html += editor.generateLabel();
+			html += '  <div class="col-9">';
+			html += '    <div class="row form-row">';
+			html += '      <div id="'+inputFieldId+'_field" class="col-10" style="border: 1px solid #c0c0c0;margin-left: 15px;margin-right: -15px;font-style: italic;background-color: #eee;">';
+			html += '      </div>';
+			html += '      <div class="col-2">';
+			html += '        <button id="'+inputFieldId+'_editbtn" type="button" class="btn btn-sm btn-secondary">'+editor.getLocalizedString('@apaf.form.innerTypeEditor.edit.button')+'</button>';
+			html += '      </div>';
+			html += '    </div>';
+			html += '  </div>';
+			html += '  <div class="col-1">&nbsp;</div>';
+			html += '</div>';
+			parent.append(html);
+			$('#'+inputFieldId+'_editbtn').on('click',function(){
+				
+				let title = editor.getLocalizedString('@apaf.form.innerTypeEditor.datatype.dialog.title',[editor.config.datatype]);
+				let modal = apaf.createModalDialog({"title": title,"size": "XXL","buttons": [{"label": editor.getLocalizedString('@apaf.simple.dialog.cancel.label'),"action": "cancel"},{"label": editor.getLocalizedString('@apaf.simple.dialog.close.label'),"action": "close"}]});
+				let bodyContent = '<div id="innerDatatypeEditorDialog_'+modal.baseId+'"></div>';
+				modal.setBody(bodyContent);
+				let formId = 'innerDatatypeEditorDialogForm_'+modal.baseId;
+				let formConfig = {"id": formId,"version": "1.0.0","type": "apaf.DatatypeForm","configuration": {"class": "form-frame-noborder","datatype": editor.config.datatype}};
+				npaUi.renderSingleComponent('innerDatatypeEditorDialog_'+modal.baseId,formConfig,function(){
+					let form = npaUi.getComponent(formId);
+					form.setData(editor.data?editor.data:{});
+					form.setEditMode(true);
+					modal.setOnCloseCallback(function(){
+						let data = form.getData();
+						let serialVer = editor.serialize(data);
+						$('#'+inputFieldId+'_field').html(serialVer);
+						editor.data = data;
+						modal.clean();
+					});
+					modal.open();
+				});
+				
+			});
+			then();
+		});
+	}
+	serialize(record){
+		if(this.canEdit){
+			if(typeof this.config.renderer!='undefined' && this.config.renderer.length>0){
+				let renderString = '';
+				let toEval = 'renderString = '+this.config.renderer.replace(/@/g,'record');
+				try{
+					eval(toEval);
+					return renderString;
+				}catch(t){
+					return '<evaluation error>';
+				}
+			}else{
+				let asText = '';
+				let fields = sortOn(this.datatypeDef.fields,'displayIndex');
+				for(var i=0;i<fields.length;i++){
+					let field = fields[i];
+					if(field.required){
+						if(typeof field.type=='undefined'){
+							asText += record[field.name];
+							asText += ' ';
+						}
+						if('text'==field.type || 
+						   'integer'==field.type ||
+						   'ruleDataReference'==field.type || 
+						   'url'==field.type || 
+						   'color'==field.type || 
+						   'range'==field.type || 
+						   'select'==field.type){
+							asText += record[field.name];
+							asText += ' ';
+						}
+						if('password'==field.type){
+							asText += '*****';
+							asText += ' ';
+						}
+						if('option'==field.type || 
+						   'check'==field.type ||  
+						   'switch'==field.type){
+							asText += record[field.name]?'true':'false';
+							asText += ' ';
+						}
+					}
+				}
+				return asText.trim();
+			}
+		}else{
+			return '####';
+		}
+	}
+	hide(){
+		super.hide();
+		let inputFielRowId = '#'+this.baseId+'_'+this.config.name+'_row';
+		$(inputFielRowId).hide();
+	}
+	show(){
+		let inputFielRowId = '#'+this.baseId+'_'+this.config.name+'_row';
+		$(inputFielRowId).show();
+	}
+	setEnabled(editing){
+		let inputFieldId = this.baseId+'_'+this.config.name;
+		if(editing && this.canEdit){
+			$('#'+inputFieldId+'_editbtn').prop('disabled',false);
+		}else{
+			$('#'+inputFieldId+'_editbtn').prop('disabled',true);
+		}
+	}
+	setFocus(){
+		let inputFieldId = this.baseId+'_'+this.config.name;
+		$('#'+inputFieldId).focus();
+	}
+	setData(parentObj){
+		var inputFieldId = this.baseId+'_'+this.config.name;
+		if(this.canEdit){
+			this.data = parentObj[this.config.name];
+			var value = this.serialize(this.data);
+			$('#'+inputFieldId+'_field').html(value);
+		}
+	}
+	assignData(parentObj){
+		parentObj[this.config.name] = this.data;
+	}
+	vetoRaised(){
+		return false;
+	}
+}
+
 let ArrayEditorFieldCount = 0;
 class ArrayEditorField extends LabeledFormField{
 	datatype = 'text';
 	datatypeDef = null;
 	canEdit = true;
 	isCustomDatatype = false;
-	dialogId = (ArrayEditorFieldCount++);
 	data = [];
 	constructor(config,form){
 		super(config,form);
@@ -1402,7 +1563,7 @@ class ArrayEditorField extends LabeledFormField{
 				$('#'+inputFieldId+'_list option:selected').prop('selected', false);
 				if(arrayField.isCustomDatatype){
 					let title = arrayField.getLocalizedString('@apaf.form.arrayEditor.datatype.dialog.title',[arrayField.datatype]);
-					let modal = apaf.createModalDialog({"title": title,"size": "XXL","buttons": [{"label": "Cancel","action": "cancel"},{"label": "Ok","action": "close"}]});
+					let modal = apaf.createModalDialog({"title": title,"size": "XXL","buttons": [{"label": arrayField.getLocalizedString('@apaf.simple.dialog.cancel.label'),"action": "cancel"},{"label": arrayField.getLocalizedString('@apaf.simple.dialog.close.label'),"action": "close"}]});
 					let bodyContent = '<div id="arrayFieldDialog_'+modal.baseId+'"></div>';
 					modal.setBody(bodyContent);
 					let formId = 'arrayFieldDialogForm_'+modal.baseId;
@@ -1426,6 +1587,7 @@ class ArrayEditorField extends LabeledFormField{
 							$('#'+inputFieldId+'_edit').val('');
 							$('#'+inputFieldId+'_edit').attr('readonly');
 							$('#'+inputFieldId+'_gobtn').prop('disabled',true);
+							modal.clean();
 						});
 						modal.open();
 					});
@@ -1504,7 +1666,7 @@ class ArrayEditorField extends LabeledFormField{
 					let selectedIndex = $('#'+inputFieldId+'_list').prop('selectedIndex');
 					let selectedItem = arrayField.data[selectedIndex];
 					let title = arrayField.getLocalizedString('@apaf.form.arrayEditor.datatype.dialog.title',[arrayField.datatype]);
-					let modal = apaf.createModalDialog({"title": title,"size": "XXL","buttons": [{"label": "Cancel","action": "cancel"},{"label": "Ok","action": "close"}]});
+					let modal = apaf.createModalDialog({"title": title,"size": "XXL","buttons": [{"label": arrayField.getLocalizedString('@apaf.simple.dialog.cancel.label'),"action": "cancel"},{"label": arrayField.getLocalizedString('@apaf.simple.dialog.close.label'),"action": "close"}]});
 					let bodyContent = '<div id="arrayFieldDialog_'+modal.baseId+'"></div>';
 					modal.setBody(bodyContent);
 					let formId = 'arrayFieldDialogForm_'+modal.baseId;
@@ -1519,6 +1681,7 @@ class ArrayEditorField extends LabeledFormField{
 							arrayField.data[selectedIndex] = data;
 							$('#'+inputFieldId+'_list option:selected').val(serialVer);
 							$('#'+inputFieldId+'_list option:selected').text(serialVer);
+							modal.clean();
 						});
 						modal.open();
 					});
@@ -1931,15 +2094,17 @@ class UploadField extends LabeledFormField{
 		}
 	}
 	addLinks(filePath){
-		let filename = filePath.substring(filePath.lastIndexOf('/')+1);
-		let smallFilename = filename.length<8?filename:filename.substring(0,7)+'...';
-		let inputFieldId = this.baseId+'_'+this.config.name;
-		let html = '';
-		html += '<a href="/apaf-workspace/binaryFile/'+btoa(filePath)+'" title="'+filename+'"><img src="'+this.getFileIcon(filename)+'">&nbsp;'+smallFilename+'</a><br>';
-		if(this.config.allowMultiple){
-			$('#'+inputFieldId+'_linksArea').append(html);
-		}else{
-			$('#'+inputFieldId+'_linksArea').html(html);
+		if(filePath && filePath.length>0){
+			let filename = filePath.substring(filePath.lastIndexOf('/')+1);
+			let smallFilename = filename.length<8?filename:filename.substring(0,7)+'...';
+			let inputFieldId = this.baseId+'_'+this.config.name;
+			let html = '';
+			html += '<a href="/apaf-workspace/binaryFile/'+btoa(filePath)+'" title="'+filename+'"><img src="'+this.getFileIcon(filename)+'">&nbsp;'+smallFilename+'</a><br>';
+			if(this.config.allowMultiple){
+				$('#'+inputFieldId+'_linksArea').append(html);
+			}else{
+				$('#'+inputFieldId+'_linksArea').html(html);
+			}
 		}
 	}
 	uploadFile(path,file,then){
@@ -2923,9 +3088,9 @@ apaf.DatatypeForm = class DatatypeForm extends NpaUiComponent{
 		if('array'==config.type){
 			return new ArrayEditorField(config,this)
 		}
-		if('datatype'==config.type){
+		/*if('userDatatype'==config.type){
 			return new DatatypeField(config,this)
-		}
+		}*/
 		if('upload'==config.type){
 			return new UploadField(config,this)
 		}
@@ -2946,6 +3111,9 @@ apaf.DatatypeForm = class DatatypeForm extends NpaUiComponent{
 		}
 		if('pluggable'==config.type){
 			return new PluggableEditorField(config,this);
+		}
+		if('userDatatype'==config.type){
+			return new DatatypeEditorField(config,this);
 		}
 		let specializedPluggableEditor = this.specializedEditors[config.type];
 		if(typeof specializedPluggableEditor!='undefined'){

@@ -67,6 +67,7 @@
     				{"label": "@apaf.user.datatype.field.type.button", "value": "button"},
     				{"label": "@apaf.user.datatype.field.type.placeholder", "value": "placeholder"},
     				{"label": "@apaf.user.datatype.field.type.richText", "value": "richText"},
+    				{"label": "@apaf.user.datatype.field.type.datatype", "value": "userDatatype"},
     				{"label": "@apaf.user.datatype.field.type.reference", "value": "reference"},
     				{"label": "@apaf.user.datatype.field.type.relationship", "value": "relationship"},
     				{"label": "@apaf.user.datatype.field.type.ruleDataRef", "value": "ruleDataReference"}
@@ -123,7 +124,7 @@
     			"step": 1,
     			"value": 3,
     			"help": "@apaf.user.datatype.field.rows.help",
-				"constraint": "if(@.type=='textarea'){#.setEditMode(true)}else{#.val(5);#.setEditMode(false);}",
+				"constraint": "if(@.type=='textarea'){#.show();#.setEditMode(true)}else{#.val(5);#.setEditMode(false);#.hide();}",
 				"constrainedBy": "type"
     		},
     		{
@@ -150,7 +151,7 @@
     			"required": false,
     			"size": 9,
     			"help": "@apaf.user.datatype.field.renderer.help",
-    			"constraint": "if(@.type=='text'||@.type=='password'||@.type=='select'||@.type=='url'||@.type=='array'||@.type=='relationship'||@.type=='ruleDataReference'){#.show();#.setEditMode(true)}else{#.val('');#.setEditMode(false);#.hide();}",
+    			"constraint": "if(@.type=='text'||@.type=='password'||@.type=='select'||@.type=='url'||@.type=='array'||@.type=='relationship'||@.type=='ruleDataReference'||@.type=='userDatatype'){#.show();#.setEditMode(true)}else{#.val('');#.setEditMode(false);#.hide();}",
 				"constrainedBy": "type"
     		},
     		{
@@ -194,16 +195,11 @@
     		{
     			"name": "datatype",
     			"label": "@apaf.user.datatype.field.datatype.label",
-    			"type_": "select",
     			"type": "text",
     			"size": 3,
     			"required": true,
 				"default": "datatype",
-				"values_": [
-    				{"label": "@apaf.user.datatype.field.datatype.text", "value": "text"},
-    				{"label": "@apaf.user.datatype.field.datatype.object", "value": "object"}
-    			],
-				"constraint": "if(@.type=='array' || @.type=='relationship'){#.show();#.setEditMode(true);}else{#.hide();}",
+				"constraint": "if(@.type=='array' || @.type=='relationship' || @.type=='userDatatype'){#.show();#.setEditMode(true);}else{#.hide();}",
 				"constrainedBy": "type"
     		},
     		{
