@@ -350,12 +350,16 @@ apaf.createModalDialog = function(options={}){
 	modalWrapper.baseId = id;
 	modalWrapper.modal = $('#'+id);
 	modalWrapper.open = function(){
-		$('#'+this.baseId+'_closeBtn').off('.'+this.baseId);
+		//$('#'+this.baseId+'_closeBtn').off('.'+this.baseId);
 		$('#'+this.baseId+'_closeBtn').on('click.'+this.baseId,function(event){
 			modalWrapper.modal.modal('hide');
 			if(typeof modalWrapper.onCloseCallback!='undefined'){
 				modalWrapper.onCloseCallback();
 			}
+		});
+		$('#'+this.baseId+'_cancelBtn').on('click.'+this.baseId,function(event){
+			modalWrapper.modal.modal('hide');
+			modalWrapper.clean();
 		});
 		this.modal.modal('show');
 	}
@@ -367,6 +371,4 @@ apaf.createModalDialog = function(options={}){
 		this.onCloseCallback = callback;
 	}
 	return modalWrapper;
-	//a.click()
-	//document.body.removeChild(a)
 }
