@@ -319,7 +319,7 @@ apaf.createModalDialog = function(options={}){
 	let html = '';
 	html += '  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable'+size+'">';
 	html += '    <div class="modal-content">';
-	html += '      <div id="'+id+'_header" class="modal-header modal-dialog-header">';
+	html += '      <div id="'+id+'_header" class="modal-header inner-dialog-header">';
 	html += '        <h1 class="modal-title fs-5" id="'+id+'_title">'+npaUi.getLocalizedString(title)+'</h1>';
 	html += '        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
 	html += '      </div>';
