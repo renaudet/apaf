@@ -649,7 +649,7 @@ loadBuiltinNodes = function(editor,engine){
 	      node.addProperty('method','HTTP Verb','select',true,'GET','GET,PUT,POST,DELETE');
 	      node.addProperty('payload.variable.name','Payload variable name','string',false,'payload');
 	      node.addProperty('secured','Use HTTPS','boolean',true,false);
-	      node.addProperty('acceptCertificate','Accept Self-signed certificates','boolean',true,true);
+	      node.addProperty('acceptCertificate','Accept Self-signed certificates','boolean',true,false);
 	      node.addProperty('username','Username','string',true,'');
 	      node.addProperty('password','Password','string',true,'');
 	      node.addProperty('response.variable.name','Response variable name','string',false,'restCallData');
