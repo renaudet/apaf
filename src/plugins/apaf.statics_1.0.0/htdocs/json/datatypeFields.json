@@ -31,6 +31,11 @@
                 "renderer": "typeof @.type=='undefined'?'text':@.type"
             },
             {
+                "label": "ID Field",
+                "field": "isIdField",
+                "type": "boolean"
+            },
+            {
                 "label": "Required",
                 "field": "required",
                 "type": "boolean"

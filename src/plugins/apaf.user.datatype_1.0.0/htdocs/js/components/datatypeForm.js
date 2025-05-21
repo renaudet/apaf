@@ -3,7 +3,7 @@
  * Copyright 2023 Nicolas Renaudet - All rights reserved
  */
  
-class FormField {
+class FormField2 {
 	config = null;
 	form = null;
 	baseId = '';
@@ -67,7 +67,7 @@ class FormField {
 	}
 }
 
-class LabeledFormField extends FormField{
+class LabeledFormField2 extends FormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -89,7 +89,7 @@ class LabeledFormField extends FormField{
 	}
 }
 
-class TextField extends LabeledFormField{
+class TextField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -170,7 +170,7 @@ class TextField extends LabeledFormField{
 		if(this.config.required && (typeof fieldValue=='undefined' || fieldValue.length==0)){
 			$('#'+inputFieldId).addClass('is-invalid');
 			$('#'+inputFieldId).focus();
-			showError(this.getLocalizedString('@form.textField.error',[this.config.name]));
+			showError(this.getLocalizedString('@form.TextField.error',[this.config.name]));
 			return true;
 		}else{
 			$('#'+inputFieldId).removeClass('is-invalid');
@@ -179,7 +179,7 @@ class TextField extends LabeledFormField{
 	}
 }
 
-class PasswordField extends TextField{
+class PasswordField2 extends TextField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -249,7 +249,7 @@ class PasswordField extends TextField{
 			if(this.config.required && (typeof fieldValue=='undefined' || fieldValue.length==0)){
 				$('#'+inputFieldId).addClass('is-invalid');
 				$('#'+inputFieldId).focus();
-				showError(this.getLocalizedString('@form.textField.error',[this.config.name]));
+				showError(this.getLocalizedString('@form.TextField.error',[this.config.name]));
 				return true;
 			}else{
 				if((this.config.required && this.config.minimumLength && fieldValue.length<this.config.minimumLength) ||
@@ -284,7 +284,7 @@ class PasswordField extends TextField{
 	}
 }
 
-class UrlField extends LabeledFormField{
+class UrlField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -373,7 +373,7 @@ class UrlField extends LabeledFormField{
 		if(this.config.required && (typeof fieldValue=='undefined' || fieldValue.length==0) && !fieldValue.startsWith('http')){
 			$('#'+inputFieldId).addClass('is-invalid');
 			$('#'+inputFieldId).focus();
-			showError(this.getLocalizedString('@form.textField.error',[this.config.name]));
+			showError(this.getLocalizedString('@form.TextField.error',[this.config.name]));
 			return true;
 		}else{
 			$('#'+inputFieldId).removeClass('is-invalid');
@@ -382,7 +382,7 @@ class UrlField extends LabeledFormField{
 	}
 }
 
-class NumericField extends TextField{
+class NumericField2 extends TextField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -468,13 +468,13 @@ class NumericField extends TextField{
 	}
 }
 
-const DATE_PICKER_DEPTS = [
+const DATE_PICKER_DEPTS_2 = [
 	{"type": "css","uri": "/css/bootstrap-datepicker.standalone.css"},
 	{"type": "js","uri": "/js/bootstrap-datepicker.js"},
 	{"type": "js","uri": "/js/moment.min.js"}
 ]
 
-class DateField extends TextField{
+class DateField2 extends TextField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -519,7 +519,7 @@ class DateField extends TextField{
 		$('#'+inputFieldId).on('change',function(){
 			field.fireFormEvent({"type": "change","source": field.config.name});
 		});
-		loadDeps(DATE_PICKER_DEPTS,function(){
+		loadDeps(DATE_PICKER_DEPTS_2,function(){
 			  $('#'+inputFieldId).val(moment().format(field.getDisplayFormat()));
 			  then();
 		});
@@ -573,7 +573,7 @@ class DateField extends TextField{
 	}
 }
 
-class CheckField extends FormField{
+class CheckField2 extends FormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -665,7 +665,7 @@ class CheckField extends FormField{
 	}
 }
 
-class RadioField extends LabeledFormField{
+class RadioField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -740,7 +740,7 @@ class RadioField extends LabeledFormField{
 	}
 }
 
-class ColorPickerField extends LabeledFormField{
+class ColorPickerField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -804,7 +804,7 @@ class ColorPickerField extends LabeledFormField{
 	}
 }
 
-class RangeSelectorField extends LabeledFormField{
+class RangeSelectorField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -896,7 +896,7 @@ class RangeSelectorField extends LabeledFormField{
 	}
 }
 
-class SelectField extends LabeledFormField{
+class SelectField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -1095,7 +1095,7 @@ class SelectField extends LabeledFormField{
 	}
 }
 
-const CODE_MIRROR_DEPTS = [
+const CODE_MIRROR_DEPTS_2 = [
 	{"type": "css","uri": "/css/codemirror.css"},
 	{"type": "css","uri": "/css/codeMirror/abcdef.css"},
 	{"type": "css","uri": "/uiTools/css/editor.css"},
@@ -1105,9 +1105,9 @@ const CODE_MIRROR_DEPTS = [
 	{"type": "js","uri": "/js/codeMirror/loadmode.js"},
 	{"type": "js","uri": "/js/codeMirror/meta.js"}
 ];
-const DEFAULT_EDITOR_HEIGHT = 300;
+const DEFAULT_EDITOR_HEIGHT_2 = 300;
 
-class SourceEditorField extends LabeledFormField{
+class SourceEditorField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -1136,7 +1136,7 @@ class SourceEditorField extends LabeledFormField{
 			editorMode = 'javascript';
 		}
 		var source = this;
-		loadDeps(CODE_MIRROR_DEPTS,function(){
+		loadDeps(CODE_MIRROR_DEPTS_2,function(){
 			var textArea = document.getElementById(inputFieldId);
 			source.form.editors[source.config.name] = CodeMirror.fromTextArea(textArea, {
 			    lineNumbers: true,
@@ -1148,7 +1148,7 @@ class SourceEditorField extends LabeledFormField{
 			if(typeof source.config.height!='undefined'){
 				source.form.editors[source.config.name].setSize(null,source.config.height);
 			}else{
-				source.form.editors[source.config.name].setSize(null,DEFAULT_EDITOR_HEIGHT);
+				source.form.editors[source.config.name].setSize(null,DEFAULT_EDITOR_HEIGHT_2);
 			}
 			setTimeout(function(){ source.form.editors[source.config.name].setOption("mode",editorMode);then(); },200);
 		});
@@ -1236,7 +1236,7 @@ class SourceEditorField extends LabeledFormField{
 	}
 }
 
-class TextAreaField extends LabeledFormField{
+class TextAreaField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -1304,7 +1304,7 @@ class TextAreaField extends LabeledFormField{
 		if(this.config.required && (typeof fieldValue=='undefined' || fieldValue.length==0)){
 			$('#'+inputFieldId).addClass('is-invalid');
 			$('#'+inputFieldId).focus();
-			showError(this.getLocalizedString('@form.textField.error',[this.config.name]));
+			showError(this.getLocalizedString('@form.TextField.error',[this.config.name]));
 			return true;
 		}else{
 			$('#'+inputFieldId).removeClass('is-invalid');
@@ -1313,7 +1313,7 @@ class TextAreaField extends LabeledFormField{
 	}
 }
 
-class DatatypeEditorField extends LabeledFormField{
+class DatatypeEditorField2 extends LabeledFormField2{
 	datatypeDef = null;
 	canEdit = true;
 	data = null;
@@ -1475,8 +1475,8 @@ class DatatypeEditorField extends LabeledFormField{
 	}
 }
 
-let ArrayEditorFieldCount = 0;
-class ArrayEditorField extends LabeledFormField{
+//let ArrayEditorFieldCount = 0;
+class ArrayEditorField2 extends LabeledFormField2{
 	datatype = 'text';
 	datatypeDef = null;
 	canEdit = true;
@@ -1868,7 +1868,7 @@ class ArrayEditorField extends LabeledFormField{
 	}
 }
 
-class DatatypeField extends LabeledFormField{
+class DatatypeField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -1928,11 +1928,11 @@ class DatatypeField extends LabeledFormField{
 	}
 }
 
-const UPLOAD_FIELD_DEPTS = [
+const UPLOAD_FIELD_DEPTS_2 = [
 	{"type": "css","uri": "/datatype/css/uploadField.css"}
 ];
 
-const FILE_ICON = {
+const FILE_ICON_2 = {
 	"txt": "/uiTools/img/silk/page_white_text.png",
 	"png": "/uiTools/img/silk/page_white_picture.png",
 	"jpg": "/uiTools/img/silk/page_white_camera.png",
@@ -1948,7 +1948,7 @@ const FILE_ICON = {
 	"xlsx": "/uiTools/img/silk/page_excel.png"
 }
 
-class UploadField extends LabeledFormField{
+class UploadField2 extends LabeledFormField2{
 	uploadFolder = null;
 	enabled = false;
 	filename = null;
@@ -2010,7 +2010,7 @@ class UploadField extends LabeledFormField{
 		html += '</div>';
 		parent.append(html);
 		var editor = this;
-		loadDeps(UPLOAD_FIELD_DEPTS,function(){
+		loadDeps(UPLOAD_FIELD_DEPTS_2,function(){
 			$('#'+inputFieldId+'_submit').on('click',function(){
 				npaUi.fireEvent(action,{"action": action,"field": $('#'+inputFieldId)});
 			});
@@ -2083,7 +2083,7 @@ class UploadField extends LabeledFormField{
 		}else{
 			try{
 				let ext = filename.split('.')[1];
-				let fileIcon = FILE_ICON[ext];
+				let fileIcon = FILE_ICON_2[ext];
 				if(typeof fileIcon!='undefined'){
 					return fileIcon;
 				}
@@ -2207,7 +2207,7 @@ class UploadField extends LabeledFormField{
 	}
 }
 
-class ButtonField extends FormField{
+class ButtonField2 extends FormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -2254,7 +2254,7 @@ class ButtonField extends FormField{
 	}
 }
 
-class PlaceholderField extends LabeledFormField{
+class PlaceholderField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -2291,7 +2291,7 @@ class PlaceholderField extends LabeledFormField{
 	}
 }
 
-class MultipleReferenceEditorField extends LabeledFormField{
+class MultipleReferenceEditorField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -2579,7 +2579,7 @@ class MultipleReferenceEditorField extends LabeledFormField{
 	}
 }
 
-class SingleReferenceEditorField extends LabeledFormField{
+class SingleReferenceEditorField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -2781,13 +2781,13 @@ class SingleReferenceEditorField extends LabeledFormField{
 	}
 }
 
-const RICH_TEXT_EDITOR_DEPTS = [
+const RICH_TEXT_EDITOR_DEPTS_2 = [
 	 {"type": "css","uri": "/css/rte/rte.css"},
      {"type": "js","uri": "/js/richText/rte.js"},
      {"type": "js","uri": "/uiTools/js/richText/rteControls.js"}
 ];
 
-class RichTextEditorField extends LabeledFormField{
+class RichTextEditorField2 extends LabeledFormField2{
 	constructor(config,form){
 		super(config,form);
 	}
@@ -2815,7 +2815,7 @@ class RichTextEditorField extends LabeledFormField{
 			var actionId = $(this).data('actionid');
 			npaUi.fireEvent(actionId,{"action": actionId,"editor": source.form.editors[source.config.name]});
 		});
-		loadDeps(RICH_TEXT_EDITOR_DEPTS,function(){
+		loadDeps(RICH_TEXT_EDITOR_DEPTS_2,function(){
 			var width = 800; // default width
 			var height = 300; // default height
 			if(typeof source.config.height!='undefined'){
@@ -2897,7 +2897,7 @@ class RichTextEditorField extends LabeledFormField{
 		"siteId": "<some-DIV-#ID>"
    }
  */
-class PluggableEditorField extends LabeledFormField{
+class PluggableEditorField2 extends LabeledFormField2{
 	innerEditor = null;
 	pendingValue = null;
 	siteId = null;
@@ -2952,7 +2952,7 @@ class PluggableEditorField extends LabeledFormField{
 			this.innerEditor = editor;
 			this.innerEditor.render(then);
 		}catch(t){
-			console.log('WARNING: in PluggableEditorField#plugEditor() field: '+this.config.name);
+			console.log('WARNING: in PluggableEditorField2#plugEditor() field: '+this.config.name);
 			console.log(t);
 			then();
 		}
@@ -3050,79 +3050,79 @@ apaf.DatatypeForm = class DatatypeForm extends NpaUiComponent{
 			config.type = 'text';
 		}
 		if('text'==config.type){
-			return new TextField(config,this)
+			return new TextField2(config,this)
 		}
 		if('password'==config.type || 'passwordCheck'==config.type){
-			return new PasswordField(config,this)
+			return new PasswordField2(config,this)
 		}
 		if('url'==config.type){
-			return new UrlField(config,this)
+			return new UrlField2(config,this)
 		}
 		if('integer'==config.type){
-			return new NumericField(config,this)
+			return new NumericField2(config,this)
 		}
 		if('date'==config.type){
-			return new DateField(config,this)
+			return new DateField2(config,this)
 		}
 		if('option'==config.type || 'check'==config.type|| 'switch'==config.type){
-			return new CheckField(config,this)
+			return new CheckField2(config,this)
 		}
 		if('radio'==config.type){
-			return new RadioField(config,this)
+			return new RadioField2(config,this)
 		}
 		if('color'==config.type){
-			return new ColorPickerField(config,this)
+			return new ColorPickerField2(config,this)
 		}
 		if('range'==config.type){
-			return new RangeSelectorField(config,this)
+			return new RangeSelectorField2(config,this)
 		}
 		if('select'==config.type){
-			return new SelectField(config,this)
+			return new SelectField2(config,this)
 		}
 		if('json'==config.type || 'javascript'==config.type){
-			return new SourceEditorField(config,this)
+			return new SourceEditorField2(config,this)
 		}
 		if('textarea'==config.type){
-			return new TextAreaField(config,this)
+			return new TextAreaField2(config,this)
 		}
 		if('array'==config.type){
-			return new ArrayEditorField(config,this)
+			return new ArrayEditorField2(config,this)
 		}
 		/*if('userDatatype'==config.type){
-			return new DatatypeField(config,this)
+			return new DatatypeField2(config,this)
 		}*/
 		if('upload'==config.type){
-			return new UploadField(config,this)
+			return new UploadField2(config,this)
 		}
 		if('button'==config.type){
-			return new ButtonField(config,this)
+			return new ButtonField2(config,this)
 		}
 		if('placeholder'==config.type){
-			return new PlaceholderField(config,this)
+			return new PlaceholderField2(config,this)
 		}
 		if('richText'==config.type){
-			return new RichTextEditorField(config,this);
+			return new RichTextEditorField2(config,this);
 		}
 		if('reference'==config.type && config.multiple){
-			return new MultipleReferenceEditorField(config,this);
+			return new MultipleReferenceEditorField2(config,this);
 		}
 		if('reference'==config.type && !config.multiple){
-			return new SingleReferenceEditorField(config,this);
+			return new SingleReferenceEditorField2(config,this);
 		}
 		if('pluggable'==config.type){
-			return new PluggableEditorField(config,this);
+			return new PluggableEditorField2(config,this);
 		}
 		if('userDatatype'==config.type){
-			return new DatatypeEditorField(config,this);
+			return new DatatypeEditorField2(config,this);
 		}
 		let specializedPluggableEditor = this.specializedEditors[config.type];
 		if(typeof specializedPluggableEditor!='undefined'){
 			let newConfig = Object.assign({},config);
 			newConfig.requires = specializedPluggableEditor.libraries;
 			newConfig.editor = specializedPluggableEditor.editor;
-			return new PluggableEditorField(newConfig,this);
+			return new PluggableEditorField2(newConfig,this);
 		}
-		return new FormField(config,this);
+		return new FormField2(config,this);
 	}
 	render(then){
 		let config = this.getConfiguration();

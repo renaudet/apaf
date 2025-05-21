@@ -74,6 +74,7 @@ initializeUi = function(){
 			npaUi.on('deleteRecord',deleteRecord);
 			npaUi.on('editAsJSON',editRecordAsJSON);
 			npaUi.on('filter',filterData);
+			npaUi.on('import',importData);
 			npaUi.registerSelectionListener(ITEM_SELECTION_LIST_ID,datatypeSelectionHandler);
 			npaUi.onComponentLoaded = onComponentLoaded;
 			npaUi.render();
@@ -299,4 +300,274 @@ filterData = function(event){
 	let filterExpr = event.data;
 	let datatable = $apaf(selectedDatatype.name+'_tmpTable');
 	datatable.applyFilter(filterExpr);
+}
+let importCount = 0;
+importData = function(){
+	let dialogOption = {};
+	dialogOption.title = npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.title');
+	dialogOption.size = 'XXL';
+	dialogOption.buttons = [
+		{"action": "cancel","label": npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.cancel')},
+		{"action": "close","label": npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.close')}
+	]
+	let dialog = apaf.createModalDialog(dialogOption);
+	let inputId = 'importFileInput_'+importCount;
+	let outputId = 'csvContent_'+importCount;
+	let btnId = 'importFileInputSubmitBtn_'+(importCount++);
+	let html = '';
+	html += '';
+	html += '<div class="row form-row" id="importDialogForm">';
+	html += '  <div class="col-2" style="font-weight: bold;text-align: right;margin-top: 5px;">';
+	html += npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.form.input.field');
+	html += '  </div>';
+	html += '  <div class="col-7">';
+	html += '     <input class="form-control" type="file" id="'+inputId+'"/>';
+	html += '  </div>';
+	html += '  <div class="col-3">';
+	html += '    <button id="'+btnId+'" type="button" class="btn btn-primary">'+npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.form.input.button')+'</button>';
+	html += '  </div>';
+	html += '</div>';
+	html += '<div id="'+outputId+'" style="margin-top: 5px;height: 400px;overflow: auto;padding: 4px;background-color: #000;color: #0f0;font-size: 0.75rem;font-family: courier;"></div>';
+	html += '';
+	dialog.setBody(html);
+	let data = [];
+	$('#'+btnId).on('click',function(){
+		var file = $('#'+inputId).get(0).files[0];
+		if (file) {
+		  var reader = new FileReader();
+	      reader.readAsText(file, "UTF-8");
+	      reader.onload = function(evt) {
+			console.log(file.name+' content:');
+	        console.log(evt.target.result);
+	        if(evt.target.result && evt.target.result.length>0){
+	        	data = evt.target.result.split('\n');
+				for(var i=0;i<data.length;i++){
+					let line = data[i];
+					$('#'+outputId).append(line);
+					$('#'+outputId).append('<br>');
+				}
+				console.log('- '+data.length+' lines found in file');
+			}
+	      }
+	      reader.onerror = function(evt) {
+	        console.log(evt);
+	        showError('Unable to read this file');
+	      }
+		}else{
+			showWarning('No file selected');
+		}
+	});
+	dialog.setOnCloseCallback(function(){
+		mappImportedData(data);
+	});
+	dialog.open();
+}
+
+const MAPPING_FORM_ID = 'mappingForm';
+const MAPPING_FORM = {
+    "id": MAPPING_FORM_ID,
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title_": "",
+    	"class": "form-frame-noborder",
+    	"fields": [
+    		{
+    			"name": "separator",
+    			"label": "@apaf.page.user.data.import.action.dialog.field.separator.label",
+    			"required": true,
+    			"size": 1,
+    			"default": ";"
+    		},
+    		{
+    			"name": "ignoreFirst",
+    			"label": "@apaf.page.user.data.import.action.dialog.field.ignore.label",
+    			"type": "check",
+    			"required": true,
+    			"default": true
+    		}
+    	]
+    }
+}
+
+mappImportedData = function(data){
+	let dialogOption = {};
+	dialogOption.title = npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.title');
+	dialogOption.size = 'XXL';
+	dialogOption.buttons = [
+		{"action": "cancel","label": npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.cancel')},
+		{"action": "close","label": npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.close')}
+	]
+	let dialog = apaf.createModalDialog(dialogOption);
+	let html = '';
+	html += '<div id="mappingDialogBody">';
+	html += '<span style="padding-left: 15px;">'+npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.line1',[data.length])+'</span>';
+	html += '<div id="mappingFormDiv"></div> ';
+	html += '<div style="padding-left: 15px;margin-top: 3px;font-weight: bold;">'+npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.line2')+'</div>';
+	html += '<div style="padding-right: 15px;margin-top: 3px;height: 500px;overflow: auto;">';
+	let fields = sortOn(selectedDatatype.fields,'displayIndex');
+	let fieldsByName = {};
+	for(var i=0;i<fields.length;i++){
+		let field = fields[i];
+		fieldsByName[field.name] = field;
+		let type = field.type;
+		if(typeof type=='undefined'){
+			type = 'text';
+		}
+		
+		html += '<div class="row" style="margin-top: 3px;">';
+		html += '  <div class="col-2" style="text-align: right;">'+npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.column.label',[i])+'</div>';
+		html += '  <div class="col-4"><select id="column_'+i+'" class="form-select form-select-sm">';
+		html += '    <option value="">'+npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.mapping.empty')+'</option>';
+		for(var j=0;j<fields.length;j++){
+			let mappedField = fields[j];
+			let selected = '';
+			if(j==i){
+				selected = ' selected';
+			}
+			html += '<option value="'+mappedField.name+'"'+selected+'>'+mappedField.label+' ('+type+')</option>';
+		}
+		html += '';
+		html += '    </select>';
+		html += '  </div>';
+		html += '  <div class="col-1" style="text-align: right;">'+npaUi.getLocalizedString('@apaf.page.user.data.import.action.dialog.mapping.expr')+'</div>';
+		html += '  <div class="col-5">';
+		let exprValue = '';
+		if('switch'==field.type || 'check'==field.type || 'option'==field.type){
+			exprValue = "@ == 'true'";
+		}else
+		if('integer'==field.type ||
+		   'range'==field.type){
+			exprValue = 'parseInt(@)';
+		}else
+		if('text'==field.type || 
+		   'password'==field.type || 
+		   'passwordCheck'==field.type || 
+		   'url'==field.type || 
+		   'date'==field.type || 
+		   'radio'==field.type || 
+		   'color'==field.type || 
+		   'select'==field.type){
+			exprValue = '@';
+		}else
+			exprValue = '';
+		html += '    <input id="column_'+i+'_processor" type="text" class="form-control form-control-sm" value="'+exprValue+'">';
+		html += '  </div>';
+		html += '</div>';
+	}
+	html += '';
+	html += '</div>';
+	html += '</div>';	
+	dialog.setBody(html);
+	dialog.setOnCloseCallback(function(){
+		let form = $apaf(MAPPING_FORM_ID);
+		let options = form.getData();
+		let records = [];
+		for(var i=0;i<data.length;i++){
+			let line = data[i].trim();
+			if(i>0 || !options.ignoreFirst){
+				let values = line.split(options.separator);
+				let record = {};
+				let columnIndex = 0;
+				for(var j=0;j<fields.length;j++){
+					let mapping = $('#column_'+j).val();
+					let expr = $('#column_'+j+'_processor').val();
+					let currentValue = values[columnIndex];
+					if(mapping && mapping.length>0 && j<values.length){
+						if(expr && expr.length>0){
+							let mappedValue = null;
+							let toEval = 'mappedValue = '+expr.replace(/@/g,'currentValue')+';';
+							try{
+								eval(toEval);
+								record[mapping] = mappedValue;
+							}catch(t){
+								console.log('error evaluating "'+toEval+'" for column '+columnIndex);
+							}
+						}else{
+							let field = fieldsByName[mapping];
+							if('integer'==field.type || 'range'==field.type){
+								record[mapping] = parseInt(values[columnIndex]);
+							}else
+							if('switch'==field.type || 'check'==field.type || 'option'==field.type){
+								record[mapping] = (values[columnIndex]=='true');
+							}else
+								record[mapping] = values[columnIndex];
+						}
+						columnIndex++;
+					}
+				}
+				records.push(record);
+			}
+		}
+		bulkCreateRecords(records,function(){
+			$('#mappingDialogBody').remove();
+		});
+	});
+	npaUi.renderSingleComponent('mappingFormDiv',MAPPING_FORM,function(){
+		let form = $apaf(MAPPING_FORM_ID);
+		form.setData({});
+		form.setEditMode(true);
+		dialog.open();
+	});
+}
+
+createSearchQuery = function(record){
+	let query = {"selector": {"$and": []}};
+	let andClause = query.selector.$and;
+	for(var i=0;i<selectedDatatype.fields.length;i++){
+		let field = selectedDatatype.fields[i];
+		if(field.isIdField){
+			let andMember = {};
+			let recordValue = record[field.name];
+			if(typeof recordValue!='undefined'){
+				andMember[field.name] = {"$eq": recordValue};
+				andClause.push(andMember);
+			}
+		}
+	}
+	return query;
+}
+
+bulkCreateRecords = function(arrayOfRecords,next){
+	let manager = npaUi.getComponent(GENERIC_DATA_MANAGER_ID);
+	let errors = [];
+	//let total = arrayOfRecords.length;
+	let totalCreatedRecord = 0;
+	let createRecords = function(list,index,then){
+		if(index<list.length){
+			let record = list[index];
+			//let progress = Math.round((index/total)*100);
+			manager.query(createSearchQuery(record))
+			.then(function(searchResult){
+				if(searchResult && searchResult.length==0){
+					manager.create(record).then(function(data){
+						totalCreatedRecord++;
+						createRecords(list,index+1,then);
+						//setTimeout(function(){ createRecords(list,index+1,then); },1000);
+					}).onError(function(errorMsg){
+						errors.push({"index": index,"data": record,"message": "Creating record failed"});
+						createRecords(list,index+1,then);
+					});
+				}else{
+					errors.push({"index": index,"data": record,"message": "Duplicated key"});
+					createRecords(list,index+1,then);
+				}
+			})
+			.onError(function(errorMsg){
+				errors.push({"index": index,"data": record,"message": "Looking for existing record failed!"});
+				createRecords(list,index+1,then);
+			});
+		}else{
+			then();
+		}
+	}
+	createRecords(arrayOfRecords,0,function(){
+		if(errors.length>0){
+			showWarning('@apaf.page.user.data.import.action.dialog.warning');
+			console.error('Errors detected while importing data:');
+			console.error(errors);
+		}
+		showInfo('@apaf.page.user.data.import.action.dialog.final.msg',[totalCreatedRecord]);
+		next();
+	});
 }
