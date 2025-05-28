@@ -18,30 +18,35 @@
                 "field": "displayIndex"
             },
             {
-                "label": "Name",
+                "label": "@apaf.page.datatypes.table.field.name.label",
                 "field": "name"
             },
             {
-                "label": "Label",
+                "label": "@apaf.page.datatypes.table.field.label.label",
                 "field": "label"
             },
             {
-                "label": "Type",
+                "label": "@apaf.page.datatypes.table.field.type.label",
                 "field": "type",
                 "renderer": "typeof @.type=='undefined'?'text':@.type"
             },
             {
-                "label": "ID Field",
+                "label": "@apaf.page.datatypes.table.field.id.label",
                 "field": "isIdField",
                 "type": "boolean"
             },
             {
-                "label": "Required",
+                "label": "@apaf.page.datatypes.table.field.required.label",
                 "field": "required",
                 "type": "boolean"
             },
             {
-                "label": "Actions",
+                "label": "@apaf.page.datatypes.table.field.search.label",
+                "field": "searchField",
+                "type": "boolean"
+            },
+            {
+                "label": "@apaf.page.datatypes.table.field.action.label",
                 "type": "rowActions",
                 "actions": [
                     {

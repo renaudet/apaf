@@ -86,6 +86,12 @@
 				"constrainedBy": "isIdField"
     		},
     		{
+    			"name": "searchField",
+    			"label": "@apaf.user.datatype.field.search.label",
+    			"type": "switch",
+    			"default": true
+    		},
+    		{
     			"name": "multiple",
     			"label": "@apaf.user.datatype.field.multiple.label",
     			"type": "switch",
