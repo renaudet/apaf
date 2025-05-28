@@ -616,6 +616,16 @@
 		                "type": "separator"
 		            },
 		    		{
+		                "label": "@data.toolbar.import.label",
+		                "actionId": "import",
+		                "icon": "/uiTools/img/silk/cart_put.png",
+		                "enabled": false,
+		                "enableOnSelection": true
+		            },
+		    		{
+		                "type": "separator"
+		            },
+		    		{
 		                "label": "@data.toolbar.add.label",
 		                "actionId": "add",
 		                "icon": "/uiTools/img/silk/add.png",
