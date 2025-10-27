@@ -55,6 +55,7 @@ apafUi.RuleDataReferenceEditor = class RuleDataReferenceEditor extends Pluggable
 		$('#'+this.inputFieldId()).empty();
   }
   render(then){
+	console.log('-> apafUi.RuleDataReferenceEditor#render()');
     let editor = this;
 	let html = '';
 	html += '    <select id="'+this.inputFieldId()+'" class="form-select" disabled>';
@@ -78,6 +79,7 @@ apafUi.RuleDataReferenceEditor = class RuleDataReferenceEditor extends Pluggable
 			editor.setValue(editor.field.pendingValue);
 			delete editor.field.pendingValue;
 		}
+		console.log('<- apafUi.RuleDataReferenceEditor#render()');
 		then();
 	});
   }

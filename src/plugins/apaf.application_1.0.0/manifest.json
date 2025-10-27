@@ -41,7 +41,7 @@
   	},
   	{
   		"point": "npa.ui.locale.provider",
-  		"id": "apaf.application.locale.provider.fr",
+  		"id": "apaf.application.locale.provider.frFR",
   		"path": "i18n/apaf_fr-FR.locale",
   		"locale": "fr-FR"
   	},
@@ -50,6 +50,12 @@
   		"id": "apaf.application.locale.provider.fr",
   		"path": "i18n/apaf_fr-FR.locale",
   		"locale": "fr"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.locale.provider.FR",
+  		"path": "i18n/apaf_fr-FR.locale",
+  		"locale": "FR"
   	}
   ],
   "provides": [

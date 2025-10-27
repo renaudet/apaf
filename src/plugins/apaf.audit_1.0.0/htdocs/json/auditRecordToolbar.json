@@ -1,0 +1,18 @@
+{
+    "id":"auditRecordToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"actions": [
+    		{
+                "type": "control",
+                "kind": "filter",
+                "actionId": "filter",
+                "label": "@apaf.audit.toolbar.filter.label",
+                "width": 300
+            }
+    	]
+    }
+}

@@ -220,12 +220,16 @@ plugin.uploadFileHandler = function(req,res){
 			if(encryptedData && encryptedData.length>0){
 				let buff = Buffer.from(encryptedData, 'base64');
 				let folder = buff.toString('ascii');
+				plugin.debug('folder: '+folder);
 				let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
 				let uploadDir = workspaceService.absolutePath(folder);
+				plugin.debug('uploadDir: '+uploadDir);
+				workspaceService.checkExists(uploadDir);
 				const form = formidable({ "multiples": false, "uploadDir": uploadDir });
 				form.parse(req, function(err, fields, files){
 					if(err){
 						plugin.debug('<-uploadFileHandler() - request parsing error');
+						plugin.debug('err: '+JSON.stringify(err));
 						res.json({"status": 406,"message": err,"data": []});
 					}else{
 						for(var entry in files){

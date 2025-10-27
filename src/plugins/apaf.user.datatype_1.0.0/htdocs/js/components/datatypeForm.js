@@ -468,6 +468,69 @@ class NumericField2 extends TextField2{
 	}
 }
 
+const TIMESTAMP_DEPTS_2 = [
+	{"type": "js","uri": "/js/moment.min.js"}
+]
+
+class TimestampField2 extends LabeledFormField2{
+	constructor(config,form){
+		super(config,form);
+	}
+	getDisplayFormat(){
+		if(this.config.displayFormat){
+			return this.config.displayFormat;
+		}
+		return 'YYYY/MM/DD HH:mm:ss';
+	}
+	getStorageFormat(){
+		if(this.config.storageFormat){
+			return this.config.storageFormat;
+		}
+		return 'YYYY/MM/DD HH:mm:ss';
+	}
+	render(parent,then){
+		this.baseId = parent.prop('id');
+		let inputFieldId = this.baseId+'_'+this.config.name;
+		let html = '';
+		html += '<div class="row form-row" id="'+inputFieldId+'_row">';
+		html += this.generateLabel();
+		html += '  <div id="'+inputFieldId+'" class="col-10">n/a</div>';
+		html += '</div>';
+		parent.append(html);
+		loadDeps(TIMESTAMP_DEPTS_2,function(){
+			then();
+		});
+	}
+	hide(){
+		super.hide();
+		let inputFielRowId = '#'+this.baseId+'_'+this.config.name+'_row';
+		$(inputFielRowId).hide();
+	}
+	show(){
+		let inputFielRowId = '#'+this.baseId+'_'+this.config.name+'_row';
+		$(inputFielRowId).show();
+	}
+	setData(parentObj){
+		var inputFieldId = this.baseId+'_'+this.config.name;
+		if(typeof parentObj[this.config.name]!='undefined'){
+			var value = moment(parentObj[this.config.name],this.getStorageFormat());
+			var displayValue = value.format(this.getDisplayFormat());
+			$('#'+inputFieldId).html(displayValue);
+			$('#'+inputFieldId).removeClass('is-invalid');
+		}else{
+			$('#'+inputFieldId).html('&nbsp;');
+			$('#'+inputFieldId).removeClass('is-invalid');
+		}
+	}
+	assignData(parentObj){
+		var storageValue = moment().format(this.getStorageFormat());
+		parentObj[this.config.name] = storageValue;
+	}
+	vetoRaised(){
+		return false;
+	}
+}
+
 const DATE_PICKER_DEPTS_2 = [
 	{"type": "css","uri": "/css/bootstrap-datepicker.standalone.css"},
 	{"type": "js","uri": "/js/bootstrap-datepicker.js"},
@@ -1972,13 +2035,13 @@ class UploadField2 extends LabeledFormField2{
 		html += '<div class="row form-row" id="'+inputFieldId+'_row">';
 		html += this.generateLabel();
 		if(this.config.dragEnabled){
-			let size = 10;
-			if(typeof this.config.size!='undefined'){
+			let size = 9;
+			if(typeof this.config.size!='undefined' && this.config.size<10){
 				size = this.config.size;
 			}
 			html += '<div class="col-'+size+' uploadComponent">';
 			html += '  <div class="row">';
-			html += '    <div class="col-10">';
+			html += '    <div class="col-9">';
 			html += '  <div id="'+inputFieldId+'" class="uploadArea">';
 			html += this.getLocalizedString('@apaf.component.upload.message');
 			html += '  </div>';
@@ -1993,11 +2056,11 @@ class UploadField2 extends LabeledFormField2{
 			html += '    </div>';
 			html += '  </div>';
 			html += '    </div>';
-			html += '    <div id="'+inputFieldId+'_linksArea" class="col-2"></div>';
+			html += '    <div id="'+inputFieldId+'_linksArea" class="col-3"></div>';
 			html += '  </div>';
 			html += '</div>';
-			if(size<10){
-				html += '<div class="col-'+(10-size)+'">&nbsp;</div>';
+			if(size<9){
+				html += '<div class="col-'+(9-size)+'">&nbsp;</div>';
 			}
 		}else{
 			html += '  <div class="col-7">';
@@ -3115,6 +3178,9 @@ apaf.DatatypeForm = class DatatypeForm extends NpaUiComponent{
 		if('userDatatype'==config.type){
 			return new DatatypeEditorField2(config,this);
 		}
+		if('timestamp'==config.type){
+			return new TimestampField2(config,this);
+		}	
 		let specializedPluggableEditor = this.specializedEditors[config.type];
 		if(typeof specializedPluggableEditor!='undefined'){
 			let newConfig = Object.assign({},config);
@@ -3158,7 +3224,7 @@ apaf.DatatypeForm = class DatatypeForm extends NpaUiComponent{
 		let renderFieldList = function(list,index,next){
 			if(index<list.length){
 				var fieldId = list[index].name;
-				console.log('looking for helper class for field #'+fieldId+' ('+list[index].type+')');
+				console.log('apaf.DatatypeForm#renderFields() looking for helper class for field #'+fieldId+' ('+list[index].type+')');
 				var field = form.fieldCache[fieldId];
 				if(typeof field!='undefined'){
 					console.log('calling '+field.config.type+' rendering');

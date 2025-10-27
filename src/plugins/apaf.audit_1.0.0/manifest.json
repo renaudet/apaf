@@ -1,0 +1,131 @@
+{
+  "id": "apaf.audit",
+  "name": "Rule Data support plugin for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.audit.logger",
+  		"dir": "apaf.audit"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.audit.router",
+  		"path": "/apaf-audit"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.audit.datatype",
+  		"datatype": {
+  			"id": "audit",
+  			"name": "Audit",
+  			"builtIn": true,
+  			"persistent": true,
+  			"database": "apaf_audit",
+  			"fields": [
+	    		{
+	    			"name": "datatypeid",
+	    			"label": "@apaf.audit.datatype.datatypeid",
+	    			"required": true,
+	    			"size": 5,
+	    			"help": "@apaf.audit.datatype.datatypeid.help"
+	    		},
+	    		{
+	    			"name": "entityid",
+	    			"label": "@apaf.audit.datatype.entityid",
+	    			"required": true,
+	    			"size": 5,
+	    			"help": "@apaf.audit.datatype.entityid.help"
+	    		},
+	    		{
+	    			"name": "timestamp",
+	    			"label": "@apaf.audit.datatype.timestamp",
+	    			"type": "timestamp",
+	    			"storageFormat": "YYYY/MM/DD HH:mm:ss",
+	    			"displayFormat": "YYYY/MM/DD HH:mm:ss",
+	    			"size": 6
+	    		},
+	    		{
+	    			"name": "event",
+	    			"label": "@apaf.audit.datatype.event",
+	    			"required": true,
+	    			"type": "select",
+	    			"size": 4,
+	    			"values": ["created","updated","deleted"]
+	    		},
+	    		{
+	    			"name": "byUser",
+	    			"label": "@apaf.audit.datatype.user",
+	    			"required": true,
+	    			"size": 5,
+	    			"help": "@apaf.audit.datatype.user.help"
+	    		},
+	    		{
+	    			"name": "data",
+	    			"label": "@apaf.audit.datatype.value",
+	    			"required": false,
+	    			"type": "json",
+					"height": 500
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.audit.htdocs",
+  		"path": "/audit",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.core.service",
+  		"id": "apaf.audit.service",
+  		"service": "audit"
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.audit.menu.item",
+  		"menu": "adminMenuPlaceholder",
+  		"securityRole": "administrator",
+  		"item": {
+			"id": "auditDataEditor",
+    		"label": "@apaf.page.audit.menu",
+    		"actionId": "redirect",
+    		"icon": "/audit/img/auditIcon.png",
+    		"uri": "/audit/html/manageAuditRecords.html"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.audit.query.handler",
+  		"router": "apaf.audit.router",
+  		"method": "POST",
+  		"schema": "/query",
+  		"handler": "queryAuditHandler",
+  		"securityRole": "administrator",
+		"description": "Query the list of Audit records for a given User Datatype and Entity ID",
+		"input": {"selector": {"$and": [{"datatypeid": {"$eq": "aaa-bbb-ccc-ddd"}},{"entityid": {"$eq": "aaa-bbb-ccc-ddd"}}]}}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.audit.delete.handler",
+  		"router": "apaf.audit.router",
+  		"method": "DELETE",
+  		"schema": "/:id",
+  		"handler": "deleteAuditHandler",
+  		"securityRole": "administrator",
+		"description": "Delete an Audit record given its unique ID",
+		"input": {}
+  	}
+  ],
+  "provides": [
+  ]
+}

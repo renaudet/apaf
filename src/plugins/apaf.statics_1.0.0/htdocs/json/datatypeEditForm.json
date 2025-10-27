@@ -41,6 +41,12 @@
     			"help": "@apaf.user.datatype.persistent.help"
     		},
     		{
+    			"name": "auditEnabled",
+    			"label": "@apaf.user.datatype.auditEnabled",
+    			"type": "check",
+    			"help": "@apaf.user.datatype.auditEnabled.help"
+    		},
+    		{
     			"name": "database",
     			"label": "@apaf.user.datatype.database",
     			"required": false,

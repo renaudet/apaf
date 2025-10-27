@@ -7,6 +7,7 @@ const ApafPlugin = require('../../apafUtil.js');
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const USER_DATATYPE_DATATYPE = 'datatype';
+const AUDIT_SERVICE_NAME = 'audit';
 const moment = require('moment');
 const TIMESTAMP_FORMAT = 'YYYY/MM/DD HH:mm:ss';
 
@@ -243,6 +244,7 @@ plugin.createUserDataHandler = function(req,res){
 	plugin.debug('->createUserDataHandler()');
 	let requiredRole = plugin.getRequiredSecurityRole('apaf.datatype.create.user.data.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	let auditService = plugin.getService(AUDIT_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
 			plugin.debug('<-createUserDataHandler() - error');
@@ -267,6 +269,11 @@ plugin.createUserDataHandler = function(req,res){
 									plugin.debug('<-createUserDataHandler() - error');
 									res.json({"status": 500,"message": err,"data": []});
 								}else{
+									if(datatypeRecord.auditEnabled){
+										try{
+											auditService.createAuditRecord(datatypeRecord,data.id,user.login,'created',data);
+										}catch(e){}
+									}
 									plugin.debug('<-createUserDataHandler() - success');
 									res.json({"status": 200,"message": "created","data": data});
 								}
@@ -290,6 +297,7 @@ plugin.updateUserDataHandler = function(req,res){
 	plugin.debug('->updateUserDataHandler()');
 	let requiredRole = plugin.getRequiredSecurityRole('apaf.datatype.update.user.data.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	let auditService = plugin.getService(AUDIT_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
 			plugin.debug('<-updateUserDataHandler() - error');
@@ -311,6 +319,11 @@ plugin.updateUserDataHandler = function(req,res){
 									plugin.debug('<-updateUserDataHandler() - error');
 									res.json({"status": 500,"message": err,"data": []});
 								}else{
+									if(datatypeRecord.auditEnabled){
+										try{
+											auditService.createAuditRecord(datatypeRecord,req.body.id,user.login,'updated',req.body);
+										}catch(e){}
+									}
 									plugin.debug('<-updateUserDataHandler() - success');
 									res.json({"status": 200,"message": "updated","data": data});
 								}
@@ -334,6 +347,7 @@ plugin.deleteUserDataHandler = function(req,res){
 	plugin.debug('->deleteUserDataHandler()');
 	let requiredRole = plugin.getRequiredSecurityRole('apaf.datatype.delete.user.data.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	let auditService = plugin.getService(AUDIT_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
 			plugin.debug('<-deleteUserDataHandler() - error');
@@ -356,6 +370,11 @@ plugin.deleteUserDataHandler = function(req,res){
 									plugin.debug('<-deleteUserDataHandler() - error');
 									res.json({"status": 500,"message": err,"data": []});
 								}else{
+									if(datatypeRecord.auditEnabled){
+										try{
+											auditService.createAuditRecord(datatypeRecord,id,user.login,'deleted');
+										}catch(e){}
+									}
 									plugin.debug('<-deleteUserDataHandler() - success');
 									res.json({"status": 200,"message": "updated","data": data});
 								}

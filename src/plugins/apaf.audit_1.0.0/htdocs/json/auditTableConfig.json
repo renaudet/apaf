@@ -1,0 +1,51 @@
+{
+    "id":"auditTable",
+    "version": "1.0.0",
+    "type": "Datatable",
+    "configuration": {
+        "datasource": {
+            "type": "managed",
+            "manager": "genericManager"
+        },
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "timestamp",
+        	"ascending": true
+        },
+    	"maxHeight": 800,
+        "columns": [
+            {
+                "label": "@apaf.audit.datatype.timestamp",
+                "field": "timestamp"
+            },
+            {
+                "label": "@apaf.audit.datatype.event",
+                "field": "event"
+            },
+            {
+                "label": "@apaf.audit.datatype.user",
+                "field": "byUser"
+            },
+            {
+                "label": "@apaf.audit.datatype.entityid",
+                "field": "entityid"
+            },
+            {
+                "label": "@apaf.audit.table.action.label",
+                "type": "rowActions",
+                "actions": [
+                    {
+                        "label": "@apaf.audit.table.action.show.label",
+                        "actionId": "showRecord",
+                        "icon": "/uiTools/img/silk/eye.png"
+                    },
+                    {
+                        "label": "@apaf.audit.table.action.delete.label",
+                        "actionId": "deleteRecord",
+                        "icon": "/uiTools/img/silk/delete.png"
+                    }
+                ]
+            }
+        ]
+    }
+}
