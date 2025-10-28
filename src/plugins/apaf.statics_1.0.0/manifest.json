@@ -36,6 +36,14 @@
   		"name": "DatatableV2",
   		"version": "1.0.0",
   		"dependency": "/resources/js/components/apafDatatable2.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.component.datatype.search",
+  		"namespace": "apaf",
+  		"name": "DatatypeSearch",
+  		"version": "1.0.0",
+  		"dependency": "/resources/js/components/datatypeSearch.js"
   	}
   ],
   "provides": [
