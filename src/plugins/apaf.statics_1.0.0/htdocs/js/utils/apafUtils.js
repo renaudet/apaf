@@ -343,7 +343,7 @@ apaf.createModalDialog = function(options={}){
 	html += '    </div>';
 	html += '  </div>';
 	$('#'+id).html(html);
-	let modalWrapper = {};
+	let modalWrapper = {"initialized": false};
 	modalWrapper.clean = function(){
 		document.body.removeChild(modalDiv);
 	}
@@ -351,16 +351,19 @@ apaf.createModalDialog = function(options={}){
 	modalWrapper.modal = $('#'+id);
 	modalWrapper.open = function(){
 		//$('#'+this.baseId+'_closeBtn').off('.'+this.baseId);
-		$('#'+this.baseId+'_closeBtn').on('click.'+this.baseId,function(event){
-			modalWrapper.modal.modal('hide');
-			if(typeof modalWrapper.onCloseCallback!='undefined'){
-				modalWrapper.onCloseCallback();
-			}
-		});
-		$('#'+this.baseId+'_cancelBtn').on('click.'+this.baseId,function(event){
-			modalWrapper.modal.modal('hide');
-			modalWrapper.clean();
-		});
+		if(!this.initialized){
+			$('#'+this.baseId+'_closeBtn').on('click.'+this.baseId,function(event){
+				modalWrapper.modal.modal('hide');
+				if(typeof modalWrapper.onCloseCallback!='undefined'){
+					modalWrapper.onCloseCallback();
+				}
+			});
+			$('#'+this.baseId+'_cancelBtn').on('click.'+this.baseId,function(event){
+				modalWrapper.modal.modal('hide');
+				modalWrapper.clean();
+			});
+			this.initialized = true;
+		}
 		this.modal.modal('show');
 	}
 	modalWrapper.setBody = function(html){

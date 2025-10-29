@@ -7,8 +7,8 @@ apaf.DatatypeSearch = class DatatypeSearch extends NpaUiComponent{
 	modalDialog = null;
 	datatype = null;
 	resultSet = [];
+	onQueryCallback = null;
 	initialize(then){
-		//then();
 		console.log('initialize()');
 		this.loadDatatype(then);
 	}
@@ -69,8 +69,9 @@ apaf.DatatypeSearch = class DatatypeSearch extends NpaUiComponent{
 		}
 		npaUi.renderSingleComponent(formId+'_parent',searchFormConfig,function(){});
 	}
-	open(){
+	open(callback){
 		console.log('open()');
+		this.onQueryCallback = callback;
 		this.modalDialog.open();
 		let formId = this.datatype.name+'_searchForm';
 		$apaf(formId).setEditMode(true);
@@ -99,6 +100,9 @@ apaf.DatatypeSearch = class DatatypeSearch extends NpaUiComponent{
 		let component = this;
 		this.queryDatabase(query,function(data){
 			component.resultSet = data;
+			if(component.onQueryCallback!=null){
+				component.onQueryCallback(component.resultSet);
+			}
 		});
 	}
 }
