@@ -40,6 +40,11 @@
                         "icon": "/uiTools/img/silk/eye.png"
                     },
                     {
+                        "label": "@apaf.audit.table.action.compare.label",
+                        "actionId": "compareRecord",
+                        "icon": "/uiTools/img/silk/arrow_switch.png"
+                    },
+                    {
                         "label": "@apaf.audit.table.action.delete.label",
                         "actionId": "deleteRecord",
                         "icon": "/uiTools/img/silk/delete.png"
