@@ -119,6 +119,7 @@ apaf.application.restrictedToRole=Restricted to
 apaf.application.fragments=Fragments
 apaf.application.menuIcon=Menu icon
 apaf.application.requiresGraphicSupport=Add graphic support library
+apaf.application.requiresDateTimeSupport=Add date/time support library (moment.js)
 apaf.page.applications.delete.confirm=Are you sure you really want to delete Application "{0}"?
 apaf.page.applications.delete.flash=Application deleted!
 apaf.page.applications.action.execute=Execute

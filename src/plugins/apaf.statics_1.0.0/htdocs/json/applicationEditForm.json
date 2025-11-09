@@ -86,6 +86,11 @@
     			"name": "requiresGraphicSupport",
     			"label": "@apaf.application.requiresGraphicSupport",
 				"type": "switch"
+    		},
+    		{
+    			"name": "requiresDateTimeSupport",
+    			"label": "@apaf.application.requiresDateTimeSupport",
+				"type": "switch"
     		}
     	]
     }
