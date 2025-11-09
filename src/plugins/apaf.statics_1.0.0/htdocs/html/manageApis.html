@@ -23,23 +23,25 @@
 			<div id="verticalMenu" class="npaUi" data-config="/resources/json/apisMenuConfig.json">
 				<div data-menu-ref="apis">
 					<div class="row" style="margin-top: 5px;">
-						<div id="apiTreeArea" class="col-5">
+						<div id="apiTreeArea" class="col-4">
 						</div>
-						<div id="apiTestArea" class="col-7">&nbsp;
+						<div id="apiTestArea" class="col-8">&nbsp;
 							<div id="apiTestFormArea" class="npaUi" data-config="/resources/json/apistestFormConfig.json"></div>
 							<div id="apiTestEditableArea" style="margin-top: 10px;">
 								<div class="row">
 									<div class="col-2 form-row-label">Test URI:</div>
-									<div class="col-9"><input id="testUri" type="text" class="form-control"></div>
+									<div class="col-9"><input id="testUri" type="text" class="form-control form-control"></div>
 									<div class="col-1"><button id="testRestCallBtn" type="button" class="btn btn-primary">Go</button></div>
 								</div>
 								<div class="row" style="margin-top: 5px;">
 									<div class="col-2 form-row-label">Payload:</div>
-									<div class="col-10"><textarea id="payload" class="form-control" rows="5" style="font-family: 'Courier New', Courier, monospace;font-size: 1.0rem;"></textarea></div>
+									<div class="col-10"><textarea id="payload" class="form-control" rows="5" style="font-family: 'Courier New', Courier, monospace;font-size: 0.8rem;"></textarea></div>
 								</div>
 								<div class="row" style="margin-top: 5px;">
 									<div class="col-2 form-row-label">Result:</div>
-									<div id="testRestCallResult" class="col-10" style="font-family: Courier;font-size: 0.9rem;color: #6872a8;height: 300px;max-height: 300px;overflow: auto;"></div>
+									<div id="testRestCallResultArea" class="col-10" style="height: 300px;max-height: 300px;overflow: auto;">
+									  <div id="testRestCallResult" style="font-family: Courier;font-size: 0.8rem;color: #00ff00;background-color: #000000;border-radius: .375rem;"></div>
+									</div>
 								</div>
 							</div>
 						</div>

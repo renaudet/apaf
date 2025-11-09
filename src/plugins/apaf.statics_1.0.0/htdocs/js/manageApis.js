@@ -612,12 +612,12 @@ downloadResource = function(){
 initializeApiCallResultArea = function(){
 	console.log('initializeApiCallResultArea()');
 	let height = $('#workArea').height()-500;
-	$('#testRestCallResult').height(height);
-	$('#testRestCallResult').css('max-height',height+'px');
+	$('#testRestCallResultArea').height(height);
+	$('#testRestCallResultArea').css('max-height',height+'px');
 	$(window).on('resize',function(){
 		height = $('#workArea').height()-500;
-		$('#testRestCallResult').height(height);
-		$('#testRestCallResult').css('max-height',height+'px');
+		$('#testRestCallResultArea').height(height);
+		$('#testRestCallResultArea').css('max-height',height+'px');
 	});
 }
 

@@ -213,14 +213,14 @@ compareData = function(prec,next){
 				   field.type=='switch' ||
 				   field.type=='check'){
 					if(prec[field.name]!=next[field.name]){
-						comp[field.name] = apaf.localize('@apaf.page.audit.dialog.compare.report.detail2',['<i>'+next[field.name]+'</i>']);
+						comp[field.label] = apaf.localize('@apaf.page.audit.dialog.compare.report.detail2',['<i>'+next[field.name]+'</i>']);
 					}
 				}
 				if(field.type=='textarea'){
 					if(prec[field.name]!=next[field.name] && next[field.name].length<128){
-						comp[field.name] = apaf.localize('@apaf.page.audit.dialog.compare.report.detail2',['<i>'+next[field.name]+'</i>']);
+						comp[field.label] = apaf.localize('@apaf.page.audit.dialog.compare.report.detail2',['<i>'+next[field.name]+'</i>']);
 					}else{
-						comp[field.name] = apaf.localize('@apaf.page.audit.dialog.compare.report.detail4');
+						comp[field.label] = apaf.localize('@apaf.page.audit.dialog.compare.report.detail4');
 					}
 				}
 				if(field.type=='array' && prec[field.name].length!=next[field.name].length){
