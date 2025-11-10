@@ -47,17 +47,13 @@ plugin.invokeDynamicApiHandler = function(req,res){
 			plugin.debug('<-invokeDynamicApiHandler() - error check access');
 			res.json({"status": 500,"message": err,"data": []});
 		}else{
-			let alias = req.params.alias;
-			let payload = req.body;
-			if(typeof payload=='undefined' || payload==null || Object.keys(payload).length==0){
-				payload = req.query;
-			}
+			let alias = req.params.alias[0];
 			plugin.lookupServletByAlias(alias,function(err,servlet){
 				if(err){
 					plugin.debug('<-invokeDynamicApiHandler() - error check servlet');
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
-					plugin.invokeServlet(servlet,payload,user,function(err,result){
+					plugin.invokeServlet(servlet,req,user,function(err,result){
 						if(err){
 							plugin.debug('<-invokeDynamicApiHandler() - error servlet invocation');
 							res.json({"status": 500,"message": err,"data": []});
@@ -72,7 +68,7 @@ plugin.invokeDynamicApiHandler = function(req,res){
 	});
 }
 
-plugin.invokeServlet = function(fragment,payload,user,then){
+plugin.invokeServlet = function(fragment,request,user,then){	
 	this.debug('->invokeServlet()');
 	try{
 		this.debug('evaluating servlet "'+fragment.alias+'" (v'+fragment.version+') for user "'+user.login+'"');
@@ -80,7 +76,11 @@ plugin.invokeServlet = function(fragment,payload,user,then){
 		xeval(moduleSrc);
 		initializeServlet();
 		if(typeof servlet.endpoint!='undefined'){
-			let context = {"user": user,"runtime": plugin.runtime,"require": require};
+			let payload = request.body;
+			if(typeof payload=='undefined' || payload==null || Object.keys(payload).length==0){
+				payload = request.query;
+			}
+			let context = {"user": user,"runtime": plugin.runtime,"require": require,"httpRequest": request};
 			servlet.endpoint(payload,context,then);
 			this.debug('<-invokeServlet() - success');
 		}else{

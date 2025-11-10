@@ -2,12 +2,19 @@
  * ctx: {
  	"user": <connected user>,
  	"runtime": <npa runtime>,
- 	"require": <require function>
+ 	"require": <Node.js 'require' function>,
+ 	"httpRequest": <original Express request>
    }
    then: function(err,result)
  */
 myFunction = function(params,ctx,then){
-	then(null,'some result');
+	let paths = ctx.httpRequest.params.alias;
+	//let servletAlias = paths[0];
+	let version = '1.0';
+	if(paths.length>1){
+		version = paths[1];
+	}
+	then(null,{"status": "ok","version": version});
 }
 
 servlet.endpoint = myFunction;
