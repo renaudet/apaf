@@ -16,15 +16,27 @@
   	},
   	{
   		"point": "npa.ui.locale.provider",
-  		"id": "apaf.branding.locale.provider.fr",
+  		"id": "apaf.branding.locale.provider.frFR",
   		"path": "i18n/apaf_fr-FR.locale",
   		"locale": "fr-FR"
   	},
   	{
   		"point": "npa.ui.locale.provider",
-  		"id": "apaf.branding.locale.provider.us",
+  		"id": "apaf.branding.locale.provider.enUS",
   		"path": "i18n/apaf_en-US.locale",
   		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.branding.locale.provider.fr",
+  		"path": "i18n/apaf_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.branding.locale.provider.en",
+  		"path": "i18n/apaf_en-US.locale",
+  		"locale": "en"
   	}
   ],
   "provides": [

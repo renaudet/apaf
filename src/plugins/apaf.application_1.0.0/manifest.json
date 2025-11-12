@@ -35,9 +35,15 @@
   	},
   	{
   		"point": "npa.ui.locale.provider",
-  		"id": "apaf.application.locale.provider.en",
+  		"id": "apaf.application.locale.provider.enUS",
   		"path": "i18n/apaf_en-US.locale",
   		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.locale.provider.en",
+  		"path": "i18n/apaf_en-US.locale",
+  		"locale": "en"
   	},
   	{
   		"point": "npa.ui.locale.provider",
@@ -50,12 +56,6 @@
   		"id": "apaf.application.locale.provider.fr",
   		"path": "i18n/apaf_fr-FR.locale",
   		"locale": "fr"
-  	},
-  	{
-  		"point": "npa.ui.locale.provider",
-  		"id": "apaf.application.locale.provider.FR",
-  		"path": "i18n/apaf_fr-FR.locale",
-  		"locale": "FR"
   	}
   ],
   "provides": [
