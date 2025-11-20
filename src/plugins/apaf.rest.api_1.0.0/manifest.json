@@ -12,7 +12,7 @@
   "extends": [
   	{
   		"point": "npa.log.provider",
-  		"id": "npa.rest.logger",
+  		"id": "apaf.rest.api.logger",
   		"dir": "apaf.rest.api"
   	},
   	{

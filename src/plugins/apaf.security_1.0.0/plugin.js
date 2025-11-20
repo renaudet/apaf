@@ -10,14 +10,24 @@ const GROUP_DATATYPE = 'group';
 const SECURITY_ROLE_DATATYPE = 'role';
 const SECURITY_TOKEN_URI_PARAM_NAME = 'token';
 const CRYPTOGRAPHY_SERVICE_NAME = 'cryptography';
+const USER_SESSION_DATA_NAMESPACE = '_user_data';
+const TELEMETRY_SERVICE_NAME = 'telemetry';
+const SECURE_API_CALL_DIMENSION = 'secure.api.call';
+const TELEMETRY_COLLECT_TIMEOUT = 30;
 
 
 var plugin = new ApafPlugin();
+plugin.invocationCount = 0;
+
+plugin.onConfigurationLoaded = function(){
+	setTimeout(function(){ plugin.collectTelemetry(); },10*1000);
+}
 
 plugin.checkUserAccess = function(req,requiredRole,then){
 	this.trace('->checkUserAccess('+requiredRole+')');
 	let session = req.session;
 	if(typeof session!='undefined' && session!=null){
+		this.invocationCount++;
 		let user = session.user;
 		if(typeof user!=undefined && user!=null && session.alive){
 			session.lastAccess = moment();
@@ -43,6 +53,7 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 							req.session.lastAccess = now;
 							req.session.created = now;
 							req.session.alive = true;
+							req.session[USER_SESSION_DATA_NAMESPACE] = {"_created": now};
 							plugin.trace('<-checkUserAccess(ok)');
 							then(null,user);
 						}else{
@@ -185,6 +196,15 @@ plugin.loadUserRoles = function(user,then){
 		plugin.trace(JSON.stringify(roles,null,'\t'));
 		then(user);
 	})
+}
+
+plugin.collectTelemetry = function(){
+	this.trace('->collectTelemetry()');
+	let telemetryService = this.getService(TELEMETRY_SERVICE_NAME);
+	let telemetryData = {"timestamp": moment().format('YYYY/MM/DD HH:mm:ss'),"count": this.invocationCount};
+	telemetryService.push(SECURE_API_CALL_DIMENSION,telemetryData);
+	plugin.trace('<-collectTelemetry()');
+	setTimeout(function(){ plugin.collectTelemetry(); },TELEMETRY_COLLECT_TIMEOUT*1000);
 }
 
 module.exports = plugin;

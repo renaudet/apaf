@@ -10,8 +10,37 @@ const USER_DATATYPE_DATATYPE = 'datatype';
 const AUDIT_SERVICE_NAME = 'audit';
 const moment = require('moment');
 const TIMESTAMP_FORMAT = 'YYYY/MM/DD HH:mm:ss';
+const TELEMETRY_SERVICE_NAME = 'telemetry';
+const USER_DATATYPE_CREATE_DIMENSION = 'create.user.datatype.count';
+const USER_DATATYPE_QUERY_DIMENSION = 'read.user.datatype.count';
+const USER_DATATYPE_UPDATE_DIMENSION = 'update.user.datatype.count';
+const USER_DATATYPE_DELETE_DIMENSION = 'delete.user.datatype.count';
+const TELEMETRY_COLLECT_TIMEOUT = 30;
 
 var plugin = new ApafPlugin();
+plugin.createCount = 0;
+plugin.queryCount = 0;
+plugin.updateCount = 0;
+plugin.deleteCount = 0;
+
+plugin.onConfigurationLoaded = function(){
+	setTimeout(function(){ plugin.collectTelemetry(); },10*1000);
+}
+
+plugin.collectTelemetry = function(){
+	this.trace('->collectTelemetry()');
+	let telemetryService = this.getService(TELEMETRY_SERVICE_NAME);
+	let telemetryData = {"timestamp": moment().format('YYYY/MM/DD HH:mm:ss'),"count": this.createCount};
+	telemetryService.push(USER_DATATYPE_CREATE_DIMENSION,telemetryData);
+	telemetryData = {"timestamp": moment().format('YYYY/MM/DD HH:mm:ss'),"count": this.queryCount};
+	telemetryService.push(USER_DATATYPE_QUERY_DIMENSION,telemetryData);
+	telemetryData = {"timestamp": moment().format('YYYY/MM/DD HH:mm:ss'),"count": this.updateCount};
+	telemetryService.push(USER_DATATYPE_UPDATE_DIMENSION,telemetryData);
+	telemetryData = {"timestamp": moment().format('YYYY/MM/DD HH:mm:ss'),"count": this.deleteCount};
+	telemetryService.push(USER_DATATYPE_DELETE_DIMENSION,telemetryData);
+	plugin.trace('<-collectTelemetry()');
+	setTimeout(function(){ plugin.collectTelemetry(); },TELEMETRY_COLLECT_TIMEOUT*1000);
+}
 
 plugin.queryDatatypeHandler = function(req,res){
 	plugin.debug('->queryDatatypeHandler()');
@@ -206,6 +235,7 @@ plugin.queryUserDataHandler = function(req,res){
 									plugin.debug('<-queryUserDataHandler() - error database');
 									res.json({"status": 500,"message": err,"data": []});
 								}else{
+									plugin.queryCount++;
 									let result = [];
 									if(datatypeRecord.private && !user.isAdmin){
 										for(var i=0;i<data.length;i++){
@@ -269,6 +299,7 @@ plugin.createUserDataHandler = function(req,res){
 									plugin.debug('<-createUserDataHandler() - error');
 									res.json({"status": 500,"message": err,"data": []});
 								}else{
+									plugin.createCount++;
 									if(datatypeRecord.auditEnabled){
 										try{
 											auditService.createAuditRecord(datatypeRecord,data.id,user.login,'created',data);
@@ -319,6 +350,7 @@ plugin.updateUserDataHandler = function(req,res){
 									plugin.debug('<-updateUserDataHandler() - error');
 									res.json({"status": 500,"message": err,"data": []});
 								}else{
+									plugin.updateCount++;
 									if(datatypeRecord.auditEnabled){
 										try{
 											auditService.createAuditRecord(datatypeRecord,req.body.id,user.login,'updated',req.body);
@@ -370,6 +402,7 @@ plugin.deleteUserDataHandler = function(req,res){
 									plugin.debug('<-deleteUserDataHandler() - error');
 									res.json({"status": 500,"message": err,"data": []});
 								}else{
+									plugin.deleteCount++;
 									if(datatypeRecord.auditEnabled){
 										try{
 											auditService.createAuditRecord(datatypeRecord,id,user.login,'deleted');

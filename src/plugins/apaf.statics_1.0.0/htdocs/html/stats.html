@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="All-Purpose-Application-Framework Manage APIs Page">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link rel="icon" type="image/png" href="/apaf-branding/img/apaf-logo.png?version=1.0"/>
+		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/resources/css/apaf.css" rel="stylesheet">
+		<title>All Purpose Application Framework</title>
+	</head>
+	<body>
+		<div id="navBar" class="npaUi" data-ref="menu"></div>
+		<div id="card" class="npaUi" data-config="/resources/json/manageStatsCardConfig.json">
+			<div id="verticalMenu" class="npaUi" data-config="/resources/json/statsMenuConfig.json">
+				<div data-menu-ref="sessions">
+					<div id="sessionToolbar" class="npaUi" data-config="/resources/json/sessionToolbarConfig.json"></div>
+					<div id="sessionTable" class="npaUi" data-config="/resources/json/sessionTableConfig.json"></div>
+				</div>
+				<div data-menu-ref="graphs">
+					<div id="graphicArea" style="height: 800px;overflow: auto;padding: 5px;">
+						<div class="accordion" id="graphicsAccordion">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="notifier" class="npaUi" data-ref="notifier"></div>
+		<script src="/js/jquery-3.6.3.min.js"></script>
+		<script src="/js/bootstrap.bundle.min.js"></script>
+		<script src="/js/graphicUtils.js"></script>
+		<script src="/uiTools/js/npaUiCore.js"></script>
+		<script src="/resources/js/utils/apafUtils.js"></script>
+		<script src="/resources/js/utils/basicFlowChart.js"></script>
+		<script src="/resources/js/manageStats.js"></script>
+	</body>
+</html>

@@ -7,6 +7,7 @@
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.telemetry","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"}
   ],
@@ -73,6 +74,16 @@
   			"name": "coreServices",
   			"description": "Grant permission to use APAF Core services"
   		}
+  	},
+  	{
+  		"point": "npa.telemetry.dimension.provider",
+  		"id": "apaf.dyn.api.stat.provider",
+		"name": "servlet.invocation",
+		"displayLabel": "Servlet invocations",
+		"description": "Total number of Servlet invocations",
+		"type": "int",
+		"unit": "",
+		"maxPoints": 60
   	}
   ],
   "provides": [

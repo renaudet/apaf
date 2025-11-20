@@ -8,11 +8,13 @@ const md5 = require('md5');
 const moment = require('moment');
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const SECURITY_SERVICE_NAME = 'apaf-security';
+const HTTP_SERVICE_NAME = 'http';
 const USER_DATATYPE = 'user';
 const GROUP_DATATYPE = 'group';
 const ROLE_DATATYPE = 'role';
 const TIMESTAMP_FORMAT = 'YYYY/MM/DD HH:mm:ss';
 const DEFAULT_LOGIN_PAGE = '/resources/html/login.html';
+const USER_SESSION_DATA_NAMESPACE = '_user_data';
 
 var plugin = new ApafPlugin();
 plugin.userPrefs = {};
@@ -568,6 +570,64 @@ plugin.getProfilePageContributionsHandler = function(req,res){
 		}else{
 			plugin.debug('<-getProfilePageContributionsHandler() - success');
 			res.json({"status": 200,"message": "ok","data": plugin.profilePageContributors });
+		}
+	});
+}
+
+plugin.getStatsHandler = function(req,res){
+	plugin.debug('->getStatsHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.admin.stats.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-getStatsHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			plugin.debug('<-getStatsHandler() - success');
+			let stats = {};
+			stats.timestamp = moment().format(TIMESTAMP_FORMAT);
+			stats.connectedUser = user.login;
+			let httpService = plugin.getService(HTTP_SERVICE_NAME);
+			if(httpService.sessionStore!=null){
+				httpService.sessionStore.all(function(err,sessions){
+					stats.sessions = [];
+					var sessionIdTable = [];
+					for(var sessionId in sessions){
+						sessionIdTable.push(sessionId);
+					}
+					stats.sessionCount = sessionIdTable.length;
+					var checkSessionsById = function(sessionIdLst,index,then){
+						if(index<sessionIdLst.length){
+							var sessionId = sessionIdLst[index];
+							httpService.sessionStore.get(sessionId,function(err,sessObj){
+								if(typeof sessObj!='undefined' && sessObj!=null && sessObj.alive){
+									let created = moment(sessObj.created,'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD HH:mm:ss');
+									let lastAccess = moment(sessObj.lastAccess,'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD HH:mm:ss');
+									let lastRequestUri = 'n/a';
+									if(sessObj.lastRequestUri){
+										lastRequestUri = sessObj.lastRequestUri;
+									}
+									let record = {"sessionid": sessionId,"user": sessObj.user.login,"created": created,"lastAccessed": lastAccess,"lastRequestUri": lastRequestUri};
+									if(sessObj['_user_data']){
+										record.data = sessObj[USER_SESSION_DATA_NAMESPACE];
+									}else{
+										record.data = {};
+									}
+									stats.sessions.push(record);
+								}
+								checkSessionsById(sessionIdLst,index+1,then);
+							});
+						}else{
+							then();
+						}
+					}
+					checkSessionsById(sessionIdTable,0,function(){
+						res.json({"status": 200,"message": "ok","data": stats });
+					});
+				});
+			}else{
+				res.json({"status": 200,"message": "ok","data": stats });
+			}
 		}
 	});
 }

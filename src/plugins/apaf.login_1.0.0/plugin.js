@@ -11,6 +11,7 @@ const SECURITY_SERVICE_NAME = 'apaf-security';
 const USER_DATATYPE = 'user';
 const CACHE_EVICTION_LOOP_TIMEOUT = 60*1000;
 const LISTEN_TO_STATE = 'apaf.datatype.ready';
+const USER_SESSION_DATA_NAMESPACE = '_user_data';
 
 var plugin = new ApafPlugin();
 plugin.available = false;
@@ -177,6 +178,7 @@ plugin.loginHandler = function(req,res){
 									req.session.lastAccess = now;
 									req.session.created = now;
 									req.session.alive = true;
+									req.session[USER_SESSION_DATA_NAMESPACE] = {"_created": now};
 									res.json({"status": 200,"message": "ok","data": user.roles});
 								});
 							}else{

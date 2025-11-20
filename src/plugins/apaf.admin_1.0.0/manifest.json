@@ -502,6 +502,30 @@
   		"securityRole": "",
 		"description": "Get the list of registered extensions for the Profile page",
 		"input": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.admin.stats.handler",
+  		"router": "apaf.admin.router",
+  		"method": "GET",
+  		"schema": "/stats",
+  		"handler": "getStatsHandler",
+  		"securityRole": "administrator",
+		"description": "Get the current stats object for this server",
+		"input": ""
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.admin.menu.stats",
+  		"menu": "administration",
+  		"securityRole": "administrator",
+  		"item": {
+			"id": "showStats",
+    		"label": "@apaf.menu.admin.stats.label",
+    		"actionId": "redirect",
+    		"uri": "/resources/html/stats.html",
+    		"icon": "/resources/img/apaf-stats.png"
+		}
   	}
   ],
   "provides": [

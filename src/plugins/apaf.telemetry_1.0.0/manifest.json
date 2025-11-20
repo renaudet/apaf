@@ -1,0 +1,58 @@
+{
+  "id": "apaf.telemetry",
+  "name": "Telemetry API provider for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.telemetry","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.telemetry.logger",
+  		"dir": "apaf.telemetry"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.telemetry.router",
+  		"path": "/apaf-telemetry"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.telemetry.list.handler",
+  		"router": "apaf.telemetry.router",
+  		"method": "GET",
+  		"schema": "/list",
+  		"handler": "getDimensionListHandler",
+  		"securityRole": "telemetryConsumer",
+		"description": "Get the list of knwon telemetry dimensions",
+		"input": {}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.telemetry.collect.handler",
+  		"router": "apaf.telemetry.router",
+  		"method": "GET",
+  		"schema": "/dimension/:dimensionName",
+  		"handler": "collectDimensionHandler",
+  		"securityRole": "telemetryConsumer",
+		"description": "Collect telemetry data for a given dimension",
+		"input": {}
+  	},
+  	{
+  		"point": "apaf.datatype.object.initializer",
+  		"id": "apaf.telemetry.role.initializer.telemetryConsumer",
+  		"datatype": "role",
+  		"data": {
+  			"name": "telemetryConsumer",
+  			"description": "Grant permission to collect Telemetry data"
+  		}
+  	}
+  ],
+  "provides": [
+  ]
+}

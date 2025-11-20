@@ -7,6 +7,7 @@
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.telemetry","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.dev","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
@@ -210,6 +211,46 @@
   		"name": "DatatypeForm",
   		"version": "1.0.0",
   		"dependency": "/datatype/js/components/datatypeForm.js"
+  	},
+  	{
+  		"point": "npa.telemetry.dimension.provider",
+  		"id": "apaf.user.datatype.create.telemetry.provider",
+		"name": "create.user.datatype.count",
+		"displayLabel": "User Datatype Creation",
+		"description": "Total number of user datatype record creation",
+		"type": "int",
+		"unit": "",
+		"maxPoints": 60
+  	},
+  	{
+  		"point": "npa.telemetry.dimension.provider",
+  		"id": "apaf.user.datatype.read.telemetry.provider",
+		"name": "read.user.datatype.count",
+		"displayLabel": "User Datatype Query",
+		"description": "Total number of user datatype record query executed",
+		"type": "int",
+		"unit": "",
+		"maxPoints": 60
+  	},
+  	{
+  		"point": "npa.telemetry.dimension.provider",
+  		"id": "apaf.user.datatype.update.telemetry.provider",
+		"name": "update.user.datatype.count",
+		"displayLabel": "User Datatype Update",
+		"description": "Total number of user datatype record updated",
+		"type": "int",
+		"unit": "",
+		"maxPoints": 60
+  	},
+  	{
+  		"point": "npa.telemetry.dimension.provider",
+  		"id": "apaf.user.datatype.delete.telemetry.provider",
+		"name": "delete.user.datatype.count",
+		"displayLabel": "User Datatype Deletion",
+		"description": "Total number of user datatype record deleted",
+		"type": "int",
+		"unit": "",
+		"maxPoints": 60
   	}
   ],
   "provides": [

@@ -7,6 +7,7 @@
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.telemetry","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"}
   ],
   "extends": [
@@ -19,6 +20,16 @@
   		"point": "npa.core.service",
   		"id": "npa.security.service",
   		"service": "apaf-security"
+  	},
+  	{
+  		"point": "npa.telemetry.dimension.provider",
+  		"id": "apaf.security.telemetry.provider",
+		"name": "secure.api.call",
+		"displayLabel": "Secured API Calls",
+		"description": "Total number of secured API call",
+		"type": "int",
+		"unit": "",
+		"maxPoints": 60
   	}
   ],
   "provides": [

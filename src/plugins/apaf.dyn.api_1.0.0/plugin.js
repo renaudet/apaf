@@ -4,13 +4,22 @@
  */
  
 const ApafPlugin = require('../../apafUtil.js');
+const moment = require('moment');
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const FRAGMENT_DATATYPE = 'fragment';
 const REQUIRED_ROLE = 'coreServices';
+const TELEMETRY_SERVICE_NAME = 'telemetry';
+const SERVLET_INVOCATION_DIMENSION = 'servlet.invocation';
+const TELEMETRY_COLLECT_TIMEOUT = 30;
 
 var plugin = new ApafPlugin();
+plugin.totalInvocationCount = 0;
 var xeval = eval;
+
+plugin.onConfigurationLoaded = function(){
+	setTimeout(function(){ plugin.collectTelemetry(); },TELEMETRY_COLLECT_TIMEOUT*1000);
+}
 
 plugin.lookupServletByAlias = function(alias,then){
 	this.debug('->lookupServletByAlias()');
@@ -81,6 +90,7 @@ plugin.invokeServlet = function(fragment,request,user,then){
 				payload = request.query;
 			}
 			let context = {"user": user,"runtime": plugin.runtime,"require": require,"httpRequest": request};
+			this.totalInvocationCount++;
 			servlet.endpoint(payload,context,then);
 			this.debug('<-invokeServlet() - success');
 		}else{
@@ -92,6 +102,15 @@ plugin.invokeServlet = function(fragment,request,user,then){
 		this.debug('<-invokeServlet() - error evaluation');
 		then('Error executing servlet "'+fragment.alias+'" - exception evaluating the code',null);
 	}
+}
+
+plugin.collectTelemetry = function(){
+	this.trace('->collectTelemetry()');
+	let telemetryService = this.getService(TELEMETRY_SERVICE_NAME);
+	let telemetryData = {"timestamp": moment().format('YYYY/MM/DD HH:mm:ss'),"count": this.totalInvocationCount};
+	telemetryService.push(SERVLET_INVOCATION_DIMENSION,telemetryData);
+	this.trace('<-collectTelemetry()');
+	setTimeout(function(){ plugin.collectTelemetry(); },TELEMETRY_COLLECT_TIMEOUT*1000);
 }
 
 module.exports = plugin;
