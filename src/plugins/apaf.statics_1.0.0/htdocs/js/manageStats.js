@@ -136,7 +136,7 @@ createGraphic = function(counter){
 	prop.title = counter.description;
 	prop.titleBackground = '#9dadfc';
 	prop.gridSize = 5;
-	charts[counter.name] = new GenericFlowChart(parentDivId,$('#graphicsAccordion').width()-30,500,prop);
+	charts[counter.name] = new GenericFlowChart(parentDivId,$('#graphicsAccordion').width()-50,450,prop);
 }
 
 updateChart = function(counter,data){

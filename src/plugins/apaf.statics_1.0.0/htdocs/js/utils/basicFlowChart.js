@@ -49,7 +49,7 @@ class GenericFlowChart {
     this.gc.background = this.config.backgroundColor;
     this.eventListener = this;
     this.gc.detectValueArea = function(x,y){
-      if(this.chart.bounds.length>0){
+	  if(this.chart.bounds.length>0){
         this.chart.selectedDataIndex=-1;
         for(var i=0;i<this.chart.bounds.length && this.chart.selectedDataIndex==-1;i++){
           let valueArea = this.chart.bounds[i];
@@ -67,7 +67,6 @@ class GenericFlowChart {
     }
     this.gc.onMouseDown = function(mouseEvent){
       mouseEvent.target = this.chart;
-      //this.detectValueArea(mouseEvent.location.x,mouseEvent.location.y);
       this.chart.eventListener.onEvent(mouseEvent);
     }
     this.gc.onMouseUp = function(mouseEvent){
@@ -75,7 +74,7 @@ class GenericFlowChart {
       this.chart.eventListener.onEvent(mouseEvent);
     }
     this.gc.onMouseMove = function(mouseEvent){
-      mouseEvent.target = this.chart;
+	  mouseEvent.target = this.chart;
       this.detectValueArea(mouseEvent.location.x,mouseEvent.location.y);
       this.chart.eventListener.onEvent(mouseEvent);
     }
@@ -87,42 +86,64 @@ class GenericFlowChart {
       keyEvent.target = this.chart;
       this.chart.eventListener.onEvent(keyEvent);
     }
-    this.gc.computeScales = function(){
-      let scales = {};
-      scales.maxValue = Number.MIN_VALUE;
-      scales.minValue = Number.MAX_VALUE;
+    this.gc.extractFlowContext = function(){
+      let flowCtx = {};
+      flowCtx.maxValue = Number.MIN_VALUE;
+      flowCtx.minValue = Number.MAX_VALUE;
+      flowCtx.minYValue = 0;
       for(var i=0;i<this.chart.data.length;i++){
         let value = this.chart.data[i];
-        if(value<scales.minValue){
-          scales.minValue = value;
+        if(value<flowCtx.minValue){
+          flowCtx.minValue = value;
         }
-        if(value>scales.maxValue){
-          scales.maxValue = value;
+        if(value>flowCtx.maxValue){
+          flowCtx.maxValue = value;
         }
       }
-      if(scales.maxValue!=0 && this.chart.data.length>1){
-      	scales.scaleY = (this.height-2*this.chart.config.borderWidth)/(scales.maxValue/0.9);
-        scales.scaleX = (this.width-2*this.chart.config.borderWidth)/(this.chart.data.length-1);
+      if(flowCtx.maxValue!=0 && this.chart.data.length>1){
+		flowCtx.yAxisLeftSpace = (''+flowCtx.maxValue).length*10;
+		flowCtx.deltaValue = flowCtx.maxValue;
+		if(flowCtx.minValue<0){
+			flowCtx.minYValue = Math.floor(flowCtx.minValue*1.1);
+		}else{
+			flowCtx.minYValue = 0;
+			if(flowCtx.minValue>100){
+				flowCtx.minYValue = Math.floor(flowCtx.minValue-(flowCtx.maxValue - flowCtx.minValue)*0.1);
+			}
+		}
+		flowCtx.deltaValue = flowCtx.maxValue - flowCtx.minYValue;
+		this.chart.config.gridSize = flowCtx.deltaValue>10?Math.floor(flowCtx.deltaValue/10):1;
+      	flowCtx.scaleY = (this.height-2*this.chart.config.borderWidth)/(flowCtx.deltaValue/0.85);
+        flowCtx.scaleX = (this.width-2*this.chart.config.borderWidth-flowCtx.yAxisLeftSpace)/(this.chart.data.length-1);
       }
-      return scales;
+      return flowCtx;
     }
-    this.gc.drawAxis = function(gc,scales){
+    this.gc.drawAxis = function(gc,flowCtx){
       gc.strokeStyle = this.chart.config.axisColor;
       gc.lineWidth = this.chart.config.axisWidth;
       gc.beginPath();
-      gc.moveTo(this.chart.config.borderWidth,this.chart.config.borderWidth);
-      gc.lineTo(this.chart.config.borderWidth,this.height-this.chart.config.borderWidth);
-      gc.lineTo(this.width-this.chart.config.borderWidth,this.height-this.chart.config.borderWidth);
+      gc.moveTo(this.chart.config.borderWidth+flowCtx.yAxisLeftSpace,this.chart.config.borderWidth);
+      gc.lineTo(this.chart.config.borderWidth+flowCtx.yAxisLeftSpace,this.height-this.chart.config.borderWidth);
+      if(flowCtx.minYValue>=0){
+      	gc.lineTo(this.width-this.chart.config.borderWidth,this.height-this.chart.config.borderWidth);
+      }
       gc.stroke();
+      if(flowCtx.minYValue<0){
+		let y = this.height-this.chart.config.borderWidth+flowCtx.minYValue*flowCtx.scaleY;
+	    gc.beginPath();
+	    gc.moveTo(this.chart.config.borderWidth+flowCtx.yAxisLeftSpace,y);
+		gc.lineTo(this.width-this.chart.config.borderWidth,y);
+		gc.stroke();
+	  }
     }
-    this.gc.drawData = function(gc,scales){
+    this.gc.drawData = function(gc,flowCtx){
       this.chart.bounds = [];
       if(this.chart.data.length>1){
         gc.strokeStyle = this.chart.config.lineColor;
         gc.lineWidth = this.chart.config.lineWidth;
-        let x0 = this.chart.config.borderWidth;
-        let y0 = this.height-this.chart.config.borderWidth-this.chart.data[0]*scales.scaleY;
-        let scaleX2 = scales.scaleX/2;
+        let x0 = this.chart.config.borderWidth+flowCtx.yAxisLeftSpace;
+        let y0 = this.height-this.chart.config.borderWidth-(this.chart.data[0]-flowCtx.minYValue)*flowCtx.scaleY;
+        let scaleX2 = flowCtx.scaleX/2;
         this.chart.bounds.push({"value": this.chart.data[0],
                                 "x0": (x0-scaleX2),
                                 "y0": (y0-scaleX2),
@@ -133,8 +154,8 @@ class GenericFlowChart {
         gc.beginPath();
         gc.moveTo(x0,y0);
         for(var i=1;i<this.chart.data.length;i++){
-          x0 += scales.scaleX;
-          y0 = this.height-this.chart.config.borderWidth-this.chart.data[i]*scales.scaleY;
+          x0 += flowCtx.scaleX;
+          y0 = this.height-this.chart.config.borderWidth-(this.chart.data[i]-flowCtx.minYValue)*flowCtx.scaleY;
           this.chart.bounds.push({"value": this.chart.data[i],
                                   "x0": (x0-scaleX2),
                                   "y0": (y0-scaleX2),
@@ -145,8 +166,8 @@ class GenericFlowChart {
           gc.lineTo(x0,y0);
         }
         gc.lineTo(x0,this.height-this.chart.config.borderWidth);
-        gc.lineTo(this.chart.config.borderWidth,this.height-this.chart.config.borderWidth);
-        gc.lineTo(this.chart.config.borderWidth,this.height-this.chart.config.borderWidth-this.chart.data[0]*scales.scaleY);
+        gc.lineTo(this.chart.config.borderWidth+flowCtx.yAxisLeftSpace,this.height-this.chart.config.borderWidth);
+        gc.lineTo(this.chart.config.borderWidth+flowCtx.yAxisLeftSpace,this.height-this.chart.config.borderWidth-this.chart.data[0]*flowCtx.scaleY);
         gc.stroke();
         const lingrad = gc.createLinearGradient(this.width/2, 0, this.width/2, this.height);
         lingrad.addColorStop(0, this.chart.config.lineColor);
@@ -171,10 +192,10 @@ class GenericFlowChart {
       gc.font = this.chart.config.textWidth+'px sans-serif';
       gc.textBaseline = 'top';
       let labelWidth = gc.measureText(text).width;
-      let deltaY = 10;
-      if(this.height-this.chart.config.borderWidth-valueArea.y<this.chart.config.textWidth+10){
-        deltaY = -10-this.chart.config.textWidth;
-      }
+      //let deltaY = 10;
+      //if(this.height-this.chart.config.borderWidth-valueArea.y<this.chart.config.textWidth+10){
+      let deltaY = -10-this.chart.config.textWidth;
+      //}
       gc.fillText(text, valueArea.x-(labelWidth/2),valueArea.y+deltaY);
     }
     this.gc.drawTitle = function(gc){
@@ -190,31 +211,37 @@ class GenericFlowChart {
         gc.fillText(this.chart.config.title, x0-titleWidth/2,y0);
       }
     }
-    this.gc.drawGrid = function(gc,scales){
+    this.gc.drawGrid = function(gc,flowCtx){
       if(this.chart.config.showGrid){
+	    gc.fillStyle =  this.chart.config.textColor;
+        gc.font = this.chart.config.textWidth+'px sans-serif';
+        gc.textBaseline = 'top';
         gc.lineWidth = this.chart.config.gridWidth;
         gc.strokeStyle = this.chart.config.gridColor;
         let y = this.height-this.chart.config.borderWidth;
+        let gridValue = flowCtx.minYValue;
         while(y>this.chart.config.borderWidth){
           gc.beginPath();
-          gc.moveTo(this.chart.config.borderWidth,y);
+          gc.moveTo(this.chart.config.borderWidth+flowCtx.yAxisLeftSpace-5,y);
           gc.lineTo(this.width-this.chart.config.borderWidth,y);
           gc.stroke();
-          y -= this.chart.config.gridSize*scales.scaleY;
+          gc.fillText(gridValue, this.chart.config.borderWidth,y-(this.chart.config.textWidth/2));
+          y -= this.chart.config.gridSize*flowCtx.scaleY;
+          gridValue += this.chart.config.gridSize;
         }
       }
     }
     this.gc.paint = function(gc){
-      let scales = this.computeScales();
+      let flowCtx = this.extractFlowContext();
       gc.shadowOffsetX = 0;
       gc.shadowOffsetY = 0;
       gc.shadowBlur = 0;
-      this.drawGrid(gc,scales);
-      this.drawData(gc,scales);
+      this.drawGrid(gc,flowCtx);
+      this.drawData(gc,flowCtx);
       if(this.chart.selectedDataIndex>=0){
-        this.showValueArea(gc,scales,this.chart.selectedDataIndex);
+        this.showValueArea(gc,flowCtx,this.chart.selectedDataIndex);
       }
-      this.drawAxis(gc,scales);
+      this.drawAxis(gc,flowCtx);
       this.drawTitle(gc);
     }
     this.gc.init();
