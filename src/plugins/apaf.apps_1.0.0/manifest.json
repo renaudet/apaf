@@ -44,6 +44,16 @@
 		}
   	},
   	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.builtin.apps.menu.placeholder",
+  		"menu": "apps",
+  		"securityRole": "",
+  		"item": {
+			"type": "placeholder",
+			"id": "builtinAppsMenuPlaceholder"
+		}
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.apps.get.applications.menu.handler",
   		"router": "apaf.apps.router",
