@@ -56,7 +56,7 @@ plugin.invokeDynamicApiHandler = function(req,res){
 			plugin.debug('<-invokeDynamicApiHandler() - error check access');
 			res.json({"status": 500,"message": err,"data": []});
 		}else{
-			let alias = req.params.alias[0];
+			let alias = req.params.alias;
 			plugin.lookupServletByAlias(alias,function(err,servlet){
 				if(err){
 					plugin.debug('<-invokeDynamicApiHandler() - error check servlet');
