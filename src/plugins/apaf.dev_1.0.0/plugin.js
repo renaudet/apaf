@@ -50,6 +50,34 @@ plugin.lazzyPlug = function(extenderId,extensionPointConfig){
 	}
 }
 
+plugin.loadFragmentHandler = function(req,res){
+	plugin.debug('->loadFragmentHandler()');
+	//res.set('Content-Type','application/json');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.load.fragment.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-loadFragmentHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let fragmentdId = req.params.id;
+			plugin.debug('request for fragment ID #'+fragmentdId);
+			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+			datatypePlugin.findByPrimaryKey(FRAGMENT_DATATYPE,{"id": fragmentdId},function(err,fragment){
+				if(err){
+					res.set('Content-Type','application/json');
+					plugin.debug('<-loadFragmentHandler() - error');
+					res.json({"status": 500,"message": err,"data": []});
+				}else{
+					res.set('Content-Type', 'text/javascript; charset=utf-8');
+					plugin.debug('<-loadFragmentHandler() - success - fragment name is '+fragment.name);
+					res.send(fragment.source);
+				}
+			});
+		}
+	});
+}
+
 plugin.queryFragmentHandler = function(req,res){
 	plugin.debug('->queryFragmentHandler()');
 	res.set('Content-Type','application/json');

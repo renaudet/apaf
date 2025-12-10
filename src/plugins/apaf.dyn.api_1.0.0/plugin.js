@@ -62,7 +62,7 @@ plugin.invokeDynamicApiHandler = function(req,res){
 					plugin.debug('<-invokeDynamicApiHandler() - error check servlet');
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
-					plugin.invokeServlet(servlet,req,user,function(err,result){
+					plugin.invokeServlet(servlet,req,res,user,function(err,result){
 						if(err){
 							plugin.debug('<-invokeDynamicApiHandler() - error servlet invocation');
 							res.json({"status": 500,"message": err,"data": []});
@@ -77,7 +77,7 @@ plugin.invokeDynamicApiHandler = function(req,res){
 	});
 }
 
-plugin.invokeServlet = function(fragment,request,user,then){	
+plugin.invokeServlet = function(fragment,request,response,user,then){	
 	this.debug('->invokeServlet()');
 	try{
 		this.debug('evaluating servlet "'+fragment.alias+'" (v'+fragment.version+') for user "'+user.login+'"');
@@ -89,7 +89,7 @@ plugin.invokeServlet = function(fragment,request,user,then){
 			if(typeof payload=='undefined' || payload==null || Object.keys(payload).length==0){
 				payload = request.query;
 			}
-			let context = {"user": user,"runtime": plugin.runtime,"require": require,"httpRequest": request};
+			let context = {"user": user,"runtime": plugin.runtime,"require": require,"httpRequest": request,"httpResponse": response};
 			this.totalInvocationCount++;
 			servlet.endpoint(payload,context,then);
 			this.debug('<-invokeServlet() - success');

@@ -32,7 +32,7 @@
     			"required": true,
     			"type": "select",
     			"size": 3,
-    			"values": ["snippet","library","servlet","workflowNode"]
+    			"values": ["snippet","library","servlet","workflowNode","X11"]
     		},
     		{
     			"name": "alias",

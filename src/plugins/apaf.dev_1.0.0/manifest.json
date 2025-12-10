@@ -472,6 +472,17 @@
   		"id": "apaf.dev.docs.1",
   		"description": "APAF Development Guide",
   		"page": "/dev/docs/apafDevGuide.html"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.load.fragment.handler",
+  		"router": "apaf.dev.router",
+  		"method": "GET",
+  		"schema": "/loadFragment/:id",
+  		"handler": "loadFragmentHandler",
+  		"securityRole": "operator",
+		"description": "Load an existing code fragment as a text/javascript content type given its uuid",
+		"input": ""
   	}
   ],
   "provides": [

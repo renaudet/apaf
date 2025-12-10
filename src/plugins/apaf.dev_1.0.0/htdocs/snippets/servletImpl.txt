@@ -3,18 +3,13 @@
  	"user": <connected user>,
  	"runtime": <npa runtime>,
  	"require": <Node.js 'require' function>,
- 	"httpRequest": <original Express request>
+ 	"httpRequest": <original Express request object>,
+ 	"httpResponse": <original Express response object>
    }
    then: function(err,result)
  */
 myFunction = function(params,ctx,then){
-	let paths = ctx.httpRequest.params.alias;
-	//let servletAlias = paths[0];
-	let version = '1.0';
-	if(paths.length>1){
-		version = paths[1];
-	}
-	then(null,{"status": "ok","version": version});
+	then(null,{"status": "ok"});
 }
 
 servlet.endpoint = myFunction;
