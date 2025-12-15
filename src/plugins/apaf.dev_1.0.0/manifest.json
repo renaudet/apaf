@@ -483,6 +483,17 @@
   		"securityRole": "operator",
 		"description": "Load an existing code fragment as a text/javascript content type given its uuid",
 		"input": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.dev.load.fragment.by.name.handler",
+  		"router": "apaf.dev.router",
+  		"method": "GET",
+  		"schema": "/loadFragmentByName",
+  		"handler": "loadFragmentByNameHandler",
+  		"securityRole": "operator",
+		"description": "Load an existing code fragment as a text/javascript content type given its name and version (defaults to latest)",
+		"input": ""
   	}
   ],
   "provides": [

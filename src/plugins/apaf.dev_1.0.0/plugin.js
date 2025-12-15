@@ -52,7 +52,6 @@ plugin.lazzyPlug = function(extenderId,extensionPointConfig){
 
 plugin.loadFragmentHandler = function(req,res){
 	plugin.debug('->loadFragmentHandler()');
-	//res.set('Content-Type','application/json');
 	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.load.fragment.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
@@ -72,6 +71,49 @@ plugin.loadFragmentHandler = function(req,res){
 					res.set('Content-Type', 'text/javascript; charset=utf-8');
 					plugin.debug('<-loadFragmentHandler() - success - fragment name is '+fragment.name);
 					res.send(fragment.source);
+				}
+			});
+		}
+	});
+}
+
+plugin.loadFragmentByNameHandler = function(req,res){
+	plugin.debug('->loadFragmentByNameHandler()');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.dev.load.fragment.by.name.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-loadFragmentByNameHandler() - error');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let fragmentName = req.query.name;
+			let fragmentVersion = req.query.version;
+			let query = null;
+			if(typeof fragmentVersion=='undefined'){
+				query = {"selector": {"name": {"$eq": fragmentName}}};
+				fragmentVersion = ':latest';
+			}else{
+				query = {"selector": {"$and": [{"name": {"$eq": fragmentName}},{"version": {"$eq": fragmentVersion}}]}}
+			}
+			plugin.debug('request for fragment "'+fragmentName+'" v'+fragmentVersion);
+			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+			datatypePlugin.query(FRAGMENT_DATATYPE,query,function(err,fragments){
+				if(err){
+					res.set('Content-Type','application/json');
+					plugin.debug('<-loadFragmentByNameHandler() - error');
+					res.json({"status": 500,"message": err,"data": []});
+				}else{
+					if(fragments.length>0){
+						let list = plugin.sortOn(fragments,'version',false);
+						let fragment = list[0];
+						res.set('Content-Type', 'text/javascript; charset=utf-8');
+						plugin.debug('<-loadFragmentByNameHandler() - success - fragment is #'+fragment.id+' with version v'+fragment.version);
+						res.send(fragment.source);
+					}else{
+						res.set('Content-Type','application/json');
+						plugin.debug('<-loadFragmentByNameHandler() - error');
+						res.json({"status": 404,"message": "Not found"});
+					}
 				}
 			});
 		}
