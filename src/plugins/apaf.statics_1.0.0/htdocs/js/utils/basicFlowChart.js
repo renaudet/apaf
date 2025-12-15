@@ -220,7 +220,8 @@ class GenericFlowChart {
         gc.strokeStyle = this.chart.config.gridColor;
         let y = this.height-this.chart.config.borderWidth;
         let gridValue = flowCtx.minYValue;
-        while(y>this.chart.config.borderWidth){
+        let iterationCount = 0;
+        while(y>this.chart.config.borderWidth && iterationCount<100){
           gc.beginPath();
           gc.moveTo(this.chart.config.borderWidth+flowCtx.yAxisLeftSpace-5,y);
           gc.lineTo(this.width-this.chart.config.borderWidth,y);
@@ -228,7 +229,11 @@ class GenericFlowChart {
           gc.fillText(gridValue, this.chart.config.borderWidth,y-(this.chart.config.textWidth/2));
           y -= this.chart.config.gridSize*flowCtx.scaleY;
           gridValue += this.chart.config.gridSize;
+          iterationCount++;
         }
+        if(iterationCount==100){
+			console.log('infinite loop detected in graph for '+this.chart.config.title);
+		}
       }
     }
     this.gc.paint = function(gc){
