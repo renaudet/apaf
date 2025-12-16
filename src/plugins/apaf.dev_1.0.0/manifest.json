@@ -494,6 +494,13 @@
   		"securityRole": "operator",
 		"description": "Load an existing code fragment as a text/javascript content type given its name and version (defaults to latest)",
 		"input": ""
+  	},
+  	{
+  		"point": "apaf.dev.snippet.provider",
+  		"id": "apaf.dev.snippet.21",
+  		"label": "Contribute an X11 Application",
+  		"location": "/dev/snippets/createX11Application.txt",
+  		"category": "Application"
   	}
   ],
   "provides": [

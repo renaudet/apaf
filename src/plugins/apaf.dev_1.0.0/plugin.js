@@ -57,7 +57,8 @@ plugin.loadFragmentHandler = function(req,res){
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
 			plugin.debug('<-loadFragmentHandler() - error');
-			res.json({"status": 500,"message": err,"data": []});
+			//res.json({"status": 500,"message": err,"data": []});
+			res.send('console.log("/loadFragment API call error - return code is 500");');
 		}else{
 			let fragmentdId = req.params.id;
 			plugin.debug('request for fragment ID #'+fragmentdId);
@@ -66,7 +67,8 @@ plugin.loadFragmentHandler = function(req,res){
 				if(err){
 					res.set('Content-Type','application/json');
 					plugin.debug('<-loadFragmentHandler() - error');
-					res.json({"status": 500,"message": err,"data": []});
+					//res.json({"status": 500,"message": err,"data": []});
+					res.send('console.log("/loadFragment API call error - return code is 501");');
 				}else{
 					res.set('Content-Type', 'text/javascript; charset=utf-8');
 					plugin.debug('<-loadFragmentHandler() - success - fragment name is '+fragment.name);
@@ -84,7 +86,8 @@ plugin.loadFragmentByNameHandler = function(req,res){
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
 			plugin.debug('<-loadFragmentByNameHandler() - error');
-			res.json({"status": 500,"message": err,"data": []});
+			//res.json({"status": 500,"message": err,"data": []});
+			res.send('console.log("/loadFragmentByName API call error - return code is 500");');
 		}else{
 			let fragmentName = req.query.name;
 			let fragmentVersion = req.query.version;
@@ -101,7 +104,8 @@ plugin.loadFragmentByNameHandler = function(req,res){
 				if(err){
 					res.set('Content-Type','application/json');
 					plugin.debug('<-loadFragmentByNameHandler() - error');
-					res.json({"status": 500,"message": err,"data": []});
+					//res.json({"status": 500,"message": err,"data": []});
+					res.send('console.log("/loadFragmentByName API call error - return code is 501");');
 				}else{
 					if(fragments.length>0){
 						let list = plugin.sortOn(fragments,'version',false);
@@ -112,7 +116,8 @@ plugin.loadFragmentByNameHandler = function(req,res){
 					}else{
 						res.set('Content-Type','application/json');
 						plugin.debug('<-loadFragmentByNameHandler() - error');
-						res.json({"status": 404,"message": "Not found"});
+						//res.json({"status": 404,"message": "Not found"});
+						res.send('console.log("/loadFragmentByName API call error - return code is 404");');
 					}
 				}
 			});
