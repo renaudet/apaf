@@ -1,4 +1,4 @@
-# APAF for NPA
+# ![The APAF Project](https://github.com/renaudet/apaf/blob/main/screenshots/readme_logo.png?raw=true)
 
 APAF stands for All Purpose Application Framework. This is a framework for creating 3-tiers applications an easy way using a built-in application builder "from inside the application itself"
 
