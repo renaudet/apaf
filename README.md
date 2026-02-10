@@ -276,7 +276,7 @@ The integrated execution console enables developers to test their workflow from 
 These workflows may then be called from custom APAF applications as reusable business components. It also greatly reduce the time needed to develop complex asynchronous applications when multiple calls to REST providers are expected for example.
 
 An introduction to APAF Workflows on YouTube:
-[![Custom Datatype Browser](https://github.com/renaudet/apaf/blob/main/screenshots/workflowVideo.png)](https://youtu.be/l6dPkFtVAvk )
+[![Custom Datatype Browser](https://github.com/renaudet/apaf/blob/main/screenshots/workflowsOnYoutube.png)](https://youtu.be/l6dPkFtVAvk )
 
 ## Security Token
 
