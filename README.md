@@ -275,6 +275,9 @@ The integrated execution console enables developers to test their workflow from 
  
 These workflows may then be called from custom APAF applications as reusable business components. It also greatly reduce the time needed to develop complex asynchronous applications when multiple calls to REST providers are expected for example.
 
+An introduction to APAF Workflows on YouTube:
+[![Custom Datatype Browser](https://github.com/renaudet/apaf/blob/main/screenshots/workflowVideo.png)](https://youtu.be/l6dPkFtVAvk )
+
 ## Security Token
 
 An APAF fragment may be tagged as a Servlet. In this case, a Servlet `alias` is defined so that the Servlet may be invoked using the relative URI `/apaf-api/servlet/<alias>`. But as a Servlet is a secured resource, the security layer will look for an existing session or a credential in the incomming request (Authorization header with base64 encoded user/password).
