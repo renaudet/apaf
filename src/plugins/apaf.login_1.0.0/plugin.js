@@ -155,6 +155,7 @@ plugin.loginHandler = function(req,res){
 					if(err){
 						plugin.debug('<-loginHandler(500)');
 						let errorMsg = 'unable to retrieve user "'+userId+'"';
+						plugin.error(errorMsg);
 						res.json({"status": 500,"message": "@apaf.page.login.error.internal","data": errorMsg});
 					}else{
 						if(data && data.length==0){
@@ -162,6 +163,7 @@ plugin.loginHandler = function(req,res){
 							userConnectionData.lastAttempt = lastAttempt;
 							userConnectionData.attemptCount++;
 							plugin.debug('<-loginHandler(404)');
+							plugin.error('unauthorized login attempt for user '+userId);
 							setTimeout(function(){ res.json({"status": 404,"message": "@apaf.page.login.error.unauthorized"}); },3000);
 						}else{
 							let registeredUser = data[0];
@@ -186,6 +188,7 @@ plugin.loginHandler = function(req,res){
 								userConnectionData.lastAttempt = lastAttempt;
 								userConnectionData.attemptCount++;
 								plugin.debug('<-loginHandler(401)');
+								plugin.error('invalid login attempt for user '+userId+' using password '+password);
 								setTimeout(function(){ res.json({"status": 401,"message": "@apaf.page.login.error.invalid"}); },5000);
 							}
 						}
@@ -193,10 +196,12 @@ plugin.loginHandler = function(req,res){
 				});
 			}else{
 				plugin.debug('<-loginHandler(423)');
+				plugin.error('too many login attempts from IP '+userIp);
 				setTimeout(function(){ res.json({"status": 423,"message": "@apaf.page.login.error.tooMany"}); },userConnectionData.attemptCount*10000);
 			}
 		}else{
 			plugin.debug('<-loginHandler(412)');
+			plugin.error('invalid login attempt from IP '+userIp+' - bad parameters');
 			res.json({"status": 412,"message": "@apaf.page.login.error.invalid"});
 		}
 	}else{
