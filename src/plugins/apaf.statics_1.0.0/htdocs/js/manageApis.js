@@ -715,7 +715,7 @@ var apiEventListener = {
 					"uri": targetUri,
 					"payload": payload
 				}).then(function(data){
-					if(data){
+					if(data || data==0){
 						$('#testRestCallResult').html(JSON.stringify(data,null,'\t').replace(/\n/g,'<br>').replace(/\t/g,'&nbsp;&nbsp;&nbsp;'));
 					}else{
 						$('#testRestCallResult').html('[&nbsp;]');
