@@ -13,6 +13,8 @@ const EDITING_TOOLBAR_ID = 'editingToolbar';
 const DIALOG_ID = 'simpleDialog';
 const DATATABLE_ID = 'datatypeFieldsTable';
 const EMPTY_DIALOG_ID = 'emptyDialog';
+const PRE_PROCESSOR_CODE_EDITOR_ID = 'preProcessingSourceCodeEditor';
+const POST_PROCESSOR_CODE_EDITOR_ID = 'postProcessingSourceCodeEditor';
 
 var dialogNotOpenYet = true;
 var selectedDatatype = null;
@@ -71,18 +73,31 @@ initNewRecord = function(){
 	let form = npaUi.getComponent(EDIT_FORM_ID);
 	form.setData(datatype);
 	form.setEditMode(true);
+	let preProEditor = $apaf(PRE_PROCESSOR_CODE_EDITOR_ID);
+	preProEditor.setEnable(true);
+	let postProEditor = $apaf(POST_PROCESSOR_CODE_EDITOR_ID);
+	postProEditor.setEnable(true);
 	editRecord();
 }
 
 editRecord = function(){
 	let datatable = npaUi.getComponent(DATATABLE_ID);
 	datatable.setEditable(true);
+	let preProEditor = $apaf(PRE_PROCESSOR_CODE_EDITOR_ID);
+	preProEditor.setEnable(true);
+	let postProEditor = $apaf(POST_PROCESSOR_CODE_EDITOR_ID);
+	postProEditor.setEnable(true);
 }
 
 saveRecord = function(){
 	let form = npaUi.getComponent(EDIT_FORM_ID);
 	if(form.isValid()){
 		let updatedRecord = form.getData();
+		let preProEditor = $apaf(PRE_PROCESSOR_CODE_EDITOR_ID);
+		updatedRecord.preProcessingCode = preProEditor.getSource();
+		let postProEditor = $apaf(POST_PROCESSOR_CODE_EDITOR_ID);
+		updatedRecord.postProcessingCode = postProEditor.getSource();
+		
 		//updateVersion(updatedRecord);
 		let dataManager = npaUi.getComponent(DATA_MANAGER_ID);
 		dataManager.update(updatedRecord).then(function(data){
@@ -102,6 +117,8 @@ saveRecord = function(){
 			let datatable = npaUi.getComponent(DATATABLE_ID);
 			datatable.setEditable(false);
 			selectedDatatype = data;
+			preProEditor.setEnable(false);
+			postProEditor.setEnable(false);
 		}).onError(function(errorMsg){
 			if(errorMsg.httpStatus==404){
 				showError('@apaf.error.http.not.found');
@@ -131,6 +148,11 @@ saveJson = function(){
 			let datatable = npaUi.getComponent(DATATABLE_ID);
 			datatable.setEditable(false);
 			selectedDatatype = data;
+			
+			let preProEditor = $apaf(PRE_PROCESSOR_CODE_EDITOR_ID);
+			preProEditor.setEnable(false);
+			let postProEditor = $apaf(POST_PROCESSOR_CODE_EDITOR_ID);
+			postProEditor.setEnable(false);
 		}).onError(function(errorMsg){
 			if(errorMsg.httpStatus==404){
 				showError('@apaf.error.http.not.found');
@@ -165,6 +187,11 @@ deleteRecord = function(){
 			datatable.renderData([]);
 			datatable.setEditable(false);
 			selectedDatatype = null;
+			
+			let preProEditor = $apaf(PRE_PROCESSOR_CODE_EDITOR_ID);
+			preProEditor.setEnable(false);
+			let postProEditor = $apaf(POST_PROCESSOR_CODE_EDITOR_ID);
+			postProEditor.setEnable(false);
 		}).onError(function(errorMsg){
 			if(errorMsg.httpStatus==404){
 				showError('@apaf.error.http.not.found');
@@ -196,7 +223,8 @@ addDatatypeField = function(){
 		let datatype = form.getData();
 		datatype.fields.push(fieldEditForm.getData());
 		let datatable = npaUi.getComponent(DATATABLE_ID);
-		datatable.refresh();
+		//datatable.refresh();
+		datatable.onItemSelected(datatype);
 	});
 	dialog.open();
 }

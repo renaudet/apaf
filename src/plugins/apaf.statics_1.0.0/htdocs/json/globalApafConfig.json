@@ -514,7 +514,8 @@
 		                "id": "json",
 		                "label": "@apaf.editorTabPane.tab2.label"
 		            }
-		        ]
+		        ],
+		        "parentId": "workArea"
 		    }
 		},
 		"jsonEditor": {

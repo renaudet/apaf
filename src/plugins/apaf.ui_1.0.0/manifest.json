@@ -1,0 +1,40 @@
+{
+  "id": "apaf.ui",
+  "name": "Advanced UI plugin for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.ui.logger",
+  		"dir": "apaf.ui"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.ui.router",
+  		"path": "/apaf-ui-support"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.ui.htdocs",
+  		"path": "/apaf-ui",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.ui.components.sourceCodeEditor",
+  		"namespace": "apafUi",
+  		"name": "SourceCodeEditor",
+  		"version": "1.0.0",
+  		"dependency": "/apaf-ui/js/sourceCodeEditor.js"
+  	}
+  ],
+  "provides": [
+  ]
+}

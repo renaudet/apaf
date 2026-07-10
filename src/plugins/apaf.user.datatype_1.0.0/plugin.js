@@ -294,21 +294,88 @@ plugin.createUserDataHandler = function(req,res){
 							let record = req.body;
 							record['createdBy'] = user.login;
 							record['created'] = moment().format(TIMESTAMP_FORMAT);
-							datatypePlugin.createRecord(datatypeRecord.name,record,function(err,data){
-								if(err){
-									plugin.debug('<-createUserDataHandler() - error');
-									res.json({"status": 500,"message": err,"data": []});
-								}else{
-									plugin.createCount++;
-									if(datatypeRecord.auditEnabled){
-										try{
-											auditService.createAuditRecord(datatypeRecord,data.id,user.login,'created',data);
-										}catch(e){}
-									}
-									plugin.debug('<-createUserDataHandler() - success');
-									res.json({"status": 200,"message": "created","data": data});
+							let vetoRaised = false;
+							let reason = 'no further data';
+							
+							if(typeof datatypeRecord.preProcessingCode!='undefined'){
+								let preProcess = null;
+								let preProcessorContext = {
+									"user": user,
+									"runtime": plugin.runtime,
+									"plugin": plugin,
+									"require": require
 								}
-							});
+								try{
+									let toEval = 'preProcess = function(ctx,oldRecord,record){\n'+datatypeRecord.preProcessingCode+'\n}';
+									eval(toEval);
+								}catch(t){
+									plugin.error('pre-processor evaluation exception for datatype '+datatypeName);
+									plugin.error(t);
+								}
+								if(preProcess!=null){
+									plugin.debug('executing pre-processor function for datatype '+datatypeName);
+									try{
+										preProcess(preProcessorContext,null,record);
+										plugin.debug('pre-processor execution successfull');
+									}catch(e){
+										plugin.info('veto raised by pre-processor for datatype '+datatypeName);
+										vetoRaised = true;
+										if(e.message){
+											plugin.debug('reason: '+e.message);
+											reason = e.message;
+										}
+									}
+								}
+							}
+							if(vetoRaised){
+								plugin.debug('<-createUserDataHandler() - veto raised');
+								let message = 'veto raised by pre-processor. reason: '+reason;
+								res.json({"status": 500,"message": message,"data": []});
+							}else{
+								datatypePlugin.createRecord(datatypeRecord.name,record,function(err,data){
+									if(err){
+										plugin.debug('<-createUserDataHandler() - error');
+										res.json({"status": 500,"message": err,"data": []});
+									}else{
+										plugin.createCount++;
+										if(datatypeRecord.auditEnabled){
+											try{
+												auditService.createAuditRecord(datatypeRecord,data.id,user.login,'created',data);
+											}catch(e){}
+										}
+										plugin.debug('<-createUserDataHandler() - success');
+										res.json({"status": 200,"message": "created","data": data});
+										if(typeof datatypeRecord.postProcessingCode!='undefined'){
+											let postProcess = null;
+											let postProcessorContext = {
+												"user": user,
+												"runtime": plugin.runtime,
+												"plugin": plugin,
+												"require": require
+											}
+											try{
+												let toEval = 'postProcess = function(ctx,record){\n'+datatypeRecord.postProcessingCode+'\n}';
+												eval(toEval);
+											}catch(t){
+												plugin.error('post-processor evaluation exception for datatype '+datatypeName);
+												plugin.error(t);
+											}
+											if(postProcess!=null){
+												plugin.debug('executing post-processor function for datatype '+datatypeName);
+												try{
+													postProcess(postProcessorContext,data);
+													plugin.debug('post-processor execution successfull');
+												}catch(e){
+													plugin.error('post-processor execution failed');
+													if(e.message){
+														plugin.error('reason: '+e.message);
+													}
+												}
+											}
+										}
+									}
+								});
+							}
 						}else{
 							plugin.debug('<-createUserDataHandler() - error');
 							res.json({"status": 401,"message": "unauthorized","data": []});
@@ -345,19 +412,104 @@ plugin.updateUserDataHandler = function(req,res){
 						let datatypeRecord = data[0];
 						if(user.isAdmin || datatypeRecord.writeRole.length==0 ||
 						   typeof user.roles[datatypeRecord.writeRole]!='undefined'){
-							datatypePlugin.updateRecord(datatypeRecord.name,req.body,function(err,data){
+							let record = req.body;
+							record['lastUpdatedBy'] = user.login;
+							record['updated'] = moment().format(TIMESTAMP_FORMAT);
+							let vetoRaised = false;
+							let reason = 'no further data';
+							
+							datatypePlugin.findByPrimaryKey(datatypeRecord.name,{"id": record.id},function(err,oldRecord){
 								if(err){
-									plugin.debug('<-updateUserDataHandler() - error');
+									plugin.debug('<-updateUserDataHandler() - error database');
 									res.json({"status": 500,"message": err,"data": []});
 								}else{
-									plugin.updateCount++;
-									if(datatypeRecord.auditEnabled){
-										try{
-											auditService.createAuditRecord(datatypeRecord,req.body.id,user.login,'updated',req.body);
-										}catch(e){}
+									if(oldRecord && oldRecord['_rev']==record['_rev']){
+										
+										if(typeof datatypeRecord.preProcessingCode!='undefined'){
+											let preProcess = null;
+											let preProcessorContext = {
+												"user": user,
+												"runtime": plugin.runtime,
+												"plugin": plugin,
+												"require": require
+											}
+											try{
+												let toEval = 'preProcess = function(ctx,oldRecord,record){\n'+datatypeRecord.preProcessingCode+'\n}';
+												eval(toEval);
+											}catch(t){
+												plugin.error('pre-processor evaluation exception for datatype '+datatypeName);
+												plugin.error(t);
+											}
+											if(preProcess!=null){
+												plugin.debug('executing pre-processor function for datatype '+datatypeName);
+												try{
+													preProcess(preProcessorContext,oldRecord,record);
+													plugin.debug('pre-processor execution successfull');
+												}catch(e){
+													plugin.info('veto raised by pre-processor for datatype '+datatypeName);
+													vetoRaised = true;
+													if(e.message){
+														plugin.debug('reason: '+e.message);
+														reason = e.message;
+													}
+												}
+											}
+										}
+										if(vetoRaised){
+											plugin.debug('<-updateUserDataHandler() - veto raised');
+											let message = 'veto raised by pre-processor. reason: '+reason;
+											res.json({"status": 500,"message": message,"data": []});
+										}else{
+											datatypePlugin.updateRecord(datatypeRecord.name,record,function(err,data){
+												if(err){
+													plugin.debug('<-updateUserDataHandler() - error');
+													res.json({"status": 500,"message": err,"data": []});
+												}else{
+													plugin.updateCount++;
+													if(datatypeRecord.auditEnabled){
+														try{
+															auditService.createAuditRecord(datatypeRecord,req.body.id,user.login,'updated',data);
+														}catch(e){}
+													}
+													plugin.debug('<-updateUserDataHandler() - success');
+													res.json({"status": 200,"message": "updated","data": data});
+													if(typeof datatypeRecord.postProcessingCode!='undefined'){
+														let postProcess = null;
+														let postProcessorContext = {
+															"user": user,
+															"runtime": plugin.runtime,
+															"plugin": plugin,
+															"require": require
+														}
+														try{
+															let toEval = 'postProcess = function(ctx,record){\n'+datatypeRecord.postProcessingCode+'\n}';
+															eval(toEval);
+														}catch(t){
+															plugin.error('post-processor evaluation exception for datatype '+datatypeName);
+															plugin.error(t);
+														}
+														if(postProcess!=null){
+															plugin.debug('executing post-processor function for datatype '+datatypeName);
+															try{
+																postProcess(postProcessorContext,data);
+																plugin.debug('post-processor execution successfull');
+															}catch(e){
+																plugin.error('post-processor execution failed');
+																if(e.message){
+																	plugin.error('reason: '+e.message);
+																}
+															}
+														}
+													}
+												}
+											});
+										}
+										
+										
+									}else{
+										plugin.debug('<-updateUserDataHandler() - error concurrent access');
+										res.json({"status": 500,"message": "Stale data - please refresh and retry","data": []});
 									}
-									plugin.debug('<-updateUserDataHandler() - success');
-									res.json({"status": 200,"message": "updated","data": data});
 								}
 							});
 						}else{

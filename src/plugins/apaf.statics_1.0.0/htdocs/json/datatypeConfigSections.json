@@ -1,0 +1,17 @@
+{
+    "id":"datatypeConfigSections",
+    "version": "1.0.0",
+    "type": "Accordion",
+    "configuration": {
+    	"sections": [
+    		{
+    			"label": "Pre-Processing function (server-side)",
+    			"id": "preProcessing"
+    		},
+    		{
+    			"label": "Post-Processing function (server-side)",
+    			"id": "postProcessing"
+    		}
+    	]
+    }
+}

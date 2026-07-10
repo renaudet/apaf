@@ -1,0 +1,14 @@
+{
+    "id":"preProcessingSourceCodeEditor",
+    "version": "1.0.0",
+    "type": "apafUi.SourceCodeEditor",
+    "configuration": {
+        "label": "Open the source code editor",
+        "listen": {
+        	"source": "itemSelectionList",
+        	"type": "select",
+        	"adapter": "@.preProcessingCode"
+        },
+        "defaultSource": "// implement here the body for function preProcess(ctx,oldRecord,record)\n// either update the record variable before commit or throw an Error to rollback\n// oldRecord is null in case of a new instance creation\n// ctx is a JSON structure giving access to \"user\", \"runtime\", \"plugin\" and the \"require\" function\n"
+    }
+}
