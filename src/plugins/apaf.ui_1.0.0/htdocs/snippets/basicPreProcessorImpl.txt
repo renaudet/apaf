@@ -1,0 +1,3 @@
+if(oldRecord!=null){
+	ctx.plugin.info(ctx.user.login+' updated this record');
+}

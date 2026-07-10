@@ -33,8 +33,27 @@
   		"name": "SourceCodeEditor",
   		"version": "1.0.0",
   		"dependency": "/apaf-ui/js/sourceCodeEditor.js"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.ui.components.sourceCodeEditor.snippets.handler",
+  		"router": "apaf.ui.router",
+  		"method": "GET",
+  		"schema": "/codeEditor/snippets",
+  		"handler": "getSuitableSnippetsList",
+  		"securityRole": "developer",
+		"description": "Returns a list of suitable code snippets for this editor",
+		"input": {}
+  	},
+  	{
+  		"point": "apaf.ui.code.editor.snippet.provider",
+  		"id": "apaf.ui.code.editor.snippet.1",
+  		"label": "Base implementation for a Datatype pre-processor",
+  		"location": "/apaf-ui/snippets/basicPreProcessorImpl.txt",
+  		"category": "API"
   	}
   ],
   "provides": [
+  	{"id": "apaf.ui.code.editor.snippet.provider"}
   ]
 }
