@@ -16,6 +16,7 @@ const TELEMETRY_SERVICE_NAME = 'telemetry';
 const SECURE_API_CALL_DIMENSION = 'secure.api.call';
 const TELEMETRY_COLLECT_TIMEOUT = 30;
 const API_KEY_HEADER = 'x-api-key';
+const BASE_API_KEY_VALUE = 'APAF_';
 
 
 var plugin = new ApafPlugin();
@@ -49,7 +50,7 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 						plugin.trace('<-checkUserAccess(ok)');
 						then(null,credential.user);
 					}else{
-						let loginHandler = this.runtime.getPlugin('apaf.login'); // circular reference!
+						let loginHandler = plugin.runtime.getPlugin('apaf.login'); // circular reference!
 						loginHandler.authenticate(credential.login,credential.password,function(err,user){
 							if(err){
 								plugin.trace('<-checkUserAccess(loginHandler) error');
@@ -73,7 +74,7 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 						});
 					}
 				}else{
-					this.trace('<-checkUserAccess(unauthenticated)');
+					plugin.trace('<-checkUserAccess(unauthenticated)');
 					then('unauthenticated',null);
 				}
 			});
@@ -103,7 +104,7 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 					});
 				}
 			}else{
-				this.trace('<-checkUserAccess(no session)');
+				plugin.trace('<-checkUserAccess(no session)');
 				then('no session',null);
 			}
 		});
@@ -157,23 +158,30 @@ plugin.checkAuthorizationToken = function(req,then){
 		}
 	}else if(typeof req.headers[API_KEY_HEADER]!='undefined'){
     	let apiKey = req.headers[API_KEY_HEADER];
-		let cryptoService = this.getService(CRYPTOGRAPHY_SERVICE_NAME);
-		let decrypted = cryptoService.decrypt(apiKey).split(':');
+		//let cryptoService = this.getService(CRYPTOGRAPHY_SERVICE_NAME);
+		//let decrypted = cryptoService.decrypt(apiKey).split(':');
 		if(decrypted && decrypted.length==2){
-			let userid = decrypted[0];
-			let authorizationKey = decrypted[1];
-			datatypePlugin.findByPrimaryKey(USER_DATATYPE,{"id": userid},function(err,userQueryResult){
+			//let userid = decrypted[0];
+			//let authorizationKey = decrypted[1];
+			const [userid, authorizationKey] = Buffer.from(apiKey, 'base64').toString().split(':');
+			datatypePlugin.query(USER_DATATYPE,{"selector": {"login": {"$eq": userid}}},function(err,userQueryResult){
 				if(err){
-					this.trace('->checkAuthorizationToken() error accessing the user base');
+					plugin.trace('->checkAuthorizationToken() error accessing the user base');
 					then(null);
 				}else{
-					if(userQueryResult && userQueryResult.apiKey==authorizationKey){
-						this.trace('->checkAuthorizationToken() valid API key found for user '+userQueryResult.login);
-						plugin.loadUserRoles(userQueryResult,function(user){
-							then({"user": user});
-						});
+					if(userQueryResult && userQueryResult.length==1){
+						let apiUser = userQueryResult[0];
+						if(apiUser.apiKey==authorizationKey){
+							plugin.trace('->checkAuthorizationToken() valid API key found for user '+apiUser.login);
+							plugin.loadUserRoles(apiUser,function(user){
+								then({"user": user});
+							});
+						}else{
+							plugin.trace('->checkAuthorizationToken() expired data');
+							then(null);
+						}
 					}else{
-						this.trace('->checkAuthorizationToken() expired data');
+						plugin.trace('->checkAuthorizationToken() unknown user');
 						then(null);
 					}
 				}
@@ -269,6 +277,24 @@ plugin.collectTelemetry = function(){
 	telemetryService.push(SECURE_API_CALL_DIMENSION,telemetryData);
 	plugin.trace('<-collectTelemetry()');
 	setTimeout(function(){ plugin.collectTelemetry(); },TELEMETRY_COLLECT_TIMEOUT*1000);
+}
+
+plugin.generateApiKeyHandler = function(req,res){
+	plugin.debug('->generateApiKeyHandler()');
+	res.set('Content-Type','application/json');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.security.generate.api.key.handler');
+	plugin.checkUserAccess(req,requiredRole,function(err,user){
+		if(err){
+			plugin.debug('<-generateApiKeyHandler() - error security');
+			res.json({"status": 500,"message": err,"data": []});
+		}else{
+			let authorizationKey = BASE_API_KEY_VALUE+moment().valueOf();
+			let cryptoService = plugin.getService(CRYPTOGRAPHY_SERVICE_NAME);
+			let encrypted = cryptoService.encrypt(authorizationKey);
+			plugin.debug('<-generateApiKeyHandler() key='+encrypted);
+			res.json({"status": 200,"message": "ok","data": {"key": encrypted}});
+		}
+	});
 }
 
 module.exports = plugin;

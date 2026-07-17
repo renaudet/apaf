@@ -18,8 +18,13 @@
   	},
   	{
   		"point": "npa.core.service",
-  		"id": "npa.security.service",
+  		"id": "apaf.security.service",
   		"service": "apaf-security"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.security.router",
+  		"path": "/apaf-security"
   	},
   	{
   		"point": "npa.telemetry.dimension.provider",
@@ -30,6 +35,17 @@
 		"type": "int",
 		"unit": "",
 		"maxPoints": 60
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.security.generate.api.key.handler",
+  		"router": "apaf.security.router",
+  		"method": "GET",
+  		"schema": "/getApiKey",
+  		"handler": "generateApiKeyHandler",
+  		"securityRole": "operator",
+		"description": "Get a newly generated API key",
+		"input": ""
   	}
   ],
   "provides": [

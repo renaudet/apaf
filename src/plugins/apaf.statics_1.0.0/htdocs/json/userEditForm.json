@@ -75,7 +75,17 @@
 			        	"processor": "'<img src=\"/uiTools/img/silk/group.png\">&nbsp;'+@.name"
 		        	}
 		        }
-    		}
+    		},
+			{
+				"name": "apiKey",
+				"label": "@apaf.user.api.key",
+				"type": "generatedField",
+				"required": false,
+				"size": 7,
+				"endpoint": "/apaf-security/getApiKey",
+				"responseAdapter": "@.key",
+				"help": "@apaf.user.api.key.help"
+	         }
     	]
     }
 }

@@ -44,6 +44,15 @@
   		"name": "DatatypeSearch",
   		"version": "1.0.0",
   		"dependency": "/resources/js/components/datatypeSearch.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.editor",
+  		"id": "apaf.editors.generated.field.editor",
+  		"datatype": "generatedField",
+  		"libraries": [
+         	{"type": "js", "uri": "/resources/js/editors/generatedFieldEditor.js"}
+         ],
+  		"editor": "apafEditors.GeneratedFieldEditor"
   	}
   ],
   "provides": [
