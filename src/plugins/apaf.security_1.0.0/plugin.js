@@ -6,6 +6,7 @@
 const ApafPlugin = require('../../apafUtil.js');
 const moment = require('moment');
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
+const USER_DATATYPE = 'user';
 const GROUP_DATATYPE = 'group';
 const SECURITY_ROLE_DATATYPE = 'role';
 const SECURITY_TOKEN_URI_PARAM_NAME = 'token';
@@ -14,6 +15,7 @@ const USER_SESSION_DATA_NAMESPACE = '_user_data';
 const TELEMETRY_SERVICE_NAME = 'telemetry';
 const SECURE_API_CALL_DIMENSION = 'secure.api.call';
 const TELEMETRY_COLLECT_TIMEOUT = 30;
+const API_KEY_HEADER = 'x-api-key';
 
 
 var plugin = new ApafPlugin();
@@ -27,6 +29,7 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 	this.trace('->checkUserAccess('+requiredRole+')');
 	let session = req.session;
 	if(typeof session!='undefined' && session!=null){
+		this.debug('an existing session was found');
 		this.invocationCount++;
 		let user = session.user;
 		if(typeof user!=undefined && user!=null && session.alive){
@@ -39,47 +42,75 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 				then('unauthorized',null);
 			}
 		}else{
-			let authToken = this.checkAuthorizationToken(req);
-			if(authToken!=null){
-				let loginHandler = this.runtime.getPlugin('apaf.login'); // circular reference!
-				loginHandler.authenticate(authToken.login,authToken.password,function(err,user){
-					if(err){
-						plugin.trace('<-checkUserAccess(loginHandler)');
-						then(err,null);
+			this.debug('this is a technical session - check headers for a valid credential...');
+			this.checkAuthorizationToken(req,function(credential){
+				if(credential!=null){
+					if(credential.user){
+						plugin.trace('<-checkUserAccess(ok)');
+						then(null,credential.user);
 					}else{
-						if(user.isAdmin || requiredRole==null || requiredRole.length==0 || (user.roles && typeof user.roles[requiredRole]!='undefined')){
-							session.user = user;
-							let now = moment();
-							req.session.lastAccess = now;
-							req.session.created = now;
-							req.session.alive = true;
-							req.session[USER_SESSION_DATA_NAMESPACE] = {"_created": now};
-							plugin.trace('<-checkUserAccess(ok)');
-							then(null,user);
-						}else{
-							plugin.trace('<-checkUserAccess(loginHandler,unauthorized)');
-							then('unauthorized',null);
-						}
-						
+						let loginHandler = this.runtime.getPlugin('apaf.login'); // circular reference!
+						loginHandler.authenticate(credential.login,credential.password,function(err,user){
+							if(err){
+								plugin.trace('<-checkUserAccess(loginHandler) error');
+								then(err,null);
+							}else{
+								if(user.isAdmin || requiredRole==null || requiredRole.length==0 || (user.roles && typeof user.roles[requiredRole]!='undefined')){
+									session.user = user;
+									let now = moment();
+									req.session.lastAccess = now;
+									req.session.created = now;
+									req.session.alive = true;
+									req.session[USER_SESSION_DATA_NAMESPACE] = {"_created": now};
+									plugin.trace('<-checkUserAccess(ok)');
+									then(null,user);
+								}else{
+									plugin.trace('<-checkUserAccess(loginHandler,unauthorized)');
+									then('unauthorized',null);
+								}
+								
+							}
+						});
 					}
-				});
-			}else{
-				this.trace('<-checkUserAccess(unauthenticated)');
-				then('unauthenticated',null);
-			}
+				}else{
+					this.trace('<-checkUserAccess(unauthenticated)');
+					then('unauthenticated',null);
+				}
+			});
 		}
 	}else{
-		let authToken = this.checkAuthorizationToken(req);
-		if(authToken!=null){
-			
-		}else{
-			this.trace('<-checkUserAccess(no session)');
-			then('no session',null);
-		}
+		this.debug('no existing session was found - check headers for a valid credential');
+		this.checkAuthorizationToken(req,function(credential){
+			if(credential!=null){
+				if(credential.user){
+					plugin.trace('<-checkUserAccess(ok)');
+					then(null,credential.user);
+				}else{
+					let loginHandler = this.runtime.getPlugin('apaf.login'); // circular reference!
+					loginHandler.authenticate(credential.login,credential.password,function(err,user){
+						if(err){
+							plugin.trace('<-checkUserAccess(loginHandler)');
+							then(err,null);
+						}else{
+							if(user.isAdmin || requiredRole==null || requiredRole.length==0 || (user.roles && typeof user.roles[requiredRole]!='undefined')){
+								plugin.trace('<-checkUserAccess() success - valid token only');
+								then(null,user);
+							}else{
+								plugin.trace('<-checkUserAccess(loginHandler,unauthorized)');
+								then('unauthorized',null);
+							}
+						}
+					});
+				}
+			}else{
+				this.trace('<-checkUserAccess(no session)');
+				then('no session',null);
+			}
+		});
 	}
 }
 
-plugin.checkAuthorizationToken = function(req){
+plugin.checkAuthorizationToken = function(req,then){
 	this.trace('->checkAuthorizationToken()');
 	if(typeof req.headers.authorization!='undefined'){
 		this.debug('Authorization header: '+req.headers.authorization);
@@ -89,10 +120,11 @@ plugin.checkAuthorizationToken = function(req){
 			const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':');
 			if(login && login.length>0){
 				this.trace('->checkAuthorizationToken() Basic token found');
-				return {"login": login,"password": password};
+				this.trace('login: '+login);
+				then({"login": login,"password": password});
 			}else{
 				this.trace('->checkAuthorizationToken() invalid token for Basic auth');
-				return null;
+				then(null);
 			}
 		}else
 		if(authorization.startsWith('Bearer ')){
@@ -106,19 +138,51 @@ plugin.checkAuthorizationToken = function(req){
 				let path = req.baseUrl+req.path;
 				if(uri==path){
 					this.trace('->checkAuthorizationToken() valid Bearer token found');
-					return {"login": login,"password": password};
+					this.trace('login: '+login);
+					this.trace('uri: '+uri);
+					then({"login": login,"password": password});
 				}else{
-					this.trace('->checkAuthorizationToken() invalid Bearer token for path '+path);
-					return null;
+					this.trace('->checkAuthorizationToken() unauthorized Bearer token for path '+path);
+					this.trace('login: '+login);
+					this.trace('uri: '+uri);
+					then(null);
 				}
 			}else{
 				this.trace('->checkAuthorizationToken() invalid Bearer token');
-				return null;
+				then(null);
 			}
 		}else{
 			this.trace('->checkAuthorizationToken() unsupported auth method detected');
-			return null;
+			then(null);
 		}
+	}else if(typeof req.headers[API_KEY_HEADER]!='undefined'){
+    	let apiKey = req.headers[API_KEY_HEADER];
+		let cryptoService = this.getService(CRYPTOGRAPHY_SERVICE_NAME);
+		let decrypted = cryptoService.decrypt(apiKey).split(':');
+		if(decrypted && decrypted.length==2){
+			let userid = decrypted[0];
+			let authorizationKey = decrypted[1];
+			datatypePlugin.findByPrimaryKey(USER_DATATYPE,{"id": userid},function(err,userQueryResult){
+				if(err){
+					this.trace('->checkAuthorizationToken() error accessing the user base');
+					then(null);
+				}else{
+					if(userQueryResult && userQueryResult.apiKey==authorizationKey){
+						this.trace('->checkAuthorizationToken() valid API key found for user '+userQueryResult.login);
+						plugin.loadUserRoles(userQueryResult,function(user){
+							then({"user": user});
+						});
+					}else{
+						this.trace('->checkAuthorizationToken() expired data');
+						then(null);
+					}
+				}
+			});
+		}else{
+			this.trace('->checkAuthorizationToken() invalid API Key provided');
+			then(null);
+		}
+		
 	}else{
 		if(typeof req.query[SECURITY_TOKEN_URI_PARAM_NAME]!='undefined' && req.query[SECURITY_TOKEN_URI_PARAM_NAME].length>0){
 			this.trace('Security token found');
@@ -131,18 +195,18 @@ plugin.checkAuthorizationToken = function(req){
 				let uri = decrypted[2];
 				let path = req.baseUrl+req.path;
 				if(uri==path){
-					this.trace('->checkAuthorizationToken() valid query parameter token found');
-					return {"login": login,"password": password};
+					this.trace('->checkAuthorizationToken() valid query parameter token found for user '+login);
+					then({"login": login,"password": password});
 				}else{
-					this.trace('->checkAuthorizationToken() invalid query parameter token for path '+path);
-					return null;
+					this.trace('->checkAuthorizationToken() unauthorized query parameter token for path '+path);
+					then(null);
 				}
 			}else{
 				this.trace('->checkAuthorizationToken() invalid query parameter token');
-				return null;
+				then(null);
 			}
 		}else
-			return null;
+			then(null);
 	}
 }
 
