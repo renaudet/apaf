@@ -47,8 +47,14 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 			this.checkAuthorizationToken(req,function(credential){
 				if(credential!=null){
 					if(credential.user){
-						plugin.trace('<-checkUserAccess(ok)');
-						then(null,credential.user);
+						let user = credential.user;
+						if(user.isAdmin || requiredRole==null || requiredRole.length==0 || (user.roles && typeof user.roles[requiredRole]!='undefined')){
+							plugin.trace('<-checkUserAccess(ok)');
+							then(null,user);
+						}else{
+							plugin.trace('<-checkUserAccess(unauthorized)');
+							then('unauthorized',null);
+						}
 					}else{
 						let loginHandler = plugin.runtime.getPlugin('apaf.login'); // circular reference!
 						loginHandler.authenticate(credential.login,credential.password,function(err,user){
@@ -84,8 +90,14 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 		this.checkAuthorizationToken(req,function(credential){
 			if(credential!=null){
 				if(credential.user){
-					plugin.trace('<-checkUserAccess(ok)');
-					then(null,credential.user);
+					let user = credential.user;
+					if(user.isAdmin || requiredRole==null || requiredRole.length==0 || (user.roles && typeof user.roles[requiredRole]!='undefined')){
+						plugin.trace('<-checkUserAccess(ok)');
+						then(null,user);
+					}else{
+						plugin.trace('<-checkUserAccess(unauthorized)');
+						then('unauthorized',null);
+					}
 				}else{
 					let loginHandler = this.runtime.getPlugin('apaf.login'); // circular reference!
 					loginHandler.authenticate(credential.login,credential.password,function(err,user){
@@ -113,6 +125,7 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 
 plugin.checkAuthorizationToken = function(req,then){
 	this.trace('->checkAuthorizationToken()');
+	this.debug('checkAuthorizationToken() - headers: '+JSON.stringify(req.headers));
 	if(typeof req.headers.authorization!='undefined'){
 		this.debug('Authorization header: '+req.headers.authorization);
 		let authorization = req.headers.authorization;
@@ -157,13 +170,12 @@ plugin.checkAuthorizationToken = function(req,then){
 			then(null);
 		}
 	}else if(typeof req.headers[API_KEY_HEADER]!='undefined'){
-    	let apiKey = req.headers[API_KEY_HEADER];
-		//let cryptoService = this.getService(CRYPTOGRAPHY_SERVICE_NAME);
-		//let decrypted = cryptoService.decrypt(apiKey).split(':');
-		if(decrypted && decrypted.length==2){
-			//let userid = decrypted[0];
-			//let authorizationKey = decrypted[1];
-			const [userid, authorizationKey] = Buffer.from(apiKey, 'base64').toString().split(':');
+		this.debug('checkAuthorizationToken() - x-api-key branch entered');
+	   	let apiKey = req.headers[API_KEY_HEADER];
+		const [userid, authorizationKey] = Buffer.from(apiKey, 'base64').toString().split(':');
+		this.debug('checkAuthorizationToken() - userid: '+userid);
+		if(userid && userid.length>0){
+			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 			datatypePlugin.query(USER_DATATYPE,{"selector": {"login": {"$eq": userid}}},function(err,userQueryResult){
 				if(err){
 					plugin.trace('->checkAuthorizationToken() error accessing the user base');
