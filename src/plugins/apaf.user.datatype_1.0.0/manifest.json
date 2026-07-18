@@ -45,6 +45,11 @@
 		}
   	},
   	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.user.datatype.tool.queryDatatypes",
+  		"apiId": "apaf.datatype.query.user.datatype.handler"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.datatype.query.user.datatype.handler",
   		"router": "apaf.user.datatype.router",
@@ -52,8 +57,79 @@
   		"schema": "/datatype/query",
   		"handler": "queryDatatypeHandler",
   		"securityRole": "developer",
-		"description": "Query the list of registered User Datatypes",
-		"input": {"selector": {"name": {"$eq": "abcd"}}}
+  		"description": "Query the list of registered User Datatypes",
+  		"input": {"selector": {"name": {"$eq": "abcd"}}},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {
+  				"title": "User Datatype Query",
+  				"version": "1.0.0",
+  				"description": "Query the list of User Datatype definitions registered in APAF"
+  			},
+  			"paths": {
+  				"/apaf-datatype/datatype/query": {
+  					"post": {
+  						"operationId": "queryDatatypes",
+  						"summary": "Query the list of registered User Datatypes",
+  						"description": "Returns a list of User Datatype definitions matching the given CouchDB Mango selector. Pass an empty body to retrieve all datatypes.",
+  						"requestBody": {
+  							"required": false,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"properties": {
+  											"selector": {
+  												"type": "object",
+  												"description": "A CouchDB Mango selector, e.g. {\"name\":{\"$eq\":\"myType\"}}. Omit to return all datatypes."
+  											}
+  										},
+  										"additionalProperties": false
+  									}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {
+  								"description": "Query successful.",
+  								"content": {
+  									"application/json": {
+  										"schema": {
+  											"type": "object",
+  											"properties": {
+  												"status":  {"type": "integer", "example": 200},
+  												"message": {"type": "string",  "example": "ok"},
+  												"data":    {"type": "array",   "description": "Array of matching User Datatype definition records."}
+  											}
+  										}
+  									}
+  								}
+  							},
+  							"500": {
+  								"description": "Server or database error.",
+  								"content": {
+  									"application/json": {
+  										"schema": {
+  											"type": "object",
+  											"properties": {
+  												"status":  {"type": "integer", "example": 500},
+  												"message": {"type": "string"},
+  												"data":    {"type": "array"}
+  											}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.user.datatype.tool.createDatatype",
+  		"apiId": "apaf.datatype.create.user.datatype.handler"
   	},
   	{
   		"point": "npa.http.handler",
@@ -63,8 +139,51 @@
   		"schema": "/datatype",
   		"handler": "createDatatypeHandler",
   		"securityRole": "developer",
-		"description": "Create a new User Datatype record",
-		"input": {"name": "abcd","label": "abcd","description": "abcd","private": false,"persistent": false,"database": "abcd","fields": [{"name": "fieldName","label": "abcd","type": "text","size": 5,"isIdField": true,"required": true,"default": "abcd"}]}
+  		"description": "Create a new User Datatype record",
+  		"input": {"name": "abcd","label": "abcd","description": "abcd","private": false,"persistent": false,"database": "abcd","fields": [{"name": "fieldName","label": "abcd","type": "text","size": 5,"isIdField": true,"required": true,"default": "abcd"}]},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Create User Datatype","version": "1.0.0"},
+  			"paths": {
+  				"/apaf-datatype/datatype": {
+  					"post": {
+  						"operationId": "createDatatype",
+  						"summary": "Create a new User Datatype",
+  						"description": "Create a new User Datatype definition record in APAF",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["name","label"],
+  										"properties": {
+  											"name":        {"type": "string", "description": "Technical name of the datatype (lowercase, no spaces)"},
+  											"label":       {"type": "string", "description": "Human-readable label for the datatype"},
+  											"description": {"type": "string", "description": "Optional description of the datatype"},
+  											"persistent":  {"type": "boolean","description": "Whether the datatype data is persisted in CouchDB"},
+  											"private":     {"type": "boolean","description": "Whether records are private to their creator"},
+  											"database":    {"type": "string", "description": "CouchDB database name (required if persistent is true)"},
+  											"fields":      {"type": "array",  "description": "Array of field definitions for this datatype"}
+  										},
+  										"additionalProperties": false
+  									}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {"description": "Datatype created successfully."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.user.datatype.tool.updateDatatype",
+  		"apiId": "apaf.datatype.update.user.datatype.handler"
   	},
   	{
   		"point": "npa.http.handler",
@@ -74,8 +193,53 @@
   		"schema": "/datatype",
   		"handler": "updateDatatypeHandler",
   		"securityRole": "developer",
-		"description": "Update an existing User Datatype record",
-		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","label": "abcd","description": "abcd","private": false,"persistent": false,"database": "abcd","fields": [{"name": "fieldName","label": "abcd","type": "text","size": 5,"isIdField": true,"required": true,"default": "abcd"}]}
+  		"description": "Update an existing User Datatype record",
+  		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","label": "abcd","description": "abcd","private": false,"persistent": false,"database": "abcd","fields": [{"name": "fieldName","label": "abcd","type": "text","size": 5,"isIdField": true,"required": true,"default": "abcd"}]},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Update User Datatype","version": "1.0.0"},
+  			"paths": {
+  				"/apaf-datatype/datatype": {
+  					"put": {
+  						"operationId": "updateDatatype",
+  						"summary": "Update an existing User Datatype",
+  						"description": "Update an existing User Datatype definition record in APAF. The record must include its id and _rev fields.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["id","_rev","name","label"],
+  										"properties": {
+  											"id":          {"type": "string", "description": "UUID of the datatype record to update"},
+  											"_rev":        {"type": "string", "description": "CouchDB revision token (required for optimistic concurrency)"},
+  											"name":        {"type": "string", "description": "Technical name of the datatype"},
+  											"label":       {"type": "string", "description": "Human-readable label for the datatype"},
+  											"description": {"type": "string", "description": "Optional description of the datatype"},
+  											"persistent":  {"type": "boolean","description": "Whether the datatype data is persisted in CouchDB"},
+  											"private":     {"type": "boolean","description": "Whether records are private to their creator"},
+  											"database":    {"type": "string", "description": "CouchDB database name"},
+  											"fields":      {"type": "array",  "description": "Array of field definitions for this datatype"}
+  										},
+  										"additionalProperties": false
+  									}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {"description": "Datatype updated successfully."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.user.datatype.tool.deleteDatatype",
+  		"apiId": "apaf.datatype.delete.user.datatype.handler"
   	},
   	{
   		"point": "npa.http.handler",
@@ -85,7 +249,38 @@
   		"schema": "/datatype/:id",
   		"handler": "deleteDatatypeHandler",
   		"securityRole": "developer",
-		"description": "Delete an existing User Datatype record given its uuid"
+  		"description": "Delete an existing User Datatype record given its uuid",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Delete User Datatype","version": "1.0.0"},
+  			"paths": {
+  				"/apaf-datatype/datatype/{id}": {
+  					"delete": {
+  						"operationId": "deleteDatatype",
+  						"summary": "Delete a User Datatype by UUID",
+  						"description": "Delete an existing User Datatype definition record given its UUID",
+  						"parameters": [
+  							{
+  								"name": "id",
+  								"in": "path",
+  								"required": true,
+  								"description": "UUID of the datatype record to delete",
+  								"schema": {"type": "string"}
+  							}
+  						],
+  						"responses": {
+  							"200": {"description": "Datatype deleted successfully."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.user.datatype.tool.getDatatypeById",
+  		"apiId": "apaf.datatype.find.user.datatype.by.id.handler"
   	},
   	{
   		"point": "npa.http.handler",
@@ -95,7 +290,38 @@
   		"schema": "/datatype/:id",
   		"handler": "findDatatypeByPrimaryKeyHandler",
   		"securityRole": "",
-		"description": "Get an existing User Datatype given its uuid"
+  		"description": "Get an existing User Datatype given its uuid",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Get User Datatype by UUID","version": "1.0.0"},
+  			"paths": {
+  				"/apaf-datatype/datatype/{id}": {
+  					"get": {
+  						"operationId": "getDatatypeById",
+  						"summary": "Get a User Datatype by UUID",
+  						"description": "Retrieve an existing User Datatype definition record given its UUID",
+  						"parameters": [
+  							{
+  								"name": "id",
+  								"in": "path",
+  								"required": true,
+  								"description": "UUID of the datatype record to retrieve",
+  								"schema": {"type": "string"}
+  							}
+  						],
+  						"responses": {
+  							"200": {"description": "Datatype found."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.user.datatype.tool.getDatatypeByName",
+  		"apiId": "apaf.datatype.find.user.datatype.by.name.handler"
   	},
   	{
   		"point": "npa.http.handler",
@@ -105,8 +331,35 @@
   		"schema": "/datatype",
   		"handler": "findDatatypeByNameHandler",
   		"securityRole": "",
-		"description": "Get an existing User Datatype given its datatype name",
-		"input": "name=datatypeName"
+  		"description": "Get an existing User Datatype given its datatype name",
+  		"input": "name=datatypeName",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Get User Datatype by Name","version": "1.0.0"},
+  			"paths": {
+  				"/apaf-datatype/datatype": {
+  					"get": {
+  						"operationId": "getDatatypeByName",
+  						"summary": "Get a User Datatype by name",
+  						"description": "Retrieve an existing User Datatype definition record given its technical name",
+  						"parameters": [
+  							{
+  								"name": "name",
+  								"in": "query",
+  								"required": true,
+  								"description": "Technical name of the datatype to retrieve",
+  								"schema": {"type": "string"}
+  							}
+  						],
+  						"responses": {
+  							"200": {"description": "Datatype found."},
+  							"404": {"description": "Datatype not found."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "apaf.menu.item.provider",
@@ -122,6 +375,11 @@
 		}
   	},
   	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.user.datatype.tool.queryUserData",
+  		"apiId": "apaf.datatype.query.user.data.handler"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.datatype.query.user.data.handler",
   		"router": "apaf.user.data.router",
@@ -129,8 +387,58 @@
   		"schema": "/:datatypeName/query",
   		"handler": "queryUserDataHandler",
   		"securityRole": "",
-		"description": "Query the instances of a given User Datatype given the Datatype name",
-		"input": {"selector": {"active": {"$eq": true}}}
+  		"description": "Query the instances of a given User Datatype given the Datatype name",
+  		"input": {"selector": {"active": {"$eq": true}}},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Query User Data","version": "1.0.0"},
+  			"paths": {
+  				"/user-data/{datatypeName}/query": {
+  					"post": {
+  						"operationId": "queryUserData",
+  						"summary": "Query records of a User Datatype",
+  						"description": "Returns records of a given User Datatype matching the provided CouchDB Mango selector. Pass an empty body to retrieve all records.",
+  						"parameters": [
+  							{
+  								"name": "datatypeName",
+  								"in": "path",
+  								"required": true,
+  								"description": "Technical name of the target User Datatype",
+  								"schema": {"type": "string"}
+  							}
+  						],
+  						"requestBody": {
+  							"required": false,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"properties": {
+  											"selector": {
+  												"type": "object",
+  												"description": "A CouchDB Mango selector to filter records, e.g. {\"active\":{\"$eq\":true}}. Omit to return all records."
+  											}
+  										},
+  										"additionalProperties": false
+  									}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {"description": "Query successful."},
+  							"404": {"description": "Datatype not found."},
+  							"401": {"description": "Unauthorized."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.user.datatype.tool.createUserData",
+  		"apiId": "apaf.datatype.create.user.data.handler"
   	},
   	{
   		"point": "npa.http.handler",
@@ -140,8 +448,59 @@
   		"schema": "/:datatypeName",
   		"handler": "createUserDataHandler",
   		"securityRole": "",
-		"description": "Create a record for a User Datatype given the Datatype name",
-		"input": {}
+  		"description": "Create a record for a User Datatype given the Datatype name",
+  		"input": {},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Create User Data record","version": "1.0.0"},
+  			"paths": {
+  				"/user-data/{datatypeName}": {
+  					"post": {
+  						"operationId": "createUserData",
+  						"summary": "Create a record for a User Datatype",
+  						"description": "Create a new data record for the given User Datatype. The record fields must match the datatype definition.",
+  						"parameters": [
+  							{
+  								"name": "datatypeName",
+  								"in": "path",
+  								"required": true,
+  								"description": "Technical name of the target User Datatype",
+  								"schema": {"type": "string"}
+  							}
+  						],
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["data"],
+  										"properties": {
+  											"data": {
+  												"type": "object",
+  												"description": "The record fields matching the User Datatype definition. Use getDatatypeByName to discover the expected fields before creating a record."
+  											}
+  										},
+  										"additionalProperties": false
+  									}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {"description": "Record created successfully."},
+  							"404": {"description": "Datatype not found."},
+  							"401": {"description": "Unauthorized."},
+  							"500": {"description": "Server or database error or pre-processor veto."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.user.datatype.tool.updateUserData",
+  		"apiId": "apaf.datatype.update.user.data.handler"
   	},
   	{
   		"point": "npa.http.handler",
@@ -151,8 +510,59 @@
   		"schema": "/:datatypeName",
   		"handler": "updateUserDataHandler",
   		"securityRole": "",
-		"description": "Update an existing instance of a User Datatype given the Datatype name",
-		"input": {}
+  		"description": "Update an existing instance of a User Datatype given the Datatype name",
+  		"input": {},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Update User Data record","version": "1.0.0"},
+  			"paths": {
+  				"/user-data/{datatypeName}": {
+  					"put": {
+  						"operationId": "updateUserData",
+  						"summary": "Update a record of a User Datatype",
+  						"description": "Update an existing data record for the given User Datatype. The record must include its id and _rev fields for optimistic concurrency control.",
+  						"parameters": [
+  							{
+  								"name": "datatypeName",
+  								"in": "path",
+  								"required": true,
+  								"description": "Technical name of the target User Datatype",
+  								"schema": {"type": "string"}
+  							}
+  						],
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["data"],
+  										"properties": {
+  											"data": {
+  												"type": "object",
+  												"description": "The full record to update. Must include id and _rev fields for optimistic concurrency control, plus all fields to update."
+  											}
+  										},
+  										"additionalProperties": false
+  									}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {"description": "Record updated successfully."},
+  							"404": {"description": "Datatype not found."},
+  							"401": {"description": "Unauthorized."},
+  							"500": {"description": "Server or database error, stale data, or pre-processor veto."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.user.datatype.tool.deleteUserData",
+  		"apiId": "apaf.datatype.delete.user.data.handler"
   	},
   	{
   		"point": "npa.http.handler",
@@ -162,7 +572,47 @@
   		"schema": "/:datatypeName/:id",
   		"handler": "deleteUserDataHandler",
   		"securityRole": "",
-		"description": "Delete an existing instance of a User Datatype given its uuid and Datatype name"
+  		"description": "Delete an existing instance of a User Datatype given its uuid and Datatype name",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Delete User Data record","version": "1.0.0"},
+  			"paths": {
+  				"/user-data/{datatypeName}/{id}": {
+  					"delete": {
+  						"operationId": "deleteUserData",
+  						"summary": "Delete a record of a User Datatype",
+  						"description": "Delete an existing data record for the given User Datatype given its UUID",
+  						"parameters": [
+  							{
+  								"name": "datatypeName",
+  								"in": "path",
+  								"required": true,
+  								"description": "Technical name of the target User Datatype",
+  								"schema": {"type": "string"}
+  							},
+  							{
+  								"name": "id",
+  								"in": "path",
+  								"required": true,
+  								"description": "UUID of the record to delete",
+  								"schema": {"type": "string"}
+  							}
+  						],
+  						"responses": {
+  							"200": {"description": "Record deleted successfully."},
+  							"404": {"description": "Datatype not found."},
+  							"401": {"description": "Unauthorized."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.user.datatype.tool.getUserDataById",
+  		"apiId": "apaf.datatype.get.user.data.by.id.handler"
   	},
   	{
   		"point": "npa.http.handler",
@@ -172,7 +622,42 @@
   		"schema": "/:datatypeName/:id",
   		"handler": "getUserDataByIdHandler",
   		"securityRole": "",
-		"description": "Get an existing instance of a User Datatype given its uuid and Datatype name"
+  		"description": "Get an existing instance of a User Datatype given its uuid and Datatype name",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Get User Data record by UUID","version": "1.0.0"},
+  			"paths": {
+  				"/user-data/{datatypeName}/{id}": {
+  					"get": {
+  						"operationId": "getUserDataById",
+  						"summary": "Get a record of a User Datatype by UUID",
+  						"description": "Retrieve an existing data record for the given User Datatype given its UUID",
+  						"parameters": [
+  							{
+  								"name": "datatypeName",
+  								"in": "path",
+  								"required": true,
+  								"description": "Technical name of the target User Datatype",
+  								"schema": {"type": "string"}
+  							},
+  							{
+  								"name": "id",
+  								"in": "path",
+  								"required": true,
+  								"description": "UUID of the record to retrieve",
+  								"schema": {"type": "string"}
+  							}
+  						],
+  						"responses": {
+  							"200": {"description": "Record found."},
+  							"404": {"description": "Datatype or record not found."},
+  							"401": {"description": "Unauthorized."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.static",
