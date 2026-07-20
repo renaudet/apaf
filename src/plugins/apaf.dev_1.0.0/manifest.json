@@ -7,6 +7,7 @@
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.mcp","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
@@ -96,6 +97,26 @@
 		}
   	},
   	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.dev.tool.queryFragment",
+  		"apiId": "apaf.dev.query.fragment.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.dev.tool.findFragment",
+  		"apiId": "apaf.dev.find.fragment.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.dev.tool.createFragment",
+  		"apiId": "apaf.dev.create.fragment.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.dev.tool.updateFragment",
+  		"apiId": "apaf.dev.update.fragment.handler"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.dev.query.fragment.handler",
   		"router": "apaf.dev.router",
@@ -103,8 +124,41 @@
   		"schema": "/fragment/query",
   		"handler": "queryFragmentHandler",
   		"securityRole": "developer",
-		"description": "Query the list of code fragments",
-		"input": {"selector": {"$and": [{"name": {"$regex": "abcd"}},{"version": {"$eq": "1.0.0"}}]}}
+  "description": "Query the list of code fragments",
+  "input": {"selector": {"$and": [{"name": {"$regex": "abcd"}},{"version": {"$eq": "1.0.0"}}]}},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Fragment Query", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-dev/fragment/query": {
+  					"post": {
+  						"operationId": "queryFragments",
+  						"summary": "Query the list of code fragments",
+  						"description": "Returns a list of code fragment records matching the given CouchDB Mango selector. Pass an empty body to retrieve all fragments.",
+  						"requestBody": {
+  							"required": false,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"properties": {
+  											"selector": {
+  												"type": "object",
+  												"description": "CouchDB Mango selector to filter fragments, e.g. {\"type\":{\"$eq\":\"snippet\"}}"
+  											},
+  											"fields": {
+  												"type": "array",
+  												"description": "Optional list of fields to return (projection)"
+  											}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -114,8 +168,43 @@
   		"schema": "/fragment",
   		"handler": "createFragmentHandler",
   		"securityRole": "developer",
-		"description": "Create a new code fragment record",
-		"input": {"name": "abcd","version": "1.0.0","description": "abcd","type": "snippet/servlet/library/workflowNode","source": "abcd"}
+  "description": "Create a new code fragment record",
+  "input": {"name": "abcd","version": "1.0.0","description": "abcd","type": "snippet/servlet/library/workflowNode","source": "abcd"},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Fragment Create", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-dev/fragment": {
+  					"post": {
+  						"operationId": "createFragment",
+  						"summary": "Create a new code fragment",
+  						"description": "Creates a new code fragment record in APAF (snippet, library, servlet or workflowNode).",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["name", "version", "type"],
+  										"properties": {
+  											"name": {"type": "string", "description": "Name of the fragment"},
+  											"version": {"type": "string", "description": "Version string, e.g. 1.0.0"},
+  											"description": {"type": "string", "description": "Short description"},
+  											"type": {
+  												"type": "string",
+  												"enum": ["snippet", "library", "servlet", "workflowNode"],
+  												"description": "Fragment type"
+  											},
+  											"source": {"type": "string", "description": "JavaScript source code of the fragment"}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -125,8 +214,45 @@
   		"schema": "/fragment",
   		"handler": "updateFragmentHandler",
   		"securityRole": "developer",
-		"description": "Update an existing code fragment record",
-		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","version": "1.0.0","description": "abcd","type": "snippet/servlet/library/workflowNode","source": "abcd"}
+  "description": "Update an existing code fragment record",
+  "input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","version": "1.0.0","description": "abcd","type": "snippet/servlet/library/workflowNode","source": "abcd"},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Fragment Update", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-dev/fragment": {
+  					"put": {
+  						"operationId": "updateFragment",
+  						"summary": "Update an existing code fragment",
+  						"description": "Updates an existing code fragment record. The record must include its id and _rev fields.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["id", "_rev"],
+  										"properties": {
+  											"id": {"type": "string", "description": "UUID of the fragment to update"},
+  											"_rev": {"type": "string", "description": "CouchDB revision token for optimistic concurrency"},
+  											"name": {"type": "string", "description": "Name of the fragment"},
+  											"version": {"type": "string", "description": "Version string, e.g. 1.0.0"},
+  											"description": {"type": "string", "description": "Short description"},
+  											"type": {
+  												"type": "string",
+  												"enum": ["snippet", "library", "servlet", "workflowNode"],
+  												"description": "Fragment type"
+  											},
+  											"source": {"type": "string", "description": "JavaScript source code of the fragment"}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -136,8 +262,8 @@
   		"schema": "/fragment/:id",
   		"handler": "deleteFragmentHandler",
   		"securityRole": "developer",
-		"description": "Delete an existing code fragment given its uuid",
-		"input": {}
+  "description": "Delete an existing code fragment given its uuid",
+  "input": {}
   	},
   	{
   		"point": "npa.http.handler",
@@ -147,8 +273,30 @@
   		"schema": "/fragment/:id",
   		"handler": "findFragmentHandler",
   		"securityRole": "",
-		"description": "Get an existing code fragment given its uuid",
-		"input": ""
+  "description": "Get an existing code fragment given its uuid",
+  "input": "",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Fragment Find", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-dev/fragment/{id}": {
+  					"get": {
+  						"operationId": "findFragment",
+  						"summary": "Get a code fragment by UUID",
+  						"description": "Returns a single code fragment record given its UUID.",
+  						"parameters": [
+  							{
+  								"name": "id",
+  								"in": "path",
+  								"required": true,
+  								"description": "UUID of the fragment to retrieve",
+  								"schema": {"type": "string"}
+  							}
+  						]
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
@@ -200,6 +348,26 @@
 		}
   	},
   	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.dev.tool.queryApplication",
+  		"apiId": "apaf.dev.query.application.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.dev.tool.findApplication",
+  		"apiId": "apaf.dev.find.application.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.dev.tool.createApplication",
+  		"apiId": "apaf.dev.create.application.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.dev.tool.updateApplication",
+  		"apiId": "apaf.dev.update.application.handler"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.dev.query.application.handler",
   		"router": "apaf.dev.router",
@@ -207,8 +375,41 @@
   		"schema": "/application/query",
   		"handler": "queryApplicationHandler",
   		"securityRole": "developer",
-		"description": "Query the list of APAF Application records",
-		"input": {"selector": {"$and": [{"name": {"$regex": "abcd"}},{"version": {"$eq": "1.0.0"}},{"published": {"$eq": true}}]}}
+  "description": "Query the list of APAF Application records",
+  "input": {"selector": {"$and": [{"name": {"$regex": "abcd"}},{"version": {"$eq": "1.0.0"}},{"published": {"$eq": true}}]}},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Application Query", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-dev/application/query": {
+  					"post": {
+  						"operationId": "queryApplications",
+  						"summary": "Query the list of APAF applications",
+  						"description": "Returns a list of APAF Application records matching the given CouchDB Mango selector. Pass an empty body to retrieve all applications.",
+  						"requestBody": {
+  							"required": false,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"properties": {
+  											"selector": {
+  												"type": "object",
+  												"description": "CouchDB Mango selector to filter applications, e.g. {\"published\":{\"$eq\":true}}"
+  											},
+  											"fields": {
+  												"type": "array",
+  												"description": "Optional list of fields to return (projection)"
+  											}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -218,8 +419,43 @@
   		"schema": "/application",
   		"handler": "createApplicationHandler",
   		"securityRole": "developer",
-		"description": "Create a new APAF Application record",
-		"input": {"name": "abcd","version": "1.0.0","description": "abcd","published": false,"restrictedToRole": "","menuIcon": "/uiTools/img/silk/application.png","fragments": []}
+  "description": "Create a new APAF Application record",
+  "input": {"name": "abcd","version": "1.0.0","description": "abcd","published": false,"restrictedToRole": "","menuIcon": "/uiTools/img/silk/application.png","fragments": [],"requiresGraphicSupport": false,"requiresDateTimeSupport": false},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Application Create", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-dev/application": {
+  					"post": {
+  						"operationId": "createApplication",
+  						"summary": "Create a new APAF application",
+  						"description": "Creates a new APAF Application record.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["name", "version"],
+  										"properties": {
+  											"name": {"type": "string", "description": "Name of the application"},
+  											"version": {"type": "string", "description": "Version string, e.g. 1.0.0"},
+  											"description": {"type": "string", "description": "Short description"},
+  											"published": {"type": "boolean", "description": "Whether the application is published and visible in the menu"},
+  											"restrictedToRole": {"type": "string", "description": "Security role required to access the application (empty = no restriction)"},
+  											"menuIcon": {"type": "string", "description": "Path to the menu icon, e.g. /uiTools/img/silk/application.png"},
+  											"fragments": {"type": "array", "description": "List of fragment UUIDs used by this application"},
+  											"requiresGraphicSupport": {"type": "boolean", "description": "Add graphic support library (chart.js)"},
+  											"requiresDateTimeSupport": {"type": "boolean", "description": "Add date/time support library (moment.js)"}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -229,8 +465,45 @@
   		"schema": "/application",
   		"handler": "updateApplicationHandler",
   		"securityRole": "developer",
-		"description": "Update an existing APAF Application record",
-		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","version": "1.0.0","description": "abcd","published": false,"restrictedToRole": "","menuIcon": "/uiTools/img/silk/application.png","fragments": []}
+  "description": "Update an existing APAF Application record",
+  "input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","version": "1.0.0","description": "abcd","published": false,"restrictedToRole": "","menuIcon": "/uiTools/img/silk/application.png","fragments": []},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Application Update", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-dev/application": {
+  					"put": {
+  						"operationId": "updateApplication",
+  						"summary": "Update an existing APAF application",
+  						"description": "Updates an existing APAF Application record. The record must include its id and _rev fields.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["id", "_rev"],
+  										"properties": {
+  											"id": {"type": "string", "description": "UUID of the application to update"},
+  											"_rev": {"type": "string", "description": "CouchDB revision token for optimistic concurrency"},
+  											"name": {"type": "string", "description": "Name of the application"},
+  											"version": {"type": "string", "description": "Version string, e.g. 1.0.0"},
+  											"description": {"type": "string", "description": "Short description"},
+  											"published": {"type": "boolean", "description": "Whether the application is published and visible in the menu"},
+  											"restrictedToRole": {"type": "string", "description": "Security role required to access the application (empty = no restriction)"},
+  											"menuIcon": {"type": "string", "description": "Path to the menu icon, e.g. /uiTools/img/silk/application.png"},
+  											"fragments": {"type": "array", "description": "List of fragment UUIDs used by this application"},
+  											"requiresGraphicSupport": {"type": "boolean", "description": "Add graphic support library (chart.js)"},
+  											"requiresDateTimeSupport": {"type": "boolean", "description": "Add date/time support library (moment.js)"}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -240,8 +513,8 @@
   		"schema": "/application/:id",
   		"handler": "deleteApplicationHandler",
   		"securityRole": "developer",
-		"description": "Delete an existing APAF Application record",
-		"input": {}
+  "description": "Delete an existing APAF Application record",
+  "input": {}
   	},
   	{
   		"point": "npa.http.handler",
@@ -251,8 +524,30 @@
   		"schema": "/application/:id",
   		"handler": "findApplicationHandler",
   		"securityRole": "",
-		"description": "Get an APAF Application record given its uuid",
-		"input": ""
+  "description": "Get an APAF Application record given its uuid",
+  "input": "",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Application Find", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-dev/application/{id}": {
+  					"get": {
+  						"operationId": "findApplication",
+  						"summary": "Get an APAF application by UUID",
+  						"description": "Returns a single APAF Application record given its UUID.",
+  						"parameters": [
+  							{
+  								"name": "id",
+  								"in": "path",
+  								"required": true,
+  								"description": "UUID of the application to retrieve",
+  								"schema": {"type": "string"}
+  							}
+  						]
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "apaf.menu.item.provider",
