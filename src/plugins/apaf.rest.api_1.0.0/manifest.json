@@ -7,6 +7,7 @@
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.mcp","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"}
   ],
   "extends": [
@@ -21,6 +22,11 @@
   		"path": "/apaf-rest"
   	},
   	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.rest.api.tool.invokeRestApi",
+  		"apiId": "apaf.rest.api.handler"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.rest.api.handler",
   		"router": "apaf.rest.api.router",
@@ -28,8 +34,97 @@
   		"schema": "/invoke",
   		"handler": "invokeRestApiHandler",
   		"securityRole": "coreServices",
-		"description": "Invoke a distant REST Service from the APAF runtime",
-		"input": {"host": "abcd","port": 9080,"secured": true,"acceptCertificate": true,"method": "GET/POST/PUT/DELETE","uri": "/abcd","username": "abcd","password": "abcd","options": {},"payload": {}}
+  "description": "Invoke a distant REST Service from the APAF runtime",
+  "input": {"host": "abcd","port": 9080,"secured": true,"acceptCertificate": true,"method": "GET/POST/PUT/DELETE","uri": "/abcd","username": "abcd","password": "abcd","options": {},"payload": {}},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {
+  				"title": "REST API Invoker",
+  				"version": "1.0.0",
+  				"description": "Invoke a distant REST service from the APAF runtime"
+  			},
+  			"paths": {
+  				"/apaf-rest/invoke": {
+  					"post": {
+  						"operationId": "invokeRestApi",
+  						"summary": "Invoke a distant REST service",
+  						"description": "Performs an HTTP call (GET, POST, PUT or DELETE) to a remote host using the APAF runtime as proxy. Returns the response body and headers.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["host", "uri", "method"],
+  										"properties": {
+  											"host": {
+  												"type": "string",
+  												"description": "Hostname or IP address of the target server"
+  											},
+  											"port": {
+  												"type": "integer",
+  												"description": "TCP port of the target server (optional, defaults to 80 or 443)"
+  											},
+  											"secured": {
+  												"type": "boolean",
+  												"description": "Use HTTPS when true, HTTP when false"
+  											},
+  											"acceptCertificate": {
+  												"type": "boolean",
+  												"description": "Accept self-signed or untrusted TLS certificates"
+  											},
+  											"method": {
+  												"type": "string",
+  												"enum": ["GET", "POST", "PUT", "DELETE"],
+  												"description": "HTTP method to use"
+  											},
+  											"uri": {
+  												"type": "string",
+  												"description": "Request path (e.g. /api/v1/resource)"
+  											},
+  											"username": {
+  												"type": "string",
+  												"description": "Basic-auth username (optional)"
+  											},
+  											"password": {
+  												"type": "string",
+  												"description": "Basic-auth password (optional)"
+  											},
+  											"options": {
+  												"type": "object",
+  												"description": "Additional Axios request options (e.g. custom headers)"
+  											},
+  											"payload": {
+  												"type": "object",
+  												"description": "Request body to send for POST and PUT calls"
+  											}
+  										}
+  									}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {
+  								"description": "Successful invocation",
+  								"content": {
+  									"application/json": {
+  										"schema": {
+  											"type": "object",
+  											"properties": {
+  												"status": { "type": "integer" },
+  												"message": { "type": "string" },
+  												"data": { "type": "object" },
+  												"headers": { "type": "object" }
+  											}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "apaf.datatype.object.initializer",
