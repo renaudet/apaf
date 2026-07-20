@@ -7,6 +7,7 @@
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.mcp","version": "1.0.0"},
   	{"type": "plugin","id": "npa.workspace","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
   	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"}
@@ -23,6 +24,41 @@
   		"path": "/apaf-workspace"
   	},
   	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workspace.tool.findProject",
+  		"apiId": "apaf.workspace.project.find.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workspace.tool.createProject",
+  		"apiId": "apaf.workspace.project.create.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workspace.tool.createFolder",
+  		"apiId": "apaf.workspace.folder.create.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workspace.tool.readFolderContent",
+  		"apiId": "apaf.workspace.folder.read.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workspace.tool.readFile",
+  		"apiId": "apaf.workspace.file.read.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workspace.tool.writeFile",
+  		"apiId": "apaf.workspace.file.write.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workspace.tool.readBinaryFile",
+  		"apiId": "apaf.workspace.file.read.binary.handler"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.workspace.project.create.handler",
   		"router": "apaf.workspace.router",
@@ -30,8 +66,37 @@
   		"schema": "/project",
   		"handler": "createProjectHandler",
   		"securityRole": "coreServices",
-		"description": "Create a new Project within the Workspace",
-		"input": {"name": "abcd","displayName": "abcd","type": "general"}
+  "description": "Create a new Project within the Workspace",
+  "input": {"name": "abcd","displayName": "abcd","type": "general"},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Workspace Create Project", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-workspace/project": {
+  					"post": {
+  						"operationId": "createWorkspaceProject",
+  						"summary": "Create a new project in the Workspace",
+  						"description": "Creates a new project folder in the APAF workspace.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["name"],
+  										"properties": {
+  											"name": {"type": "string", "description": "Technical name of the project (used as folder name)"},
+  											"displayName": {"type": "string", "description": "Human-readable display name of the project"},
+  											"type": {"type": "string", "description": "Project type (e.g. 'general')"}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -41,8 +106,35 @@
   		"schema": "/project/find",
   		"handler": "findProjectHandler",
   		"securityRole": "coreServices",
-		"description": "Find Projects within the Workspace",
-		"input": {"name": "abcd","type": "abcd"}
+  "description": "Find Projects within the Workspace",
+  "input": {"name": "abcd","type": "abcd"},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Workspace Find Projects", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-workspace/project/find": {
+  					"post": {
+  						"operationId": "findWorkspaceProjects",
+  						"summary": "List projects in the Workspace",
+  						"description": "Returns the list of projects in the APAF workspace matching the optional filter.",
+  						"requestBody": {
+  							"required": false,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"properties": {
+  											"name": {"type": "string", "description": "Filter by project name (optional)"},
+  											"type": {"type": "string", "description": "Filter by project type (optional)"}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -52,8 +144,36 @@
   		"schema": "/folder",
   		"handler": "createFolderHandler",
   		"securityRole": "coreServices",
-		"description": "Create a Folder within an existing Project in the Workspace",
-		"input": {"project": "abcd","folder": "abcd"}
+  "description": "Create a Folder within an existing Project in the Workspace",
+  "input": {"project": "abcd","folder": "abcd"},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Workspace Create Folder", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-workspace/folder": {
+  					"post": {
+  						"operationId": "createWorkspaceFolder",
+  						"summary": "Create a folder in a Workspace project",
+  						"description": "Creates a new folder inside an existing project in the APAF workspace.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["project", "folder"],
+  										"properties": {
+  											"project": {"type": "string", "description": "Name of the target project"},
+  											"folder": {"type": "string", "description": "Relative path of the folder to create (e.g. 'src/utils')"}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -63,8 +183,26 @@
   		"schema": "/folder",
   		"handler": "readFolderContentHandler",
   		"securityRole": "coreServices",
-		"description": "Get the content of an existing Folder within the Workspace",
-		"input": "project=abcd&folder=abcd&hidden=true"
+  "description": "Get the content of an existing Folder within the Workspace",
+  "input": "project=abcd&folder=abcd&hidden=true",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Workspace Read Folder", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-workspace/folder": {
+  					"get": {
+  						"operationId": "readWorkspaceFolderContent",
+  						"summary": "List the content of a Workspace folder",
+  						"description": "Returns the list of files and sub-folders in a given project folder.",
+  						"parameters": [
+  							{"name": "project", "in": "query", "required": true, "description": "Name of the project", "schema": {"type": "string"}},
+  							{"name": "folder", "in": "query", "required": false, "description": "Relative sub-folder path within the project (omit for project root)", "schema": {"type": "string"}},
+  							{"name": "hidden", "in": "query", "required": false, "description": "Include hidden files when true", "schema": {"type": "boolean"}}
+  						]
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -74,7 +212,23 @@
   		"schema": "/file/:encrypted",
   		"handler": "readFileContentHandler",
   		"securityRole": "coreServices",
-		"description": "Get the content of an existing file within the Workspace given its Base64-encoded relative Path"
+  "description": "Get the content of an existing file within the Workspace given its Base64-encoded relative Path",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Workspace Read File", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-workspace/file/{encrypted}": {
+  					"get": {
+  						"operationId": "readWorkspaceFile",
+  						"summary": "Read the content of a Workspace file",
+  						"description": "Returns the text content of a file. The path parameter must be the Base64 encoding of the relative file path within the workspace (e.g. Base64('myProject/src/app.js')).",
+  						"parameters": [
+  							{"name": "encrypted", "in": "path", "required": true, "description": "Base64-encoded relative file path (e.g. Base64('myProject/src/app.js'))", "schema": {"type": "string"}}
+  						]
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -84,7 +238,23 @@
   		"schema": "/binaryFile/:encrypted",
   		"handler": "readBinaryFileContentHandler",
   		"securityRole": "coreServices",
-		"description": "Get the content of a File within the Workspace as binary data"
+  		"description": "Get the content of a File within the Workspace as binary data",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Read A Binary File From APAF Workspace", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-workspace/binaryFile/{encrypted}": {
+  					"get": {
+  						"operationId": "readWorkspaceBinaryFile",
+  						"summary": "Download a binary file from the APAF Workspace",
+  						"description": "Returns the binary content of a file as a base64-encoded MCP resource. The path parameter must be the Base64 encoding of the relative file path within the workspace (e.g. Base64('myProject/assets/image.png')).",
+  						"parameters": [
+  							{"name": "encrypted", "in": "path", "required": true, "description": "Base64-encoded relative file path (e.g. Base64('myProject/assets/image.png'))", "schema": {"type": "string"}}
+  						]
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -94,8 +264,35 @@
   		"schema": "/file/:encrypted",
   		"handler": "writeFileHandler",
   		"securityRole": "coreServices",
-		"description": "Update the content of a File within the Workspace",
-		"input": "some file content..."
+  "description": "Update the content of a File within the Workspace",
+  "input": "some file content...",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Workspace Write File", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-workspace/file/{encrypted}": {
+  					"put": {
+  						"operationId": "writeWorkspaceFile",
+  						"summary": "Write the content of a Workspace file",
+  						"description": "Creates or overwrites a text file in the workspace. The path parameter must be the Base64 encoding of the relative file path (e.g. Base64('myProject/src/app.js')). The request body is the raw text content of the file.",
+  						"parameters": [
+  							{"name": "encrypted", "in": "path", "required": true, "description": "Base64-encoded relative file path (e.g. Base64('myProject/src/app.js'))", "schema": {"type": "string"}}
+  						],
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "string",
+  										"description": "Text content to write into the file"
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
