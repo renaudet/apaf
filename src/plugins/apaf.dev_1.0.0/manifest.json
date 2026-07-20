@@ -195,7 +195,9 @@
   												"enum": ["snippet", "library", "servlet", "workflowNode"],
   												"description": "Fragment type"
   											},
-  											"source": {"type": "string", "description": "JavaScript source code of the fragment"}
+  											"source": {"type": "string", "description": "JavaScript source code of the fragment"},
+  											"alias": {"type": "string", "description": "Servlet path alias (required if type is 'servlet'). The servlet will be accessible at /apaf-api/servlet/<alias>"},
+  											"enabled": {"type": "boolean", "description": "Enable or disable routing to the servlet (required if type is 'servlet')"}
   										}
   									}
   								}
@@ -243,7 +245,9 @@
   												"enum": ["snippet", "library", "servlet", "workflowNode"],
   												"description": "Fragment type"
   											},
-  											"source": {"type": "string", "description": "JavaScript source code of the fragment"}
+  											"source": {"type": "string", "description": "JavaScript source code of the fragment"},
+  											"alias": {"type": "string", "description": "Servlet path alias (required if type is 'servlet'). The servlet will be accessible at /apaf-api/servlet/<alias>"},
+  											"enabled": {"type": "boolean", "description": "Enable or disable routing to the servlet (required if type is 'servlet')"}
   										}
   									}
   								}
