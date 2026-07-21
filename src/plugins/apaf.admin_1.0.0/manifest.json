@@ -9,7 +9,8 @@
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
-  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.mcp","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -143,6 +144,26 @@
 		}
   	},
   	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.admin.tool.queryUsers",
+  		"apiId": "apaf.admin.query.user.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.admin.tool.queryGroups",
+  		"apiId": "apaf.admin.query.group.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.admin.tool.findGroupById",
+  		"apiId": "apaf.admin.find.group.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.admin.tool.queryRoles",
+  		"apiId": "apaf.admin.query.role.handler"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.admin.query.user.handler",
   		"router": "apaf.admin.router",
@@ -150,8 +171,38 @@
   		"schema": "/user/query",
   		"handler": "queryUserHandler",
   		"securityRole": "manageUser",
-		"description": "Query the list of registered APAF users",
-		"input": {"selector": {"login": {"$regex": "abcd"}}}
+  "description": "Query the list of registered APAF users",
+  "input": {"selector": {"login": {"$regex": "abcd"}}},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Query APAF Users", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-admin/user/query": {
+  			"post": {
+  				"operationId": "queryUsers",
+  				"summary": "Query the list of registered APAF users",
+  				"description": "Returns a list of APAF User records matching the given CouchDB Mango selector. Pass an empty body to retrieve all users. Useful for resolving a login name to its UUID (e.g. for the runAs field of a Scheduler).",
+  				"requestBody": {
+  					"required": false,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"properties": {
+  									"selector": {"type": "object", "description": "A CouchDB Mango selector, e.g. {\"login\":{\"$regex\":\"alice\"}}. Omit to return all users."}
+  								}
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Query successful."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
   	},
   	{
   		"point": "npa.http.handler",
@@ -261,8 +312,38 @@
   		"schema": "/group/query",
   		"handler": "queryGroupHandler",
   		"securityRole": "manageGroup",
-		"description": "Query the list of existing user groups",
-		"input": {"selector": {"description": {"$regex": "abcd"}}}
+  "description": "Query the list of existing user groups",
+  "input": {"selector": {"description": {"$regex": "abcd"}}},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Query APAF Groups", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-admin/group/query": {
+  			"post": {
+  				"operationId": "queryGroups",
+  				"summary": "Query the list of existing APAF user groups",
+  				"description": "Returns a list of Group records matching the given CouchDB Mango selector. Pass an empty body to retrieve all groups. Each group record includes its assigned security roles.",
+  				"requestBody": {
+  					"required": false,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"properties": {
+  									"selector": {"type": "object", "description": "A CouchDB Mango selector, e.g. {\"name\":{\"$eq\":\"developers\"}}. Omit to return all groups."}
+  								}
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Query successful."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
   	},
   	{
   		"point": "npa.http.handler",
@@ -305,8 +386,28 @@
   		"schema": "/group/:id",
   		"handler": "findGroupHandler",
   		"securityRole": "manageGroup",
-		"description": "Get a Group of APAF users given its uuid",
-		"input": ""
+  "description": "Get a Group of APAF users given its uuid",
+  "input": "",
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Find APAF Group by UUID", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-admin/group/{id}": {
+  			"get": {
+  				"operationId": "findGroupById",
+  				"summary": "Get an APAF Group given its UUID",
+  				"description": "Returns a single Group record identified by its UUID, including its list of assigned security roles.",
+  				"parameters": [
+  					{"name": "id", "in": "path", "required": true, "description": "UUID of the group record to retrieve", "schema": {"type": "string"}}
+  				],
+  				"responses": {
+  					"200": {"description": "Group found."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
   	},
   	{
   		"point": "apaf.datatype.base.datatype",
@@ -353,8 +454,38 @@
   		"schema": "/role/query",
   		"handler": "queryRoleHandler",
   		"securityRole": "administrator",
-		"description": "Query the list of APAF Security Roles",
-		"input": {"selector": {"description": {"$regex": "abcd"}}}
+  "description": "Query the list of APAF Security Roles",
+  "input": {"selector": {"description": {"$regex": "abcd"}}},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Query APAF Security Roles", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-admin/role/query": {
+  			"post": {
+  				"operationId": "queryRoles",
+  				"summary": "Query the list of APAF Security Roles",
+  				"description": "Returns a list of Security Role records matching the given CouchDB Mango selector. Pass an empty body to retrieve all roles. Useful to discover available role names before assigning them to a group.",
+  				"requestBody": {
+  					"required": false,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"properties": {
+  									"selector": {"type": "object", "description": "A CouchDB Mango selector, e.g. {\"name\":{\"$eq\":\"developer\"}}. Omit to return all roles."}
+  								}
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Query successful."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
   	},
   	{
   		"point": "npa.http.handler",
