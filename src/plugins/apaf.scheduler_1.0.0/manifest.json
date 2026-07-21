@@ -10,7 +10,8 @@
   	{"type": "plugin","id": "npa.jobs","version": "1.0.0"},
   	{"type": "plugin","id": "npa.runtime.props","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
-  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.mcp","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -45,7 +46,7 @@
 	    			"type": "select",
 	    			"required": true,
 	    			"size": 3,
-	    			"values": ["startup","recurrent","fixed time"]
+	    			"values": ["startup","recurrent","fixed"]
 	    		},
 	    		{
 	    			"name": "active",
@@ -110,6 +111,26 @@
 		"locked": false
   	},
   	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.scheduler.tool.querySchedulers",
+  		"apiId": "apaf.scheduler.query.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.scheduler.tool.createScheduler",
+  		"apiId": "apaf.scheduler.create.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.scheduler.tool.updateScheduler",
+  		"apiId": "apaf.scheduler.update.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.scheduler.tool.deleteScheduler",
+  		"apiId": "apaf.scheduler.delete.handler"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.scheduler.query.handler",
   		"router": "apaf.scheduler.router",
@@ -117,8 +138,38 @@
   		"schema": "/query",
   		"handler": "querySchedulersHandler",
   		"securityRole": "administrator",
-		"description": "Query the list of registered Schedulers",
-		"input": {"selector": {"active": {"$eq": true}}}
+  "description": "Query the list of registered Schedulers",
+  "input": {"selector": {"active": {"$eq": true}}},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Scheduler Query", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-scheduler/query": {
+  			"post": {
+  				"operationId": "querySchedulers",
+  				"summary": "Query the list of registered Schedulers",
+  				"description": "Returns a list of Scheduling Rule records matching the given CouchDB Mango selector. Pass an empty body to retrieve all schedulers.",
+  				"requestBody": {
+  					"required": false,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"properties": {
+  									"selector": {"type": "object", "description": "A CouchDB Mango selector, e.g. {\"active\":{\"$eq\":true}}. Omit to return all records."}
+  								}
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Query successful."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
   	},
   	{
   		"point": "npa.http.handler",
@@ -128,8 +179,47 @@
   		"schema": "/",
   		"handler": "createSchedulerHandler",
   		"securityRole": "administrator",
-		"description": "Create a new Scheduler record",
-		"input": {"name": "abcd","type": "startup/recurrent/fixed","active": false,"description": "abcd","servlet": "abcd-abcd-abcd-abcd","workflow": "abcd-abcd-abcd-abcd","runAs": "abcd-abcd-abcd-abcd","delay": 123,"time": "12:00:00"}
+  "description": "Create a new Scheduler record",
+  "input": {"name": "abcd","type": "startup/recurrent/fixed","active": false,"description": "abcd","servlet": "abcd-abcd-abcd-abcd","workflow": "abcd-abcd-abcd-abcd","runAs": "abcd-abcd-abcd-abcd","delay": 123,"time": "12:00:00"},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Create Scheduler", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-scheduler/": {
+  			"post": {
+  				"operationId": "createScheduler",
+  				"summary": "Create a new Scheduling Rule",
+  				"description": "Creates a new Scheduling Rule record. Use type 'startup' to run once at server start, 'recurrent' to repeat every N minutes (set delay), or 'fixed' to run at a specific time each day (set time). Provide either servlet (snippet UUID) or workflow (workflow UUID) as the target to execute. runAs must be the UUID of an existing APAF user.",
+  				"requestBody": {
+  					"required": true,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"required": ["name", "type", "runAs"],
+  								"properties": {
+  									"name":        {"type": "string", "description": "Name of the scheduling rule"},
+  									"type":        {"type": "string", "enum": ["startup", "recurrent", "fixed"], "description": "Execution type: 'startup' (once at server start), 'recurrent' (every N minutes), 'fixed' (daily at a fixed time)"},
+  									"active":      {"type": "boolean", "description": "Whether the rule is active (default: false)"},
+  									"description": {"type": "string", "description": "Optional description"},
+  									"servlet":     {"type": "string", "description": "UUID of the code snippet (fragment) to execute. Mutually exclusive with workflow."},
+  									"workflow":    {"type": "string", "description": "UUID of the APAF workflow to execute. Mutually exclusive with servlet."},
+  									"runAs":       {"type": "string", "description": "UUID of the APAF user under whose identity the task executes"},
+  									"delay":       {"type": "integer", "description": "Repeat interval in minutes (required when type is 'recurrent')"},
+  									"time":        {"type": "string", "description": "Execution time as HH:mm:ss (required when type is 'fixed')"}
+  								}
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Scheduler created successfully."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
   	},
   	{
   		"point": "npa.http.handler",
@@ -139,8 +229,49 @@
   		"schema": "/",
   		"handler": "updateSchedulerHandler",
   		"securityRole": "administrator",
-		"description": "Update a given SCheduler record",
-		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","type": "startup/recurrent/fixed","active": false,"description": "abcd","servlet": "abcd-abcd-abcd-abcd","workflow": "abcd-abcd-abcd-abcd","runAs": "abcd-abcd-abcd-abcd","delay": 123,"time": "12:00:00"}
+  "description": "Update an existing Scheduler record",
+  "input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","type": "startup/recurrent/fixed","active": false,"description": "abcd","servlet": "abcd-abcd-abcd-abcd","workflow": "abcd-abcd-abcd-abcd","runAs": "abcd-abcd-abcd-abcd","delay": 123,"time": "12:00:00"},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Update Scheduler", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-scheduler/": {
+  			"put": {
+  				"operationId": "updateScheduler",
+  				"summary": "Update an existing Scheduling Rule",
+  				"description": "Updates an existing Scheduling Rule record. The record must include its id and _rev fields for optimistic concurrency control. Note: the lastExecuted field is automatically cleared on update, which forces immediate re-execution on the next engine tick.",
+  				"requestBody": {
+  					"required": true,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"required": ["id"],
+  								"properties": {
+  									"id":          {"type": "string", "description": "UUID of the scheduler record to update"},
+  									"_rev":        {"type": "string", "description": "CouchDB revision token for optimistic concurrency"},
+  									"name":        {"type": "string", "description": "Name of the scheduling rule"},
+  									"type":        {"type": "string", "enum": ["startup", "recurrent", "fixed"], "description": "Execution type"},
+  									"active":      {"type": "boolean", "description": "Whether the rule is active"},
+  									"description": {"type": "string", "description": "Optional description"},
+  									"servlet":     {"type": "string", "description": "UUID of the code snippet (fragment) to execute"},
+  									"workflow":    {"type": "string", "description": "UUID of the APAF workflow to execute"},
+  									"runAs":       {"type": "string", "description": "UUID of the APAF user under whose identity the task executes"},
+  									"delay":       {"type": "integer", "description": "Repeat interval in minutes (for type 'recurrent')"},
+  									"time":        {"type": "string", "description": "Execution time as HH:mm:ss (for type 'fixed')"}
+  								}
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Scheduler updated successfully."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
   	},
   	{
   		"point": "npa.http.handler",
@@ -150,7 +281,27 @@
   		"schema": "/:id",
   		"handler": "deleteSchedulerHandler",
   		"securityRole": "administrator",
-		"description": "Delete an existing Scheduler record given its uuid"
+  "description": "Delete an existing Scheduler record given its uuid",
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Delete Scheduler", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-scheduler/{id}": {
+  			"delete": {
+  				"operationId": "deleteScheduler",
+  				"summary": "Delete a Scheduling Rule given its UUID",
+  				"description": "Deletes an existing Scheduling Rule record. Requires the administrator security role.",
+  				"parameters": [
+  					{"name": "id", "in": "path", "required": true, "description": "UUID of the scheduler record to delete", "schema": {"type": "string"}}
+  				],
+  				"responses": {
+  					"200": {"description": "Scheduler deleted successfully."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
   	},
   	{
   		"point": "apaf.menu.item.provider",
