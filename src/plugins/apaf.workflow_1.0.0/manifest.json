@@ -12,7 +12,8 @@
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.admin","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
-  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.mcp","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -130,6 +131,16 @@
 		"locked": false
   	},
   	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workflow.tool.queryWorkflows",
+  		"apiId": "apaf.workflow.query.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workflow.tool.getWorkflowByName",
+  		"apiId": "apaf.workflow.get.handler"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.workflow.query.handler",
   		"router": "apaf.workflow.router",
@@ -137,8 +148,38 @@
   		"schema": "/query",
   		"handler": "queryWorkflowHandler",
   		"securityRole": "developer",
-		"description": "Query the list of Workflows",
-		"input": {"selector": {"name": {"$regex": "abcd"}}}
+  "description": "Query the list of Workflows",
+  "input": {"selector": {"name": {"$regex": "abcd"}}},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Query Workflows", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-workflow/query": {
+  			"post": {
+  				"operationId": "queryWorkflows",
+  				"summary": "Query the list of APAF Workflows",
+  				"description": "Returns a list of Workflow records matching the given CouchDB Mango selector. Pass an empty body to retrieve all workflows. Each record includes name, version, description and uuid but not the full node graph.",
+  				"requestBody": {
+  					"required": false,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"properties": {
+  									"selector": {"type": "object", "description": "A CouchDB Mango selector, e.g. {\"name\":{\"$regex\":\"temperature\"}}. Omit to return all workflows."}
+  								}
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Query successful."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
   	},
   	{
   		"point": "npa.http.handler",
@@ -180,7 +221,29 @@
   		"schema": "/:workflowName/:workflowVersion",
   		"handler": "getByNameHandler",
   		"securityRole": "coreServices",
-		"description": "Get an existing Workflow definition gievn its name and version"
+  "description": "Get an existing Workflow definition given its name and version",
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Get Workflow by Name", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-workflow/{workflowName}/{workflowVersion}": {
+  			"get": {
+  				"operationId": "getWorkflowByName",
+  				"summary": "Get a Workflow definition by name and version",
+  				"description": "Returns the full definition of a Workflow given its name and version, including the node graph. Useful to retrieve the workflow UUID for use in a Scheduler.",
+  				"parameters": [
+  					{"name": "workflowName", "in": "path", "required": true, "description": "Name of the workflow", "schema": {"type": "string"}},
+  					{"name": "workflowVersion", "in": "path", "required": true, "description": "Version of the workflow, e.g. 1.0.0", "schema": {"type": "string"}}
+  				],
+  				"responses": {
+  					"200": {"description": "Workflow found."},
+  					"404": {"description": "Workflow not found."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
   	},
   	{
   		"point": "apaf.datatype.object.initializer",
