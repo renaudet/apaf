@@ -302,10 +302,8 @@
   							"schema": {
   								"type": "object",
   								"properties": {
-  									"status":   {"type": "string", "description": "Initial workflow status, typically 'pending'"},
-  									"_options": {"type": "object", "description": "Optional engine options: {noTimeout: true} to disable timeout, {noLogging: true} to suppress _console output"}
-  								},
-  								"additionalProperties": true
+  									"data": {"type": "object", "description": "The initial execution context passed to the workflow. Use {\"status\": \"pending\"} for workflows that need no input. For workflows that require input data, add the expected properties to the context object (e.g. {\"status\": \"pending\", \"argument1\": \"some value\", \"argument2\": false}). Use _options to control engine behaviour ({\"noTimeout\": true, \"noLogging\": true})."}
+  								}
   							}
   						}
   					}
