@@ -141,6 +141,11 @@
   		"apiId": "apaf.workflow.get.handler"
   	},
   	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workflow.tool.executeWorkflow",
+  		"apiId": "apaf.workflow.execute.handler"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.workflow.query.handler",
   		"router": "apaf.workflow.router",
@@ -276,8 +281,43 @@
   		"schema": "/execute/:id",
   		"handler": "executeWorkflowHandler",
   		"securityRole": "coreServices",
-		"description": "Execute an existing Workflow given its definition uuid",
-		"input": {"prop1": "value1"}
+  "description": "Execute an existing Workflow given its definition uuid",
+  "input": {"prop1": "value1"},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Execute Workflow", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-workflow/execute/{id}": {
+  			"post": {
+  				"operationId": "executeWorkflow",
+  				"summary": "Execute an APAF Workflow given its UUID",
+  				"description": "Executes a Workflow synchronously and returns the runtime context after execution. The request body is the initial execution context passed to the workflow. Use {\"status\": \"pending\"} for workflows that need no input. For workflows that require input data, add the expected properties to the context object (e.g. {\"status\": \"pending\", \"argument1\": \"some value\", \"argument2\": false}). The response data contains the final context, including a '_console' array with execution log events. Use _options to control engine behaviour ({\"noTimeout\": true, \"noLogging\": true}).",
+  				"parameters": [
+  					{"name": "id", "in": "path", "required": true, "description": "UUID of the Workflow definition to execute", "schema": {"type": "string"}}
+  				],
+  				"requestBody": {
+  					"required": false,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"properties": {
+  									"status":   {"type": "string", "description": "Initial workflow status, typically 'pending'"},
+  									"_options": {"type": "object", "description": "Optional engine options: {noTimeout: true} to disable timeout, {noLogging: true} to suppress _console output"}
+  								},
+  								"additionalProperties": true
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Workflow executed. Response data contains the final runtime context including '_console' log."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
   	},
   	{
   		"point": "npa.http.handler",
