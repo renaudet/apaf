@@ -1,0 +1,122 @@
+/*
+ * apiExplorer.css - styles for the APAF API Explorer page
+ * Copyright 2025 Nicolas Renaudet - All rights reserved
+ */
+
+/* ---------- Method badges ---------- */
+.api-method-badge {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 0.7rem;
+    font-family: monospace;
+    vertical-align: middle;
+    min-width: 44px;
+    text-align: center;
+}
+
+.api-method-badge-lg {
+    padding: 3px 10px;
+    font-size: 0.85rem;
+    min-width: 60px;
+    border-radius: 4px;
+}
+
+/* URI in tree */
+.api-uri-tree {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.8rem;
+    color: #555;
+}
+
+/* ---------- Detail panel ---------- */
+.api-detail-placeholder {
+    padding: 20px;
+    color: #888;
+    font-style: italic;
+}
+
+.api-detail-header {
+    padding: 8px 10px;
+    background-color: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+.api-detail-uri {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    color: #1f2328;
+}
+
+.api-detail-description {
+    color: #444;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    padding-left: 2px;
+}
+
+.api-detail-section-label {
+    font-size: 0.82rem;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.api-security-badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 10px;
+    background-color: #7c5cd8;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.api-detail-pre {
+    background-color: #f4f6f8;
+    border: 1px solid #dde0e4;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    padding: 8px;
+    max-height: 120px;
+    overflow: auto;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+/* ---------- Test panel ---------- */
+.api-detail-test-panel {
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 8px;
+    background-color: #fafafa;
+}
+
+.api-payload-area {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.8rem;
+    resize: vertical;
+}
+
+/* ---------- Result area ---------- */
+.api-result-area {
+    height: 200px;
+    max-height: 200px;
+    overflow: auto;
+    border-radius: 4px;
+    border: 1px solid #333;
+    background-color: #0d0d0d;
+}
+
+.api-result-content {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.78rem;
+    color: #00ff88;
+    padding: 6px 8px;
+    word-break: break-all;
+}

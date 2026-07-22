@@ -1,0 +1,11 @@
+{
+    "id": "apiExplorerCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/uiTools/img/silk/world_link.png",
+        "label": "@apaf.api.explorer.page.title",
+        "headerClass": "bg-secondary bg-gradient bg-opacity-10",
+        "stylesheet": "/apaf-branding/css/apafCard.css"
+    }
+}
