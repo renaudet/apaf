@@ -1,3 +1,9 @@
 apaf.api.explorer.menu.label=API Explorer
 apaf.api.explorer.page.title=API Explorer
 apaf.api.explorer.select.hint=Select an API from the tree on the left to explore it
+apaf.api.explorer.label.uri=URI:
+apaf.api.explorer.label.payload=Payload:
+apaf.api.explorer.label.result=Result:
+apaf.api.explorer.btn.test=Test
+apaf.api.explorer.label.security=Security role:
+apaf.api.explorer.label.request.body=Request body sample:

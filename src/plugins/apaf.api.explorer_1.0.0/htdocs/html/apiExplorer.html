@@ -36,22 +36,22 @@
 						<pre id="apiInputContent" class="api-detail-pre" style="display:none;"></pre>
 						<div class="api-detail-test-panel">
 							<div class="row align-items-center" style="margin-bottom: 6px;">
-								<div class="col-2 form-row-label">URI:</div>
-								<div class="col-8"><input id="testUri" type="text" class="form-control form-control-sm"></div>
-								<div class="col-2"><button id="testRestCallBtn" type="button" class="btn btn-sm btn-primary">Test</button></div>
-							</div>
-							<div class="row" id="payloadRow" style="display:none; margin-bottom: 6px;">
-								<div class="col-2 form-row-label">Payload:</div>
-								<div class="col-10"><textarea id="payload" class="form-control form-control-sm api-payload-area" rows="5"></textarea></div>
-							</div>
-							<div class="row">
-								<div class="col-2 form-row-label">Result:</div>
-								<div class="col-10">
-									<div id="testRestCallResultArea" class="api-result-area">
-										<div id="testRestCallResult" class="api-result-content"></div>
+									<div class="col-2 form-row-label" id="labelUri"></div>
+									<div class="col-8"><input id="testUri" type="text" class="form-control form-control-sm"></div>
+									<div class="col-2"><button id="testRestCallBtn" type="button" class="btn btn-sm btn-primary" id="btnTest"></button></div>
+								</div>
+								<div class="row" id="payloadRow" style="display:none; margin-bottom: 6px;">
+									<div class="col-2 form-row-label" id="labelPayload"></div>
+									<div class="col-10"><textarea id="payload" class="form-control form-control-sm api-payload-area" rows="5"></textarea></div>
+								</div>
+								<div class="row">
+									<div class="col-2 form-row-label" id="labelResult"></div>
+									<div class="col-10 api-result-col">
+										<div id="testRestCallResultArea" class="api-result-area">
+											<div id="testRestCallResult" class="api-result-content"></div>
+										</div>
 									</div>
 								</div>
-							</div>
 						</div>
 					</div>
 				</div>

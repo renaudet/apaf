@@ -105,12 +105,13 @@
 
 /* ---------- Result area ---------- */
 .api-result-area {
+    min-height: 100px;
     height: 200px;
-    max-height: 200px;
     overflow: auto;
     border-radius: 4px;
     border: 1px solid #333;
     background-color: #0d0d0d;
+    resize: vertical;
 }
 
 .api-result-content {

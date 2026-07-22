@@ -20,9 +20,17 @@ initializeUi = function(){
 	npaUi.loadConfigFrom(GLOBAL_CONFIGURATION_FILE,function(){
 		npaUi.initialize(function(){
 			npaUi.render();
+			localizeUi();
 			initApiBrowser();
 		});
 	});
+}
+
+localizeUi = function(){
+	$('#labelUri').text(npaUi.getLocalizedString('@apaf.api.explorer.label.uri'));
+	$('#labelPayload').text(npaUi.getLocalizedString('@apaf.api.explorer.label.payload'));
+	$('#labelResult').text(npaUi.getLocalizedString('@apaf.api.explorer.label.result'));
+	$('#testRestCallBtn').text(npaUi.getLocalizedString('@apaf.api.explorer.btn.test'));
 }
 
 /*--- Tree visitor / decorator / event listener ---*/
@@ -93,13 +101,13 @@ showApiDetail = function(api){
 
 	// Security
 	$('#apiSecurityLabel').html(
-		'<img src="/uiTools/img/silk/lock.png">&nbsp;<b>Security role:</b>&nbsp;'
+		'<b>'+npaUi.getLocalizedString('@apaf.api.explorer.label.security')+'</b>&nbsp;'
 		+'<span class="api-security-badge">'+(api.securityRole||'none')+'</span>'
 	);
 
 	// Input sample for POST/PUT
 	if(('POST'==api.method || 'PUT'==api.method) && api.input){
-		$('#apiInputLabel').html('<b>Request body sample:</b>').show();
+		$('#apiInputLabel').html('<b>'+npaUi.getLocalizedString('@apaf.api.explorer.label.request.body')+'</b>').show();
 		let txt = (typeof api.input=='object')
 			? JSON.stringify(api.input,null,'  ')
 			: api.input;
@@ -165,15 +173,19 @@ parsePayload = function(txt){
 var apiBrowser = null;
 
 initApiBrowser = function(){
-	let resizeTree = function(){
-		let height = $('#card').height() - 40;
-		$('#apiTreeArea').css({'height': height+'px', 'max-height': height+'px', 'overflow': 'auto'});
-		let detailHeight = height;
-		$('#apiDetailArea').css({'height': detailHeight+'px', 'max-height': detailHeight+'px', 'overflow': 'auto'});
-		$('#testRestCallResultArea').css({'height': '200px', 'max-height': '200px'});
+	let resizeColumns = function(){
+		let workAreaHeight = $('#workArea').height();
+		if(workAreaHeight && workAreaHeight > 0){
+			$('#apiTreeArea').css({'height': workAreaHeight+'px', 'overflow': 'auto'});
+			$('#apiDetailArea').css({'height': workAreaHeight+'px', 'overflow-y': 'auto'});
+		}
 	};
-	resizeTree();
-	$(window).on('resize', resizeTree);
+	// initial resize
+	setTimeout(resizeColumns, 100);
+	// re-trigger on window resize
+	$(window).on('resize', function(){
+		setTimeout(resizeColumns, 50);
+	});
 
 	$('#selectApiHint').text(npaUi.getLocalizedString('@apaf.api.explorer.select.hint'));
 
