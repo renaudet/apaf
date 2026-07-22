@@ -4,6 +4,8 @@
  */
 
 const GLOBAL_CONFIGURATION_FILE = '/resources/json/globalApafConfig.json';
+const API_FIND_URI = '/apaf-api-management/find';
+const REST_INVOKE_URI = '/apaf-rest/invoke';
 
 const METHOD_COLORS = {
 	'GET':    '#61affe',
@@ -11,6 +13,9 @@ const METHOD_COLORS = {
 	'PUT':    '#fca130',
 	'DELETE': '#f93e3e'
 };
+
+// null = local mode; object = remote mode
+var remoteContext = null;
 
 $(document).ready(function(){
 	checkSessionStatus(initializeUi);
@@ -21,16 +26,99 @@ initializeUi = function(){
 		npaUi.initialize(function(){
 			npaUi.render();
 			localizeUi();
+			initRemoteControls();
 			initApiBrowser();
 		});
 	});
 }
 
+/*--- i18n ---*/
+
 localizeUi = function(){
-	$('#labelUri').text(npaUi.getLocalizedString('@apaf.api.explorer.label.uri'));
-	$('#labelPayload').text(npaUi.getLocalizedString('@apaf.api.explorer.label.payload'));
-	$('#labelResult').text(npaUi.getLocalizedString('@apaf.api.explorer.label.result'));
-	$('#testRestCallBtn').text(npaUi.getLocalizedString('@apaf.api.explorer.btn.test'));
+	$('#labelUri').html(npaUi.getLocalizedString('@apaf.api.explorer.label.uri'));
+	$('#labelPayload').html(npaUi.getLocalizedString('@apaf.api.explorer.label.payload'));
+	$('#labelResult').html(npaUi.getLocalizedString('@apaf.api.explorer.label.result'));
+	$('#copyResultBtn').attr('title', npaUi.getLocalizedString('@apaf.api.explorer.btn.copy.tooltip'));
+	$('#testRestCallBtn').html(npaUi.getLocalizedString('@apaf.api.explorer.btn.test'));
+	$('#remoteBtn').html(npaUi.getLocalizedString('@apaf.api.explorer.btn.remote'));
+	$('#clearRemoteBtn').html(npaUi.getLocalizedString('@apaf.api.explorer.btn.clear'));
+	$('#remoteModalTitle').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.title'));
+	$('#remoteModalHostLabel').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.host'));
+	$('#remoteSecuredLabel').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.secured'));
+	$('#remoteAcceptCertLabel').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.accept.cert'));
+	$('#remoteModalUserLabel').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.username'));
+	$('#remoteModalPwdLabel').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.password'));
+	$('#remoteModalCancelBtn').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.cancel'));
+	$('#remoteModalConnectBtn').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.connect'));
+}
+
+/*--- Remote context controls ---*/
+
+initRemoteControls = function(){
+	$('#remoteBtn').on('click', function(){
+		// pre-fill modal if context already set
+		if(remoteContext){
+			$('#remoteHost').val(remoteContext.host);
+			$('#remotePort').val(remoteContext.port || '');
+			$('#remoteSecured').prop('checked', remoteContext.secured || false);
+			$('#remoteAcceptCert').prop('checked', remoteContext.acceptCertificate || false);
+			$('#remoteUsername').val(remoteContext.username || '');
+			$('#remotePassword').val(remoteContext.password || '');
+		}else{
+			$('#remoteHost').val('');
+			$('#remotePort').val('');
+			$('#remoteSecured').prop('checked', false);
+			$('#remoteAcceptCert').prop('checked', false);
+			$('#remoteUsername').val('');
+			$('#remotePassword').val('');
+		}
+		$('#remoteContextModal').show();
+	});
+
+	$('#remoteModalCloseBtn, #remoteModalCancelBtn').on('click', function(){
+		$('#remoteContextModal').hide();
+	});
+
+	$('#remoteModalConnectBtn').on('click', function(){
+		let host = $('#remoteHost').val().trim();
+		if(!host){
+			showError(npaUi.getLocalizedString('@apaf.api.explorer.modal.host.required'));
+			return;
+		}
+		remoteContext = {
+			host:              host,
+			port:              parseInt($('#remotePort').val()) || null,
+			secured:           $('#remoteSecured').is(':checked'),
+			acceptCertificate: $('#remoteAcceptCert').is(':checked'),
+			username:          $('#remoteUsername').val().trim() || null,
+			password:          $('#remotePassword').val() || null
+		};
+		if(!remoteContext.port) delete remoteContext.port;
+		if(!remoteContext.username) delete remoteContext.username;
+		if(!remoteContext.password) delete remoteContext.password;
+		$('#remoteContextModal').hide();
+		updateRemoteStatusBar();
+		loadApiList();
+	});
+
+	$('#clearRemoteBtn').on('click', function(){
+		remoteContext = null;
+		updateRemoteStatusBar();
+		loadApiList();
+	});
+}
+
+updateRemoteStatusBar = function(){
+	if(remoteContext){
+		let label = (remoteContext.secured ? 'https' : 'http') + '://' + remoteContext.host;
+		if(remoteContext.port) label += ':' + remoteContext.port;
+		$('#remoteStatusLabel').text(label);
+		$('#remoteStatusBar').show();
+		$('#remoteBtn').addClass('btn-warning').removeClass('btn-outline-secondary');
+	}else{
+		$('#remoteStatusBar').hide();
+		$('#remoteBtn').removeClass('btn-warning').addClass('btn-outline-secondary');
+	}
 }
 
 /*--- Tree visitor / decorator / event listener ---*/
@@ -91,33 +179,26 @@ var apiEventListener = {
 showApiDetail = function(api){
 	let color = METHOD_COLORS[api.method] || '#aaa';
 
-	// Header: method badge + URI
 	let headerHtml = '<span class="api-method-badge api-method-badge-lg" style="background-color:'+color+';">'+api.method+'</span>';
 	headerHtml += '&nbsp;<span class="api-detail-uri">'+api.uri+'</span>';
 	$('#apiDetailHeader').html(headerHtml);
 
-	// Description
 	$('#apiDetailDescription').text(api.description || '');
 
-	// Security
 	$('#apiSecurityLabel').html(
 		'<b>'+npaUi.getLocalizedString('@apaf.api.explorer.label.security')+'</b>&nbsp;'
 		+'<span class="api-security-badge">'+(api.securityRole||'none')+'</span>'
 	);
 
-	// Input sample for POST/PUT
 	if(('POST'==api.method || 'PUT'==api.method) && api.input){
 		$('#apiInputLabel').html('<b>'+npaUi.getLocalizedString('@apaf.api.explorer.label.request.body')+'</b>').show();
-		let txt = (typeof api.input=='object')
-			? JSON.stringify(api.input,null,'  ')
-			: api.input;
+		let txt = (typeof api.input=='object') ? JSON.stringify(api.input,null,'  ') : api.input;
 		$('#apiInputContent').text(txt).show();
 	}else{
 		$('#apiInputLabel').hide();
 		$('#apiInputContent').hide();
 	}
 
-	// Test panel setup
 	$('#testUri').val(api.uri);
 
 	if('POST'==api.method || 'PUT'==api.method){
@@ -141,22 +222,50 @@ showApiDetail = function(api){
 		let targetUri = $('#testUri').val();
 		let method = api.method;
 		let payload = ('POST'==method || 'PUT'==method) ? parsePayload($('#payload').val()) : {};
-		apaf.call({
-			"method": method,
-			"uri": targetUri,
-			"payload": payload
-		}).then(function(data){
-			let formatted = JSON.stringify(data,null,'  ')
-				.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-				.replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
-			$('#testRestCallResult').html(formatted);
-		}).onError(function(errorMsg){
-			showError(errorMsg?(errorMsg.message?errorMsg.message:errorMsg):'An exception was caught!');
-		});
+
+		if(remoteContext){
+			// indirect call via /apaf-rest/invoke
+			let invokePayload = Object.assign({}, remoteContext, {
+				method:  method,
+				uri:     targetUri,
+				payload: payload
+			});
+			apaf.call({
+				"method": "POST",
+				"uri": REST_INVOKE_URI,
+				"payload": invokePayload
+			}).then(function(response){
+				renderResult(response.data !== undefined ? response.data : response);
+			}).onError(function(errorMsg){
+				showError(errorMsg?(errorMsg.message?errorMsg.message:errorMsg):'An exception was caught!');
+			});
+		}else{
+			// direct local call
+			apaf.call({
+				"method": method,
+				"uri": targetUri,
+				"payload": payload
+			}).then(function(data){
+				renderResult(data);
+			}).onError(function(errorMsg){
+				showError(errorMsg?(errorMsg.message?errorMsg.message:errorMsg):'An exception was caught!');
+			});
+		}
 	});
 
 	$('#apiDetailPlaceholder').hide();
 	$('#apiDetailContent').show();
+}
+
+renderResult = function(data){
+	if(data===null || data===undefined){
+		$('#testRestCallResult').html('[&nbsp;]');
+		return;
+	}
+	let formatted = JSON.stringify(data,null,'  ')
+		.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+		.replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
+	$('#testRestCallResult').html(formatted);
 }
 
 parsePayload = function(txt){
@@ -168,27 +277,9 @@ parsePayload = function(txt){
 	}
 }
 
-/*--- Tree init & model ---*/
+/*--- API list loading (local or remote) ---*/
 
-var apiBrowser = null;
-
-initApiBrowser = function(){
-	let resizeColumns = function(){
-		let workAreaHeight = $('#workArea').height();
-		if(workAreaHeight && workAreaHeight > 0){
-			$('#apiTreeArea').css({'height': workAreaHeight+'px', 'overflow': 'auto'});
-			$('#apiDetailArea').css({'height': workAreaHeight+'px', 'overflow-y': 'auto'});
-		}
-	};
-	// initial resize
-	setTimeout(resizeColumns, 100);
-	// re-trigger on window resize
-	$(window).on('resize', function(){
-		setTimeout(resizeColumns, 50);
-	});
-
-	$('#selectApiHint').text(npaUi.getLocalizedString('@apaf.api.explorer.select.hint'));
-
+loadApiList = function(){
 	$('#apiTreeArea').empty();
 	apiBrowser = new TreeViewer('apiBrowser', $('#apiTreeArea')[0]);
 	apiBrowser.init();
@@ -196,17 +287,40 @@ initApiBrowser = function(){
 	apiBrowser.setDecorator(apiDecorator);
 	apiBrowser.setEventListener(apiEventListener);
 
-	apaf.call({
-		"method": "GET",
-		"uri": "/apaf-api-management/find",
-		"payload": {}
-	}).then(function(data){
-		let model = createApiModel(data);
-		apiBrowser.addRootData(model);
-		apiBrowser.refreshTree();
-	}).onError(function(errorMsg){
-		showError(errorMsg.message?errorMsg.message:errorMsg);
-	});
+	// reset detail panel
+	$('#apiDetailContent').hide();
+	$('#apiDetailPlaceholder').show();
+
+	if(remoteContext){
+		let invokePayload = Object.assign({}, remoteContext, {
+			method: 'GET',
+			uri:    API_FIND_URI
+		});
+		apaf.call({
+			"method": "POST",
+			"uri": REST_INVOKE_URI,
+			"payload": invokePayload
+		}).then(function(response){
+			let apiData = response.data !== undefined ? response.data : response;
+			let model = createApiModel(apiData);
+			apiBrowser.addRootData(model);
+			apiBrowser.refreshTree();
+		}).onError(function(errorMsg){
+			showError(errorMsg.message?errorMsg.message:errorMsg);
+		});
+	}else{
+		apaf.call({
+			"method": "GET",
+			"uri": API_FIND_URI,
+			"payload": {}
+		}).then(function(data){
+			let model = createApiModel(data);
+			apiBrowser.addRootData(model);
+			apiBrowser.refreshTree();
+		}).onError(function(errorMsg){
+			showError(errorMsg.message?errorMsg.message:errorMsg);
+		});
+	}
 }
 
 createApiModel = function(apiData){
@@ -237,4 +351,41 @@ createApiModel = function(apiData){
 		apafRoot.plugins.push(plugins[pluginId]);
 	}
 	return apafRoot;
+}
+
+/*--- Browser init ---*/
+
+var apiBrowser = null;
+
+initApiBrowser = function(){
+	let resizeColumns = function(){
+		let workAreaHeight = $('#workArea').height();
+		if(workAreaHeight && workAreaHeight > 0){
+			$('#apiLeftCol').css({'height': workAreaHeight+'px'});
+			$('#apiDetailArea').css({'height': workAreaHeight+'px', 'overflow-y': 'auto'});
+		}
+	};
+	setTimeout(resizeColumns, 100);
+	$(window).on('resize', function(){
+		setTimeout(resizeColumns, 50);
+	});
+
+	$('#selectApiHint').text(npaUi.getLocalizedString('@apaf.api.explorer.select.hint'));
+
+	$('#copyResultBtn').on('click', function(){
+		let text = $('#testRestCallResult').text().replace(/\u00a0/g,' ');
+		if(navigator.clipboard){
+			navigator.clipboard.writeText(text);
+		}else{
+			let ta = document.createElement('textarea');
+			ta.value = text;
+			document.body.appendChild(ta);
+			ta.select();
+			document.execCommand('copy');
+			document.body.removeChild(ta);
+		}
+		flash('@apaf.api.explorer.btn.copy.flash');
+	});
+
+	loadApiList();
 }

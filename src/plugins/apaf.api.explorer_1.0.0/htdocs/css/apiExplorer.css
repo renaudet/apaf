@@ -3,6 +3,62 @@
  * Copyright 2025 Nicolas Renaudet - All rights reserved
  */
 
+/* ---------- Left column toolbar ---------- */
+.api-tree-toolbar {
+    padding: 4px 2px;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 4px;
+}
+
+/* ---------- Remote status bar ---------- */
+.api-remote-status-bar {
+    background-color: #c47400;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+/* ---------- Remote context modal ---------- */
+.api-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.45);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.api-modal-box {
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    width: 480px;
+    max-width: 96vw;
+}
+
+.api-modal-header {
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid #e5e7eb;
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+
+.api-modal-body {
+    padding: 14px;
+}
+
+.api-modal-footer {
+    padding: 8px 14px 12px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
 /* ---------- Method badges ---------- */
 .api-method-badge {
     display: inline-block;
