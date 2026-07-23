@@ -224,12 +224,16 @@ plugin.queryUserDataHandler = function(req,res){
 				}else{
 					if(data && data.length>0){
 						let datatypeRecord = data[0];
+						plugin.trace('a valid datatype "'+datatypeName+'" was found!');
+						plugin.trace('datatypeRecord: '+JSON.stringify(datatypeRecord,null,'\t'));
+						plugin.trace('User: '+JSON.stringify(user,null,'\t'));
 						if(user.isAdmin || datatypeRecord.readRole.length==0 ||
 						   typeof user.roles[datatypeRecord.readRole]!='undefined'){
 							let selector = {};
 							if(req.body && typeof req.body=='object' && req.body.selector){
 								selector = req.body;
 							}
+							plugin.trace('selector: '+JSON.stringify(selector,null,'\t'));
 							datatypePlugin.query(datatypeRecord.name,selector,function(err,data){
 								if(err){
 									plugin.debug('<-queryUserDataHandler() - error database');
