@@ -1,0 +1,82 @@
+{
+  "id": "apaf.application.explorer",
+  "name": "Application Explorer plugin for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.application.explorer.logger",
+  		"dir": "apaf.application.explorer"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.application.explorer.htdocs",
+  		"path": "/apaf-application-explorer",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.application.explorer.router",
+  		"path": "/apaf-application-explorer-api"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.application.explorer.query.handler",
+  		"router": "apaf.application.explorer.router",
+  		"method": "GET",
+  		"schema": "/applications",
+  		"handler": "queryApplicationsHandler",
+  		"securityRole": "",
+  		"description": "Get the list of published APAF Applications accessible to the connected user"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.explorer.locale.provider.enUS",
+  		"path": "i18n/apaf_application_explorer_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.explorer.locale.provider.en",
+  		"path": "i18n/apaf_application_explorer_en-US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.explorer.locale.provider.frFR",
+  		"path": "i18n/apaf_application_explorer_fr-FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.explorer.locale.provider.fr",
+  		"path": "i18n/apaf_application_explorer_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.application.explorer.menu.item",
+  		"menu": "builtinAppsMenuPlaceholder",
+  		"securityRole": "",
+  		"item": {
+  			"id": "applicationExplorer",
+  			"label": "@apaf.application.explorer.menu.label",
+  			"actionId": "redirect",
+  			"icon": "/uiTools/img/silk/application_view_tile.png",
+  			"uri": "/apaf-application-explorer/html/applicationExplorer.html"
+  		}
+  	}
+  ],
+  "provides": [
+  ]
+}
