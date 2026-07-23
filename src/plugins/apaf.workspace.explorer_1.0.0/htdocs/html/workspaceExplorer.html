@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="All-Purpose-Application-Framework Workspace Explorer Page">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link rel="icon" type="image/png" href="/apaf-branding/img/apaf-logo.png?version=1.0"/>
+		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/resources/css/apaf.css" rel="stylesheet">
+		<link href="/css/treeViewer.css" rel="stylesheet">
+		<link href="/apaf-workspace-explorer/css/workspaceExplorer.css" rel="stylesheet">
+		<title>All Purpose Application Framework</title>
+	</head>
+	<body>
+		<div id="navBar" class="npaUi" data-ref="menu"></div>
+		<div id="card" class="npaUi" data-config="/apaf-workspace-explorer/json/workspaceExplorerCardConfig.json">
+			<div class="row" style="margin-top: 5px;">
+
+				<!-- Left column: toolbar + tree -->
+				<div class="col-4 wex-left-col" id="wexLeftCol">
+					<!-- Main toolbar -->
+					<div id="wexToolbar" class="npaUi" data-config="/apaf-workspace-explorer/json/workspaceExplorerToolbar.json"></div>
+					<!-- Tree + drop overlay -->
+					<div class="wex-tree-wrapper">
+						<div id="wexTreeArea" class="wex-tree-area"></div>
+						<div class="wex-drop-overlay" id="wexDropOverlay">
+							<span id="wexDropHint"></span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Right column: content area -->
+				<div class="col-8 wex-right-col" id="wexRightCol">
+					<!-- Hint (default) -->
+					<div id="wexHint" class="wex-hint">
+						<img src="/uiTools/img/silk/folder_explore.png">&nbsp;<span id="wexHintText"></span>
+					</div>
+
+					<!-- Text editor -->
+					<div id="wexEditorPanel" class="wex-editor-panel" style="display:none;">
+						<div class="wex-editor-toolbar">
+							<button id="btnEdit" type="button" class="btn btn-sm btn-outline-primary" disabled>
+								<img src="/uiTools/img/silk/page_white_edit.png">&nbsp;<span id="btnEditLabel"></span>
+							</button>
+							<button id="btnSave" type="button" class="btn btn-sm btn-success" disabled>
+								<img src="/uiTools/img/silk/disk.png">&nbsp;<span id="btnSaveLabel"></span>
+							</button>
+						</div>
+						<textarea id="wexEditorArea" class="wex-editor-textarea" readonly></textarea>
+					</div>
+
+					<!-- Image viewer -->
+					<div id="wexImagePanel" class="wex-image-panel" style="display:none;">
+						<div class="wex-image-meta" id="wexImageMeta">
+							<div class="wex-image-meta-row">
+								<span class="wex-image-meta-label" id="wexImageMetaNameLabel"></span>
+								<span class="wex-image-meta-value" id="wexImageMetaName"></span>
+							</div>
+							<div class="wex-image-meta-row">
+								<span class="wex-image-meta-label" id="wexImageMetaSizeLabel"></span>
+								<span class="wex-image-meta-value" id="wexImageMetaSize"></span>
+							</div>
+							<div class="wex-image-meta-row" id="wexImageMetaDimRow">
+								<span class="wex-image-meta-label" id="wexImageMetaDimLabel"></span>
+								<span class="wex-image-meta-value" id="wexImageMetaDim"></span>
+							</div>
+						</div>
+						<div class="wex-image-frame">
+							<img id="wexImageView" class="wex-image-view" src="" alt="">
+						</div>
+					</div>
+
+					<!-- Binary download panel -->
+					<div id="wexBinaryPanel" class="wex-binary-panel" style="display:none;">
+						<div class="wex-binary-info" id="wexBinaryInfo"></div>
+						<button id="btnBinaryDownload" type="button" class="btn btn-sm btn-primary">
+							<img src="/uiTools/img/silk/folder_go.png">&nbsp;<span id="btnDownloadLabel"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Upload modal -->
+		<div id="wexUploadModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.45); z-index:2000; align-items:center; justify-content:center;">
+			<div style="background:#fff; border-radius:6px; width:480px; max-width:96vw; box-shadow:0 4px 24px rgba(0,0,0,0.25);">
+				<div style="padding:10px 14px 8px; border-bottom:1px solid #e5e7eb; font-weight:bold; font-size:0.95rem;">
+					<span id="wexUploadTitle"></span>
+					<button type="button" class="btn-close float-end" id="wexUploadCloseBtn"></button>
+				</div>
+				<div style="padding:14px;">
+					<div class="row mb-2 align-items-center">
+						<label class="col-2 col-form-label col-form-label-sm" id="wexUploadFieldLabel"></label>
+						<div class="col-7"><input type="file" id="wexUploadInput" class="form-control form-control-sm"></div>
+						<div class="col-3">
+							<button id="wexUploadSubmitBtn" type="button" class="btn btn-sm btn-primary" id="wexUploadFieldLabel"></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="notifier" class="npaUi" data-ref="notifier"></div>
+		<div id="monitor" class="npaUi" data-ref="sessionMonitor"></div>
+		<script src="/js/jquery-3.6.3.min.js"></script>
+		<script src="/js/bootstrap.bundle.min.js"></script>
+		<script src="/js/treeViewer.js"></script>
+		<script src="/uiTools/js/npaUiCore.js"></script>
+		<script src="/resources/js/utils/apafUtils.js"></script>
+		<script src="/apaf-workspace-explorer/js/workspaceExplorer.js"></script>
+	</body>
+</html>

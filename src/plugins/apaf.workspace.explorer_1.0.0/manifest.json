@@ -1,0 +1,65 @@
+{
+  "id": "apaf.workspace.explorer",
+  "name": "Workspace Explorer plugin for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.workspace.explorer.logger",
+  		"dir": "apaf.workspace.explorer"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.workspace.explorer.htdocs",
+  		"path": "/apaf-workspace-explorer",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.workspace.explorer.locale.provider.enUS",
+  		"path": "i18n/apaf_workspace_explorer_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.workspace.explorer.locale.provider.en",
+  		"path": "i18n/apaf_workspace_explorer_en-US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.workspace.explorer.locale.provider.frFR",
+  		"path": "i18n/apaf_workspace_explorer_fr-FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.workspace.explorer.locale.provider.fr",
+  		"path": "i18n/apaf_workspace_explorer_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.workspace.explorer.menu.item",
+  		"menu": "builtinAppsMenuPlaceholder",
+  		"securityRole": "coreServices",
+  		"item": {
+  			"id": "workspaceExplorer",
+  			"label": "@apaf.workspace.explorer.menu.label",
+  			"actionId": "redirect",
+  			"icon": "/uiTools/img/silk/folder_explore.png",
+  			"uri": "/apaf-workspace-explorer/html/workspaceExplorer.html"
+  		}
+  	}
+  ],
+  "provides": [
+  ]
+}

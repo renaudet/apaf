@@ -1,0 +1,51 @@
+{
+    "id": "wexToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+        "actions": [
+            {
+                "label": "@apaf.workspace.explorer.toolbar.new.project",
+                "actionId": "newProject",
+                "icon": "/uiTools/img/silk/book_add.png",
+                "enabled": true
+            },
+            {
+                "label": "@apaf.workspace.explorer.toolbar.new.folder",
+                "actionId": "newFolder",
+                "icon": "/uiTools/img/silk/folder_add.png",
+                "enabled": false
+            },
+            {
+                "label": "@apaf.workspace.explorer.toolbar.new.file",
+                "actionId": "newFile",
+                "icon": "/uiTools/img/silk/page_add.png",
+                "enabled": false
+            },
+            {
+                "type": "separator"
+            },
+            {
+                "label": "@apaf.workspace.explorer.toolbar.upload",
+                "actionId": "uploadFile",
+                "icon": "/uiTools/img/silk/folder_page.png",
+                "enabled": false
+            },
+            {
+                "label": "@apaf.workspace.explorer.toolbar.download",
+                "actionId": "downloadFile",
+                "icon": "/uiTools/img/silk/folder_go.png",
+                "enabled": false
+            },
+            {
+                "type": "separator"
+            },
+            {
+                "label": "@apaf.workspace.explorer.toolbar.delete",
+                "actionId": "deleteResource",
+                "icon": "/uiTools/img/silk/delete.png",
+                "enabled": false
+            }
+        ]
+    }
+}

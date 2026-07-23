@@ -52,6 +52,9 @@ plugin.findProjectHandler = function(req,res){
 			let filter = req.body;
 			let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
 			let projects = workspaceService.getProjects(filter);
+			if(!user.isAdmin){
+				projects = projects.filter(p => p.createdBy==user.login);
+			}
 			plugin.debug('<-findProjectHandler()');
 			res.json({"status": 200,"message": "Ok","data": projects});
 		}
@@ -73,6 +76,17 @@ plugin.createFolderHandler = function(req,res){
 				plugin.debug('project: '+folderCreationContext.project);
 				plugin.debug('folder: '+folderCreationContext.folder);
 				let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
+				let project = workspaceService.getProject(folderCreationContext.project);
+				if(project==null){
+					plugin.debug('<-createFolderHandler() - project not found');
+					res.json({"status": 404,"message": "Not found","data": "Project not found"});
+					return;
+				}
+				if(!user.isAdmin && user.login!=project.createdBy){
+					plugin.debug('<-createFolderHandler() - forbidden');
+					res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
+					return;
+				}
 				let creationOutput = workspaceService.createFolder(folderCreationContext.project,folderCreationContext.folder);
 				plugin.debug('<-createFolderHandler()');
 				res.json({"status": 200,"message": "Ok","data": creationOutput});
@@ -151,7 +165,19 @@ plugin.writeFileHandler = function(req,res){
 			if(encryptedData && encryptedData.length>0){
 				let buff = Buffer.from(encryptedData, 'base64');
 				let filePath = buff.toString('ascii');
+				let projectName = filePath.split('/')[0];
 				let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
+				let project = workspaceService.getProject(projectName);
+				if(project==null){
+					plugin.debug('<-writeFileHandler() - project not found');
+					res.json({"status": 404,"message": "Not found","data": "Project not found"});
+					return;
+				}
+				if(!user.isAdmin && user.login!=project.createdBy){
+					plugin.debug('<-writeFileHandler() - forbidden');
+					res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
+					return;
+				}
 				workspaceService.setFileContent(filePath,req.body);
 				plugin.debug('<-writeFileHandler()');
 				res.json({"status": 200,"message": "Ok","data": []});
@@ -165,7 +191,7 @@ plugin.writeFileHandler = function(req,res){
 
 plugin.deleteResourceHandler = function(req,res){
 	plugin.debug('->deleteResourceHandler()');
-	let requiredRole = plugin.getRequiredSecurityRole('apaf.workspace.file.write.handler');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.workspace.delete.handler');
 	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
 	securityEngine.checkUserAccess(req,requiredRole,function(err,user){
 		if(err){
@@ -178,7 +204,19 @@ plugin.deleteResourceHandler = function(req,res){
 				let resourcePath = buff.toString('ascii');
 				let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
 				if(resourcePath.indexOf('/')>=0){
-					// folder or file
+					// folder or file — check ownership on the parent project
+					let projectName = resourcePath.split('/')[0];
+					let project = workspaceService.getProject(projectName);
+					if(project==null){
+						plugin.debug('<-deleteResourceHandler() - project not found');
+						res.json({"status": 404,"message": "Not found","data": "Project not found"});
+						return;
+					}
+					if(!user.isAdmin && user.login!=project.createdBy){
+						plugin.debug('<-deleteResourceHandler() - forbidden');
+						res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
+						return;
+					}
 					try{
 						workspaceService.deleteResource(resourcePath);
 						plugin.debug('<-deleteResourceHandler()');
@@ -189,6 +227,7 @@ plugin.deleteResourceHandler = function(req,res){
 						res.json({"status": 500,"message": e.message,"data": []});
 					}
 				}else{
+					// project deletion — ownership check done inside npa.workspace.deleteProject()
 					try{
 						workspaceService.deleteProject(resourcePath,user);
 						plugin.debug('<-deleteResourceHandler()');
@@ -221,7 +260,19 @@ plugin.uploadFileHandler = function(req,res){
 				let buff = Buffer.from(encryptedData, 'base64');
 				let folder = buff.toString('ascii');
 				plugin.debug('folder: '+folder);
+				let projectName = folder.split('/')[0];
 				let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
+				let project = workspaceService.getProject(projectName);
+				if(project==null){
+					plugin.debug('<-uploadFileHandler() - project not found');
+					res.json({"status": 404,"message": "Not found","data": "Project not found"});
+					return;
+				}
+				if(!user.isAdmin && user.login!=project.createdBy){
+					plugin.debug('<-uploadFileHandler() - forbidden');
+					res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
+					return;
+				}
 				let uploadDir = workspaceService.absolutePath(folder);
 				plugin.debug('uploadDir: '+uploadDir);
 				workspaceService.checkExists(uploadDir);

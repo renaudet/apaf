@@ -1,0 +1,161 @@
+/*
+ * workspaceExplorer.css - styles for the APAF Workspace Explorer page
+ * Copyright 2025 Nicolas Renaudet - All rights reserved
+ */
+
+/* ---------- Layout ---------- */
+.wex-left-col {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e5e7eb;
+    padding-right: 6px;
+}
+
+.wex-right-col {
+    display: flex;
+    flex-direction: column;
+    padding-left: 8px;
+}
+
+/* ---------- Tree drop zone ---------- */
+.wex-tree-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
+}
+
+.wex-tree-area {
+    flex: 1;
+    overflow: auto;
+}
+
+.wex-drop-overlay {
+    position: absolute;
+    inset: 0;
+    border: 2px dashed #dee2e6;
+    border-radius: 4px;
+    background-color: transparent;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 6px;
+    font-size: 0.78rem;
+    color: #adb5bd;
+    pointer-events: none;
+    transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+}
+
+.wex-tree-area.drag-over ~ .wex-drop-overlay {
+    border-color: #3b82d4;
+    background-color: rgba(240, 246, 255, 0.85);
+    color: #3b82d4;
+    align-items: center;
+    padding-bottom: 0;
+}
+
+/* ---------- Hint panel ---------- */
+.wex-hint {
+    color: #888;
+    font-style: italic;
+    padding: 20px 10px;
+}
+
+/* ---------- Text editor panel ---------- */
+.wex-editor-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.wex-editor-toolbar {
+    padding: 3px 0 5px;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 6px;
+    display: flex;
+    gap: 4px;
+}
+
+.wex-editor-toolbar .btn {
+    font-size: 0.78rem;
+    padding: 2px 8px;
+}
+
+.wex-editor-textarea {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.8rem;
+    flex: 1;
+    resize: vertical;
+    min-height: 400px;
+    background-color: #fafafa;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 6px;
+}
+
+.wex-editor-textarea:read-only {
+    background-color: #f4f6f8;
+    color: #555;
+}
+
+/* ---------- Image viewer ---------- */
+.wex-image-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 10px;
+}
+
+.wex-image-meta {
+    background-color: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+}
+
+.wex-image-meta-row {
+    display: flex;
+    gap: 8px;
+    padding: 2px 0;
+}
+
+.wex-image-meta-label {
+    color: #57606a;
+    min-width: 80px;
+    font-weight: 500;
+}
+
+.wex-image-meta-value {
+    color: #1f2328;
+}
+
+.wex-image-frame {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+}
+
+.wex-image-view {
+    max-width: 100%;
+    max-height: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+/* ---------- Binary panel ---------- */
+.wex-binary-panel {
+    padding: 20px 10px;
+    color: #444;
+}
+
+.wex-binary-info {
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+    color: #57606a;
+}
+
