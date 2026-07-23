@@ -3263,7 +3263,8 @@ apaf.DatatypeForm = class DatatypeForm extends NpaUiComponent{
 			field.setEditMode(mode);
 		}
 		if(this.datatype.fields.length>0){
-			this.fieldCache[this.datatype.fields[0].name].setFocus();
+			let orderedFields = sortOn(this.datatype.fields,'displayIndex');
+			this.fieldCache[orderedFields[0].name].setFocus();
 		}
 		if(mode){
 			this.fireFormEvent({"type":"editionStatusChanged","source":"form"});
