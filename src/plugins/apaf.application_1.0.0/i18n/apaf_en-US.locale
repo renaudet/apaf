@@ -195,6 +195,7 @@ apaf.user.datatype.field.type.timestamp=Timestamp
 apaf.user.datatype.field.idfield.label=#ID Field
 apaf.user.datatype.field.required.label=Required
 apaf.user.datatype.field.search.label=Search Field
+apaf.user.datatype.field.json.data.label=Native JSON data
 apaf.user.datatype.field.multiple.label=Multiple
 apaf.user.datatype.field.size.label=Size
 apaf.user.datatype.field.size.help=The length of the input field - between 1 and 10

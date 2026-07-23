@@ -93,6 +93,14 @@
     			"default": true
     		},
     		{
+    			"name": "jsonData",
+    			"label": "@apaf.user.datatype.field.json.data.label",
+    			"type": "switch",
+    			"default": false,
+				"constraint": "if(@.type=='json'){#.show();}else{#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
     			"name": "multiple",
     			"label": "@apaf.user.datatype.field.multiple.label",
     			"type": "switch",

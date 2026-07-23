@@ -195,6 +195,7 @@ apaf.user.datatype.field.type.timestamp=Horodatage
 apaf.user.datatype.field.idfield.label=Participe &agrave; la cl&eacute; primaire du Datatype
 apaf.user.datatype.field.required.label=Non nul
 apaf.user.datatype.field.search.label=Crit&egrave;re de recherche
+apaf.user.datatype.field.json.data.label=Donn&eacute;e JSON native
 apaf.user.datatype.field.multiple.label=Multiple
 apaf.user.datatype.field.size.label=Taille
 apaf.user.datatype.field.size.help=La taille du champs d'&eacute;dition entre 1 et 10

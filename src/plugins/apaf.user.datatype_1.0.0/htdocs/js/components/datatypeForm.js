@@ -1268,7 +1268,16 @@ class SourceEditorField2 extends LabeledFormField2{
 			setTimeout(function(){ editor.setData(parentObj);},500);
 		}else{
 			if(typeof parentObj[this.config.name]!='undefined'){
-				this.form.editors[this.config.name].setValue(parentObj[this.config.name]);
+				let value = parentObj[this.config.name];
+				if(this.config.type=='json' && this.config.jsonData===true){
+					if(typeof value=='string'){
+						this.form.editors[this.config.name].setValue(value);
+					}else{
+						this.form.editors[this.config.name].setValue(JSON.stringify(value,null,2));
+					}
+				}else{
+					this.form.editors[this.config.name].setValue(value);
+				}
 			}else{
 				if(this.config.type=='json'){
 					this.form.editors[this.config.name].setValue('{\n}');
@@ -1281,7 +1290,12 @@ class SourceEditorField2 extends LabeledFormField2{
 	}
 	assignData(parentObj){
 		//var inputFieldId = this.baseId+'_'+this.config.name;
-		parentObj[this.config.name] = this.form.editors[this.config.name].getValue();
+		let value = this.form.editors[this.config.name].getValue();
+		if(this.config.type=='json' && this.config.jsonData===true){
+			parentObj[this.config.name] = JSON.parse(value);
+		}else{
+			parentObj[this.config.name] = value;
+		}
 	}
 	vetoRaised(){
 		if(this.config.type=='json'){
