@@ -1,0 +1,106 @@
+{
+  "id": "apaf.generic.mcp.tools",
+  "name": "Generic MCP Tools provider for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+    {"type": "plugin","id": "npa.core","version": "1.0.0"},
+    {"type": "plugin","id": "npa.logging","version": "1.0.0"},
+    {"type": "plugin","id": "npa.http","version": "1.0.0"},
+    {"type": "plugin","id": "npa.mcp","version": "1.0.0"},
+    {"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+    {"type": "plugin","id": "apaf.security","version": "1.0.0"}
+  ],
+  "extends": [
+    {
+      "point": "npa.log.provider",
+      "id": "apaf.generic.mcp.tools.logger",
+      "dir": "apaf.generic.mcp.tools"
+    },
+    {
+      "point": "npa.http.router",
+      "id": "apaf.generic.mcp.tools.router",
+      "path": "/apaf-mcp-tools"
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.generic.mcp.tools.list.handler",
+      "router": "apaf.generic.mcp.tools.router",
+      "method": "GET",
+      "schema": "/tools",
+      "handler": "getDynamicMcpToolListHandler",
+      "securityRole": "operator",
+      "description": "Returns the list of available dynamic MCP tools contributed by mcpTool fragments",
+      "input": "",
+      "apidoc": {
+        "openapi": "3.1.0",
+        "info": {"title": "Get Dynamic MCP Tool List", "version": "1.0.0"},
+        "paths": {
+          "/apaf-mcp-tools/tools": {
+            "get": {
+              "operationId": "getDynamicToolList",
+              "summary": "Get the list of dynamic MCP tools",
+              "description": "Returns the list of available dynamic MCP tools contributed by APAF mcpTool fragments. Each entry includes the tool name, description and its input schema derived from the apiDoc field."
+            }
+          }
+        }
+      }
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.generic.mcp.tools.invoke.handler",
+      "router": "apaf.generic.mcp.tools.router",
+      "method": "POST",
+      "schema": "/invoke",
+      "handler": "invokeDynamicToolHandler",
+      "securityRole": "operator",
+      "description": "Invokes a dynamic MCP tool by name",
+      "input": {"toolName": "myTool", "args": {"param1": "value1"}},
+      "apidoc": {
+        "openapi": "3.1.0",
+        "info": {"title": "Invoke Dynamic MCP Tool", "version": "1.0.0"},
+        "paths": {
+          "/apaf-mcp-tools/invoke": {
+            "post": {
+              "operationId": "invokeTool",
+              "summary": "Invoke a dynamic MCP tool by name",
+              "description": "Invokes a named mcpTool fragment. Use getDynamicToolList first to discover available tools and their expected arguments.",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "required": ["toolName"],
+                      "properties": {
+                        "toolName": {
+                          "type": "string",
+                          "description": "Name (operationId) of the mcpTool fragment to invoke"
+                        },
+                        "args": {
+                          "type": "object",
+                          "description": "Arguments to pass to the tool, as a JSON object matching its apiDoc input schema"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "point": "npa.mcp.tool",
+      "id": "apaf.generic.mcp.tools.tool.list",
+      "apiId": "apaf.generic.mcp.tools.list.handler"
+    },
+    {
+      "point": "npa.mcp.tool",
+      "id": "apaf.generic.mcp.tools.tool.invoke",
+      "apiId": "apaf.generic.mcp.tools.invoke.handler"
+    }
+  ],
+  "provides": []
+}

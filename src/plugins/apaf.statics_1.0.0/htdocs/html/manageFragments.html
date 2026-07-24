@@ -37,6 +37,57 @@
 			</div>
 		</div>
 		<div id="modalPlaceholder" class="npaUi" data-ref="emptyDialog"></div>
+
+		<!-- apiDoc Wizard Modal — labels populated by openApiDocWizard() via npaUi.getLocalizedString() -->
+		<div class="modal fade" id="apiDocWizardModal" tabindex="-1" aria-labelledby="apiDocWizardModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="apiDocWizardModalLabel"></h5>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      </div>
+		      <div class="modal-body">
+		        <div class="row mb-2">
+		          <div class="col-6">
+		            <label class="form-label fw-bold" id="apiDocLabelOperationId"></label>
+		            <input type="text" class="form-control form-control-sm" id="apiDocOperationId">
+		          </div>
+		          <div class="col-6">
+		            <label class="form-label fw-bold" id="apiDocLabelSummary"></label>
+		            <input type="text" class="form-control form-control-sm" id="apiDocSummary">
+		          </div>
+		        </div>
+		        <div class="row mb-3">
+		          <div class="col-12">
+		            <label class="form-label fw-bold" id="apiDocLabelDescription"></label>
+		            <textarea class="form-control form-control-sm" id="apiDocDescription" rows="2"></textarea>
+		          </div>
+		        </div>
+		        <hr>
+		        <div class="d-flex justify-content-between align-items-center mb-2">
+		          <strong id="apiDocLabelParams"></strong>
+		          <button type="button" class="btn btn-sm btn-primary" id="apiDocAddParam"></button>
+		        </div>
+		        <table class="table table-sm table-bordered" id="apiDocParamsTable">
+		          <thead class="table-light">
+		            <tr>
+		              <th style="width:18%" id="apiDocThName"></th>
+		              <th style="width:15%" id="apiDocThType"></th>
+		              <th style="width:10%" id="apiDocThRequired"></th>
+		              <th id="apiDocThDescription"></th>
+		              <th style="width:5%"></th>
+		            </tr>
+		          </thead>
+		          <tbody id="apiDocParamRows"></tbody>
+		        </table>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="apiDocWizardCancel"></button>
+		        <button type="button" class="btn btn-primary" id="apiDocWizardApply"></button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
 		<div id="notifier" class="npaUi" data-ref="notifier"></div>
 		<div id="monitor" class="npaUi" data-ref="sessionMonitor"></div>
 		<script src="/js/jquery-3.6.3.min.js"></script>

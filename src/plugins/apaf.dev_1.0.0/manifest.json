@@ -63,7 +63,14 @@
 	    			"required": true,
 	    			"type": "select",
 	    			"size": 4,
-	    			"values": ["snippet","library","servlet"]
+	    			"values": ["snippet","library","servlet","mcpTool"]
+	    		},
+	    		{
+	    			"name": "apiDoc",
+	    			"label": "@apaf.fragment.apiDoc",
+	    			"required": false,
+	    			"type": "json",
+	    			"jsonData": true
 	    		},
 	    		{
 	    			"name": "source",
@@ -192,12 +199,13 @@
   											"description": {"type": "string", "description": "Short description"},
   											"type": {
   												"type": "string",
-  												"enum": ["snippet", "library", "servlet", "workflowNode"],
+  												"enum": ["snippet", "library", "servlet", "workflowNode", "mcpTool"],
   												"description": "Fragment type"
   											},
   											"source": {"type": "string", "description": "JavaScript source code of the fragment"},
   											"alias": {"type": "string", "description": "Servlet path alias (required if type is 'servlet'). The servlet will be accessible at /apaf-api/servlet/<alias>"},
-  											"enabled": {"type": "boolean", "description": "Enable or disable routing to the servlet (required if type is 'servlet')"}
+  											"enabled": {"type": "boolean", "description": "Enable or disable routing to the servlet (required if type is 'servlet')"},
+  											"apiDoc": {"type": "object", "description": "OpenAPI descriptor (JSON object) for an mcpTool fragment"}
   										}
   									}
   								}
@@ -242,12 +250,13 @@
   											"description": {"type": "string", "description": "Short description"},
   											"type": {
   												"type": "string",
-  												"enum": ["snippet", "library", "servlet", "workflowNode"],
+  												"enum": ["snippet", "library", "servlet", "workflowNode", "mcpTool"],
   												"description": "Fragment type"
   											},
   											"source": {"type": "string", "description": "JavaScript source code of the fragment"},
   											"alias": {"type": "string", "description": "Servlet path alias (required if type is 'servlet'). The servlet will be accessible at /apaf-api/servlet/<alias>"},
-  											"enabled": {"type": "boolean", "description": "Enable or disable routing to the servlet (required if type is 'servlet')"}
+  											"enabled": {"type": "boolean", "description": "Enable or disable routing to the servlet (required if type is 'servlet')"},
+  											"apiDoc": {"type": "object", "description": "OpenAPI descriptor (JSON object) for an mcpTool fragment"}
   										}
   									}
   								}

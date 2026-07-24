@@ -32,7 +32,7 @@
     			"required": true,
     			"type": "select",
     			"size": 3,
-    			"values": ["snippet","library","servlet","workflowNode","X11"]
+    			"values": ["snippet","library","servlet","workflowNode","X11","mcpTool"]
     		},
     		{
     			"name": "alias",
@@ -60,6 +60,21 @@
     					"label": "Snippets Library",
     					"icon": "/uiTools/img/silk/folder_page_white.png",
     					"actionId": "openSnippetLibrary"
+    				}
+    			]
+    		},
+    		{
+    			"name": "apiDoc",
+    			"label": "@apaf.fragment.apiDoc",
+    			"type": "json",
+    			"jsonData": true,
+    			"height": 300,
+    			"constraint": "if('mcpTool'==@.type){#.show();#.setEditMode(true);}else{#.hide();}",
+    			"buttons": [
+    				{
+    					"label": "@apaf.fragment.apiDoc.wizard",
+    					"icon": "/uiTools/img/silk/wand.png",
+    					"actionId": "openApiDocWizard"
     				}
     			]
     		}
