@@ -32,13 +32,17 @@ initializeUi = function(){
 	});
 }
 
+unescapeI18N = function(labelId){
+	return $('<div />').html(npaUi.getLocalizedString(labelId)).text();
+}
+
 /*--- i18n ---*/
 
 localizeUi = function(){
 	$('#labelUri').html(npaUi.getLocalizedString('@apaf.api.explorer.label.uri'));
 	$('#labelPayload').html(npaUi.getLocalizedString('@apaf.api.explorer.label.payload'));
 	$('#labelResult').html(npaUi.getLocalizedString('@apaf.api.explorer.label.result'));
-	$('#copyResultBtn').attr('title', npaUi.getLocalizedString('@apaf.api.explorer.btn.copy.tooltip'));
+	$('#copyResultBtn').attr('title', unescapeI18N('@apaf.api.explorer.btn.copy.tooltip'));
 	$('#testRestCallBtn').html(npaUi.getLocalizedString('@apaf.api.explorer.btn.test'));
 	$('#remoteBtn').html(npaUi.getLocalizedString('@apaf.api.explorer.btn.remote'));
 	$('#clearRemoteBtn').html(npaUi.getLocalizedString('@apaf.api.explorer.btn.clear'));

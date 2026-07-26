@@ -55,7 +55,7 @@
   			"id": "apiExplorer",
   			"label": "@apaf.api.explorer.menu.label",
   			"actionId": "redirect",
-  			"icon": "/uiTools/img/silk/world_link.png",
+  			"icon": "/apaf-api-explorer/img/apiExplorerIcon.png",
   			"uri": "/apaf-api-explorer/html/apiExplorer.html"
   		}
   	}
