@@ -21,8 +21,31 @@ plugin.getApisHandler = function(req,res){
 			res.json({"status": 500,"message": err,"data": []});
 		}else{
 			let httpService = plugin.getService(HTTP_SERVICE_NAME);
+			let providers = httpService.providers;
+			let pluginName = req.query.plugin;
+			let descriptionRegex = req.query.descriptionRegex;
+			let descriptionPattern = null;
+			if(typeof descriptionRegex!='undefined' && descriptionRegex.length>0){
+				try{
+					descriptionPattern = new RegExp(descriptionRegex);
+				}catch(err){}
+			}
+			if(Array.isArray(providers.apis) && ((typeof pluginName!='undefined' && pluginName.length>0) || descriptionPattern!=null)){
+				providers = Object.assign({},providers);
+				providers.apis = providers.apis.filter(function(provider){
+					let match = true;
+					if(typeof pluginName!='undefined' && pluginName.length>0){
+						match = provider.pluginId==pluginName;
+					}
+					if(match && descriptionPattern!=null){
+						let description = (provider.api && provider.api.description)?provider.api.description:'';
+						match = descriptionPattern.test(description);
+					}
+					return match;
+				});
+			}
 			plugin.debug('<-getApisHandler() - success');
-			res.json({"status": 200,"message": "ok","data": httpService.providers});
+			res.json({"status": 200,"message": "ok","data": providers});
 		}
 	});
 }

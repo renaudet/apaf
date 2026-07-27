@@ -29,7 +29,7 @@
   		"schema": "/find",
   		"handler": "getApisHandler",
   		"securityRole": "administrator",
-		"description": "Get the list of discovered APAF APIs",
+		"description": "Get the list of discovered APAF APIs - can be filtered by 'plugin' or description using a regex as 'descriptionRegex'",
 		"input": ""
   	},
   	{
