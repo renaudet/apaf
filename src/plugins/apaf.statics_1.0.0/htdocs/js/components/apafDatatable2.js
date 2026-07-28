@@ -119,7 +119,9 @@ class SelectFieldRenderer extends FieldRenderer{
 class SourceFieldRenderer extends FieldRenderer{
 	render(item,field){
 		if(item[field.name]){
-			return '<div class="column-type-numeric">'+(Math.round((item[field.name].length/1024)*100)).toFixed(1)+'ko</div>';
+			let value = item[field.name];
+			if(typeof value !== 'string'){ value = JSON.stringify(value); }
+			return '<div class="column-type-numeric">'+(Math.round((value.length/1024)*100)).toFixed(1)+'ko</div>';
 		}else{
 			return '<i>empty</i>';
 		}
