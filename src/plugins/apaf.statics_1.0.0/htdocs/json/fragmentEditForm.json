@@ -55,11 +55,17 @@
     			"label": "@apaf.fragment.source",
     			"type": "javascript",
     			"height": 600,
+    			"expandParent": "workArea",
     			"buttons": [
     				{
     					"label": "Snippets Library",
     					"icon": "/uiTools/img/silk/folder_page_white.png",
     					"actionId": "openSnippetLibrary"
+    				},
+    				{
+    					"label": "Expand / Collapse editor",
+    					"icon": "/uiTools/img/silk/arrow_out.png",
+    					"actionId": "expandCollapse"
     				}
     			]
     		},
