@@ -66,8 +66,6 @@ initializeUi = function(){
 				initWorkspaceViewer();
 				initToolbar();
 				initUploadModal();
-				resizeColumns();
-				$(window).on('resize', resizeColumns);
 			};
 			npaUi.render();
 		});
@@ -92,16 +90,6 @@ localizeUi = function(){
 	$('#wexUploadTitle').html(npaUi.getLocalizedString('@apaf.workspace.explorer.toolbar.upload.dialog.title'));
 	$('#wexUploadFieldLabel').html(npaUi.getLocalizedString('@apaf.workspace.explorer.toolbar.upload.dialog.field'));
 	$('#wexUploadSubmitBtn').html(npaUi.getLocalizedString('@apaf.workspace.explorer.toolbar.upload.dialog.btn'));
-}
-
-/* ===== Layout ===== */
-
-resizeColumns = function(){
-	var workAreaHeight = $('#workArea').height();
-	if(workAreaHeight && workAreaHeight > 0){
-		$('#wexLeftCol').css('height', workAreaHeight + 'px');
-		$('#wexRightCol').css({'height': workAreaHeight+'px', 'overflow-y': 'auto'});
-	}
 }
 
 /* ===== Toolbar ===== */

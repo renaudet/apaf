@@ -4,17 +4,24 @@
  */
 
 /* ---------- Layout ---------- */
+
+/* Both panes are flex children of the npa-splitter container.
+   height: 100% ensures they fill the full pane height. */
 .wex-left-col {
     display: flex;
     flex-direction: column;
+    height: 100%;
     border-right: 1px solid #e5e7eb;
     padding-right: 6px;
+    box-sizing: border-box;
 }
 
 .wex-right-col {
     display: flex;
     flex-direction: column;
+    height: 100%;
     padding-left: 8px;
+    box-sizing: border-box;
 }
 
 /* ---------- Tree drop zone ---------- */
@@ -86,8 +93,8 @@
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.8rem;
     flex: 1;
-    resize: vertical;
-    min-height: 400px;
+    resize: none;
+    min-height: 0;
     background-color: #fafafa;
     border: 1px solid #e5e7eb;
     border-radius: 4px;
@@ -113,6 +120,8 @@
     border-radius: 6px;
     padding: 8px 14px;
     font-size: 0.82rem;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .wex-image-meta-row {
