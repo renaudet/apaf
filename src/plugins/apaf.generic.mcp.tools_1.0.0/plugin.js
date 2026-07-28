@@ -56,29 +56,24 @@ plugin.parseApiDoc = function(fragment) {
 
 /*
  * Execute an mcpTool fragment source, following the same pattern as
- * apaf.dyn.api.invokeServlet(). The fragment source must expose a
- * servlet.endpoint(payload, context, callback) function.
+ * apaf.dyn.api.invokeServlet(). The fragment source must implement an
+ * mcpToolEndpoint function body with argument list as (params, ctx, then)
+ * The minimal fragment implementation may be : then(null,{"result": "success"});
  */
 plugin.invokeMcpTool = function(fragment, args, user, httpRequest, httpResponse, then) {
 	this.debug('->invokeMcpTool(' + fragment.name + ')');
 	try {
-		let moduleSrc = 'var servlet = {}; var initializeServlet = function(){' + fragment.source + '}';
+		let moduleSrc = 'var mcpToolEndpoint = function(payload,context,then){' + fragment.source + '};';
 		xeval(moduleSrc);
-		initializeServlet();
-		if (typeof servlet.endpoint !== 'undefined') {
-			let context = {
-				user: user,
-				runtime: plugin.runtime,
-				require: require,
-				httpRequest: httpRequest,
-				httpResponse: httpResponse
-			};
-			servlet.endpoint(args, context, then);
-			this.debug('<-invokeMcpTool() - invoked');
-		} else {
-			this.debug('<-invokeMcpTool() - no endpoint');
-			then('mcpTool fragment "' + fragment.name + '" has no endpoint', null);
-		}
+		let ctx = {
+			user: user,
+			runtime: plugin.runtime,
+			require: require,
+			httpRequest: httpRequest,
+			httpResponse: httpResponse
+		};
+		mcpToolEndpoint(args, ctx, then);
+		this.debug('<-invokeMcpTool() - invoked');
 	} catch(e) {
 		this.error('invokeMcpTool exception: ' + e.message);
 		console.log(e);

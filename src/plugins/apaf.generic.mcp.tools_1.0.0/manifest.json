@@ -9,7 +9,8 @@
     {"type": "plugin","id": "npa.http","version": "1.0.0"},
     {"type": "plugin","id": "npa.mcp","version": "1.0.0"},
     {"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
-    {"type": "plugin","id": "apaf.security","version": "1.0.0"}
+    {"type": "plugin","id": "apaf.security","version": "1.0.0"},
+    {"type": "plugin","id": "apaf.dev","version": "1.0.0"}
   ],
   "extends": [
     {
@@ -22,6 +23,12 @@
       "id": "apaf.generic.mcp.tools.router",
       "path": "/apaf-mcp-tools"
     },
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.generic.mcp.tools.htdocs",
+  		"path": "/mcp-tools-resources",
+  		"localDir": "htdocs"
+  	},
     {
       "point": "npa.http.handler",
       "id": "apaf.generic.mcp.tools.list.handler",
@@ -63,7 +70,7 @@
           "/apaf-mcp-tools/invoke": {
             "post": {
               "operationId": "invokeTool",
-              "summary": "Invoke a dynamic MCP tool by name",
+              "summary": "Invoke a dynamic APAF MCP tool by name",
               "description": "Invokes a named mcpTool fragment. Use getDynamicToolList first to discover available tools and their expected arguments.",
               "requestBody": {
                 "required": true,
@@ -100,7 +107,14 @@
       "point": "npa.mcp.tool",
       "id": "apaf.generic.mcp.tools.tool.invoke",
       "apiId": "apaf.generic.mcp.tools.invoke.handler"
-    }
+    },
+  	{
+  		"point": "apaf.dev.snippet.provider",
+  		"id": "apaf.generic.mcp.tools.snippet",
+  		"label": "Implement a dynamic MCP Tool",
+  		"location": "/mcp-tools-resources/snippets/mcpToolImpl.txt",
+  		"category": "MCP"
+  	}
   ],
   "provides": []
 }
