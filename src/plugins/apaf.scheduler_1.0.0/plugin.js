@@ -87,7 +87,7 @@ plugin.updateSchedulerHandler = function(req,res){
 			let record = req.body;
 			record.updatedBy = user.login;
 			record.updated = moment().format('YYYY/MM/DD HH:mm:ss');
-			delete record.lastExecuted;
+			record.lastExecuted = null; // force re-execution on next tick (null survives the CouchDB merge)
 			let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
 			datatypePlugin.updateRecord(SCHEDULER_DATATYPE_NAME,record,function(err,data){
 				if(err){
