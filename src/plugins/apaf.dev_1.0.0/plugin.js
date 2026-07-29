@@ -6,6 +6,7 @@
 const ApafPlugin = require('../../apafUtil.js');
 const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const SECURITY_SERVICE_NAME = 'apaf-security';
+const EVENT_BROKER_SERVICE_NAME = 'broker';
 const FRAGMENT_DATATYPE = 'fragment';
 const APPLICATION_DATATYPE = 'application';
 
@@ -171,6 +172,8 @@ plugin.createFragmentHandler = function(req,res){
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					plugin.debug('<-createFragmentHandler() - success');
+					let broker = plugin.getService(EVENT_BROKER_SERVICE_NAME);
+					broker.emit({name: 'apaf.fragment.changed', source: 'apaf.dev', data: {action: 'created', id: data.id, fragmentType: data.type}});
 					res.json({"status": 200,"message": "created","data": data});
 				}
 			});
@@ -196,6 +199,8 @@ plugin.updateFragmentHandler = function(req,res){
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					plugin.debug('<-updateFragmentHandler() - success');
+					let broker = plugin.getService(EVENT_BROKER_SERVICE_NAME);
+					broker.emit({name: 'apaf.fragment.changed', source: 'apaf.dev', data: {action: 'updated', id: data.id, fragmentType: data.type}});
 					res.json({"status": 200,"message": "updated","data": data});
 				}
 			});
@@ -220,6 +225,8 @@ plugin.deleteFragmentHandler = function(req,res){
 					res.json({"status": 500,"message": err,"data": []});
 				}else{
 					plugin.debug('<-deleteFragmentHandler() - success');
+					let broker = plugin.getService(EVENT_BROKER_SERVICE_NAME);
+					broker.emit({name: 'apaf.fragment.changed', source: 'apaf.dev', data: {action: 'deleted', id: recordId}});
 					res.json({"status": 200,"message": "deleted","data": data});
 				}
 			});
