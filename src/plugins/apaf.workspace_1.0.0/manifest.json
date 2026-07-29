@@ -75,8 +75,8 @@
   				"/apaf-workspace/project": {
   					"post": {
   						"operationId": "createWorkspaceProject",
-  						"summary": "Create a new project in the Workspace",
-  						"description": "Creates a new project folder in the APAF workspace.",
+  						"summary": "Create a new project in the APAF server-side workspace",
+  						"description": "Creates a new project folder in the APAF server-side workspace. The APAF workspace is a managed file storage area internal to the running APAF instance, stored on the server that hosts APAF. It is entirely distinct from the local developer filesystem and from the VS Code workspace.",
   						"requestBody": {
   							"required": true,
   							"content": {
@@ -115,8 +115,8 @@
   				"/apaf-workspace/project/find": {
   					"post": {
   						"operationId": "findWorkspaceProjects",
-  						"summary": "List projects in the Workspace",
-  						"description": "Returns the list of projects in the APAF workspace matching the optional filter.",
+  						"summary": "List projects in the APAF server-side workspace",
+  						"description": "Returns the list of projects stored in the APAF server-side workspace matching the optional filter. The APAF workspace is a managed file storage area internal to the running APAF instance, stored on the server that hosts APAF. It is entirely distinct from the local developer filesystem and from the VS Code workspace. Use readLocalFile / readLocalDirectory to access the local server filesystem instead.",
   						"requestBody": {
   							"required": false,
   							"content": {
@@ -153,8 +153,8 @@
   				"/apaf-workspace/folder": {
   					"post": {
   						"operationId": "createWorkspaceFolder",
-  						"summary": "Create a folder in a Workspace project",
-  						"description": "Creates a new folder inside an existing project in the APAF workspace.",
+  						"summary": "Create a folder inside a project in the APAF server-side workspace",
+  						"description": "Creates a new folder inside an existing project in the APAF server-side workspace. The APAF workspace is a managed file storage area internal to the running APAF instance, distinct from the local developer filesystem and from the VS Code workspace.",
   						"requestBody": {
   							"required": true,
   							"content": {
@@ -192,8 +192,8 @@
   				"/apaf-workspace/folder": {
   					"get": {
   						"operationId": "readWorkspaceFolderContent",
-  						"summary": "List the content of a Workspace folder",
-  						"description": "Returns the list of files and sub-folders in a given project folder.",
+  						"summary": "List the content of a folder in the APAF server-side workspace",
+  						"description": "Returns the list of files and sub-folders in a given project folder stored in the APAF server-side workspace. The APAF workspace is a managed file storage area internal to the running APAF instance, distinct from the local developer filesystem and from the VS Code workspace. Use readLocalDirectory to browse the local server filesystem instead.",
   						"parameters": [
   							{"name": "project", "in": "query", "required": true, "description": "Name of the project", "schema": {"type": "string"}},
   							{"name": "folder", "in": "query", "required": false, "description": "Relative sub-folder path within the project (omit for project root)", "schema": {"type": "string"}},
@@ -220,8 +220,8 @@
   				"/apaf-workspace/file/{encrypted}": {
   					"get": {
   						"operationId": "readWorkspaceFile",
-  						"summary": "Read the content of a Workspace file",
-  						"description": "Returns the text content of a file. The path parameter must be the Base64 encoding of the relative file path within the workspace (e.g. Base64('myProject/src/app.js')).",
+  						"summary": "Read the content of a file stored in the APAF server-side workspace",
+  						"description": "Returns the text content of a file stored in the APAF server-side workspace. The APAF workspace is a managed file storage area internal to the running APAF instance — it is NOT the local developer filesystem nor the VS Code workspace. Use readLocalFile to read files from the local server filesystem instead. The path parameter must be the Base64 encoding of the relative file path within the workspace (e.g. Base64('myProject/src/app.js')).",
   						"parameters": [
   							{"name": "encrypted", "in": "path", "required": true, "description": "Base64-encoded relative file path (e.g. Base64('myProject/src/app.js'))", "schema": {"type": "string"}}
   						]
@@ -246,8 +246,8 @@
   				"/apaf-workspace/binaryFile/{encrypted}": {
   					"get": {
   						"operationId": "readWorkspaceBinaryFile",
-  						"summary": "Download a binary file from the APAF Workspace",
-  						"description": "Returns the binary content of a file as a base64-encoded MCP resource. The path parameter must be the Base64 encoding of the relative file path within the workspace (e.g. Base64('myProject/assets/image.png')).",
+  						"summary": "Download a binary file from the APAF server-side workspace",
+  						"description": "Returns the binary content of a file as a base64-encoded MCP resource. The file must be stored in the APAF server-side workspace (a managed file storage area internal to the running APAF instance), not the local developer filesystem. The path parameter must be the Base64 encoding of the relative file path within the workspace (e.g. Base64('myProject/assets/image.png')).",
   						"parameters": [
   							{"name": "encrypted", "in": "path", "required": true, "description": "Base64-encoded relative file path (e.g. Base64('myProject/assets/image.png'))", "schema": {"type": "string"}}
   						]
@@ -273,8 +273,8 @@
   				"/apaf-workspace/file/{encrypted}": {
   					"put": {
   						"operationId": "writeWorkspaceFile",
-  						"summary": "Write the content of a Workspace file",
-  						"description": "Creates or overwrites a text file in the workspace. The path parameter must be the Base64 encoding of the relative file path (e.g. Base64('myProject/src/app.js')). The request body is the raw text content of the file.",
+  						"summary": "Create or overwrite a text file in the APAF server-side workspace",
+  						"description": "Creates or overwrites a text file in the APAF server-side workspace. The APAF workspace is a managed file storage area internal to the running APAF instance — it is NOT the local developer filesystem nor the VS Code workspace. The path parameter must be the Base64 encoding of the relative file path (e.g. Base64('myProject/src/app.js')). The request body is the raw text content of the file.",
   						"parameters": [
   							{"name": "encrypted", "in": "path", "required": true, "description": "Base64-encoded relative file path (e.g. Base64('myProject/src/app.js'))", "schema": {"type": "string"}}
   						],
