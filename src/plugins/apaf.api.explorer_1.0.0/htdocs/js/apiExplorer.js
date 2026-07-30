@@ -6,6 +6,8 @@
 const GLOBAL_CONFIGURATION_FILE = '/resources/json/globalApafConfig.json';
 const API_FIND_URI = '/apaf-api-management/find';
 const REST_INVOKE_URI = '/apaf-rest/invoke';
+const LINK_QUERY_URI = '/apaf-link/query';
+const LINK_INVOKE_URI = '/apaf-link/invoke';
 
 const METHOD_COLORS = {
 	'GET':    '#61affe',
@@ -14,8 +16,16 @@ const METHOD_COLORS = {
 	'DELETE': '#f93e3e'
 };
 
-// null = local mode; object = remote mode
+/*
+ * remoteContext variants:
+ *   null                          → local mode
+ *   { _mode:'manual', host, ...}  → manual remote context (forwarded to /apaf-rest/invoke)
+ *   { _mode:'link', linkId, linkName, label } → APAF Link context (forwarded to /apaf-link/invoke)
+ */
 var remoteContext = null;
+
+// active modal tab: 'manual' | 'link'
+var activeRemoteTab = 'manual';
 
 $(document).ready(function(){
 	checkSessionStatus(initializeUi);
@@ -54,20 +64,86 @@ localizeUi = function(){
 	$('#remoteModalPwdLabel').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.password'));
 	$('#remoteModalCancelBtn').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.cancel'));
 	$('#remoteModalConnectBtn').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.connect'));
+	$('#remoteModalLinkLabel').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.link'));
+	$('#tabManual').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.tab.manual'));
+	$('#tabLink').html(npaUi.getLocalizedString('@apaf.api.explorer.modal.tab.link'));
 }
 
 /*--- Remote context controls ---*/
 
+switchRemoteTab = function(tab){
+	activeRemoteTab = tab;
+	if(tab=='manual'){
+		$('#tabManual').addClass('active');
+		$('#tabLink').removeClass('active');
+		$('#remoteTabManual').show();
+		$('#remoteTabLink').hide();
+	}else{
+		$('#tabLink').addClass('active');
+		$('#tabManual').removeClass('active');
+		$('#remoteTabLink').show();
+		$('#remoteTabManual').hide();
+	}
+}
+
+loadLinkOptions = function(){
+	apaf.call({
+		"method": "POST",
+		"uri": LINK_QUERY_URI,
+		"payload": {"selector": {"enabled": {"$eq": true}}}
+	}).then(function(links){
+		let select = $('#remoteLinkSelect');
+		select.empty();
+		select.append('<option value=""></option>');
+		if(links && links.length>0){
+			for(var i=0;i<links.length;i++){
+				let lnk = links[i];
+				let label = lnk.name + (lnk.description ? ' — '+lnk.description : '');
+				select.append('<option value="'+lnk.id+'" data-name="'+lnk.name+'" data-label="'+label+'">'+label+'</option>');
+			}
+		}
+		// if current context is a link, pre-select it
+		if(remoteContext && remoteContext._mode=='link'){
+			select.val(remoteContext.linkId);
+			showLinkInfo(remoteContext.label);
+		}else{
+			$('#remoteLinkInfo').hide();
+		}
+	}).onError(function(errorMsg){
+		// links plugin may not be installed; silently ignore
+		$('#remoteLinkSelect').empty().append('<option value="">'+unescapeI18N('@apaf.api.explorer.modal.link.unavailable')+'</option>');
+	});
+
+	$('#remoteLinkSelect').off('change.linksel').on('change.linksel',function(){
+		let selected = $(this).find('option:selected');
+		let lbl = selected.data('label')||'';
+		if(lbl) showLinkInfo(lbl); else $('#remoteLinkInfo').hide();
+	});
+}
+
+showLinkInfo = function(label){
+	$('#remoteLinkInfoText').text(label);
+	$('#remoteLinkInfo').show();
+}
+
 initRemoteControls = function(){
+	// tab switching
+	$('[data-remote-tab]').on('click', function(){
+		switchRemoteTab($(this).data('remote-tab'));
+	});
+
 	$('#remoteBtn').on('click', function(){
-		// pre-fill modal if context already set
-		if(remoteContext){
+		// pre-fill manual tab if context already set in manual mode
+		if(remoteContext && remoteContext._mode=='manual'){
 			$('#remoteHost').val(remoteContext.host);
 			$('#remotePort').val(remoteContext.port || '');
 			$('#remoteSecured').prop('checked', remoteContext.secured || false);
 			$('#remoteAcceptCert').prop('checked', remoteContext.acceptCertificate || false);
 			$('#remoteUsername').val(remoteContext.username || '');
 			$('#remotePassword').val(remoteContext.password || '');
+			switchRemoteTab('manual');
+		}else if(remoteContext && remoteContext._mode=='link'){
+			switchRemoteTab('link');
 		}else{
 			$('#remoteHost').val('');
 			$('#remotePort').val('');
@@ -75,7 +151,9 @@ initRemoteControls = function(){
 			$('#remoteAcceptCert').prop('checked', false);
 			$('#remoteUsername').val('');
 			$('#remotePassword').val('');
+			switchRemoteTab('manual');
 		}
+		loadLinkOptions();
 		$('#remoteContextModal').show();
 	});
 
@@ -84,22 +162,39 @@ initRemoteControls = function(){
 	});
 
 	$('#remoteModalConnectBtn').on('click', function(){
-		let host = $('#remoteHost').val().trim();
-		if(!host){
-			showError(npaUi.getLocalizedString('@apaf.api.explorer.modal.host.required'));
-			return;
+		if(activeRemoteTab=='manual'){
+			let host = $('#remoteHost').val().trim();
+			if(!host){
+				showError(npaUi.getLocalizedString('@apaf.api.explorer.modal.host.required'));
+				return;
+			}
+			remoteContext = {
+				_mode:             'manual',
+				host:              host,
+				port:              parseInt($('#remotePort').val()) || null,
+				secured:           $('#remoteSecured').is(':checked'),
+				acceptCertificate: $('#remoteAcceptCert').is(':checked'),
+				username:          $('#remoteUsername').val().trim() || null,
+				password:          $('#remotePassword').val() || null
+			};
+			if(!remoteContext.port)     delete remoteContext.port;
+			if(!remoteContext.username) delete remoteContext.username;
+			if(!remoteContext.password) delete remoteContext.password;
+		}else{
+			// link mode
+			let selected = $('#remoteLinkSelect option:selected');
+			let linkId = $('#remoteLinkSelect').val();
+			if(!linkId){
+				showError(npaUi.getLocalizedString('@apaf.api.explorer.modal.link.required'));
+				return;
+			}
+			remoteContext = {
+				_mode:     'link',
+				linkId:    linkId,
+				linkName:  selected.data('name'),
+				label:     selected.data('label') || selected.data('name')
+			};
 		}
-		remoteContext = {
-			host:              host,
-			port:              parseInt($('#remotePort').val()) || null,
-			secured:           $('#remoteSecured').is(':checked'),
-			acceptCertificate: $('#remoteAcceptCert').is(':checked'),
-			username:          $('#remoteUsername').val().trim() || null,
-			password:          $('#remotePassword').val() || null
-		};
-		if(!remoteContext.port) delete remoteContext.port;
-		if(!remoteContext.username) delete remoteContext.username;
-		if(!remoteContext.password) delete remoteContext.password;
 		$('#remoteContextModal').hide();
 		updateRemoteStatusBar();
 		loadApiList();
@@ -114,14 +209,56 @@ initRemoteControls = function(){
 
 updateRemoteStatusBar = function(){
 	if(remoteContext){
-		let label = (remoteContext.secured ? 'https' : 'http') + '://' + remoteContext.host;
-		if(remoteContext.port) label += ':' + remoteContext.port;
+		let label;
+		if(remoteContext._mode=='link'){
+			label = remoteContext.label || remoteContext.linkName;
+		}else{
+			label = (remoteContext.secured ? 'https' : 'http') + '://' + remoteContext.host;
+			if(remoteContext.port) label += ':' + remoteContext.port;
+		}
 		$('#remoteStatusLabel').text(label);
 		$('#remoteStatusBar').show();
 		$('#remoteBtn').addClass('btn-warning').removeClass('btn-outline-secondary');
 	}else{
 		$('#remoteStatusBar').hide();
 		$('#remoteBtn').removeClass('btn-warning').addClass('btn-outline-secondary');
+	}
+}
+
+/*--- REST invocation helpers ---*/
+
+invokeRemote = function(method, uri, payload, onSuccess, onError){
+	if(remoteContext._mode=='link'){
+		// via /apaf-link/invoke
+		let invokePayload = {
+			linkId:  remoteContext.linkId,
+			method:  method,
+			uri:     uri,
+			payload: payload
+		};
+		apaf.call({
+			"method": "POST",
+			"uri": LINK_INVOKE_URI,
+			"payload": invokePayload
+		}).then(function(response){
+			onSuccess(response.data !== undefined ? response.data : response);
+		}).onError(onError);
+	}else{
+		// via /apaf-rest/invoke (manual context)
+		let invokePayload = Object.assign({}, remoteContext, {
+			_mode:   undefined,
+			method:  method,
+			uri:     uri,
+			payload: payload
+		});
+		delete invokePayload._mode;
+		apaf.call({
+			"method": "POST",
+			"uri": REST_INVOKE_URI,
+			"payload": invokePayload
+		}).then(function(response){
+			onSuccess(response.data !== undefined ? response.data : response);
+		}).onError(onError);
 	}
 }
 
@@ -228,21 +365,10 @@ showApiDetail = function(api){
 		let payload = ('POST'==method || 'PUT'==method) ? parsePayload($('#payload').val()) : {};
 
 		if(remoteContext){
-			// indirect call via /apaf-rest/invoke
-			let invokePayload = Object.assign({}, remoteContext, {
-				method:  method,
-				uri:     targetUri,
-				payload: payload
-			});
-			apaf.call({
-				"method": "POST",
-				"uri": REST_INVOKE_URI,
-				"payload": invokePayload
-			}).then(function(response){
-				renderResult(response.data !== undefined ? response.data : response);
-			}).onError(function(errorMsg){
-				showError(errorMsg?(errorMsg.message?errorMsg.message:errorMsg):'An exception was caught!');
-			});
+			invokeRemote(method, targetUri, payload,
+				function(data){ renderResult(data); },
+				function(errorMsg){ showError(errorMsg?(errorMsg.message?errorMsg.message:errorMsg):'An exception was caught!'); }
+			);
 		}else{
 			// direct local call
 			apaf.call({
@@ -296,22 +422,14 @@ loadApiList = function(){
 	$('#apiDetailPlaceholder').show();
 
 	if(remoteContext){
-		let invokePayload = Object.assign({}, remoteContext, {
-			method: 'GET',
-			uri:    API_FIND_URI
-		});
-		apaf.call({
-			"method": "POST",
-			"uri": REST_INVOKE_URI,
-			"payload": invokePayload
-		}).then(function(response){
-			let apiData = response.data !== undefined ? response.data : response;
-			let model = createApiModel(apiData);
-			apiBrowser.addRootData(model);
-			apiBrowser.refreshTree();
-		}).onError(function(errorMsg){
-			showError(errorMsg.message?errorMsg.message:errorMsg);
-		});
+		invokeRemote('GET', API_FIND_URI, {},
+			function(apiData){
+				let model = createApiModel(apiData);
+				apiBrowser.addRootData(model);
+				apiBrowser.refreshTree();
+			},
+			function(errorMsg){ showError(errorMsg.message?errorMsg.message:errorMsg); }
+		);
 	}else{
 		apaf.call({
 			"method": "GET",

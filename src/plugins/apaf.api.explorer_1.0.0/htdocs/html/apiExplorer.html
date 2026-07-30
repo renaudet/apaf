@@ -80,31 +80,59 @@
 					<button type="button" class="btn-close float-end" id="remoteModalCloseBtn"></button>
 				</div>
 				<div class="api-modal-body">
-					<div class="row mb-2">
-						<label class="col-3 col-form-label col-form-label-sm" id="remoteModalHostLabel"></label>
-						<div class="col-6"><input type="text" id="remoteHost" class="form-control form-control-sm" placeholder="192.168.1.10"></div>
-						<div class="col-3"><input type="number" id="remotePort" class="form-control form-control-sm" placeholder="9080"></div>
-					</div>
-					<div class="row mb-2">
-						<div class="col-3"></div>
-						<div class="col-9 d-flex gap-3">
-							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="checkbox" id="remoteSecured">
-								<label class="form-check-label" id="remoteSecuredLabel"></label>
-							</div>
-							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="checkbox" id="remoteAcceptCert">
-								<label class="form-check-label" id="remoteAcceptCertLabel"></label>
+					<!-- Mode tabs -->
+					<ul class="nav nav-tabs mb-3" id="remoteTabs">
+						<li class="nav-item">
+							<button class="nav-link active" id="tabManual" type="button" data-remote-tab="manual"></button>
+						</li>
+						<li class="nav-item">
+							<button class="nav-link" id="tabLink" type="button" data-remote-tab="link"></button>
+						</li>
+					</ul>
+
+					<!-- Manual tab content -->
+					<div id="remoteTabManual">
+						<div class="row mb-2">
+							<label class="col-3 col-form-label col-form-label-sm" id="remoteModalHostLabel"></label>
+							<div class="col-6"><input type="text" id="remoteHost" class="form-control form-control-sm" placeholder="192.168.1.10"></div>
+							<div class="col-3"><input type="number" id="remotePort" class="form-control form-control-sm" placeholder="9080"></div>
+						</div>
+						<div class="row mb-2">
+							<div class="col-3"></div>
+							<div class="col-9 d-flex gap-3">
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="checkbox" id="remoteSecured">
+									<label class="form-check-label" id="remoteSecuredLabel"></label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="checkbox" id="remoteAcceptCert">
+									<label class="form-check-label" id="remoteAcceptCertLabel"></label>
+								</div>
 							</div>
 						</div>
+						<div class="row mb-2">
+							<label class="col-3 col-form-label col-form-label-sm" id="remoteModalUserLabel"></label>
+							<div class="col-9"><input type="text" id="remoteUsername" class="form-control form-control-sm"></div>
+						</div>
+						<div class="row mb-2">
+							<label class="col-3 col-form-label col-form-label-sm" id="remoteModalPwdLabel"></label>
+							<div class="col-9"><input type="password" id="remotePassword" class="form-control form-control-sm"></div>
+						</div>
 					</div>
-					<div class="row mb-2">
-						<label class="col-3 col-form-label col-form-label-sm" id="remoteModalUserLabel"></label>
-						<div class="col-9"><input type="text" id="remoteUsername" class="form-control form-control-sm"></div>
-					</div>
-					<div class="row mb-2">
-						<label class="col-3 col-form-label col-form-label-sm" id="remoteModalPwdLabel"></label>
-						<div class="col-9"><input type="password" id="remotePassword" class="form-control form-control-sm"></div>
+
+					<!-- Link tab content -->
+					<div id="remoteTabLink" style="display:none;">
+						<div class="row mb-2">
+							<label class="col-3 col-form-label col-form-label-sm" id="remoteModalLinkLabel"></label>
+							<div class="col-9">
+								<select id="remoteLinkSelect" class="form-select form-select-sm">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+						<div id="remoteLinkInfo" class="text-muted small" style="display:none; padding: 4px 0 0 4px;">
+							<img src="/uiTools/img/silk/connect.png">&nbsp;<span id="remoteLinkInfoText"></span>
+						</div>
 					</div>
 				</div>
 				<div class="api-modal-footer">
