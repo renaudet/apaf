@@ -223,15 +223,20 @@ plugin.invokeDynamicToolHandler = function(req, res) {
 				res.json({ status: 404, message: 'Tool "' + toolName + '" not found', data: [] });
 				return;
 			}
-			plugin.invokeMcpTool(entry.fragment, args, user, req, res, function(err, result) {
-				if (err) {
-					plugin.debug('<-invokeDynamicToolHandler() - error invocation');
-					res.json({ status: 500, message: err, data: [] });
-				} else {
-					plugin.debug('<-invokeDynamicToolHandler() - success');
-					res.json({ status: 200, message: 'ok', data: result });
-				}
-			});
+			if(typeof entry.fragment.restrictedToRole=='undefined' || entry.fragment.restrictedToRole.length===0 || user.roles[entry.fragment.restrictedToRole]){
+				plugin.invokeMcpTool(entry.fragment, args, user, req, res, function(err, result) {
+					if (err) {
+						plugin.debug('<-invokeDynamicToolHandler() - error invocation');
+						res.json({ status: 500, message: err, data: [] });
+					} else {
+						plugin.debug('<-invokeDynamicToolHandler() - success');
+						res.json({ status: 200, message: 'ok', data: result });
+					}
+				});
+			}else{
+				plugin.debug('<-invokeDynamicToolHandler() - unauthorized');
+				res.json({ status: 401, message: 'unauthorized', data: [] });
+			}
 		});
 	});
 };

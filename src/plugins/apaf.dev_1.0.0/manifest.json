@@ -65,17 +65,56 @@
 	    			"size": 4,
 	    			"values": ["snippet","library","servlet","mcpTool"]
 	    		},
+				{
+					"name": "alias",
+					"label": "@apaf.fragment.alias",
+					"required": false,
+					"size": 4,
+					"help": "@apaf.fragment.alias.help",
+					"constraint": "if('servlet'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+				},
+				{
+					"name": "enabled",
+					"label": "@apaf.fragment.enabled",
+					"type": "check",
+					"help": "@apaf.fragment.enabled.help",
+					"default": false,
+					"constraint": "if('servlet'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+				},
+				{
+					"name": "restrictedToRole",
+					"label": "@apaf.application.restrictedToRole",
+					"type": "select",
+					"multiple": false,
+					"required": false,
+					"size": 4,
+					"datasource": {
+						"type": "managed",
+						"manager": "roleManager"
+					},
+					"renderer": {
+						"label": {
+							"type": "FieldItemRenderer",
+							"processor": "@.description"
+						},
+						"value": {
+							"type": "FieldItemRenderer",
+							"processor": "@.name"
+						}
+					},
+					"constraint": "if('mcpTool'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+				},
+	    		{
+	    			"name": "source",
+	    			"label": "@apaf.fragment.source",
+	    			"type": "javascript"
+	    		},
 	    		{
 	    			"name": "apiDoc",
 	    			"label": "@apaf.fragment.apiDoc",
 	    			"required": false,
 	    			"type": "json",
 	    			"jsonData": true
-	    		},
-	    		{
-	    			"name": "source",
-	    			"label": "@apaf.fragment.source",
-	    			"type": "javascript"
 	    		}
   			]
   		}
@@ -205,6 +244,7 @@
   											"source": {"type": "string", "description": "JavaScript source code of the fragment"},
   											"alias": {"type": "string", "description": "Servlet path alias (required if type is 'servlet'). The servlet will be accessible at /apaf-api/servlet/<alias>"},
   											"enabled": {"type": "boolean", "description": "Enable or disable routing to the servlet (required if type is 'servlet')"},
+  											"restrictedToRole": {"type": "string", "description": "APAF Role restriction (required if type is 'mcpTool'). The tool will be accessible only for agents having this security role. Should be set to an empty string by default"},
   											"apiDoc": {"type": "object", "description": "OpenAPI descriptor (JSON object) for an mcpTool fragment"}
   										}
   									}

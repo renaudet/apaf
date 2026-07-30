@@ -51,6 +51,29 @@
     			"constraint": "if('servlet'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
     		},
     		{
+    			"name": "restrictedToRole",
+    			"label": "@apaf.application.restrictedToRole",
+    			"type": "select",
+    			"multiple": false,
+    			"required": false,
+    			"size": 4,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "roleManager"
+		        },
+		        "renderer": {
+		        	"label": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.name"
+		        	}
+		        },
+    			"constraint": "if('mcpTool'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+    		},
+    		{
     			"name": "source",
     			"label": "@apaf.fragment.source",
     			"type": "javascript",
