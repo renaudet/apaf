@@ -178,7 +178,10 @@ plugin.writeFileHandler = function(req,res){
 					res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
 					return;
 				}
-				workspaceService.setFileContent(filePath,req.body);
+				let fileContent = (typeof req.body === 'object' && req.body !== null)
+					? req.body.content   // MCP path: body is always a JS object
+					: req.body;          // UI path: body is a raw string (text/plain)
+				workspaceService.setFileContent(filePath,fileContent);
 				plugin.debug('<-writeFileHandler()');
 				res.json({"status": 200,"message": "Ok","data": []});
 			}else{

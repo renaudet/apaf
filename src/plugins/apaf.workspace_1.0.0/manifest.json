@@ -283,8 +283,14 @@
   							"content": {
   								"application/json": {
   									"schema": {
-  										"type": "string",
-  										"description": "Text content to write into the file"
+  										"type": "object",
+  										"required": ["content"],
+  										"properties": {
+  											"content": {
+  												"type": "string",
+  												"description": "The full text content to write into the file"
+  											}
+  										}
   									}
   								}
   							}
