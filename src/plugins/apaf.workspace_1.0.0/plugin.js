@@ -193,9 +193,12 @@ plugin.writeFileHandler = function(req,res){
 				let fileContent, writeOptions = {};
 					if(Buffer.isBuffer(req.body)){
 						// binary sync path: bodyParser.raw produced a Buffer
-						// emit workspace.file.uploaded so hub nodes can re-propagate cleanly
+						// suppressEvent prevents setFileContent from emitting workspace.file.updated
+						// with a raw Buffer payload (would crash _onFileWritten on hub nodes);
+						// instead we emit workspace.file.uploaded with clean base64 content.
 						fileContent = req.body;
 						writeOptions.encoding = 'binary';
+						writeOptions.suppressEvent = true;
 						workspaceService.setFileContent(filePath,fileContent,writeOptions);
 						plugin._emitUploadedEvent(workspaceService, projectName, filePath);
 					}else if(typeof req.body === 'object' && req.body !== null){
