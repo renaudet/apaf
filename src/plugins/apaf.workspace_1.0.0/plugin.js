@@ -195,14 +195,16 @@ plugin.writeFileHandler = function(req,res){
 						// binary sync path: bodyParser.raw produced a Buffer
 						fileContent = req.body;
 						writeOptions.encoding = 'binary';
+						writeOptions.syncSource = 'sync';
 						plugin.debug('writeFileHandler: binary path, bufferLen='+fileContent.length);
 					}else if(typeof req.body === 'object' && req.body !== null){
 						// JSON sync path (MCP or sharing plugin text files)
 						fileContent = req.body.content;
 						if(req.body.encoding){ writeOptions.encoding = req.body.encoding; }
+						writeOptions.syncSource = 'sync';
 						plugin.debug('writeFileHandler: object path, encoding='+writeOptions.encoding+' contentLen='+(fileContent?fileContent.length:0));
 					}else{
-						// UI path: raw string via bodyParser.text
+						// UI path: raw string via bodyParser.text (local user)
 						fileContent = req.body;
 						plugin.debug('writeFileHandler: string path, bodyLen='+(fileContent?fileContent.length:0));
 					}
