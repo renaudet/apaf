@@ -94,7 +94,7 @@ plugin.createFolderHandler = function(req,res){
 					res.json({"status": 404,"message": "Not found","data": "Project not found"});
 					return;
 				}
-				if(!user.isAdmin && user.login!=project.createdBy){
+				if(!user.isAdmin && user.login!=project.createdBy && project.createdBy!='system'){
 					plugin.debug('<-createFolderHandler() - forbidden');
 					res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
 					return;
@@ -185,11 +185,11 @@ plugin.writeFileHandler = function(req,res){
 					res.json({"status": 404,"message": "Not found","data": "Project not found"});
 					return;
 				}
-				if(!user.isAdmin && user.login!=project.createdBy){
-					plugin.debug('<-writeFileHandler() - forbidden');
-					res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
-					return;
-				}
+				if(!user.isAdmin && user.login!=project.createdBy && project.createdBy!='system'){
+						plugin.debug('<-writeFileHandler() - forbidden');
+						res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
+						return;
+					}
 				let fileContent, writeOptions = {};
 					if(typeof req.body === 'object' && req.body !== null){
 						fileContent = req.body.content;   // MCP / sync path
@@ -287,11 +287,11 @@ plugin.uploadFileHandler = function(req,res){
 					res.json({"status": 404,"message": "Not found","data": "Project not found"});
 					return;
 				}
-				if(!user.isAdmin && user.login!=project.createdBy){
-					plugin.debug('<-uploadFileHandler() - forbidden');
-					res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
-					return;
-				}
+				if(!user.isAdmin && user.login!=project.createdBy && project.createdBy!='system'){
+						plugin.debug('<-uploadFileHandler() - forbidden');
+						res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
+						return;
+					}
 				let uploadDir = workspaceService.absolutePath(folder);
 				plugin.debug('uploadDir: '+uploadDir);
 				workspaceService.checkExists(uploadDir);
@@ -302,12 +302,16 @@ plugin.uploadFileHandler = function(req,res){
 							plugin.debug('err: '+JSON.stringify(err));
 							res.json({"status": 406,"message": err,"data": []});
 						}else{
-							for(var entry in files){
-								var file = files[entry];
-								workspaceService.renameFile(uploadDir,file.newFilename,file.originalFilename);
-								let filePath = folder+'/'+file.originalFilename;
-								plugin._emitUploadedEvent(workspaceService, projectName, filePath);
-							}
+							let emitted = false;
+								for(var entry in files){
+									var file = files[entry];
+									workspaceService.renameFile(uploadDir,file.newFilename,file.originalFilename);
+									if(!emitted){
+										let filePath = folder+'/'+file.originalFilename;
+										plugin._emitUploadedEvent(workspaceService, projectName, filePath);
+										emitted = true;
+									}
+								}
 							plugin.debug('<-uploadFileHandler()');
 							res.json({"status": 200,"message": "Uploaded","data": file.originalFilename});
 						}
