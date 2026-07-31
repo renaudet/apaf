@@ -17,8 +17,7 @@ plugin._emitUploadedEvent = function(workspaceService, projectName, filePath){
 		let content = workspaceService.getFileContent(filePath, {"encoding": "base64"});
 		plugin.debug('_emitUploadedEvent: content length='+content.length+', emitting workspace.file.uploaded');
 		let npaWorkspace = plugin.runtime.getPlugin('npa.workspace');
-		let emitted = npaWorkspace._emitWorkspaceEvent('workspace.file.uploaded',{"project": projectName,"path": filePath,"content": content});
-		plugin.debug('_emitUploadedEvent: broker.emit returned '+emitted);
+		npaWorkspace._emitWorkspaceEvent('workspace.file.uploaded',{"project": projectName,"path": filePath,"content": content});
 	}catch(e){
 		plugin.debug('_emitUploadedEvent: could not read file "'+filePath+'": '+e.message);
 	}
@@ -199,12 +198,14 @@ plugin.writeFileHandler = function(req,res){
 						// binary sync path: bodyParser.raw produced a Buffer
 						// suppressEvent prevents setFileContent from emitting workspace.file.updated
 						// with a raw Buffer payload (would crash _onFileWritten on hub nodes);
-						// instead we emit workspace.file.uploaded with clean base64 content.
+						// instead we emit workspace.file.uploaded with clean base64 content,
+						// in the 'finish' callback so the file is guaranteed to be on disk.
 						fileContent = req.body;
 						writeOptions.encoding = 'binary';
 						writeOptions.suppressEvent = true;
-						workspaceService.setFileContent(filePath,fileContent,writeOptions);
-						plugin._emitUploadedEvent(workspaceService, projectName, filePath);
+						workspaceService.setFileContent(filePath,fileContent,writeOptions,function(){
+							plugin._emitUploadedEvent(workspaceService, projectName, filePath);
+						});
 					}else if(typeof req.body === 'object' && req.body !== null){
 						// JSON sync path (MCP or sharing plugin text files)
 						fileContent = req.body.content;
