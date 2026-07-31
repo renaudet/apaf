@@ -5,14 +5,21 @@
     "configuration": {
     	"actions": [
     		{
-                "label": "@apaf.workspace.toolbar.action.new",
-                "actionId": "newProject",
-                "icon": "/uiTools/img/silk/book_add.png",
-                "enabled": true,
-                "enableOnSelection": true
-            },
+    	           "label": "@apaf.workspace.toolbar.action.new",
+    	           "actionId": "newProject",
+    	           "icon": "/uiTools/img/silk/book_add.png",
+    	           "enabled": true,
+    	           "enableOnSelection": true
+    	       },
     		{
-                "label": "@apaf.workspace.toolbar.action.folder",
+    	           "label": "@apaf.workspace.toolbar.action.new.shared",
+    	           "actionId": "newSharedProject",
+    	           "icon": "/uiTools/img/silk/book_link.png",
+    	           "enabled": true,
+    	           "enableOnSelection": true
+    	       },
+    		{
+    	           "label": "@apaf.workspace.toolbar.action.folder",
                 "actionId": "newFolder",
                 "icon": "/uiTools/img/silk/folder_add.png",
                 "enabled": false,

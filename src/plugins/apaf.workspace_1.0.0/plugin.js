@@ -11,6 +11,16 @@ const WORKSPACE_SERVICE_NAME = 'workspace';
 
 var plugin = new ApafPlugin();
 
+plugin._emitUploadedEvent = function(workspaceService, projectName, filePath){
+	try{
+		let content = workspaceService.getFileContent(filePath, {"encoding": "base64"});
+		let npaWorkspace = plugin.runtime.getPlugin('npa.workspace');
+		npaWorkspace._emitWorkspaceEvent('workspace.file.uploaded',{"project": projectName,"path": filePath,"content": content});
+	}catch(e){
+		plugin.debug('_emitUploadedEvent: could not read file "'+filePath+'": '+e.message);
+	}
+}
+
 plugin.createProjectHandler = function(req,res){
 	plugin.debug('->createProjectHandler()');
 	let requiredRole = plugin.getRequiredSecurityRole('apaf.workspace.project.create.handler');
@@ -30,7 +40,8 @@ plugin.createProjectHandler = function(req,res){
 			if(typeof projectInfo.type=='undefined'){
 				projectInfo.type = 'general';
 			}
-			projectInfo.createdBy = user.login;
+			// shared projects are owned by 'system' so all users can see them
+			projectInfo.createdBy = (projectInfo.type === 'shared') ? 'system' : user.login;
 			projectInfo.created = moment().format('YYYY/MM/DD HH:mm:ss');
 			let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
 			workspaceService.createProject(projectInfo);
@@ -53,7 +64,8 @@ plugin.findProjectHandler = function(req,res){
 			let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
 			let projects = workspaceService.getProjects(filter);
 			if(!user.isAdmin){
-				projects = projects.filter(p => p.createdBy==user.login);
+				// non-admin users see their own projects + all shared ('system') projects
+				projects = projects.filter(p => p.createdBy==user.login || p.createdBy=='system');
 			}
 			plugin.debug('<-findProjectHandler()');
 			res.json({"status": 200,"message": "Ok","data": projects});
@@ -178,10 +190,14 @@ plugin.writeFileHandler = function(req,res){
 					res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
 					return;
 				}
-				let fileContent = (typeof req.body === 'object' && req.body !== null)
-					? req.body.content   // MCP path: body is always a JS object
-					: req.body;          // UI path: body is a raw string (text/plain)
-				workspaceService.setFileContent(filePath,fileContent);
+				let fileContent, writeOptions = {};
+					if(typeof req.body === 'object' && req.body !== null){
+						fileContent = req.body.content;   // MCP / sync path
+						if(req.body.encoding){ writeOptions.encoding = req.body.encoding; }
+					}else{
+						fileContent = req.body;           // UI path: raw string (text/plain)
+					}
+					workspaceService.setFileContent(filePath,fileContent,writeOptions);
 				plugin.debug('<-writeFileHandler()');
 				res.json({"status": 200,"message": "Ok","data": []});
 			}else{
@@ -280,20 +296,22 @@ plugin.uploadFileHandler = function(req,res){
 				plugin.debug('uploadDir: '+uploadDir);
 				workspaceService.checkExists(uploadDir);
 				const form = formidable({ "multiples": false, "uploadDir": uploadDir });
-				form.parse(req, function(err, fields, files){
-					if(err){
-						plugin.debug('<-uploadFileHandler() - request parsing error');
-						plugin.debug('err: '+JSON.stringify(err));
-						res.json({"status": 406,"message": err,"data": []});
-					}else{
-						for(var entry in files){
-							var file = files[entry];
-							workspaceService.renameFile(uploadDir,file.newFilename,file.originalFilename);
+					form.parse(req, function(err, fields, files){
+						if(err){
+							plugin.debug('<-uploadFileHandler() - request parsing error');
+							plugin.debug('err: '+JSON.stringify(err));
+							res.json({"status": 406,"message": err,"data": []});
+						}else{
+							for(var entry in files){
+								var file = files[entry];
+								workspaceService.renameFile(uploadDir,file.newFilename,file.originalFilename);
+								let filePath = folder+'/'+file.originalFilename;
+								plugin._emitUploadedEvent(workspaceService, projectName, filePath);
+							}
+							plugin.debug('<-uploadFileHandler()');
+							res.json({"status": 200,"message": "Uploaded","data": file.originalFilename});
 						}
-						plugin.debug('<-uploadFileHandler()');
-						res.json({"status": 200,"message": "Uploaded","data": file.originalFilename});
-					}
-				});
+					});
 			}else{
 				plugin.debug('<-uploadFileHandler() - bad request');
 				res.json({"status": 406,"message": "Not acceptable","data": "No resource path received!"});

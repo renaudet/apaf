@@ -34,6 +34,7 @@ initializeUi = function(){
 			npaUi.on('addToken',addToken);
 			npaUi.on('deleteToken',deleteToken);
 			npaUi.on('newProject',newProject);
+			npaUi.on('newSharedProject',newSharedProject);
 			npaUi.on('newFolder',newFolder);
 			npaUi.on('saveFile',saveEditorFile);
 			npaUi.on('uploadResource',uploadResource);
@@ -371,6 +372,25 @@ newProject = function(){
 	projectInfo.name = projectName;
 	projectInfo.displayName = projectName;
 	projectInfo.type = 'general';
+	apaf.call({
+		"method": "POST",
+		"uri": "/apaf-workspace/project",
+		"payload": projectInfo
+	}).then(function(data){
+		treeViewer.addRootData(data);
+		treeViewer.refreshTree();
+	}).onError(function(errorMsg){
+		showError(errorMsg.message?errorMsg.message:errorMsg);
+	});
+}
+
+newSharedProject = function(){
+	let projectName = prompt(npaUi.getLocalizedString('@apaf.workspace.toolbar.action.new.shared.prompt'));
+	if(!projectName || projectName.trim().length==0) return;
+	let projectInfo = {};
+	projectInfo.name = projectName.trim();
+	projectInfo.displayName = projectName.trim();
+	projectInfo.type = 'shared';
 	apaf.call({
 		"method": "POST",
 		"uri": "/apaf-workspace/project",
