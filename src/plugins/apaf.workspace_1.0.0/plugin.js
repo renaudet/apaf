@@ -12,10 +12,13 @@ const WORKSPACE_SERVICE_NAME = 'workspace';
 var plugin = new ApafPlugin();
 
 plugin._emitUploadedEvent = function(workspaceService, projectName, filePath){
+	plugin.debug('_emitUploadedEvent: reading "'+filePath+'" as base64...');
 	try{
 		let content = workspaceService.getFileContent(filePath, {"encoding": "base64"});
+		plugin.debug('_emitUploadedEvent: content length='+content.length+', emitting workspace.file.uploaded');
 		let npaWorkspace = plugin.runtime.getPlugin('npa.workspace');
-		npaWorkspace._emitWorkspaceEvent('workspace.file.uploaded',{"project": projectName,"path": filePath,"content": content});
+		let emitted = npaWorkspace._emitWorkspaceEvent('workspace.file.uploaded',{"project": projectName,"path": filePath,"content": content});
+		plugin.debug('_emitUploadedEvent: broker.emit returned '+emitted);
 	}catch(e){
 		plugin.debug('_emitUploadedEvent: could not read file "'+filePath+'": '+e.message);
 	}
@@ -191,6 +194,7 @@ plugin.writeFileHandler = function(req,res){
 						return;
 					}
 				let fileContent, writeOptions = {};
+					plugin.debug('writeFileHandler: body type='+typeof req.body+' isBuffer='+Buffer.isBuffer(req.body)+' content-type='+req.headers['content-type']);
 					if(Buffer.isBuffer(req.body)){
 						// binary sync path: bodyParser.raw produced a Buffer
 						// suppressEvent prevents setFileContent from emitting workspace.file.updated
