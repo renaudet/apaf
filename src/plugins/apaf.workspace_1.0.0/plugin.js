@@ -191,7 +191,6 @@ plugin.writeFileHandler = function(req,res){
 						return;
 					}
 				let fileContent, writeOptions = {};
-					plugin.debug('writeFileHandler: body ctor='+( req.body && req.body.constructor ? req.body.constructor.name : 'null')+' isBuffer='+Buffer.isBuffer(req.body)+' type='+typeof req.body+' CT='+(req.headers['content-type']||'none'));
 					if(Buffer.isBuffer(req.body)){
 						// binary sync path: bodyParser.raw produced a Buffer
 						fileContent = req.body;
