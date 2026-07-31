@@ -190,19 +190,20 @@ plugin.writeFileHandler = function(req,res){
 						res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
 						return;
 					}
-				let contentType = req.headers['content-type']||'';
-					let fileContent, writeOptions = {};
-					if(contentType.startsWith('application/octet-stream')){
-						// binary sync path: req.body is a raw Buffer from bodyParser.raw
+				let fileContent, writeOptions = {};
+					if(Buffer.isBuffer(req.body)){
+						// binary sync path: bodyParser.raw produced a Buffer
 						fileContent = req.body;
 						writeOptions.encoding = 'binary';
-						plugin.debug('writeFileHandler: binary path, bufferLen='+(fileContent?fileContent.length:0));
+						plugin.debug('writeFileHandler: binary path, bufferLen='+fileContent.length);
 					}else if(typeof req.body === 'object' && req.body !== null){
-						fileContent = req.body.content;   // MCP / JSON sync path
+						// JSON sync path (MCP or sharing plugin text files)
+						fileContent = req.body.content;
 						if(req.body.encoding){ writeOptions.encoding = req.body.encoding; }
 						plugin.debug('writeFileHandler: object path, encoding='+writeOptions.encoding+' contentLen='+(fileContent?fileContent.length:0));
 					}else{
-						fileContent = req.body;           // UI path: raw string (text/plain)
+						// UI path: raw string via bodyParser.text
+						fileContent = req.body;
 						plugin.debug('writeFileHandler: string path, bodyLen='+(fileContent?fileContent.length:0));
 					}
 					workspaceService.setFileContent(filePath,fileContent,writeOptions);
