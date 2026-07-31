@@ -190,11 +190,15 @@ plugin.writeFileHandler = function(req,res){
 						res.json({"status": 403,"message": "Forbidden","data": "Not owner"});
 						return;
 					}
-				let fileContent, writeOptions = {};
-					plugin.debug('writeFileHandler: req.body type='+typeof req.body+' isNull='+(req.body===null));
-					plugin.debug('writeFileHandler: Content-Type='+req.headers['content-type']);
-					if(typeof req.body === 'object' && req.body !== null){
-						fileContent = req.body.content;   // MCP / sync path
+				let contentType = req.headers['content-type']||'';
+					let fileContent, writeOptions = {};
+					if(contentType.startsWith('application/octet-stream')){
+						// binary sync path: req.body is a raw Buffer from bodyParser.raw
+						fileContent = req.body;
+						writeOptions.encoding = 'binary';
+						plugin.debug('writeFileHandler: binary path, bufferLen='+(fileContent?fileContent.length:0));
+					}else if(typeof req.body === 'object' && req.body !== null){
+						fileContent = req.body.content;   // MCP / JSON sync path
 						if(req.body.encoding){ writeOptions.encoding = req.body.encoding; }
 						plugin.debug('writeFileHandler: object path, encoding='+writeOptions.encoding+' contentLen='+(fileContent?fileContent.length:0));
 					}else{
