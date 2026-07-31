@@ -11,11 +11,13 @@ const WORKSPACE_SERVICE_NAME = 'workspace';
 
 var plugin = new ApafPlugin();
 
-plugin._emitUploadedEvent = function(workspaceService, projectName, filePath){
+plugin._emitUploadedEvent = function(workspaceService, projectName, filePath, syncSource){
 	try{
 		let content = workspaceService.getFileContent(filePath, {"encoding": "base64"});
+		let eventData = {"project": projectName,"path": filePath,"content": content};
+		if(syncSource){ eventData.syncSource = syncSource; }
 		let npaWorkspace = plugin.runtime.getPlugin('npa.workspace');
-		npaWorkspace._emitWorkspaceEvent('workspace.file.uploaded',{"project": projectName,"path": filePath,"content": content});
+		npaWorkspace._emitWorkspaceEvent('workspace.file.uploaded', eventData);
 	}catch(e){
 		plugin.debug('_emitUploadedEvent: could not read file "'+filePath+'": '+e.message);
 	}
@@ -200,7 +202,7 @@ plugin.writeFileHandler = function(req,res){
 						writeOptions.syncSource = 'sync';
 						plugin.debug('writeFileHandler: binary path, bufferLen='+fileContent.length);
 						workspaceService.setFileContent(filePath,fileContent,writeOptions);
-						plugin._emitUploadedEvent(workspaceService, projectName, filePath);
+						plugin._emitUploadedEvent(workspaceService, projectName, filePath, 'sync');
 					}else if(typeof req.body === 'object' && req.body !== null){
 						// JSON sync path (MCP or sharing plugin text files)
 						fileContent = req.body.content;
