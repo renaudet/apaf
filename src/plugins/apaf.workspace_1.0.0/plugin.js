@@ -193,22 +193,27 @@ plugin.writeFileHandler = function(req,res){
 				let fileContent, writeOptions = {};
 					if(Buffer.isBuffer(req.body)){
 						// binary sync path: bodyParser.raw produced a Buffer
+						// Use syncSource:'sync' to suppress workspace.file.updated (would carry raw binary),
+						// then emit workspace.file.uploaded so hub nodes can re-propagate cleanly.
 						fileContent = req.body;
 						writeOptions.encoding = 'binary';
 						writeOptions.syncSource = 'sync';
 						plugin.debug('writeFileHandler: binary path, bufferLen='+fileContent.length);
+						workspaceService.setFileContent(filePath,fileContent,writeOptions);
+						plugin._emitUploadedEvent(workspaceService, projectName, filePath);
 					}else if(typeof req.body === 'object' && req.body !== null){
 						// JSON sync path (MCP or sharing plugin text files)
 						fileContent = req.body.content;
 						if(req.body.encoding){ writeOptions.encoding = req.body.encoding; }
 						writeOptions.syncSource = 'sync';
 						plugin.debug('writeFileHandler: object path, encoding='+writeOptions.encoding+' contentLen='+(fileContent?fileContent.length:0));
+						workspaceService.setFileContent(filePath,fileContent,writeOptions);
 					}else{
 						// UI path: raw string via bodyParser.text (local user)
 						fileContent = req.body;
 						plugin.debug('writeFileHandler: string path, bodyLen='+(fileContent?fileContent.length:0));
+						workspaceService.setFileContent(filePath,fileContent,writeOptions);
 					}
-					workspaceService.setFileContent(filePath,fileContent,writeOptions);
 				plugin.debug('<-writeFileHandler()');
 				res.json({"status": 200,"message": "Ok","data": []});
 			}else{
