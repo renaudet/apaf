@@ -191,11 +191,15 @@ plugin.writeFileHandler = function(req,res){
 						return;
 					}
 				let fileContent, writeOptions = {};
+					plugin.debug('writeFileHandler: req.body type='+typeof req.body+' isNull='+(req.body===null));
+					plugin.debug('writeFileHandler: Content-Type='+req.headers['content-type']);
 					if(typeof req.body === 'object' && req.body !== null){
 						fileContent = req.body.content;   // MCP / sync path
 						if(req.body.encoding){ writeOptions.encoding = req.body.encoding; }
+						plugin.debug('writeFileHandler: object path, encoding='+writeOptions.encoding+' contentLen='+(fileContent?fileContent.length:0));
 					}else{
 						fileContent = req.body;           // UI path: raw string (text/plain)
+						plugin.debug('writeFileHandler: string path, bodyLen='+(fileContent?fileContent.length:0));
 					}
 					workspaceService.setFileContent(filePath,fileContent,writeOptions);
 				plugin.debug('<-writeFileHandler()');
