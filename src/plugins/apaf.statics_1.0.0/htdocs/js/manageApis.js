@@ -200,7 +200,11 @@ fileToIcon = function(filename){
 var filesystemDecorator = {
 	decorate(element,label){
 		if(element.createdBy){
-			return '<img src="/uiTools/img/silk/book.png">&nbsp;<b>'+label+'</b>';
+			if('system'==element.createdBy){
+				return '<img src="/uiTools/img/silk/book_link.png">&nbsp;<b>' + label + '</b>';
+			}else{
+				return '<img src="/uiTools/img/silk/book.png">&nbsp;<b>' + label + '</b>';
+			}
 		}
 		if(element.type){
 			if('file'==element.type){
