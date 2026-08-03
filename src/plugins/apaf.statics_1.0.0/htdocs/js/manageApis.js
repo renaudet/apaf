@@ -16,6 +16,7 @@ const API_TEST_FORM_ID = 'apiTestForm';
 const JOB_TABLE_ID = 'jobTable';
 const JOB_TOOLBAR_ID = 'jobTableToolbar';
 const PROPERTIES_TABLE_ID = 'propertiesTable';
+const PROPERTY_EDIT_FORM_ID = 'propertyEditForm';
 
 let treeViewer = null;
 let selectedFolder = null;
@@ -44,6 +45,7 @@ initializeUi = function(){
 			npaUi.on('menu.item.selected',onPageChanged);
 			npaUi.on('refreshJobs',refreshJobTable);
 			npaUi.on('terminate',terminateJob);
+			npaUi.on('editProperty',editProperty);
 			npaUi.render();
 		});
 	});
@@ -867,6 +869,61 @@ refreshPropertiesTable = function(){
 	}).onError(function(errorMsg){
 		showError(errorMsg.message?errorMsg.message:errorMsg);
 	});
+}
+
+var currentEditedProperty = null;
+editProperty = function(event){
+	currentEditedProperty = event.item;
+	let form = $apaf(PROPERTY_EDIT_FORM_ID);
+	form.setData(currentEditedProperty);
+	form.setEditMode(true);
+	let dialog = $apaf('propertyDialog');
+	dialog.onClose(function(){
+		let form = $apaf(PROPERTY_EDIT_FORM_ID);
+		if(!form.isValid()) return false;
+		let rawValue = form.getData().value;
+		let validationError = validatePropertyValue(rawValue, currentEditedProperty.type);
+		if(validationError){
+			showError(validationError);
+			return false;
+		}
+		apaf.call({
+			"method": "PUT",
+			"uri": "/runtime-properties",
+			"payload": {"name": currentEditedProperty.name,"type": currentEditedProperty.type,"value": rawValue,"description": currentEditedProperty.description}
+		}).then(function(data){
+			refreshPropertiesTable();
+			flash('@apaf.page.apis.property.updated');
+		}).onError(function(errorMsg){
+			showError(errorMsg.message?errorMsg.message:errorMsg);
+		});
+	});
+	dialog.open();
+}
+
+validatePropertyValue = function(value, type){
+	if('int'==type){
+		if(!/^-?\d+$/.test(value.toString().trim())){
+			return npaUi.getLocalizedString('@apaf.page.apis.property.validation.int');
+		}
+	}else
+	if('boolean'==type){
+		if(!/^(true|false)$/i.test(value.toString().trim())){
+			return npaUi.getLocalizedString('@apaf.page.apis.property.validation.boolean');
+		}
+	}else
+	if('percentage'==type){
+		let num = parseFloat(value);
+		if(isNaN(num) || num < 0 || num > 100){
+			return npaUi.getLocalizedString('@apaf.page.apis.property.validation.percentage');
+		}
+	}else
+	if('moment'==type){
+		if(isNaN(Date.parse(value))){
+			return npaUi.getLocalizedString('@apaf.page.apis.property.validation.moment');
+		}
+	}
+	return null;
 }
 
 var logsVisitor = {

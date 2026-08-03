@@ -598,6 +598,25 @@
 		    	]
 		    }
 		},
+		"propertyDialog": {
+		    "id":"propertyDialog",
+		    "version": "1.0.0",
+		    "type": "ModalDialog",
+		    "configuration": {
+		    	"title": "@apaf.page.apis.property.form.title",
+		    	"size": "XXL",
+		    	"buttons": [
+		    		{
+		    			"label": "@apaf.simple.dialog.cancel.label",
+		    			"action": "cancel"
+		    		},
+		    		{
+		    			"label": "@apaf.simple.dialog.close.label",
+		    			"action": "close"
+		    		}
+		    	]
+		    }
+		},
 		"dataToolbar": {
 		    "id":"dataToolbar",
 		    "version": "1.0.0",

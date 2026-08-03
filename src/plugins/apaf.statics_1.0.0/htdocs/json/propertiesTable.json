@@ -31,6 +31,10 @@
                 "label": "Locked",
                 "field": "locked",
                 "renderer": "@.locked?'<img src=\"/uiTools/img/silk/lock.png\">':'<img src=\"/uiTools/img/silk/lock_open.png\">'"
+            },
+            {
+                "label": "Actions",
+                "renderer": "!@.locked?'<img src=\"/uiTools/img/silk/pencil.png\" class=\"datatableAction\" title=\"Edit\" data-index=\"'+index+'\" data-action=\"editProperty\">':''"
             }
         ]
     }
