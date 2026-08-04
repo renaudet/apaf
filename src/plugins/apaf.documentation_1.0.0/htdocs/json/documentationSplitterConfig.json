@@ -1,0 +1,9 @@
+{
+    "id": "docSplitter",
+    "version": "1.0.0",
+    "type": "Splitter",
+    "configuration": {
+        "vertical": false,
+        "percentages": [25, 75]
+    }
+}

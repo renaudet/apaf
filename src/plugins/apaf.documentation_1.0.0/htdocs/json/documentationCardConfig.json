@@ -1,0 +1,11 @@
+{
+    "id": "documentationCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/uiTools/img/silk/book_open.png",
+        "label": "@apaf.documentation.page.title",
+        "headerClass": "bg-secondary bg-gradient bg-opacity-10",
+        "stylesheet": "/apaf-branding/css/apafCard.css"
+    }
+}

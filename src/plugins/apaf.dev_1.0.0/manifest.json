@@ -849,6 +849,14 @@
   		"label": "Contribute an X11 Application",
   		"location": "/dev/snippets/createX11Application.txt",
   		"category": "Application"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.dev.doc.devguide",
+  		"label": "APAF Developer Guide",
+  		"category": "Development",
+  		"subcategory": "Getting Started",
+  		"url": "/dev/docs/apafDevGuide.html"
   	}
   ],
   "provides": [

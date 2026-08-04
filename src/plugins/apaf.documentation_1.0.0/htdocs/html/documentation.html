@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="All-Purpose-Application-Framework Documentation Page">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link rel="icon" type="image/png" href="/apaf-branding/img/apaf-logo.png?version=1.0"/>
+		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/resources/css/apaf.css" rel="stylesheet">
+		<link href="/css/treeViewer.css" rel="stylesheet">
+		<link href="/uiTools/css/splitter.css" rel="stylesheet">
+		<link href="/apaf-documentation/css/documentation.css" rel="stylesheet">
+		<title>All Purpose Application Framework</title>
+	</head>
+	<body>
+		<div id="navBar" class="npaUi" data-ref="menu"></div>
+		<div id="card" class="npaUi" data-config="/apaf-documentation/json/documentationCardConfig.json">
+			<div id="docSplitterDiv" class="npaUi" data-config="/apaf-documentation/json/documentationSplitterConfig.json" style="height:100%;">
+
+				<!-- Left pane: Table Of Contents -->
+					<div data-splitter-target="first" class="doc-left-col">
+						<div id="docTreeArea" class="doc-tree-area"></div>
+					</div>
+
+				<!-- Right pane: page viewer -->
+				<div data-splitter-target="second" class="doc-right-col">
+					<iframe id="docFrame" class="doc-frame" src="about:blank" frameborder="0"></iframe>
+				</div>
+
+			</div>
+		</div>
+		<div id="notifier" class="npaUi" data-ref="notifier"></div>
+		<div id="monitor" class="npaUi" data-ref="sessionMonitor"></div>
+		<script src="/js/jquery-3.6.3.min.js"></script>
+		<script src="/js/bootstrap.bundle.min.js"></script>
+		<script src="/js/treeViewer.js"></script>
+		<script src="/uiTools/js/npaUiCore.js"></script>
+		<script src="/resources/js/utils/apafUtils.js"></script>
+		<script src="/apaf-documentation/js/documentation.js"></script>
+	</body>
+</html>

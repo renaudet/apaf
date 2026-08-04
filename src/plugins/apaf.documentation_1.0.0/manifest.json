@@ -1,0 +1,83 @@
+{
+  "id": "apaf.documentation",
+  "name": "Documentation plugin for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.documentation.logger",
+  		"dir": "apaf.documentation"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.documentation.htdocs",
+  		"path": "/apaf-documentation",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.documentation.router",
+  		"path": "/apaf-documentation-api"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.documentation.toc.handler",
+  		"router": "apaf.documentation.router",
+  		"method": "GET",
+  		"schema": "/toc",
+  		"handler": "getTocHandler",
+  		"securityRole": "operator",
+  		"description": "Get the documentation Table Of Contents (TOC)"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.documentation.locale.provider.enUS",
+  		"path": "i18n/apaf_documentation_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.documentation.locale.provider.en",
+  		"path": "i18n/apaf_documentation_en-US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.documentation.locale.provider.frFR",
+  		"path": "i18n/apaf_documentation_fr-FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.documentation.locale.provider.fr",
+  		"path": "i18n/apaf_documentation_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.documentation.menu.item",
+  		"menu": "helpMenuPlaceholder",
+  		"securityRole": "",
+  		"item": {
+			"id": "documentation",
+			"label": "@apaf.documentation.menu.label",
+			"actionId": "redirect",
+			"newWindow": true,
+			"icon": "/uiTools/img/silk/book_open.png",
+			"uri": "/apaf-documentation/html/documentation.html"
+		}
+  	}
+  ],
+  "provides": [
+  ]
+}
