@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.tokens plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.tokens - Tokens Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.tokens &mdash; Tokens Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.tokens</b> plugin manages <i>security tokens</i> — named, encrypted credential
+		records stored in CouchDB. A token bundles a login, a password, and an optional URI, all
+		encrypted at rest. Tokens allow servlets and workflows to reference external service
+		credentials by name without embedding plaintext secrets in code.
+
+		<h2>Data Model</h2>
+
+		Each token record contains:
+		<ul>
+			<li><b>login</b> — username for the external service</li>
+			<li><b>password</b> — AES-encrypted password (never returned in plaintext via the API)</li>
+			<li><b>uri</b> — optional target URI (e.g. service endpoint)</li>
+			<li><b>created</b> — creation timestamp</li>
+		</ul>
+
+		Records are stored in the <code>apaf_tokens</code> CouchDB database.
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-tokens/token/query</td><td>administrator</td><td>Query token records with a CouchDB Mango selector</td></tr>
+				<tr><td>POST</td><td>/apaf-tokens/token</td><td>administrator</td><td>Create a new encrypted token</td></tr>
+				<tr><td>DELETE</td><td>/apaf-tokens/token/:id</td><td>administrator</td><td>Delete a token by UUID</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Using Tokens from a Servlet</h2>
+
+		A servlet can retrieve a token's decrypted credentials at runtime:
+
+		<div class="code">
+		&nbsp;1.&nbsp;let runtime = context.runtime;<br>
+		&nbsp;2.&nbsp;let datatypePlugin = runtime.getPlugin(<span style="color:#3469e3;">'apaf.datatype'</span>);<br>
+		&nbsp;3.&nbsp;let crypto = runtime.getService(<span style="color:#3469e3;">'crypto'</span>);<br>
+		&nbsp;4.&nbsp;datatypePlugin.findByPrimaryKey(<span style="color:#3469e3;">'token'</span>, { login: <span style="color:#3469e3;">'my-service'</span> }, function(err, token) {<br>
+		&nbsp;5.&nbsp;&nbsp;&nbsp;if (token) {<br>
+		&nbsp;6.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let clearPassword = crypto.decrypt(token.password);<br>
+		&nbsp;7.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// use clearPassword to call the external service<br>
+		&nbsp;8.&nbsp;&nbsp;&nbsp;}<br>
+		&nbsp;9.&nbsp;});
+		</div>
+
+		<h2>Notes</h2>
+		<ul>
+			<li>All token management endpoints require the <code>administrator</code> role —
+			    tokens are never exposed to non-admin users.</li>
+			<li>Passwords are encrypted using the NPA default AES key via the <code>npa.crypto</code> service.
+			    The encrypted value is stored in CouchDB; decryption happens only at runtime in plugin code.</li>
+			<li>The token query API does <em>not</em> return the encrypted password field, even to administrators.</li>
+		</ul>
+
+	</body>
+</html>

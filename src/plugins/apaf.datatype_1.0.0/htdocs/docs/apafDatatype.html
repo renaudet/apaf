@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.datatype plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.datatype - Datatype Persistence Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.datatype &mdash; Datatype Persistence Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.datatype</b> plugin is the persistence backbone of APAF.
+		It manages the registration and lifecycle of <i>datatypes</i> — named schemas that describe
+		CouchDB-backed data collections. Every APAF plugin that needs to store records uses this plugin
+		to declare its datatype and then delegates all CRUD operations to it.
+
+		<h2>Declaring a Datatype</h2>
+
+		A plugin registers its datatype by contributing to the <code>apaf.datatype.base.datatype</code>
+		extension point in its <code>manifest.json</code>:
+
+		<div class="code">
+		&nbsp;1.&nbsp;{<br>
+		&nbsp;2.&nbsp;&nbsp;&nbsp;<span style="color:#3469e3;">"point"</span>: <span style="color:#3469e3;">"apaf.datatype.base.datatype"</span>,<br>
+		&nbsp;3.&nbsp;&nbsp;&nbsp;<span style="color:#3469e3;">"id"</span>: <span style="color:#3469e3;">"my.plugin.datatype"</span>,<br>
+		&nbsp;4.&nbsp;&nbsp;&nbsp;<span style="color:#3469e3;">"datatype"</span>: {<br>
+		&nbsp;5.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#3469e3;">"name"</span>: <span style="color:#3469e3;">"myRecord"</span>,<br>
+		&nbsp;6.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#3469e3;">"persistent"</span>: true,<br>
+		&nbsp;7.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#3469e3;">"database"</span>: <span style="color:#3469e3;">"apaf_my_records"</span>,<br>
+		&nbsp;8.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#3469e3;">"primaryKey"</span>: <span style="color:#3469e3;">"name"</span><br>
+		&nbsp;9.&nbsp;&nbsp;&nbsp;}<br>
+		10.&nbsp;}
+		</div>
+
+		If <code>persistent</code> is <code>true</code>, the plugin creates the CouchDB database on startup
+		if it does not already exist.
+
+		<h2>Programmatic API</h2>
+
+		The plugin is accessed through its plugin instance (not a named service). Other APAF plugins
+		resolve it via the NPA core:
+
+		<div class="code">
+		let datatypePlugin = plugin.getService(<span style="color:#3469e3;">'core'</span>).getPlugin(<span style="color:#3469e3;">'apaf.datatype'</span>);
+		</div>
+
+		<h3><code>query(datatypeId, selector, callback)</code></h3>
+
+		Executes a CouchDB Mango query on the named datatype's database.
+		<code>selector</code> is a plain Mango selector object (e.g. <code>{"active": {"$eq": true}}</code>).
+		The callback receives <code>(err, records[])</code>.
+
+		<h3><code>findByPrimaryKey(datatypeId, data, callback)</code></h3>
+
+		Finds a single record matching the <code>primaryKey</code> value from <code>data</code>.
+		Returns <code>null</code> if not found.
+
+		<h3><code>createRecord(datatypeId, data, callback)</code></h3>
+
+		Creates a new record. Automatically adds <code>id</code>, <code>created</code>, and <code>createdBy</code>
+		fields if not already present.
+
+		<h3><code>updateRecord(datatypeId, data, callback)</code></h3>
+
+		Updates an existing record. Merges <code>data</code> onto the existing CouchDB document
+		(fields absent from <code>data</code> are preserved). Requires <code>id</code> and <code>_rev</code>.
+
+		<h3><code>deleteRecord(datatypeId, data, callback)</code></h3>
+
+		Deletes the record identified by <code>data.id</code>.
+
+		<h2>Extension Points</h2>
+
+		<ul>
+			<li><b><code>apaf.datatype.base.datatype</code></b> — declare a datatype that this plugin
+			    will manage. Consumed by all APAF feature plugins.</li>
+			<li><b><code>apaf.datatype.object.initializer</code></b> — seed initial records into a
+			    datatype database at startup (used to create default roles such as <code>administrator</code>,
+			    <code>developer</code>, <code>operator</code>).</li>
+		</ul>
+
+		<h2>Built-in Datatypes</h2>
+
+		The following internal datatypes are declared by core APAF plugins and managed
+		transparently by <b>apaf.datatype</b>:
+
+		<table>
+			<thead><tr><th>Datatype name</th><th>Database</th><th>Owner plugin</th></tr></thead>
+			<tbody>
+				<tr><td>user</td><td>apaf_users</td><td>apaf.admin</td></tr>
+				<tr><td>group</td><td>apaf_groups</td><td>apaf.admin</td></tr>
+				<tr><td>role</td><td>apaf_roles</td><td>apaf.admin</td></tr>
+				<tr><td>fragment</td><td>apaf_fragments</td><td>apaf.dev</td></tr>
+				<tr><td>application</td><td>apaf_applications</td><td>apaf.dev</td></tr>
+				<tr><td>workflow</td><td>apaf_workflows</td><td>apaf.workflow</td></tr>
+				<tr><td>scheduler</td><td>apaf_scheduler</td><td>apaf.scheduler</td></tr>
+				<tr><td>ruleData</td><td>apaf_rule_data</td><td>apaf.rule.data</td></tr>
+				<tr><td>datatype</td><td>apaf_datatypes</td><td>apaf.user.datatype</td></tr>
+			</tbody>
+		</table>
+
+	</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.rest.api plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.rest.api - REST Client Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.rest.api &mdash; REST Client Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.rest.api</b> plugin provides a server-side HTTP proxy for invoking remote
+		REST services. It is the recommended way for APAF servlets, workflows, and snippets to
+		call external APIs without dealing with CORS or credentials exposure in the browser.
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-rest/invoke</td><td>coreServices</td><td>Invoke a remote REST service and return the response</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Request Payload</h2>
+
+		The <code>POST /apaf-rest/invoke</code> endpoint accepts a JSON body describing the remote call:
+
+		<div class="code">
+		{<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"host"</span>: <span style="color:#3469e3;">"api.example.com"</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// target hostname (required)<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"port"</span>: 443,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// target port (optional, default 80/443)<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"uri"</span>: <span style="color:#3469e3;">"/v1/data"</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// request path (required)<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"method"</span>: <span style="color:#3469e3;">"GET"</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// HTTP method: GET | POST | PUT | DELETE<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"secured"</span>: true,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// use HTTPS when true<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"username"</span>: <span style="color:#3469e3;">"alice"</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Basic auth username (optional)<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"password"</span>: <span style="color:#3469e3;">"secret"</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Basic auth password (optional)<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"payload"</span>: { ... },&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// request body for POST/PUT (optional)<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"options"</span>: { ... }&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// additional Axios options, e.g. custom headers<br>
+		}
+		</div>
+
+		<h2>Response</h2>
+
+		On success, the endpoint returns the remote service's response body and headers:
+
+		<div class="code">
+		{<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"status"</span>: 200,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"message"</span>: <span style="color:#3469e3;">"ok"</span>,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"data"</span>: &lt;response body&gt;,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"headers"</span>: { ... }<br>
+		}
+		</div>
+
+		<h2>Usage from a Servlet</h2>
+
+		<div class="code">
+		&nbsp;1.&nbsp;let runtime = context.runtime;<br>
+		&nbsp;2.&nbsp;let restPlugin = runtime.getPlugin(<span style="color:#3469e3;">'apaf.rest.api'</span>);<br>
+		&nbsp;3.&nbsp;restPlugin.invokeRemote({<br>
+		&nbsp;4.&nbsp;&nbsp;&nbsp;host: <span style="color:#3469e3;">'api.example.com'</span>,<br>
+		&nbsp;5.&nbsp;&nbsp;&nbsp;uri: <span style="color:#3469e3;">'/v1/data'</span>,<br>
+		&nbsp;6.&nbsp;&nbsp;&nbsp;method: <span style="color:#3469e3;">'GET'</span>,<br>
+		&nbsp;7.&nbsp;&nbsp;&nbsp;secured: true<br>
+		&nbsp;8.&nbsp;}, function(err, response) {<br>
+		&nbsp;9.&nbsp;&nbsp;&nbsp;context.httpResponse.json(response);<br>
+		10.&nbsp;});
+		</div>
+
+		<h2>MCP Tool</h2>
+
+		The plugin registers the <code>invokeRestApi</code> MCP tool, which exposes the same
+		proxy capability to AI agents.
+
+		<h2>Notes</h2>
+		<ul>
+			<li>All outbound calls are made server-side — the caller's browser never receives
+			    credentials sent to the remote service.</li>
+			<li>Self-signed certificates can be accepted by setting <code>acceptCertificate: true</code>
+			    in the <code>options</code> field.</li>
+		</ul>
+
+	</body>
+</html>

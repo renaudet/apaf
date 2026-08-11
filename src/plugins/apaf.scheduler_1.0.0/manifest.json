@@ -315,8 +315,22 @@
     		"icon": "/uiTools/img/silk/clock.png",
     		"uri": "/resources/html/manageSchedulers.html"
 		}
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.scheduler.htdocs",
+  		"path": "/apaf-scheduler",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.scheduler.doc",
+  		"label": "apaf.scheduler - Task Scheduler",
+  		"category": "APAF Framework",
+  		"subcategory": "Async & Scheduling",
+  		"url": "/apaf-scheduler/docs/apafScheduler.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }

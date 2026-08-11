@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.dev plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.dev - Development Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.dev &mdash; Development Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.dev</b> plugin is the runtime development workbench of APAF. It manages
+		<i>fragments</i> — reusable JavaScript code units — and <i>applications</i> — published
+		single-page UIs. Both are stored in CouchDB and do not require a server restart to deploy.
+
+		<h2>Fragment Types</h2>
+
+		<table>
+			<thead><tr><th>Type</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>snippet</code></td><td>A reusable server-side code block (no HTTP endpoint)</td></tr>
+				<tr><td><code>library</code></td><td>A JavaScript library loaded by APAF applications in the browser</td></tr>
+				<tr><td><code>servlet</code></td><td>A JavaScript fragment exposed as a dynamic HTTP endpoint via <code>apaf.dyn.api</code></td></tr>
+				<tr><td><code>workflowNode</code></td><td>A custom node type usable in the Workflow editor</td></tr>
+				<tr><td><code>mcpTool</code></td><td>A dynamic MCP tool exposed to AI agents without server restart</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API — Fragments</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-dev/fragment/query</td><td>developer</td><td>Query the list of code fragments</td></tr>
+				<tr><td>POST</td><td>/apaf-dev/fragment</td><td>developer</td><td>Create a new code fragment</td></tr>
+				<tr><td>PUT</td><td>/apaf-dev/fragment</td><td>developer</td><td>Update an existing code fragment</td></tr>
+				<tr><td>DELETE</td><td>/apaf-dev/fragment/:id</td><td>developer</td><td>Delete a code fragment by UUID</td></tr>
+				<tr><td>GET</td><td>/apaf-dev/fragment/:id</td><td>(none)</td><td>Get a code fragment by UUID</td></tr>
+				<tr><td>GET</td><td>/apaf-dev/loadFragment/:id</td><td>operator</td><td>Load fragment source as <code>text/javascript</code></td></tr>
+				<tr><td>GET</td><td>/apaf-dev/loadFragmentByName</td><td>operator</td><td>Load fragment source by name and version (query params)</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API — Applications</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-dev/application/query</td><td>developer</td><td>Query the list of APAF applications</td></tr>
+				<tr><td>POST</td><td>/apaf-dev/application</td><td>developer</td><td>Create a new APAF application</td></tr>
+				<tr><td>PUT</td><td>/apaf-dev/application</td><td>developer</td><td>Update an existing APAF application</td></tr>
+				<tr><td>DELETE</td><td>/apaf-dev/application/:id</td><td>developer</td><td>Delete an APAF application (only if unpublished)</td></tr>
+				<tr><td>GET</td><td>/apaf-dev/application/:id</td><td>(none)</td><td>Get an APAF application by UUID</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API — IDE Helpers</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>GET</td><td>/apaf-dev/snippets</td><td>developer</td><td>List registered code snippet templates</td></tr>
+				<tr><td>GET</td><td>/apaf-dev/wizards</td><td>developer</td><td>List registered editor wizards</td></tr>
+				<tr><td>GET</td><td>/apaf-dev/docs</td><td>developer</td><td>List registered documentation page providers</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Events</h2>
+
+		After every fragment mutation, <b>apaf.dev</b> emits an internal event via the
+		<code>npa.event.broker</code> service:
+
+		<div class="code">
+		event name: <span style="color:#3469e3;">'apaf.fragment.changed'</span><br>
+		event data: { action: <span style="color:#3469e3;">'created'</span> | <span style="color:#3469e3;">'updated'</span> | <span style="color:#3469e3;">'deleted'</span>, fragment: &lt;record&gt; }
+		</div>
+
+		This allows other plugins (such as <code>apaf.generic.mcp.tools</code>) to invalidate
+		their caches reactively without polling.
+
+		<h2>Extension Points</h2>
+
+		<ul>
+			<li><b><code>apaf.dev.snippet.provider</code></b> — contribute code snippet templates
+			    shown in the fragment editor toolbar</li>
+			<li><b><code>apaf.dev.editor.wizard.provider</code></b> — contribute guided wizard dialogs
+			    for the fragment editor</li>
+			<li><b><code>apaf.dev.editor.documentation.provider</code></b> — contribute documentation
+			    pages linked from the fragment editor</li>
+		</ul>
+
+		<h2>MCP Tools</h2>
+
+		The plugin registers MCP tools for fragment and application management:
+		<code>queryFragments</code>, <code>findFragment</code>, <code>createFragment</code>,
+		<code>updateFragment</code>, <code>queryApplications</code>, <code>findApplication</code>,
+		<code>createApplication</code>, <code>updateApplication</code>.
+
+	</body>
+</html>

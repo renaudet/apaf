@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.runtime.properties plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.runtime.properties - Runtime Properties Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.runtime.properties &mdash; Runtime Properties Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.runtime.properties</b> plugin exposes the NPA runtime property system as a
+		REST API and provides a UI for administrators to view and edit runtime configuration
+		values without restarting the server. Properties are declared by plugins via the
+		<code>npa.runtime.property.provider</code> extension point and stored in memory.
+
+		The service is accessible as:
+
+		<div class="code">
+		let properties = plugin.getService(<span style="color:#3469e3;">'properties'</span>);
+		</div>
+
+		<h2>Service Name</h2>
+
+		<div class="code">
+		<span style="color:#3469e3;">'properties'</span>
+		</div>
+
+		<h2>Property Types</h2>
+
+		<table>
+			<thead><tr><th>Type</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>string</code></td><td>Free-form text value</td></tr>
+				<tr><td><code>int</code></td><td>Integer numeric value</td></tr>
+				<tr><td><code>boolean</code></td><td>Boolean (<code>true</code> / <code>false</code>)</td></tr>
+				<tr><td><code>percentage</code></td><td>Integer value constrained to 0–100</td></tr>
+				<tr><td><code>moment</code></td><td>Date/time value (moment.js compatible)</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>GET</td><td>/runtime-properties/</td><td>administrator</td><td>Get all runtime properties</td></tr>
+				<tr><td>GET</td><td>/runtime-properties/:name</td><td>operator</td><td>Get the value of a named property</td></tr>
+				<tr><td>PUT</td><td>/runtime-properties/</td><td>operator</td><td>Set or update a runtime property value</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Declaring a Property</h2>
+
+		Any plugin can declare a runtime property via the <code>npa.runtime.property.provider</code>
+		extension point in its <code>manifest.json</code>:
+
+		<div class="code">
+		{<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"point"</span>: <span style="color:#3469e3;">"npa.runtime.property.provider"</span>,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"id"</span>: <span style="color:#3469e3;">"my.plugin.timeout.property"</span>,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"name"</span>: <span style="color:#3469e3;">"my.plugin.timeout"</span>,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"type"</span>: <span style="color:#3469e3;">"int"</span>,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"value"</span>: 30000,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"description"</span>: <span style="color:#3469e3;">"Timeout in ms for my plugin operations"</span><br>
+		}
+		</div>
+
+		<h2>Workflow Nodes</h2>
+
+		<b>apaf.runtime.properties</b> contributes two workflow nodes:
+		<ul>
+			<li><b>"Get Runtime Property Value"</b> — reads the value of a named property into the context</li>
+			<li><b>"Set Runtime Property"</b> — writes a value to a named property at runtime</li>
+		</ul>
+
+		<h2>Notes</h2>
+		<ul>
+			<li>Property values are in-memory — a server restart resets them to their declared defaults.</li>
+			<li>Locked properties cannot be edited via the UI (they are read-only in the admin page).</li>
+			<li>Well-known properties: <code>scheduler.tick.timeout</code> (apaf.scheduler),
+			    <code>workflow.global.timeout</code> (apaf.workflow).</li>
+		</ul>
+
+	</body>
+</html>

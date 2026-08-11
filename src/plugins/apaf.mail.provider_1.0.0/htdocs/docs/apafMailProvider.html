@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.mail.provider plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.mail.provider - Mail Provider Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.mail.provider &mdash; Mail Provider Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.mail.provider</b> plugin configures the SMTP mail transport for APAF and
+		exposes a REST endpoint that servlets, workflows, and snippets can use to send emails
+		without embedding SMTP credentials in application code.
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-mail/send</td><td>coreServices</td><td>Send an email message</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Request Payload</h2>
+
+		<div class="code">
+		{<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"from"</span>: <span style="color:#3469e3;">"sender@example.com"</span>,&nbsp;&nbsp;// sender address (required)<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"to"</span>: <span style="color:#3469e3;">"recipient@example.com"</span>,&nbsp;&nbsp;// recipient address (required)<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"subject"</span>: <span style="color:#3469e3;">"Hello"</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// email subject (required)<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"content"</span>: <span style="color:#3469e3;">"&lt;p&gt;Body text&lt;/p&gt;"</span>,&nbsp;&nbsp;&nbsp;// email body (required)<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"asText"</span>: false&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// true = plain text, false = HTML (optional)<br>
+		}
+		</div>
+
+		<h2>SMTP Configuration</h2>
+
+		The SMTP provider is configured via environment variables:
+
+		<table>
+			<thead><tr><th>Variable</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>SMTP_HOST</td><td>SMTP server hostname</td></tr>
+				<tr><td>SMTP_PORT</td><td>SMTP server port (default: 587)</td></tr>
+				<tr><td>SMTP_USER</td><td>SMTP authentication username</td></tr>
+				<tr><td>SMTP_PASSWORD</td><td>SMTP authentication password</td></tr>
+				<tr><td>SMTP_SECURE</td><td><code>true</code> to use TLS (default: false)</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Usage from a Servlet</h2>
+
+		<div class="code">
+		&nbsp;1.&nbsp;let res = context.httpResponse;<br>
+		&nbsp;2.&nbsp;let npaRest = context.runtime.getPlugin(<span style="color:#3469e3;">'npa.rest'</span>);<br>
+		&nbsp;3.&nbsp;npaRest.post(<span style="color:#3469e3;">'/apaf-mail/send'</span>, {<br>
+		&nbsp;4.&nbsp;&nbsp;&nbsp;from: <span style="color:#3469e3;">'noreply@myapp.com'</span>,<br>
+		&nbsp;5.&nbsp;&nbsp;&nbsp;to: context.user.email,<br>
+		&nbsp;6.&nbsp;&nbsp;&nbsp;subject: <span style="color:#3469e3;">'Your report is ready'</span>,<br>
+		&nbsp;7.&nbsp;&nbsp;&nbsp;content: <span style="color:#3469e3;">'&lt;b&gt;Download your report&lt;/b&gt;'</span><br>
+		&nbsp;8.&nbsp;}, function(err, result) {<br>
+		&nbsp;9.&nbsp;&nbsp;&nbsp;res.json({ sent: !err });<br>
+		10.&nbsp;});
+		</div>
+
+		<h2>Notes</h2>
+		<ul>
+			<li>The underlying transport is provided by <b>npa.mail</b> (Node.js <code>nodemailer</code>).</li>
+			<li>If no SMTP credentials are configured, the endpoint returns an error at runtime.</li>
+			<li>The <code>apaf.workflow</code> plugin includes a built-in <i>Send Mail</i> workflow node
+			    that internally calls this endpoint.</li>
+		</ul>
+
+	</body>
+</html>

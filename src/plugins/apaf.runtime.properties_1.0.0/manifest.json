@@ -70,8 +70,16 @@
   		"id": "apaf.runtime.properties.getProperty.node.provider",
   		"name": "Get Runtime Property Value",
   		"resourcePath": "/workflow/getRuntimePropertyNode.js"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.runtime.properties.doc",
+  		"label": "apaf.runtime.properties - Runtime Properties",
+  		"category": "APAF Framework",
+  		"subcategory": "Configuration",
+  		"url": "/runtimeProps/docs/apafRuntimeProperties.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }

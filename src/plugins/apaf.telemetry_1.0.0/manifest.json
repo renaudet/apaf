@@ -51,8 +51,22 @@
   			"name": "telemetryConsumer",
   			"description": "Grant permission to collect Telemetry data"
   		}
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.telemetry.htdocs",
+  		"path": "/apaf-telemetry-doc",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.telemetry.doc",
+  		"label": "apaf.telemetry - Telemetry",
+  		"category": "APAF Framework",
+  		"subcategory": "Monitoring",
+  		"url": "/apaf-telemetry-doc/docs/apafTelemetry.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }

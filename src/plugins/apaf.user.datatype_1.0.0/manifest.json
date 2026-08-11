@@ -736,8 +736,16 @@
 		"type": "int",
 		"unit": "",
 		"maxPoints": 60
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.user.datatype.doc",
+  		"label": "apaf.user.datatype - User-Defined Datatypes",
+  		"category": "APAF Framework",
+  		"subcategory": "Persistence",
+  		"url": "/datatype/docs/apafUserDatatype.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }

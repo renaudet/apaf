@@ -49,8 +49,22 @@
   			"name": "coreServices",
   			"description": "Grant permission to use APAF Core services"
   		}
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.mail.provider.htdocs",
+  		"path": "/apaf-mail",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.mail.provider.doc",
+  		"label": "apaf.mail.provider - Mail Service",
+  		"category": "APAF Framework",
+  		"subcategory": "Integration",
+  		"url": "/apaf-mail/docs/apafMailProvider.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }

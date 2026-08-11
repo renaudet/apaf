@@ -857,9 +857,17 @@
   		"category": "Development",
   		"subcategory": "Getting Started",
   		"url": "/dev/docs/apafDevGuide.html"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.dev.doc",
+  		"label": "apaf.dev - Fragment & Application Development",
+  		"category": "APAF Framework",
+  		"subcategory": "Development",
+  		"url": "/dev/docs/apafDev.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   	{"id": "apaf.dev.snippet.provider"},
   	{"id": "apaf.dev.editor.wizard.provider"},
   	{"id": "apaf.dev.editor.documentation.provider"}

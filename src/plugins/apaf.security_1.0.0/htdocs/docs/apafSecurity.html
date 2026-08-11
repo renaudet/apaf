@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.security plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.security - Security Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.security &mdash; Security Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.security</b> plugin is the core authentication and authorization engine of APAF.
+		It verifies every incoming HTTP request, resolves the caller's identity from multiple
+		credential types, and enforces role-based access control (RBAC) on all protected endpoints.
+		The service is available as <b><code>apaf-security</code></b>:
+
+		<div class="code">
+		let security = plugin.getService(<span style="color:#3469e3;">'apaf-security'</span>);
+		</div>
+
+		<h2>Service Name</h2>
+
+		<div class="code">
+		<span style="color:#3469e3;">'apaf-security'</span>
+		</div>
+
+		<h2>Authentication Mechanisms</h2>
+
+		The security plugin resolves the caller identity from the following sources, checked in order:
+
+		<ul>
+			<li><b>HTTP session</b> — an active browser session established via the login page</li>
+			<li><b>Basic auth</b> — <code>Authorization: Basic &lt;base64(login:password)&gt;</code></li>
+			<li><b>Bearer token</b> — <code>Authorization: Bearer &lt;token&gt;</code> (APAF token)</li>
+			<li><b>API key header</b> — <code>X-Api-Key: &lt;base64(login:apiKey)&gt;</code></li>
+			<li><b>Query parameter</b> — <code>?apiKey=&lt;base64(login:apiKey)&gt;</code></li>
+		</ul>
+
+		<h2>Methods</h2>
+
+		<h3><code>checkAuthentication(req, res, role, then)</code></h3>
+
+		Verifies that the request is authenticated and that the resolved user holds the given
+		<code>role</code>. If authorization fails, the response is terminated with HTTP 401.
+		Otherwise <code>then(user)</code> is called with the resolved User record.
+		Pass an empty string for <code>role</code> to require authentication only (no specific role).
+
+		<h3><code>getLoginFromRequest(req)</code></h3>
+
+		Extracts the login name from the request using all supported authentication mechanisms.
+		Returns <code>null</code> if no valid credentials are found.
+
+		<h3><code>getUserRecord(login, callback)</code></h3>
+
+		Returns the full User record for the given login name.
+
+		<h3><code>updateRecord(login, data, callback)</code></h3>
+
+		Updates the User record identified by <code>login</code> with the provided <code>data</code>.
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>GET</td><td>/apaf-security/getApiKey</td><td>(authenticated)</td><td>Generate and return a new API key for the currently authenticated user</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Telemetry</h2>
+
+		The plugin contributes a telemetry dimension:
+
+		<ul>
+			<li><b><code>secure.api.call</code></b> — counts every authenticated HTTP request per 30-second interval</li>
+		</ul>
+
+		<h2>Notes</h2>
+		<ul>
+			<li>All APAF REST handlers call <code>checkAuthentication()</code> — the security plugin
+			    is therefore a hard dependency for every other APAF plugin.</li>
+			<li>Roles are defined as records in the <code>apaf_roles</code> CouchDB database and
+			    managed via the <b>apaf.admin</b> plugin.</li>
+			<li>The built-in role <b><code>administrator</code></b> grants access to all protected
+			    administration endpoints.</li>
+		</ul>
+
+	</body>
+</html>

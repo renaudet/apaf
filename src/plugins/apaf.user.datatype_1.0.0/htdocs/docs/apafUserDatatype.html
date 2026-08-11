@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.user.datatype plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.user.datatype - User Datatype Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.user.datatype &mdash; User Datatype Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.user.datatype</b> plugin allows developers to define custom data schemas
+		(user datatypes) and store typed records in CouchDB without writing any server-side code.
+		Each user datatype is a JSON schema that describes a set of typed fields; the plugin
+		automatically provisions a CouchDB database and exposes full CRUD REST APIs for
+		both the schema definition and the data records.
+
+		<h2>Datatype Definition</h2>
+
+		A user datatype schema contains:
+		<ul>
+			<li><b>name</b> — technical name (lowercase, no spaces); used in API paths</li>
+			<li><b>label</b> — human-readable display label</li>
+			<li><b>description</b> — optional description</li>
+			<li><b>persistent</b> — <code>true</code> if records are stored in CouchDB</li>
+			<li><b>database</b> — CouchDB database name (required when persistent is true)</li>
+			<li><b>private</b> — <code>true</code> if records are visible only to their creator</li>
+			<li><b>fields</b> — array of field definitions</li>
+		</ul>
+
+		<h2>Field Types</h2>
+
+		<table>
+			<thead><tr><th>Type</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>text</code></td><td>Single-line text input</td></tr>
+				<tr><td><code>largeText</code></td><td>Multi-line text area</td></tr>
+				<tr><td><code>integer</code></td><td>Integer numeric input</td></tr>
+				<tr><td><code>boolean</code></td><td>Checkbox (true/false)</td></tr>
+				<tr><td><code>date</code></td><td>Date picker</td></tr>
+				<tr><td><code>select</code></td><td>Dropdown sourced from a rule data set</td></tr>
+				<tr><td><code>json</code></td><td>JSON object editor (CodeMirror)</td></tr>
+				<tr><td><code>password</code></td><td>Masked text input (stored encrypted)</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API — Datatype Definitions</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-datatype/datatype/query</td><td>developer</td><td>Query user datatype definitions</td></tr>
+				<tr><td>POST</td><td>/apaf-datatype/datatype</td><td>developer</td><td>Create a new user datatype definition</td></tr>
+				<tr><td>PUT</td><td>/apaf-datatype/datatype</td><td>developer</td><td>Update a user datatype definition</td></tr>
+				<tr><td>DELETE</td><td>/apaf-datatype/datatype/:id</td><td>developer</td><td>Delete a user datatype definition</td></tr>
+				<tr><td>GET</td><td>/apaf-datatype/datatype/:id</td><td>developer</td><td>Get a user datatype definition by UUID</td></tr>
+				<tr><td>GET</td><td>/apaf-datatype/datatype/by-name/:name</td><td>developer</td><td>Get a user datatype definition by technical name</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API — User Data Records</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/user-data/:datatypeName/query</td><td>operator</td><td>Query records of the named datatype</td></tr>
+				<tr><td>POST</td><td>/user-data/:datatypeName</td><td>operator</td><td>Create a new data record</td></tr>
+				<tr><td>PUT</td><td>/user-data/:datatypeName</td><td>operator</td><td>Update an existing data record</td></tr>
+				<tr><td>DELETE</td><td>/user-data/:datatypeName/:id</td><td>operator</td><td>Delete a data record</td></tr>
+				<tr><td>GET</td><td>/user-data/:datatypeName/:id</td><td>operator</td><td>Get a data record by UUID</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Telemetry</h2>
+
+		The plugin tracks four telemetry dimensions, one per CRUD operation:
+		<code>datatype.create</code>, <code>datatype.read</code>, <code>datatype.update</code>, <code>datatype.delete</code>.
+
+		<h2>MCP Tools</h2>
+
+		The plugin registers MCP tools for both layers:
+		schema tools (<code>queryDatatypes</code>, <code>getDatatypeById</code>, <code>getDatatypeByName</code>,
+		<code>createDatatype</code>, <code>updateDatatype</code>, <code>deleteDatatype</code>)
+		and data tools (<code>queryUserData</code>, <code>getUserDataById</code>,
+		<code>createUserData</code>, <code>updateUserData</code>, <code>deleteUserData</code>).
+
+		<h2>Notes</h2>
+		<ul>
+			<li>When <code>private: true</code>, records created by one user are not returned in queries
+			    made by a different user, even if both users hold the <code>operator</code> role.</li>
+			<li>The CouchDB database declared in <code>database</code> is created automatically on the
+			    first request if it does not already exist.</li>
+			<li>Deleting a datatype definition does <em>not</em> delete the corresponding CouchDB database
+			    or any stored records.</li>
+		</ul>
+
+	</body>
+</html>

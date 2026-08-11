@@ -657,9 +657,23 @@
     		"uri": "/resources/html/stats.html",
     		"icon": "/resources/img/apaf-stats.png"
 		}
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.admin.htdocs",
+  		"path": "/apaf-admin-doc",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.admin.doc",
+  		"label": "apaf.admin - User, Group & Role Management",
+  		"category": "APAF Framework",
+  		"subcategory": "Security",
+  		"url": "/apaf-admin-doc/docs/apafAdmin.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   	{"id": "apaf.admin.user.preference"},
   	{"id": "apaf.admin.profile.provider"},
 	{"id": "apaf.admin.login.page.provider"}

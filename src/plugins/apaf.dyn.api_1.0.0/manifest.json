@@ -84,8 +84,22 @@
 		"type": "int",
 		"unit": "",
 		"maxPoints": 60
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.dyn.api.htdocs",
+  		"path": "/apaf-dyn-api",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.dyn.api.doc",
+  		"label": "apaf.dyn.api - Dynamic Servlet API",
+  		"category": "APAF Framework",
+  		"subcategory": "Development",
+  		"url": "/apaf-dyn-api/docs/apafDynApi.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }

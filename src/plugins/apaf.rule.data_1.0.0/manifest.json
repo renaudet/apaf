@@ -346,8 +346,16 @@
   		"id": "apaf.rule.data.read.node.provider",
   		"name": "Read a RuleData set",
   		"resourcePath": "/workflow/readRuleDataNode.js"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.rule.data.doc",
+  		"label": "apaf.rule.data - Rule Data Sets",
+  		"category": "APAF Framework",
+  		"subcategory": "Persistence",
+  		"url": "/ruleData/docs/apafRuleData.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }

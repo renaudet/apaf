@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.dyn.api plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.dyn.api - Dynamic API Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.dyn.api &mdash; Dynamic API Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.dyn.api</b> plugin turns <code>servlet</code> fragments into live HTTP endpoints
+		without any server restart. A servlet is a JavaScript code fragment stored in CouchDB with a
+		unique <i>alias</i>; the plugin routes incoming HTTP requests to the matching fragment and
+		executes its source code in a sandboxed context.
+
+		<h2>How It Works</h2>
+
+		<ol>
+			<li>A developer creates a fragment of type <code>servlet</code> with a unique <code>alias</code>
+			    and sets its <code>enabled</code> flag to <code>true</code>.</li>
+			<li>At runtime, any HTTP call to <code>/apaf-api/servlet/&lt;alias&gt;</code> is intercepted
+			    by <b>apaf.dyn.api</b>.</li>
+			<li>The plugin resolves the fragment from CouchDB by alias, verifies it is enabled, and
+			    evaluates the fragment's <code>source</code> JavaScript.</li>
+			<li>The invocation count is pushed to the telemetry dimension <code>servlet.invocation</code>.</li>
+		</ol>
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>GET</td><td>/apaf-api/servlet/:alias</td><td>coreServices</td><td>Invoke a servlet fragment (GET)</td></tr>
+				<tr><td>POST</td><td>/apaf-api/servlet/:alias</td><td>coreServices</td><td>Invoke a servlet fragment (POST)</td></tr>
+				<tr><td>PUT</td><td>/apaf-api/servlet/:alias</td><td>coreServices</td><td>Invoke a servlet fragment (PUT)</td></tr>
+				<tr><td>DELETE</td><td>/apaf-api/servlet/:alias</td><td>coreServices</td><td>Invoke a servlet fragment (DELETE)</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Servlet Execution Context</h2>
+
+		The servlet JavaScript code receives the following context object:
+
+		<div class="code">
+		{<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">user</span>: &lt;APAF User record of the caller&gt;,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">runtime</span>: &lt;NPA runtime instance&gt;,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">require</span>: &lt;Node.js require function&gt;,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">httpRequest</span>: &lt;Express req object&gt;,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">httpResponse</span>: &lt;Express res object&gt;<br>
+		}
+		</div>
+
+		The servlet is responsible for writing the HTTP response using <code>httpResponse</code>.
+
+		<h2>Minimal Servlet Example</h2>
+
+		<div class="code">
+		&nbsp;1.&nbsp;// alias: my-hello-servlet<br>
+		&nbsp;2.&nbsp;let user = context.user;<br>
+		&nbsp;3.&nbsp;let res = context.httpResponse;<br>
+		&nbsp;4.&nbsp;res.json({ message: <span style="color:#3469e3;">'Hello, '</span> + user.login });
+		</div>
+
+		<h2>Telemetry</h2>
+
+		<ul>
+			<li><b><code>servlet.invocation</code></b> — counts servlet calls per 30-second interval</li>
+		</ul>
+
+		<h2>Notes</h2>
+		<ul>
+			<li>A servlet fragment must have <code>enabled: true</code> — requests to a disabled servlet
+			    return HTTP 404.</li>
+			<li>All four HTTP methods (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>)
+			    are routed to the same alias and the same fragment code; use <code>httpRequest.method</code>
+			    to distinguish them.</li>
+			<li>The <code>coreServices</code> role is required by default. Servlets that need a different
+			    role must implement their own authorization check inside the fragment source.</li>
+		</ul>
+
+	</body>
+</html>

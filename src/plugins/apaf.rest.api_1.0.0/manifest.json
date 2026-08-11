@@ -134,8 +134,22 @@
   			"name": "coreServices",
   			"description": "Grant permission to use APAF Core services"
   		}
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.rest.api.htdocs",
+  		"path": "/apaf-rest-api",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.rest.api.doc",
+  		"label": "apaf.rest.api - Remote REST Client",
+  		"category": "APAF Framework",
+  		"subcategory": "Integration",
+  		"url": "/apaf-rest-api/docs/apafRestApi.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }

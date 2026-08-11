@@ -46,8 +46,22 @@
   		"securityRole": "operator",
 		"description": "Get a newly generated API key",
 		"input": ""
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.security.htdocs",
+  		"path": "/apaf-security",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.security.doc",
+  		"label": "apaf.security - Authentication & Authorization",
+  		"category": "APAF Framework",
+  		"subcategory": "Security",
+  		"url": "/apaf-security/docs/apafSecurity.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }

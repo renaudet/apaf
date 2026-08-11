@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.workspace plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.workspace - Workspace Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.workspace &mdash; Workspace Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.workspace</b> plugin manages the APAF <i>server-side workspace</i> — a
+		managed file storage area internal to the running APAF instance. The workspace is
+		entirely distinct from the local developer filesystem and from the VS Code workspace.
+
+		Files are organized into <b>projects</b> (top-level folders) and <b>sub-folders</b>.
+		All file paths are transmitted as <b>Base64-encoded strings</b> to safely carry path
+		separators in URL segments.
+
+		<h2>Workspace vs. Local Filesystem</h2>
+
+		<table>
+			<thead><tr><th></th><th>APAF Workspace</th><th>Local Filesystem</th></tr></thead>
+			<tbody>
+				<tr><td>Managed by</td><td>apaf.workspace plugin</td><td>OS / npa.workspace plugin</td></tr>
+				<tr><td>Accessed via</td><td>/apaf-workspace/* REST API</td><td>readLocalFile / readLocalDirectory MCP tools</td></tr>
+				<tr><td>Path format</td><td>Base64-encoded relative path</td><td>Absolute OS path</td></tr>
+				<tr><td>Supports upload</td><td>Yes (multipart/form-data)</td><td>No</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API — Projects &amp; Folders</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-workspace/project</td><td>developer</td><td>Create a new project in the workspace</td></tr>
+				<tr><td>POST</td><td>/apaf-workspace/project/find</td><td>operator</td><td>List projects (filter by name or type)</td></tr>
+				<tr><td>POST</td><td>/apaf-workspace/folder</td><td>developer</td><td>Create a sub-folder within a project</td></tr>
+				<tr><td>GET</td><td>/apaf-workspace/folder</td><td>operator</td><td>List folder contents (query params: project, folder, hidden)</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API — Files</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>GET</td><td>/apaf-workspace/file/:encrypted</td><td>operator</td><td>Read a text file (path is Base64-encoded)</td></tr>
+				<tr><td>GET</td><td>/apaf-workspace/binaryFile/:encrypted</td><td>operator</td><td>Download a binary file (path is Base64-encoded)</td></tr>
+				<tr><td>PUT</td><td>/apaf-workspace/file/:encrypted</td><td>developer</td><td>Create or overwrite a text file</td></tr>
+				<tr><td>POST</td><td>/apaf-workspace/file/:encrypted</td><td>developer</td><td>Upload a binary file as multipart/form-data</td></tr>
+				<tr><td>DELETE</td><td>/apaf-workspace/:encrypted</td><td>developer</td><td>Delete a project, folder, or file</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Path Encoding</h2>
+
+		All file and folder paths are relative to the workspace root and must be Base64-encoded
+		before being passed in URL segments:
+
+		<div class="code">
+		// Example: encode the path "myProject/src/app.js"<br>
+		let encoded = btoa(<span style="color:#3469e3;">'myProject/src/app.js'</span>);<br>
+		// Use encoded in the URL: /apaf-workspace/file/bXlQcm9qZWN0L3NyYy9hcHAuanM=
+		</div>
+
+		<h2>MCP Tools</h2>
+
+		The plugin registers eight MCP tools covering the full workspace lifecycle:
+		<code>findWorkspaceProjects</code>, <code>createWorkspaceProject</code>,
+		<code>createWorkspaceFolder</code>, <code>readWorkspaceFolderContent</code>,
+		<code>readWorkspaceFile</code>, <code>readWorkspaceBinaryFile</code>,
+		<code>writeWorkspaceFile</code>, and a delete tool.
+
+		<h2>Notes</h2>
+		<ul>
+			<li>The workspace root directory is configured via the <code>npa.workspace</code> NPA plugin
+			    and defaults to a sub-directory of the server process working directory.</li>
+			<li>Binary file upload uses <code>multipart/form-data</code>; text file creation uses a plain
+			    JSON body with a <code>content</code> string field.</li>
+			<li>The <b>Workspace Explorer</b> UI (plugin <code>apaf.workspace.explorer</code>) provides
+			    a graphical interface over these REST APIs.</li>
+		</ul>
+
+	</body>
+</html>

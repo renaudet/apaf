@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.application plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.application - Application Framework Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.application &mdash; Application Framework Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.application</b> plugin is the bootstrap entry-point for the APAF application
+		runtime. It registers the application with the NPA core, initializes the HTTP listener,
+		and ensures that critical infrastructure plugins (datatype, scheduler) are fully started
+		before any feature plugin becomes active.
+
+		<h2>Application Lifecycle</h2>
+
+		When the NPA runtime starts, each registered application's <code>start()</code> method
+		is called. <b>apaf.application</b>:
+
+		<ol>
+			<li>Reads the application name from the <code>APPLICATION_NAME</code> environment variable (defaults to <code>"APAF"</code>)</li>
+			<li>Configures the HTTP listener port from <code>HTTP_SERVER_PORT</code> (default: <code>9080</code>)</li>
+			<li>Waits for the <code>apaf.datatype</code> and <code>apaf.scheduler</code> plugins to complete their startup</li>
+			<li>Starts the HTTP server</li>
+		</ol>
+
+		<h2>Home Page</h2>
+
+		The plugin contributes the APAF home page at <code>/resources/html/home.html</code> via
+		the <code>npa.http.home</code> extension point. This is the page served at the application
+		root URL.
+
+		<h2>Internationalization</h2>
+
+		Locale files are provided for <code>en-US</code>, <code>en</code>, <code>fr-FR</code>, and <code>fr</code>.
+		All i18n keys contributed by <b>apaf.application</b> are shared across all APAF plugins —
+		new locale keys for any APAF feature plugin are added to the locale files of <b>apaf.application</b>
+		(not to plugin-specific locale files, unless the plugin ships its own).
+
+		<h2>APAF Application Records</h2>
+
+		An <b>APAF Application</b> is a CouchDB record that describes a user-facing single-page application.
+		Applications are managed by the <b>apaf.dev</b> plugin and typically consist of:
+
+		<ul>
+			<li>A name, version, description, and optional role restriction</li>
+			<li>A list of fragment UUIDs (libraries, snippets) loaded by the page</li>
+			<li>Optional support flags (<code>requiresGraphicSupport</code>, <code>requiresDateTimeSupport</code>)</li>
+			<li>A published flag — only published applications appear in the application menus</li>
+		</ul>
+
+		Applications are rendered by the APAF card framework and loaded dynamically by the
+		<b>apaf.apps</b> plugin.
+
+		<h2>Extension Points Consumed</h2>
+
+		<table>
+			<thead><tr><th>Extension Point</th><th>Purpose</th></tr></thead>
+			<tbody>
+				<tr><td>npa.core.application</td><td>Registers APAF as a selectable NPA application</td></tr>
+				<tr><td>npa.http.router</td><td>Mounts the <code>/apaf</code> router</td></tr>
+				<tr><td>npa.http.home</td><td>Declares the default home page</td></tr>
+				<tr><td>npa.ui.locale.provider</td><td>Provides shared i18n locale files</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Environment Variables</h2>
+
+		<table>
+			<thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>APPLICATION_NAME</td><td>APAF</td><td>Display name shown in the browser title and NavBar</td></tr>
+				<tr><td>HTTP_SERVER_PORT</td><td>9080</td><td>TCP port the HTTP server listens on</td></tr>
+			</tbody>
+		</table>
+
+	</body>
+</html>

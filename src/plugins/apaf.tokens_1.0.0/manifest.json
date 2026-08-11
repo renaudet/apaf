@@ -90,8 +90,22 @@
   		"schema": "/token/:id",
   		"handler": "deleteTokenHandler",
   		"securityRole": "administrator"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.tokens.htdocs",
+  		"path": "/apaf-tokens-doc",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.tokens.doc",
+  		"label": "apaf.tokens - Security Tokens",
+  		"category": "APAF Framework",
+  		"subcategory": "Security",
+  		"url": "/apaf-tokens-doc/docs/apafTokens.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }

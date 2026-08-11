@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.jobs plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.jobs - Jobs Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.jobs &mdash; Jobs Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.jobs</b> plugin provides a lightweight server-side job management API.
+		A <i>job</i> is a trackable unit of work: it has a description, a status, an optional
+		progress value, and an owner. Jobs are stored in memory by the underlying <code>npa.jobs</code>
+		service and are therefore <b>not persisted</b> — they are lost on server restart.
+
+		The service is accessible as:
+
+		<div class="code">
+		let jobService = plugin.getService(<span style="color:#3469e3;">'jobs'</span>);
+		</div>
+
+		<h2>Service Name</h2>
+
+		<div class="code">
+		<span style="color:#3469e3;">'jobs'</span>
+		</div>
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-jobs/</td><td>operator</td><td>Create a new managed job with a description</td></tr>
+				<tr><td>GET</td><td>/apaf-jobs/:id</td><td>operator</td><td>Retrieve a job by its UUID</td></tr>
+				<tr><td>PUT</td><td>/apaf-jobs/</td><td>operator</td><td>Update job status and/or progress (owner or administrator only)</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Job Lifecycle</h2>
+
+		A job transitions through the following statuses:
+
+		<ul>
+			<li><b><code>pending</code></b> — job has been created but not yet started</li>
+			<li><b><code>running</code></b> — job is actively executing</li>
+			<li><b><code>done</code></b> — job completed successfully</li>
+			<li><b><code>error</code></b> — job terminated with an error</li>
+		</ul>
+
+		The optional <code>progress</code> field (0–100) can be updated incrementally to track
+		long-running operations.
+
+		<h2>Workflow Node</h2>
+
+		<b>apaf.jobs</b> contributes the <b>"Set Job Progress"</b> workflow node, which updates
+		the progress value of a job from within a workflow execution context.
+
+		<h2>Usage Example</h2>
+
+		<div class="code">
+		// Create a job from a servlet<br>
+		&nbsp;1.&nbsp;let jobService = context.runtime.getService(<span style="color:#3469e3;">'jobs'</span>);<br>
+		&nbsp;2.&nbsp;let job = jobService.createJob(<span style="color:#3469e3;">'Processing my file'</span>, context.user.login);<br>
+		&nbsp;3.&nbsp;// ... do work ...<br>
+		&nbsp;4.&nbsp;jobService.updateJob(job.id, { status: <span style="color:#3469e3;">'done'</span>, progress: 100 });
+		</div>
+
+		<h2>Notes</h2>
+		<ul>
+			<li>Only the job's owner or a user with the <code>administrator</code> role can update a job.</li>
+			<li>Jobs are in-memory only — a server restart clears all job records.</li>
+			<li>For long-running background tasks, combine <b>apaf.jobs</b> with <b>apaf.scheduler</b>
+			    to track progress from a scheduled snippet.</li>
+		</ul>
+
+	</body>
+</html>

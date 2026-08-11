@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.scheduler plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.scheduler - Scheduler Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.scheduler &mdash; Scheduler Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.scheduler</b> plugin manages the scheduled execution of code snippets and
+		workflows. Scheduling rules are stored in CouchDB, evaluated periodically by a tick engine,
+		and executed server-side without user interaction.
+
+		<h2>Scheduling Rule Types</h2>
+
+		<table>
+			<thead><tr><th>Type</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>startup</code></td><td>Executed once when the server starts (or when the rule becomes active)</td></tr>
+				<tr><td><code>recurrent</code></td><td>Executed every <code>delay</code> minutes</td></tr>
+				<tr><td><code>fixed</code></td><td>Executed daily at the specified <code>time</code> (HH:mm:ss)</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Data Model</h2>
+
+		A scheduling rule record contains:
+		<ul>
+			<li><b>name</b> — human-readable name</li>
+			<li><b>type</b> — <code>startup</code> | <code>recurrent</code> | <code>fixed</code></li>
+			<li><b>active</b> — boolean; only active rules are evaluated by the tick engine</li>
+			<li><b>servlet</b> — UUID of the code snippet (fragment) to execute (mutually exclusive with <code>workflow</code>)</li>
+			<li><b>workflow</b> — UUID of the workflow to execute (mutually exclusive with <code>servlet</code>)</li>
+			<li><b>runAs</b> — UUID of the APAF user under whose identity the task executes</li>
+			<li><b>delay</b> — repeat interval in minutes (for type <code>recurrent</code>)</li>
+			<li><b>time</b> — execution time as HH:mm:ss (for type <code>fixed</code>)</li>
+			<li><b>lastExecuted</b> — timestamp of the last execution (maintained by the engine)</li>
+		</ul>
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-scheduler/query</td><td>administrator</td><td>Query scheduling rules with a CouchDB Mango selector</td></tr>
+				<tr><td>POST</td><td>/apaf-scheduler/</td><td>administrator</td><td>Create a new scheduling rule</td></tr>
+				<tr><td>PUT</td><td>/apaf-scheduler/</td><td>administrator</td><td>Update an existing scheduling rule</td></tr>
+				<tr><td>DELETE</td><td>/apaf-scheduler/:id</td><td>administrator</td><td>Delete a scheduling rule</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Tick Engine</h2>
+
+		The scheduler evaluates all active rules on a fixed interval controlled by the runtime
+		property <code>scheduler.tick.timeout</code> (default: <b>30 000 ms</b>). On each tick:
+
+		<ul>
+			<li><code>startup</code> rules that have never been executed are triggered immediately.</li>
+			<li><code>recurrent</code> rules are triggered if <code>now - lastExecuted &ge; delay * 60 000 ms</code>.</li>
+			<li><code>fixed</code> rules are triggered if the current time matches the <code>time</code> field
+			    (within the tick interval).</li>
+		</ul>
+
+		<h2>MCP Tools</h2>
+
+		The plugin registers four MCP tools:
+		<code>querySchedulers</code>, <code>createScheduler</code>, <code>updateScheduler</code>, <code>deleteScheduler</code>.
+
+		<h2>Notes</h2>
+		<ul>
+			<li>Updating a rule clears its <code>lastExecuted</code> field, which forces the scheduler
+			    to re-evaluate it on the next tick.</li>
+			<li>The <code>runAs</code> field controls the security identity used during execution —
+			    the resolved user must have the roles required by the target snippet or workflow.</li>
+			<li>Startup rules execute immediately at server start; to prevent re-execution after a
+			    restart, set the rule to inactive once it has run.</li>
+		</ul>
+
+	</body>
+</html>

@@ -327,9 +327,23 @@
   		"securityRole": "coreServices",
 		"description": "Returns user-defined and extension-defined custom nodes",
 		"input": ""
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.workflow.htdocs",
+  		"path": "/apaf-workflow-doc",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.workflow.doc",
+  		"label": "apaf.workflow - Workflow Engine",
+  		"category": "APAF Framework",
+  		"subcategory": "Async & Scheduling",
+  		"url": "/apaf-workflow-doc/docs/apafWorkflow.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   	{"id": "apaf.workflow.node.provider"}
   ]
 }

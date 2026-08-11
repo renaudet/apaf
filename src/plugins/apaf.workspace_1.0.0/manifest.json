@@ -337,8 +337,22 @@
   		"name": "UploadManager",
   		"version": "1.0.0",
   		"dependency": "/resources/js/components/uploadManager.js"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.workspace.htdocs",
+  		"path": "/apaf-workspace-doc",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.workspace.doc",
+  		"label": "apaf.workspace - Server-side Workspace",
+  		"category": "APAF Framework",
+  		"subcategory": "Filesystem",
+  		"url": "/apaf-workspace-doc/docs/apafWorkspace.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }

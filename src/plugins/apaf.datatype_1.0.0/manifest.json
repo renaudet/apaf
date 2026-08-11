@@ -75,9 +75,23 @@
 	    		}
   			]
   		}
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.datatype.htdocs",
+  		"path": "/apaf-datatype-doc",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.datatype.doc",
+  		"label": "apaf.datatype - Datatype Persistence Engine",
+  		"category": "APAF Framework",
+  		"subcategory": "Persistence",
+  		"url": "/apaf-datatype-doc/docs/apafDatatype.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   	{"id": "apaf.datatype.base.datatype"},
   	{"id": "apaf.datatype.object.initializer"}
   ]

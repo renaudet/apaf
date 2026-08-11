@@ -79,8 +79,16 @@
   		"label": "Clean event handlers associated with an eventId",
   		"location": "/eventRes/snippets/cleanHandlers.txt",
   		"category": "API"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.event.broker.doc",
+  		"label": "apaf.event.broker - Event-Driven Integration",
+  		"category": "APAF Framework",
+  		"subcategory": "Integration",
+  		"url": "/eventRes/docs/apafEventBroker.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }

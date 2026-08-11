@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.admin plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.admin - Administration Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.admin &mdash; Administration Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.admin</b> plugin provides the user, group, and role management layer of APAF.
+		It exposes REST APIs for managing the three security entities, handles session lifecycle
+		(ping, check), and provides access to per-user profile and preferences.
+
+		<h2>Security Model</h2>
+
+		APAF uses a three-tier RBAC model:
+
+		<ul>
+			<li><b>User</b> — an individual account with login, password, and optional API key</li>
+			<li><b>Group</b> — a named collection of Users that carries security roles</li>
+			<li><b>Role</b> — a named permission checked by REST handlers (e.g. <code>administrator</code>, <code>developer</code>)</li>
+		</ul>
+
+		A user inherits all roles from every group they belong to.
+
+		<h2>REST API — Session</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>GET</td><td>/apaf-admin/session</td><td>(none)</td><td>Check whether a user session is active</td></tr>
+				<tr><td>PUT</td><td>/apaf-admin/session</td><td>(none)</td><td>Ping the current session to keep it alive</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API — Users</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-admin/user/query</td><td>manageUser</td><td>Query the list of registered APAF users</td></tr>
+				<tr><td>POST</td><td>/apaf-admin/user</td><td>manageUser</td><td>Register a new User</td></tr>
+				<tr><td>PUT</td><td>/apaf-admin/user</td><td>manageUser</td><td>Update an APAF User record</td></tr>
+				<tr><td>DELETE</td><td>/apaf-admin/user/:id</td><td>administrator</td><td>Delete an APAF User record</td></tr>
+				<tr><td>GET</td><td>/apaf-admin/user/:id</td><td>manageUser</td><td>Get an APAF User by UUID</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API — Groups</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-admin/group/query</td><td>manageGroup</td><td>Query the list of existing user groups</td></tr>
+				<tr><td>POST</td><td>/apaf-admin/group</td><td>manageGroup</td><td>Create a group of APAF users</td></tr>
+				<tr><td>PUT</td><td>/apaf-admin/group</td><td>manageGroup</td><td>Update a group of APAF users</td></tr>
+				<tr><td>DELETE</td><td>/apaf-admin/group/:id</td><td>administrator</td><td>Delete an existing group</td></tr>
+				<tr><td>GET</td><td>/apaf-admin/group/:id</td><td>manageGroup</td><td>Get a group by UUID</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API — Roles</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-admin/role/query</td><td>administrator</td><td>Query the list of APAF security roles</td></tr>
+				<tr><td>POST</td><td>/apaf-admin/role</td><td>administrator</td><td>Create a new APAF security role</td></tr>
+				<tr><td>PUT</td><td>/apaf-admin/role</td><td>administrator</td><td>Update an APAF security role</td></tr>
+				<tr><td>DELETE</td><td>/apaf-admin/role/:id</td><td>administrator</td><td>Delete an APAF security role</td></tr>
+				<tr><td>GET</td><td>/apaf-admin/role/:id</td><td>administrator</td><td>Get an APAF security role by UUID</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API — Profile &amp; Preferences</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>GET</td><td>/apaf-admin/profile</td><td>(authenticated)</td><td>Get the connected user's profile record</td></tr>
+				<tr><td>PUT</td><td>/apaf-admin/profile</td><td>(authenticated)</td><td>Update the connected user's profile record</td></tr>
+				<tr><td>GET</td><td>/apaf-admin/preferences</td><td>(authenticated)</td><td>Get the connected user's preference records</td></tr>
+				<tr><td>GET</td><td>/apaf-admin/profilePageContributions</td><td>(none)</td><td>List registered profile page extensions</td></tr>
+				<tr><td>GET</td><td>/apaf-admin/stats</td><td>administrator</td><td>Get current server statistics</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Extension Points</h2>
+
+		<ul>
+			<li><b><code>apaf.admin.user.preference</code></b> — declare a per-user preference namespace
+			    (consumed by plugins such as <code>apaf.workflow</code> for editor settings)</li>
+			<li><b><code>apaf.admin.profile.provider</code></b> — contribute additional tabs to the user profile page</li>
+		</ul>
+
+		<h2>MCP Tools</h2>
+
+		The plugin registers four MCP tools via the <code>npa.mcp.tool</code> extension point:
+		<code>queryUsers</code>, <code>queryGroups</code>, <code>findGroupById</code>, <code>queryRoles</code>.
+
+	</body>
+</html>

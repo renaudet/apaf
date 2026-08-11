@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.telemetry plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.telemetry - Telemetry Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.telemetry &mdash; Telemetry Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.telemetry</b> plugin exposes the NPA in-memory telemetry store as a REST API,
+		making it consumable by APAF UI dashboards and external monitoring tools. It does not
+		collect metrics itself — it delegates entirely to the underlying <b>npa.telemetry</b>
+		service, which aggregates time-series data pushed by other plugins.
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>GET</td><td>/apaf-telemetry/list</td><td>telemetryConsumer</td><td>Get the list of all declared telemetry dimensions (without data)</td></tr>
+				<tr><td>GET</td><td>/apaf-telemetry/dimension/:dimensionName</td><td>telemetryConsumer</td><td>Retrieve all data points for the named dimension</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Built-in Dimensions</h2>
+
+		The following dimensions are contributed by core APAF and NPA plugins:
+
+		<table>
+			<thead><tr><th>Dimension name</th><th>Contributed by</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>used.heap</td><td>npa.telemetry</td><td>JVM heap memory used (bytes)</td></tr>
+				<tr><td>http.session</td><td>npa.http</td><td>Active HTTP sessions count</td></tr>
+				<tr><td>database.transaction</td><td>npa.couchdb.adapter</td><td>CouchDB transactions per interval</td></tr>
+				<tr><td>rest.calls</td><td>npa.rest</td><td>Outbound REST calls per interval</td></tr>
+				<tr><td>secure.api.call</td><td>apaf.security</td><td>Authenticated API calls per interval</td></tr>
+				<tr><td>servlet.invocation</td><td>apaf.dyn.api</td><td>Servlet invocations per interval</td></tr>
+				<tr><td>datatype.create/read/update/delete</td><td>apaf.user.datatype</td><td>User datatype CRUD operations per interval</td></tr>
+				<tr><td>mcp.invocation.count</td><td>npa.mcp</td><td>MCP tool invocations per interval</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Declaring a Custom Dimension</h2>
+
+		Any plugin can contribute a telemetry dimension via the
+		<code>npa.telemetry.dimension.provider</code> extension point. See the
+		<b>npa.telemetry</b> documentation for the full schema.
+
+		<h2>Notes</h2>
+		<ul>
+			<li>The <code>telemetryConsumer</code> role is required to read telemetry data via the REST API.
+			    It is automatically seeded at startup.</li>
+			<li>All telemetry data is in-memory — data points are lost on server restart.</li>
+			<li>The <code>GET /apaf-telemetry/list</code> endpoint returns only dimension metadata
+			    (name, label, type, unit) without the data array, making it efficient for discovery.</li>
+		</ul>
+
+	</body>
+</html>

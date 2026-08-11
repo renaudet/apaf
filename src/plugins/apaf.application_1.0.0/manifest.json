@@ -56,8 +56,22 @@
   		"id": "apaf.application.locale.provider.fr",
   		"path": "i18n/apaf_fr-FR.locale",
   		"locale": "fr"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.application.htdocs",
+  		"path": "/apaf-application",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.application.doc",
+  		"label": "apaf.application - Application Framework",
+  		"category": "APAF Framework",
+  		"subcategory": "Architecture",
+  		"url": "/apaf-application/docs/apafApplication.html"
   	}
-  ],
-  "provides": [
+  	 ],
+  	 "provides": [
   ]
 }
