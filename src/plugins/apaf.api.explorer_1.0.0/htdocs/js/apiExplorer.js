@@ -48,11 +48,14 @@ initializeUi = function(){
 				if(providers && providers.length>0){
 					// use the first registered provider
 					remoteProvider = providers[0];
+				}else{
+					$('#tabLink').hide();
 				}
 				initRemoteControls();
 				initApiBrowser();
 			}).onError(function(){
-				// no provider available — proceed without link support
+				// no provider available — hide link tab and proceed
+				$('#tabLink').hide();
 				initRemoteControls();
 				initApiBrowser();
 			});
@@ -106,12 +109,9 @@ switchRemoteTab = function(tab){
 
 loadLinkOptions = function(){
 	if(!remoteProvider){
-		// no provider registered: hide the link tab entirely
-		$('#tabLink').hide();
 		$('#remoteLinkSelect').empty().append('<option value="">'+unescapeI18N('@apaf.api.explorer.modal.link.unavailable')+'</option>');
 		return;
 	}
-	$('#tabLink').show();
 	apaf.call({
 		"method": "POST",
 		"uri": remoteProvider.queryUri,
