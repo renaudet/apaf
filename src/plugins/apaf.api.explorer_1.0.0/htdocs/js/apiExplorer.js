@@ -6,8 +6,7 @@
 const GLOBAL_CONFIGURATION_FILE = '/resources/json/globalApafConfig.json';
 const API_FIND_URI = '/apaf-api-management/find';
 const REST_INVOKE_URI = '/apaf-rest/invoke';
-const LINK_QUERY_URI = '/apaf-link/query';
-const LINK_INVOKE_URI = '/apaf-link/invoke';
+const REMOTE_PROVIDERS_URI = '/apaf-api-explorer-api/remoteProviders';
 
 const METHOD_COLORS = {
 	'GET':    '#61affe',
@@ -24,6 +23,10 @@ const METHOD_COLORS = {
  */
 var remoteContext = null;
 
+// provider discovered via the apaf.remote.context.provider extension point
+// { label, queryUri, invokeUri } — null when no provider is available
+var remoteProvider = null;
+
 // active modal tab: 'manual' | 'link'
 var activeRemoteTab = 'manual';
 
@@ -36,8 +39,23 @@ initializeUi = function(){
 		npaUi.initialize(function(){
 			npaUi.render();
 			localizeUi();
-			initRemoteControls();
-			initApiBrowser();
+			// discover remote context providers before wiring up controls
+			apaf.call({
+				"method": "GET",
+				"uri": REMOTE_PROVIDERS_URI,
+				"payload": {}
+			}).then(function(providers){
+				if(providers && providers.length>0){
+					// use the first registered provider
+					remoteProvider = providers[0];
+				}
+				initRemoteControls();
+				initApiBrowser();
+			}).onError(function(){
+				// no provider available — proceed without link support
+				initRemoteControls();
+				initApiBrowser();
+			});
 		});
 	});
 }
@@ -87,9 +105,16 @@ switchRemoteTab = function(tab){
 }
 
 loadLinkOptions = function(){
+	if(!remoteProvider){
+		// no provider registered: hide the link tab entirely
+		$('#tabLink').hide();
+		$('#remoteLinkSelect').empty().append('<option value="">'+unescapeI18N('@apaf.api.explorer.modal.link.unavailable')+'</option>');
+		return;
+	}
+	$('#tabLink').show();
 	apaf.call({
 		"method": "POST",
-		"uri": LINK_QUERY_URI,
+		"uri": remoteProvider.queryUri,
 		"payload": {"selector": {"enabled": {"$eq": true}}}
 	}).then(function(links){
 		let select = $('#remoteLinkSelect');
@@ -110,7 +135,7 @@ loadLinkOptions = function(){
 			$('#remoteLinkInfo').hide();
 		}
 	}).onError(function(errorMsg){
-		// links plugin may not be installed; silently ignore
+		// provider registered but query failed; silently degrade
 		$('#remoteLinkSelect').empty().append('<option value="">'+unescapeI18N('@apaf.api.explorer.modal.link.unavailable')+'</option>');
 	});
 
@@ -229,7 +254,7 @@ updateRemoteStatusBar = function(){
 
 invokeRemote = function(method, uri, payload, onSuccess, onError){
 	if(remoteContext._mode=='link'){
-		// via /apaf-link/invoke
+		// forward via the registered remote context provider
 		let invokePayload = {
 			linkId:  remoteContext.linkId,
 			method:  method,
@@ -238,7 +263,7 @@ invokeRemote = function(method, uri, payload, onSuccess, onError){
 		};
 		apaf.call({
 			"method": "POST",
-			"uri": LINK_INVOKE_URI,
+			"uri": remoteProvider.invokeUri,
 			"payload": invokePayload
 		}).then(function(response){
 			onSuccess(response.data !== undefined ? response.data : response);

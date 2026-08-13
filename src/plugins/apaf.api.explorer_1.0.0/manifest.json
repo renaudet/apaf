@@ -8,6 +8,7 @@
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
   ],
   "extends": [
@@ -17,10 +18,25 @@
   		"dir": "apaf.api.explorer"
   	},
   	{
+  		"point": "npa.http.router",
+  		"id": "apaf.api.explorer.router",
+  		"path": "/apaf-api-explorer-api"
+  	},
+  	{
   		"point": "npa.http.static",
   		"id": "apaf.api.explorer.htdocs",
   		"path": "/apaf-api-explorer",
   		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.api.explorer.remote.providers.handler",
+  		"router": "apaf.api.explorer.router",
+  		"method": "GET",
+  		"schema": "/remoteProviders",
+  		"handler": "getRemoteProvidersHandler",
+  		"securityRole": "developer",
+  		"description": "Return the list of registered remote context providers"
   	},
   	{
   		"point": "npa.ui.locale.provider",
@@ -61,5 +77,6 @@
   	}
   ],
   "provides": [
+  	{"id": "apaf.remote.context.provider"}
   ]
 }
