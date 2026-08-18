@@ -301,9 +301,12 @@
   						"application/json": {
   							"schema": {
   								"type": "object",
+  								"description": "The initial execution context passed directly to the workflow. Use {\"status\": \"pending\"} for workflows that need no input. For workflows that require input data, add the expected properties at the root of the body (e.g. {\"status\": \"pending\", \"arg1\": 2, \"arg2\": 3}). Use _options to control engine behaviour ({\"noTimeout\": true, \"noLogging\": true}).",
   								"properties": {
-  									"data": {"type": "object", "description": "The initial execution context passed to the workflow. Use {\"status\": \"pending\"} for workflows that need no input. For workflows that require input data, add the expected properties to the context object (e.g. {\"status\": \"pending\", \"argument1\": \"some value\", \"argument2\": false}). Use _options to control engine behaviour ({\"noTimeout\": true, \"noLogging\": true})."}
-  								}
+  									"status": {"type": "string", "description": "Optional initial workflow status, typically set to 'pending'."},
+  									"_options": {"type": "object", "description": "Optional workflow engine flags such as {\"noTimeout\": true, \"noLogging\": true}."}
+  								},
+  								"additionalProperties": true
   							}
   						}
   					}

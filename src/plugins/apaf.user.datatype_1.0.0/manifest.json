@@ -417,6 +417,11 @@
   											"selector": {
   												"type": "object",
   												"description": "A CouchDB Mango selector to filter records, e.g. {\"active\":{\"$eq\":true}}. Omit to return all records."
+  											},
+  											"fields": {
+  												"type": "array",
+  												"items": {"type": "string"},
+  												"description": "Optional list of field names to project in the returned records, e.g. [\"title\",\"date\",\"project\"]"
   											}
   										},
   										"additionalProperties": false
@@ -474,14 +479,8 @@
   								"application/json": {
   									"schema": {
   										"type": "object",
-  										"required": ["data"],
-  										"properties": {
-  											"data": {
-  												"type": "object",
-  												"description": "The record fields matching the User Datatype definition. Use getDatatypeByName to discover the expected fields before creating a record."
-  											}
-  										},
-  										"additionalProperties": false
+  										"description": "The record fields matching the User Datatype definition. Use getDatatypeByName to discover the expected fields before creating a record.",
+  										"additionalProperties": true
   									}
   								}
   							}
@@ -536,14 +535,8 @@
   								"application/json": {
   									"schema": {
   										"type": "object",
-  										"required": ["data"],
-  										"properties": {
-  											"data": {
-  												"type": "object",
-  												"description": "The full record to update. Must include id and _rev fields for optimistic concurrency control, plus all fields to update."
-  											}
-  										},
-  										"additionalProperties": false
+  										"description": "The full record to update. Must include id and _rev fields for optimistic concurrency control, plus all fields to update.",
+  										"additionalProperties": true
   									}
   								}
   							}

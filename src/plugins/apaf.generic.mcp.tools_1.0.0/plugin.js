@@ -121,7 +121,7 @@ plugin.parseApiDoc = function(fragment) {
 /*
  * Execute an mcpTool fragment source, following the same pattern as
  * apaf.dyn.api.invokeServlet(). The fragment source must implement an
- * mcpToolEndpoint function body with argument list as (params, ctx, then)
+ * mcpToolEndpoint function body with argument list as (payload, ctx, then)
  * The minimal fragment implementation may be : then(null,{"result": "success"});
  */
 plugin.invokeMcpTool = function(fragment, args, user, httpRequest, httpResponse, then) {
@@ -132,6 +132,7 @@ plugin.invokeMcpTool = function(fragment, args, user, httpRequest, httpResponse,
 		moduleSrc += fragment.source;
 		moduleSrc +=  '};';
 		xeval(moduleSrc);
+		let payload = args && typeof args === 'object' ? args : {};
 		let ctx = {
 			user: user,
 			runtime: plugin.runtime,
@@ -140,7 +141,7 @@ plugin.invokeMcpTool = function(fragment, args, user, httpRequest, httpResponse,
 			httpRequest: httpRequest,
 			httpResponse: httpResponse
 		};
-		mcpToolEndpoint(args, ctx, function(err,result){
+		mcpToolEndpoint(payload, ctx, function(err,result){
 			plugin.trace('<-'+fragment.name+'() err='+err);
 			then(err,result);
 		});

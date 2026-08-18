@@ -80,6 +80,14 @@
 			</tbody>
 		</table>
 
+		For <code>create</code> and <code>update</code> operations, the HTTP request body carries the
+		record fields directly at the root level. There is no wrapper object such as
+		<code>{ "data": { ... } }</code>. For updates, include both <code>id</code> and <code>_rev</code>
+		in the root body for optimistic concurrency control.
+
+		For <code>query</code> operations, the body may include a CouchDB Mango <code>selector</code>
+		and an optional <code>fields</code> array to project only a subset of attributes in the response.
+
 		<h2>Telemetry</h2>
 
 		The plugin tracks four telemetry dimensions, one per CRUD operation:

@@ -70,7 +70,7 @@
         "paths": {
           "/apaf-mcp-tools/invoke": {
             "post": {
-              "operationId": "invokeTool",
+              "operationId": "invokeDynamicTool",
               "summary": "Invoke a dynamic APAF MCP tool by name",
               "description": "Invokes a named mcpTool fragment. Use getDynamicToolList first to discover available tools and their expected arguments.",
               "requestBody": {
