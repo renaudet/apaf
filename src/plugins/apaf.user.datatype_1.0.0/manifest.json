@@ -478,9 +478,8 @@
   							"content": {
   								"application/json": {
   									"schema": {
-  										"type": "object",
-  										"description": "The record fields matching the User Datatype definition. Use getDatatypeByName to discover the expected fields before creating a record.",
-  										"additionalProperties": true
+  										"anyOf": [{"type": "object", "additionalProperties": {}}, {"type": "string"}],
+  										"description": "The record fields matching the User Datatype definition. Use getDatatypeByName to discover the expected fields before creating a record."
   									}
   								}
   							}
@@ -534,9 +533,8 @@
   							"content": {
   								"application/json": {
   									"schema": {
-  										"type": "object",
-  										"description": "The full record to update. Must include id and _rev fields for optimistic concurrency control, plus all fields to update.",
-  										"additionalProperties": true
+  										"anyOf": [{"type": "object", "additionalProperties": {}}, {"type": "string"}],
+  										"description": "The full record to update. Must include id and _rev fields for optimistic concurrency control, plus all fields to update."
   									}
   								}
   							}
