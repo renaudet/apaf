@@ -155,9 +155,14 @@ plugin.readFileContentHandler = function(req,res){
 				let buff = Buffer.from(encryptedData, 'base64');
 				let filePath = buff.toString('ascii');
 				let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
-				let content = workspaceService.getFileContent(filePath);
-				plugin.debug('<-readFileContentHandler()');
-				res.json({"status": 200,"message": "Ok","data": content});
+				try{
+					let content = workspaceService.getFileContent(filePath);
+					plugin.debug('<-readFileContentHandler()');
+					res.json({"status": 200,"message": "Ok","data": content});
+				}catch(e){
+					plugin.debug('<-readFileContentHandler() - file not found: '+filePath);
+					res.json({"status": 404,"message": "Not found","data": e.message});
+				}
 			}else{
 				plugin.debug('<-readFileContentHandler() bad request');
 				res.json({"status": 406,"message": "Not acceptable","data": "No path data received!"});
