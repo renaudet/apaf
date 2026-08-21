@@ -399,46 +399,36 @@ log = function(level,msg){
 }
 
 executeWorkflow = function(){
-	if(workflow.serverSide){
-		if(confirm(npaUi.getLocalizedString('@apaf.workflow.editor.execution.server.confirmation'))){
-			flash('sending request to execute workflow "'+workflow.name+' v'+workflow.version+'" server-side');
-			let callContext = {};
-			let workflowContext = {};
-			workflowContext['_options'] = {};
-			if(workflow.loggingEnabled){
-				workflowContext['_options'].noLogging = false;
-			}else{
-				workflowContext['_options'].noLogging = true;
-			}
-			if(workflow.timeoutEnabled){
-				workflowContext['_options'].noTimeout = false;
-			}else{
-				workflowContext['_options'].noTimeout = true;
-			}
-			callContext.method = 'POST';
-			callContext.uri = '/apaf-workflow/execute/'+workflow.id;
-			callContext.payload = workflowContext;
-			apaf.call(callContext)
-			    .then(function(responseData){
-					showInfo(JSON.stringify(responseData,null,'\t').replace(/\t/g,'&nbsp;&nbsp;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;'));
-			    })
-			    .onError(function(errorMsg){
-					showError(errorMsg);
-			    });
+	let jsonEditor = $apaf(JSON_EDITOR_ID);
+	jsonEditor.setText('{\n   "status": "pending"\n}');
+	jsonEditor.setReadonly(false);
+	let jsonEditorDialog = $apaf(JSON_DIALOG_ID);
+	jsonEditorDialog.setTitle(apaf.localize('@apaf.workflow.editor.dialog.context.title'));
+	jsonEditorDialog.onClose(function(){
+		try{
+			var context = JSON.parse(jsonEditor.getText());
+		}catch(parseException){
+			showError(parseException.message);
+			return;
 		}
-	}else{
-		let jsonEditor = $apaf(JSON_EDITOR_ID);
-		jsonEditor.setText('{\n   "status": "pending"\n}');
-		jsonEditor.setReadonly(false);
-		let jsonEditorDialog = $apaf(JSON_DIALOG_ID);
-		jsonEditorDialog.setTitle(apaf.localize('@apaf.workflow.editor.dialog.context.title'));
-		jsonEditorDialog.onClose(function(){
-			try{
-				var context = JSON.parse(jsonEditor.getText());
-			}catch(parseException){
-				showError(parseException.message);
-			}
-			if(context){
+		if(context){
+			if(workflow.serverSide){
+				flash('sending request to execute workflow "'+workflow.name+' v'+workflow.version+'" server-side');
+				context['_options'] = context['_options'] || {};
+				context['_options'].noLogging = !workflow.loggingEnabled;
+				context['_options'].noTimeout = !workflow.timeoutEnabled;
+				let callContext = {};
+				callContext.method = 'POST';
+				callContext.uri = '/apaf-workflow/execute/'+workflow.id;
+				callContext.payload = context;
+				apaf.call(callContext)
+				    .then(function(responseData){
+						showInfo(JSON.stringify(responseData,null,'\t').replace(/\t/g,'&nbsp;&nbsp;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;'));
+				    })
+				    .onError(function(errorMsg){
+						showError(errorMsg);
+				    });
+			}else{
 				let consoleListener = new WorkflowEngineEventListener();
 				consoleListener.setEventHandler(function(event){
 					console.log('Event from WorkflowEngine:');
@@ -450,7 +440,7 @@ executeWorkflow = function(){
 				clearConsole();
 				engine.start(workflow,context);
 			}
-		});
-		jsonEditorDialog.open();
-	}
+		}
+	});
+	jsonEditorDialog.open();
 }
