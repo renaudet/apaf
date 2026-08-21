@@ -262,10 +262,10 @@ plugin.executeWorkflowHandler = function(req,res){
 					plugin.debug('execution requested for Workflow "'+workflow.name+'" v'+workflow.version);
 					let doLogging = true;
 					if(typeof runtimeContext['_options']!='undefined'){
-						if(typeof runtimeContext['_options'].noTimeout){
+						if(runtimeContext['_options'].noTimeout){
 							timeout = 0;
 						}
-						if(typeof runtimeContext['_options'].noLogging){
+						if(runtimeContext['_options'].noLogging){
 							doLogging = false;
 						}
 					}
@@ -275,9 +275,9 @@ plugin.executeWorkflowHandler = function(req,res){
 							engine.registerCustomNode(fragments[i]);
 						}
 						engine.setEventListener(function(event){
-							if(doLogging){
+							/*if(doLogging){
 								runtimeContext['_console'].push(event);
-							}
+							}*/
 							if('stop'==event.type){
 								plugin.debug('<-executeWorkflowHandler()');
 								delete engine.runtimeContext._engine;
@@ -290,9 +290,11 @@ plugin.executeWorkflowHandler = function(req,res){
 								plugin.info(event.source+' '+event.data);
 							}
 							if('log'==event.type && doLogging){
+								runtimeContext['_console'].push(event);
 								plugin.info(event.source+' '+event.data);
 							}
 							if('error'==event.type){
+								runtimeContext['_console'].push(event);
 								plugin.error(event.source+' '+event.data);
 							}
 						});
