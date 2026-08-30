@@ -1,0 +1,1437 @@
+﻿{
+    "grammar":  {
+                    "name":  "APL",
+                    "version":  "1.0.0",
+                    "rootRule":  "INSTRUCTION_SEQUENCE"
+                },
+    "engineConfig":  {
+                         "input":  {
+                                       "type":  "text"
+                                   },
+                         "tokenizationRules":  [
+                                                   {
+                                                       "name":  "BLOC_START",
+                                                       "type":  "FIXED_CHAR",
+                                                       "value":  "{",
+                                                       "priority":  5
+                                                   },
+                                                   {
+                                                       "name":  "BLOC_END",
+                                                       "type":  "FIXED_CHAR",
+                                                       "value":  "}",
+                                                       "priority":  5
+                                                   },
+                                                   {
+                                                       "name":  "INSTRUCTION_BLOC_START",
+                                                       "type":  "FIXED_CHAR",
+                                                       "value":  "(",
+                                                       "priority":  5
+                                                   },
+                                                   {
+                                                       "name":  "INSTRUCTION_BLOC_END",
+                                                       "type":  "FIXED_CHAR",
+                                                       "value":  ")",
+                                                       "priority":  5
+                                                   },
+                                                   {
+                                                       "name":  "ARRAY_START",
+                                                       "type":  "FIXED_CHAR",
+                                                       "value":  "[",
+                                                       "priority":  5
+                                                   },
+                                                   {
+                                                       "name":  "ARRAY_END",
+                                                       "type":  "FIXED_CHAR",
+                                                       "value":  "]",
+                                                       "priority":  5
+                                                   },
+                                                   {
+                                                       "name":  "LINE_END",
+                                                       "type":  "FIXED_CHAR",
+                                                       "value":  ";",
+                                                       "priority":  5
+                                                   },
+                                                   {
+                                                       "name":  "AFFECTATION_SIGN",
+                                                       "type":  "FIXED_CHAR",
+                                                       "value":  "=",
+                                                       "priority":  5
+                                                   },
+                                                   {
+                                                       "name":  "PARAMETER_LIST_SEPARATOR",
+                                                       "type":  "FIXED_CHAR",
+                                                       "value":  ",",
+                                                       "priority":  5
+                                                   },
+                                                   {
+                                                       "name":  "DOT",
+                                                       "type":  "FIXED_CHAR",
+                                                       "value":  ".",
+                                                       "priority":  5
+                                                   },
+                                                   {
+                                                       "name":  "NOT",
+                                                       "type":  "FIXED_CHAR",
+                                                       "value":  "!",
+                                                       "priority":  8
+                                                   },
+                                                   {
+                                                       "name":  "WHITE_SPACE",
+                                                       "type":  "SEQUENCE",
+                                                       "allowedChars":  " \t\r\n",
+                                                       "priority":  1
+                                                   },
+                                                   {
+                                                       "name":  "INCREMENT",
+                                                       "type":  "FIXED_VALUE",
+                                                       "values":  [
+                                                                      "++"
+                                                                  ],
+                                                       "priority":  9
+                                                   },
+                                                   {
+                                                       "name":  "DECREMENT",
+                                                       "type":  "FIXED_VALUE",
+                                                       "values":  [
+                                                                      "--"
+                                                                  ],
+                                                       "priority":  9
+                                                   },
+                                                   {
+                                                       "name":  "BOOLEAN",
+                                                       "type":  "FIXED_VALUE",
+                                                       "values":  [
+                                                                      "true",
+                                                                      "false"
+                                                                  ],
+                                                       "priority":  10
+                                                   },
+                                                   {
+                                                       "name":  "NULL_VALUE",
+                                                       "type":  "FIXED_VALUE",
+                                                       "values":  [
+                                                                      "null"
+                                                                  ],
+                                                       "priority":  10
+                                                   },
+                                                   {
+                                                       "name":  "KEYWORD",
+                                                       "type":  "FIXED_VALUE",
+                                                       "values":  [
+                                                                      "var",
+                                                                      "const",
+                                                                      "if",
+                                                                      "else",
+                                                                      "function",
+                                                                      "return",
+                                                                      "for",
+                                                                      "while"
+                                                                  ],
+                                                       "priority":  10
+                                                   },
+                                                   {
+                                                       "name":  "IDENTIFIER",
+                                                       "type":  "SEQUENCE",
+                                                       "allowedChars":  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_@$1234567890",
+                                                       "startsWith":  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                                                       "priority":  7
+                                                   },
+                                                   {
+                                                       "name":  "NUMBER",
+                                                       "type":  "SEQUENCE",
+                                                       "allowedChars":  "1234567890.",
+                                                       "startsWith":  "1234567890",
+                                                       "validator":  "!isNaN(Number(\u0027@\u0027))",
+                                                       "priority":  7
+                                                   },
+                                                   {
+                                                       "name":  "CHAR_SEQUENCE",
+                                                       "type":  "SEQUENCE",
+                                                       "allowedChars":  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_@#$1234567890.,;:!?\u0027 \t+-/*|%=\u003c\u003e()[]{}",
+                                                       "startsWith":  "\"",
+                                                       "endsWith":  "\"",
+                                                       "priority":  7
+                                                   },
+                                                   {
+                                                       "name":  "OPERATOR",
+                                                       "type":  "FIXED_VALUE",
+                                                       "values":  [
+                                                                      "+",
+                                                                      "-",
+                                                                      "*",
+                                                                      "/"
+                                                                  ],
+                                                       "priority":  5
+                                                   },
+                                                   {
+                                                       "name":  "LOGIC_OPERATOR",
+                                                       "type":  "FIXED_VALUE",
+                                                       "values":  [
+                                                                      "==",
+                                                                      "!=",
+                                                                      "\u003e",
+                                                                      "\u003c",
+                                                                      "\u003e=",
+                                                                      "\u003c=",
+                                                                      "||",
+                                                                      "\u0026\u0026"
+                                                                  ],
+                                                       "priority":  6
+                                                   }
+                                               ],
+                         "compilationRules":  [
+                                                  {
+                                                      "name":  "BOOLEAN_VALUE",
+                                                      "definition":  {
+                                                                         "type":  "token",
+                                                                         "name":  "BOOLEAN"
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "NULL_LITERAL",
+                                                      "definition":  {
+                                                                         "type":  "token",
+                                                                         "name":  "NULL_VALUE"
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "PROPERTY_ACCESS",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "DOT"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "ARRAY_ACCESS",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "ARRAY_START"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "EXPRESSION"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "ARRAY_END"
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "VARIABLE_DECLARATION",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$or":  [
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "KEYWORD",
+                                                                                                                                      "value":  "var"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "IDENTIFIER"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "AFFECTATION_SIGN"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "ARRAY_START"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "ARRAY_END"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "LINE_END"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "KEYWORD",
+                                                                                                                                      "value":  "var"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "IDENTIFIER"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "AFFECTATION_SIGN"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "LINE_END"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "KEYWORD",
+                                                                                                                                      "value":  "var"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "IDENTIFIER"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "LINE_END"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "CONSTANT_DECLARATION",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "KEYWORD",
+                                                                                                        "value":  "const"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "AFFECTATION_SIGN"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "logic",
+                                                                                                        "value":  {
+                                                                                                                      "$or":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "IDENTIFIER"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "SIGNED_NUMBER"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                  }
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "LINE_END"
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "AFFECTATION",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "AFFECTATION_SIGN"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "EXPRESSION"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "LINE_END"
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "PROPERTY_AFFECTATION",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "DOT"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "AFFECTATION_SIGN"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "EXPRESSION"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "LINE_END"
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "ARRAY_AFFECTATION",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "ARRAY_START"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "EXPRESSION"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "ARRAY_END"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "AFFECTATION_SIGN"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "EXPRESSION"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "LINE_END"
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "POST_INCREMENT",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "INCREMENT"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "LINE_END"
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "POST_DECREMENT",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "DECREMENT"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "LINE_END"
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "INSTRUCTION_SEQUENCE",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$or":  [
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "INSTRUCTION"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "INSTRUCTION_SEQUENCE"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "INSTRUCTION"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "EOF"
+                                                                                                   }
+                                                                                               ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "INSTRUCTION",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$or":  [
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "VARIABLE_DECLARATION"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "CONSTANT_DECLARATION"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "ARRAY_AFFECTATION"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "PROPERTY_AFFECTATION"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "AFFECTATION"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "POST_INCREMENT"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "POST_DECREMENT"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "FUNCTION"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "FUNCTION_CALL"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "LINE_END"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "TEST"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "FOR_LOOP"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "WHILE_LOOP"
+                                                                                                   }
+                                                                                               ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "SIGNED_NUMBER",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$or":  [
+                                                                                                   {
+                                                                                                       "type":  "token",
+                                                                                                       "name":  "NUMBER"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "OPERATOR",
+                                                                                                                                      "value":  "-"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "NUMBER"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "FUNCTION_CALL",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "INSTRUCTION_BLOC_START"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "logic",
+                                                                                                        "value":  {
+                                                                                                                      "$or":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "logic",
+                                                                                                                                      "value":  {
+                                                                                                                                                    "$and":  [
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "rule",
+                                                                                                                                                                     "name":  "ARGUMENT_LIST"
+                                                                                                                                                                 },
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "token",
+                                                                                                                                                                     "name":  "INSTRUCTION_BLOC_END"
+                                                                                                                                                                 }
+                                                                                                                                                             ]
+                                                                                                                                                }
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "INSTRUCTION_BLOC_END"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                  }
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "STRING",
+                                                      "definition":  {
+                                                                         "type":  "token",
+                                                                         "name":  "CHAR_SEQUENCE"
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "EXPRESSION",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$or":  [
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "SIGNED_NUMBER"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "PROPERTY_ACCESS"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "ARRAY_ACCESS"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "IDENTIFIER"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "FUNCTION_CALL"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "STRING"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "INSTRUCTION_BLOC_START"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "INSTRUCTION_BLOC_END"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "INSTRUCTION_BLOC_START"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "INSTRUCTION_BLOC_END"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "FUNCTION_CALL"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "PROPERTY_ACCESS"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "ARRAY_ACCESS"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "SIGNED_NUMBER"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "token",
+                                                                                                       "name":  "IDENTIFIER"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "BOOLEAN_VALUE"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "NULL_LITERAL"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "STRING"
+                                                                                                   }
+                                                                                               ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "ARGUMENT_LIST",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$or":  [
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "PARAMETER_LIST_SEPARATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "ARGUMENT_LIST"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "EXPRESSION"
+                                                                                                   }
+                                                                                               ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "PARAMETER_LIST",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$or":  [
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "IDENTIFIER"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "PARAMETER_LIST_SEPARATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "PARAMETER_LIST"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "token",
+                                                                                                       "name":  "IDENTIFIER"
+                                                                                                   }
+                                                                                               ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "FUNCTION",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "KEYWORD",
+                                                                                                        "value":  "function"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "INSTRUCTION_BLOC_START"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "logic",
+                                                                                                        "value":  {
+                                                                                                                      "$or":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "logic",
+                                                                                                                                      "value":  {
+                                                                                                                                                    "$and":  [
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "rule",
+                                                                                                                                                                     "name":  "PARAMETER_LIST"
+                                                                                                                                                                 },
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "token",
+                                                                                                                                                                     "name":  "INSTRUCTION_BLOC_END"
+                                                                                                                                                                 }
+                                                                                                                                                             ]
+                                                                                                                                                }
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "INSTRUCTION_BLOC_END"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                  }
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "BLOC_START"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "logic",
+                                                                                                        "value":  {
+                                                                                                                      "$or":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "logic",
+                                                                                                                                      "value":  {
+                                                                                                                                                    "$and":  [
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "token",
+                                                                                                                                                                     "name":  "KEYWORD",
+                                                                                                                                                                     "value":  "return"
+                                                                                                                                                                 },
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "rule",
+                                                                                                                                                                     "name":  "EXPRESSION"
+                                                                                                                                                                 },
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "token",
+                                                                                                                                                                     "name":  "LINE_END"
+                                                                                                                                                                 }
+                                                                                                                                                             ]
+                                                                                                                                                }
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "logic",
+                                                                                                                                      "value":  {
+                                                                                                                                                    "$and":  [
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "rule",
+                                                                                                                                                                     "name":  "INSTRUCTION_SEQUENCE"
+                                                                                                                                                                 },
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "token",
+                                                                                                                                                                     "name":  "KEYWORD",
+                                                                                                                                                                     "value":  "return"
+                                                                                                                                                                 },
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "rule",
+                                                                                                                                                                     "name":  "EXPRESSION"
+                                                                                                                                                                 },
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "token",
+                                                                                                                                                                     "name":  "LINE_END"
+                                                                                                                                                                 }
+                                                                                                                                                             ]
+                                                                                                                                                }
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                  }
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "BLOC_END"
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "CONDITION",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$or":  [
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "NOT"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "CONDITION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "SIGNED_NUMBER"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "LOGIC_OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "PROPERTY_ACCESS"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "LOGIC_OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "ARRAY_ACCESS"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "LOGIC_OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "IDENTIFIER"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "LOGIC_OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "FUNCTION_CALL"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "LOGIC_OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "STRING"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "LOGIC_OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "logic",
+                                                                                                       "value":  {
+                                                                                                                     "$and":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "INSTRUCTION_BLOC_START"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "INSTRUCTION_BLOC_END"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "LOGIC_OPERATOR"
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "rule",
+                                                                                                                                      "name":  "EXPRESSION"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                 }
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "rule",
+                                                                                                       "name":  "BOOLEAN_VALUE"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "token",
+                                                                                                       "name":  "IDENTIFIER"
+                                                                                                   }
+                                                                                               ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "TEST",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "KEYWORD",
+                                                                                                        "value":  "if"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "INSTRUCTION_BLOC_START"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "CONDITION"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "INSTRUCTION_BLOC_END"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "BLOC_START"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "INSTRUCTION_SEQUENCE"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "logic",
+                                                                                                        "value":  {
+                                                                                                                      "$or":  [
+                                                                                                                                  {
+                                                                                                                                      "type":  "logic",
+                                                                                                                                      "value":  {
+                                                                                                                                                    "$and":  [
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "token",
+                                                                                                                                                                     "name":  "BLOC_END"
+                                                                                                                                                                 },
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "token",
+                                                                                                                                                                     "name":  "KEYWORD",
+                                                                                                                                                                     "value":  "else"
+                                                                                                                                                                 },
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "token",
+                                                                                                                                                                     "name":  "BLOC_START"
+                                                                                                                                                                 },
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "rule",
+                                                                                                                                                                     "name":  "INSTRUCTION_SEQUENCE"
+                                                                                                                                                                 },
+                                                                                                                                                                 {
+                                                                                                                                                                     "type":  "token",
+                                                                                                                                                                     "name":  "BLOC_END"
+                                                                                                                                                                 }
+                                                                                                                                                             ]
+                                                                                                                                                }
+                                                                                                                                  },
+                                                                                                                                  {
+                                                                                                                                      "type":  "token",
+                                                                                                                                      "name":  "BLOC_END"
+                                                                                                                                  }
+                                                                                                                              ]
+                                                                                                                  }
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "FOR_LOOP",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "KEYWORD",
+                                                                                                        "value":  "for"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "INSTRUCTION_BLOC_START"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "IDENTIFIER"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "AFFECTATION_SIGN"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "EXPRESSION"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "LINE_END"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "CONDITION"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "LINE_END"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "EXPRESSION"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "INSTRUCTION_BLOC_END"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "BLOC_START"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "INSTRUCTION_SEQUENCE"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "BLOC_END"
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "name":  "WHILE_LOOP",
+                                                      "definition":  {
+                                                                         "type":  "logic",
+                                                                         "value":  {
+                                                                                       "$and":  [
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "KEYWORD",
+                                                                                                        "value":  "while"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "INSTRUCTION_BLOC_START"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "CONDITION"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "INSTRUCTION_BLOC_END"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "BLOC_START"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "rule",
+                                                                                                        "name":  "INSTRUCTION_SEQUENCE"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "token",
+                                                                                                        "name":  "BLOC_END"
+                                                                                                    }
+                                                                                                ]
+                                                                                   }
+                                                                     }
+                                                  }
+                                              ]
+                     },
+    "logging":  {
+                    "level":  "error"
+                }
+}

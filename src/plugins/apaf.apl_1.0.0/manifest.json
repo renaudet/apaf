@@ -1,0 +1,25 @@
+{
+  "id": "apaf.apl",
+  "name": "APAF Programming Language execution service",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.compiler","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.apl.logger",
+  		"dir": "apaf.apl"
+  	},
+  	{
+  		"point": "npa.core.service",
+  		"id": "apaf.apl.service",
+  		"service": "apl"
+  	}
+  ],
+  "provides": [
+  ]
+}
