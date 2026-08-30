@@ -1,0 +1,190 @@
+{
+  "id": "apaf.micro.services",
+  "name": "APL Micro-Services manager for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.micro.services.logger",
+  		"dir": "apaf.micro.services"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.micro.services.htdocs",
+  		"path": "/apaf-micro-services",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.micro.services.router",
+  		"path": "/apaf-micro-services-api"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.micro.services.locale.provider.enUS",
+  		"path": "i18n/apaf_micro_services_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.micro.services.locale.provider.en",
+  		"path": "i18n/apaf_micro_services_en-US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.micro.services.locale.provider.frFR",
+  		"path": "i18n/apaf_micro_services_fr-FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.micro.services.locale.provider.fr",
+  		"path": "i18n/apaf_micro_services_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.micro.services.datatype",
+  		"datatype": {
+  			"id": "microService",
+  			"name": "MicroService",
+  			"builtIn": true,
+  			"persistent": true,
+  			"database": "apaf_micro_services",
+  			"fields": [
+  				{
+  					"name": "name",
+  					"label": "@apaf.micro.services.name",
+  					"required": true,
+  					"size": 6
+  				},
+  				{
+  					"name": "version",
+  					"label": "@apaf.micro.services.version",
+  					"required": true,
+  					"size": 2
+  				},
+  				{
+  					"name": "description",
+  					"label": "@apaf.micro.services.description",
+  					"required": false,
+  					"size": 8
+  				},
+  				{
+  					"name": "enabled",
+  					"label": "@apaf.micro.services.enabled",
+  					"type": "check",
+  					"help": "@apaf.micro.services.enabled.help",
+  					"default": false,
+  					"size": 2
+  				},
+  				{
+  					"name": "restrictedToRole",
+  					"label": "@apaf.micro.services.restrictedToRole",
+  					"type": "select",
+  					"multiple": false,
+  					"required": false,
+  					"size": 4,
+  					"datasource": {
+  						"type": "managed",
+  						"manager": "roleManager"
+  					},
+  					"renderer": {
+  						"label": {
+  							"type": "FieldItemRenderer",
+  							"processor": "@.description"
+  						},
+  						"value": {
+  							"type": "FieldItemRenderer",
+  							"processor": "@.name"
+  						}
+  					}
+  				},
+  				{
+  					"name": "source",
+  					"label": "@apaf.micro.services.source",
+  					"type": "javascript"
+  				},
+  				{
+  					"name": "apiDoc",
+  					"label": "@apaf.micro.services.apiDoc",
+  					"required": false,
+  					"type": "json",
+  					"jsonData": true
+  				}
+  			]
+  		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.micro.services.menu.item",
+  		"menu": "developmentMenuPlaceholder",
+  		"securityRole": "developer",
+  		"item": {
+  			"id": "manageMicroServices",
+  			"label": "@apaf.micro.services.menu.label",
+  			"actionId": "redirect",
+  			"icon": "/apaf-micro-services/img/microService.png",
+  			"uri": "/apaf-micro-services/html/manageMicroServices.html"
+  		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.micro.services.query.handler",
+  		"router": "apaf.micro.services.router",
+  		"method": "POST",
+  		"schema": "/query",
+  		"handler": "queryMicroServiceHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.micro.services.find.handler",
+  		"router": "apaf.micro.services.router",
+  		"method": "GET",
+  		"schema": "/:id",
+  		"handler": "findMicroServiceHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.micro.services.create.handler",
+  		"router": "apaf.micro.services.router",
+  		"method": "POST",
+  		"schema": "/",
+  		"handler": "createMicroServiceHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.micro.services.update.handler",
+  		"router": "apaf.micro.services.router",
+  		"method": "PUT",
+  		"schema": "/",
+  		"handler": "updateMicroServiceHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.micro.services.delete.handler",
+  		"router": "apaf.micro.services.router",
+  		"method": "DELETE",
+  		"schema": "/:id",
+  		"handler": "deleteMicroServiceHandler",
+  		"securityRole": "developer"
+  	}
+  ],
+  "provides": [
+  ]
+}

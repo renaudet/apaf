@@ -1,0 +1,29 @@
+{
+    "id": "itemSelectionList",
+    "version": "1.0.0",
+    "type": "SelectionList",
+    "configuration": {
+    	"header": {
+    		"title": "@apaf.micro.services.page.selection.title",
+    		"showFilter": true
+    	},
+    	"datasource": {
+            "type": "managed",
+            "manager": "microServiceManager"
+        },
+        "renderer": {
+        	"type": "FieldItemRenderer",
+        	"processor": "'<span><img src=\"/apaf-micro-services/img/microService.png\" style=\"height:16px;\">&nbsp;'+@.name+'</span><span class=\"badge rounded-pill '+((@.enabled)?'bg-success':'bg-secondary')+'\">'+@.version+'</span>'"
+        },
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "name",
+        	"ascending": false
+        },
+        "constraints": {
+        	"height": {
+        		"processor": "$('#workArea').height()-40"
+        	}
+        }
+    }
+}

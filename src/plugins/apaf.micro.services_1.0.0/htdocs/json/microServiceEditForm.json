@@ -1,0 +1,89 @@
+{
+    "id": "editForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.micro.services.page.form.title",
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.micro.services.name",
+    			"required": true,
+    			"size": 6
+    		},
+    		{
+    			"name": "version",
+    			"label": "@apaf.micro.services.version",
+    			"required": true,
+    			"size": 2
+    		},
+    		{
+    			"name": "enabled",
+    			"label": "@apaf.micro.services.enabled",
+    			"type": "check",
+    			"help": "@apaf.micro.services.enabled.help",
+    			"default": false,
+    			"size": 2
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.micro.services.description",
+    			"required": false,
+    			"size": 10
+    		},
+    		{
+    			"name": "restrictedToRole",
+    			"label": "@apaf.micro.services.restrictedToRole",
+    			"type": "select",
+    			"multiple": false,
+    			"required": false,
+    			"size": 4,
+    			"datasource": {
+    				"type": "managed",
+    				"manager": "roleManager"
+    			},
+    			"renderer": {
+    				"label": {
+    					"type": "FieldItemRenderer",
+    					"processor": "@.description"
+    				},
+    				"value": {
+    					"type": "FieldItemRenderer",
+    					"processor": "@.name"
+    				}
+    			}
+    		},
+    		{
+    			"name": "source",
+    			"label": "@apaf.micro.services.source",
+    			"type": "javascript",
+    			"height": 500,
+    			"expandParent": "workArea",
+    			"buttons": [
+    				{
+    					"label": "@apaf.micro.services.source.expand",
+    					"icon": "/uiTools/img/silk/arrow_out.png",
+    					"actionId": "expandCollapse"
+    				}
+    			]
+    		},
+    		{
+    			"name": "apiDoc",
+    			"label": "@apaf.micro.services.apiDoc",
+    			"type": "json",
+    			"jsonData": true,
+    			"height": 300,
+    			"buttons": [
+    				{
+    					"label": "@apaf.micro.services.apiDoc.wizard",
+    					"icon": "/uiTools/img/silk/wand.png",
+    					"actionId": "openApiDocWizard"
+    				}
+    			]
+    		}
+    	]
+    }
+}
