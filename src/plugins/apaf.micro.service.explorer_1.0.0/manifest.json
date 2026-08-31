@@ -1,0 +1,81 @@
+{
+  "id": "apaf.micro.service.explorer",
+  "name": "Micro-Service Explorer plugin for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.micro.service.explorer.logger",
+  		"dir": "apaf.micro.service.explorer"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.micro.service.explorer.router",
+  		"path": "/apaf-micro-service-explorer-api"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.micro.service.explorer.htdocs",
+  		"path": "/apaf-micro-service-explorer",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.micro.service.explorer.remote.providers.handler",
+  		"router": "apaf.micro.service.explorer.router",
+  		"method": "GET",
+  		"schema": "/remoteProviders",
+  		"handler": "getRemoteProvidersHandler",
+  		"securityRole": "developer",
+  		"description": "Return the list of registered remote context providers for the Micro-Service Explorer"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.micro.service.explorer.locale.provider.enUS",
+  		"path": "i18n/apaf_micro_service_explorer_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.micro.service.explorer.locale.provider.en",
+  		"path": "i18n/apaf_micro_service_explorer_en-US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.micro.service.explorer.locale.provider.frFR",
+  		"path": "i18n/apaf_micro_service_explorer_fr-FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.micro.service.explorer.locale.provider.fr",
+  		"path": "i18n/apaf_micro_service_explorer_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.micro.service.explorer.menu.item",
+  		"menu": "developmentMenuPlaceholder",
+  		"securityRole": "developer",
+  		"item": {
+  			"id": "microServiceExplorer",
+  			"label": "@apaf.micro.service.explorer.menu.label",
+  			"actionId": "redirect",
+  			"icon": "/apaf-micro-service-explorer/img/microServiceExplorerIcon.png",
+  			"uri": "/apaf-micro-service-explorer/html/microServiceExplorer.html"
+  		}
+  	}
+  ],
+  "provides": [
+  ]
+}

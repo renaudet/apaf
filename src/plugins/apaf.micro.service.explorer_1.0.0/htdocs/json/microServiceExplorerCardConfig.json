@@ -1,0 +1,11 @@
+{
+    "id": "microServiceExplorerCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/apaf-micro-service-explorer/img/microServiceExplorerIcon.png",
+        "label": "@apaf.micro.service.explorer.page.title",
+        "headerClass": "bg-secondary bg-gradient bg-opacity-10",
+        "stylesheet": "/apaf-branding/css/apafCard.css"
+    }
+}

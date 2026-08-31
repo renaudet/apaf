@@ -24,3 +24,4 @@ apaf.micro.services.apiDoc.wizard.apply=Appliquer
 apaf.micro.services.apiDoc.wizard.cancel=Annuler
 apaf.micro.services.apiDoc.wizard.required.error=L'identifiant d'op&eacute;ration et la description sont obligatoires
 apaf.micro.services.apiDoc.wizard.type=Type
+apaf.micro.services.method=M&eacute;thode

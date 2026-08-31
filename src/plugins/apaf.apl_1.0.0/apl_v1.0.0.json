@@ -1,4 +1,4 @@
-﻿{
+{
     "grammar":  {
                     "name":  "APL",
                     "version":  "1.0.0",
@@ -176,7 +176,7 @@
                                                                       "||",
                                                                       "\u0026\u0026"
                                                                   ],
-                                                       "priority":  6
+                                                       "priority":  9
                                                    }
                                                ],
                          "compilationRules":  [

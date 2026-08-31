@@ -10,7 +10,8 @@
   	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
-  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.apl","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -74,6 +75,14 @@
   					"label": "@apaf.micro.services.version",
   					"required": true,
   					"size": 2
+  				},
+  				{
+  					"name": "method",
+  					"label": "@apaf.micro.services.method",
+  					"required": true,
+  					"type": "select",
+  					"size": 3,
+  					"values": ["GET","POST","PUT","DELETE"]
   				},
   				{
   					"name": "description",
@@ -183,8 +192,44 @@
   		"schema": "/:id",
   		"handler": "deleteMicroServiceHandler",
   		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.micro.services.invoke.get.handler",
+  		"router": "apaf.micro.services.router",
+  		"method": "GET",
+  		"schema": "/api/:name/:version",
+  		"handler": "invokeMicroServiceGetHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.micro.services.invoke.post.handler",
+  		"router": "apaf.micro.services.router",
+  		"method": "POST",
+  		"schema": "/api/:name/:version",
+  		"handler": "invokeMicroServicePostHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.micro.services.invoke.put.handler",
+  		"router": "apaf.micro.services.router",
+  		"method": "PUT",
+  		"schema": "/api/:name/:version",
+  		"handler": "invokeMicroServicePutHandler",
+  		"securityRole": ""
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.micro.services.invoke.delete.handler",
+  		"router": "apaf.micro.services.router",
+  		"method": "DELETE",
+  		"schema": "/api/:name/:version",
+  		"handler": "invokeMicroServiceDeleteHandler",
+  		"securityRole": ""
   	}
-  ],
+  	 ],
   "provides": [
   ]
 }

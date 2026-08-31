@@ -524,9 +524,15 @@ var plugin = new ApafPlugin();
  * @param {object}   builtins  - map of built-in functions exposed to the script:
  *                               { name: fn }  or  { name: { fn, async: true } }
  * @param {function} callback  - node-style callback(err, result)
- *                               result is the value returned by the last expression, or null
+ *                               result is { success, error, memorySpace } on success
+ * @param {object}   [context] - optional map of variable name → initial value to pre-store
+ *                               in the engine memory space before execution starts.
+ *                               These become top-level variables accessible by name in the
+ *                               script (e.g. { request: reqObj, response: {} }).
+ *                               After execution, the final value of each variable can be
+ *                               read back from result.memorySpace['.variableName'].
  */
-plugin.execute = function(source, builtins, callback){
+plugin.execute = function(source, builtins, callback, context){
 	this.debug('->apaf.apl#execute()');
 	let compilerService = this.getService(COMPILER_SERVICE_NAME);
 	let eu = compilerService.compile(source, APL_GRAMMAR);
@@ -545,7 +551,7 @@ plugin.execute = function(source, builtins, callback){
 		canLog:  function(l){ return self.canLog(l); }
 	};
 	let enginePlugin = new AplExecutionEnginePlugin(logRef);
-	let result = compilerService.execute(eu, builtins, enginePlugin);
+	let result = compilerService.execute(eu, builtins, enginePlugin, context);
 	if(result.success){
 		this.debug('<-apaf.apl#execute() - success');
 		callback(null, result);

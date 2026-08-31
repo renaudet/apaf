@@ -33,7 +33,7 @@ plugin.checkUserAccess = function(req,requiredRole,then){
 		this.debug('an existing session was found');
 		this.invocationCount++;
 		let user = session.user;
-		if(typeof user!=undefined && user!=null && session.alive){
+		if(typeof user!='undefined' && user!=null && session.alive){
 			session.lastAccess = moment();
 			if(user.isAdmin || requiredRole==null || requiredRole.length==0 || (user.roles && typeof user.roles[requiredRole]!='undefined')){
 				this.trace('<-checkUserAccess(ok)');

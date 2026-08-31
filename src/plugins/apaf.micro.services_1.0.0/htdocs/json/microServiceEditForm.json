@@ -21,6 +21,14 @@
     			"size": 2
     		},
     		{
+    			"name": "method",
+    			"label": "@apaf.micro.services.method",
+    			"required": true,
+    			"type": "select",
+    			"size": 3,
+    			"values": ["GET","POST","PUT","DELETE"]
+    		},
+    		{
     			"name": "enabled",
     			"label": "@apaf.micro.services.enabled",
     			"type": "check",

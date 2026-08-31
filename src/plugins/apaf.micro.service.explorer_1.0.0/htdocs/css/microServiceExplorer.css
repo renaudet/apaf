@@ -1,0 +1,270 @@
+/*
+ * microServiceExplorer.css - styles for the APAF Micro-Service Explorer page
+ * Copyright 2025 Nicolas Renaudet - All rights reserved
+ */
+
+/* ---------- Left column toolbar ---------- */
+.mse-list-toolbar {
+    padding: 4px 2px;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 4px;
+}
+
+/* ---------- Remote status bar ---------- */
+.mse-remote-status-bar {
+    background-color: #c47400;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+/* ---------- Service list ---------- */
+.mse-list-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    font-size: 0.88rem;
+    transition: background-color 0.12s;
+}
+
+.mse-list-item:hover {
+    background-color: #f0f4ff;
+}
+
+.mse-list-item.active {
+    background-color: #e8eeff;
+    border-left: 3px solid #3b82d4;
+    padding-left: 7px;
+}
+
+.mse-list-item-name {
+    font-weight: bold;
+    color: #1f2328;
+    flex: 1;
+}
+
+.mse-list-item-version {
+    font-size: 0.75rem;
+    color: #57606a;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.mse-list-item-disabled {
+    opacity: 0.5;
+}
+
+/* ---------- Method badges ---------- */
+.mse-method-badge {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 0.7rem;
+    font-family: monospace;
+    vertical-align: middle;
+    min-width: 52px;
+    text-align: center;
+}
+
+.mse-method-badge-lg {
+    padding: 3px 10px;
+    font-size: 0.85rem;
+    min-width: 60px;
+    border-radius: 4px;
+}
+
+/* ---------- Detail panel ---------- */
+.mse-detail-placeholder {
+    padding: 20px;
+    color: #888;
+    font-style: italic;
+}
+
+.mse-detail-header {
+    padding: 8px 10px;
+    background-color: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mse-detail-name {
+    font-weight: bold;
+    font-size: 1rem;
+    color: #1f2328;
+}
+
+.mse-detail-version {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.82rem;
+    color: #57606a;
+}
+
+.mse-detail-description {
+    color: #444;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    padding-left: 2px;
+}
+
+.mse-detail-section-label {
+    font-size: 0.82rem;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.mse-security-badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 10px;
+    background-color: #7c5cd8;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.mse-uri-value {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.88rem;
+    color: #1f2328;
+    background-color: #f4f6f8;
+    border: 1px solid #dde0e4;
+    border-radius: 4px;
+    padding: 3px 8px;
+    display: inline-block;
+}
+
+/* ---------- API descriptor (OpenAPI-style) ---------- */
+.mse-apidoc-panel {
+    background-color: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    font-size: 0.82rem;
+}
+
+.mse-apidoc-summary {
+    font-style: italic;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+.mse-apidoc-param {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    padding: 2px 0;
+    border-bottom: 1px dashed #e5e7eb;
+}
+
+.mse-apidoc-param:last-child {
+    border-bottom: none;
+}
+
+.mse-apidoc-param-name {
+    font-family: monospace;
+    font-weight: bold;
+    color: #1f2328;
+    min-width: 110px;
+}
+
+.mse-apidoc-param-type {
+    color: #3b82d4;
+    font-family: monospace;
+    min-width: 70px;
+}
+
+.mse-apidoc-param-required {
+    color: #e53e3e;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.mse-apidoc-param-desc {
+    color: #57606a;
+    flex: 1;
+}
+
+/* ---------- Test panel ---------- */
+.mse-detail-test-panel {
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 8px;
+    background-color: #fafafa;
+}
+
+.mse-payload-area {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.8rem;
+    resize: vertical;
+}
+
+/* ---------- Result area ---------- */
+.mse-result-area {
+    min-height: 100px;
+    height: 200px;
+    overflow: auto;
+    border-radius: 4px;
+    border: 1px solid #333;
+    background-color: #0d0d0d;
+    resize: vertical;
+}
+
+.mse-result-content {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.78rem;
+    color: #00ff88;
+    padding: 6px 8px;
+    word-break: break-all;
+}
+
+/* ---------- Remote context modal ---------- */
+.mse-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.45);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mse-modal-box {
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    width: 480px;
+    max-width: 96vw;
+}
+
+.mse-modal-header {
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid #e5e7eb;
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+
+.mse-modal-body {
+    padding: 14px;
+}
+
+.mse-modal-footer {
+    padding: 8px 14px 12px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}

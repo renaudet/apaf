@@ -36,12 +36,7 @@ editRecord = function(){
 	toolbar.setEnabled('edit',false);
 	toolbar.setEnabled('save',true);
 	toolbar.setEnabled('delete',false);
-}
-
-updateVersion = function(record){
-	if(record.id){
-		record.version = increaseVersionNumber(record.version);
-	}
+	registerFormChangeListener(form);
 }
 
 initNewRecord = function(){
@@ -49,20 +44,22 @@ initNewRecord = function(){
 	selectList.select(-1);
 	let record = {};
 	record.name = 'NewMicroService';
-	record.version = '1.0.0';
+	record.version = '1.0';
+	record.method = 'GET';
 	record.description = 'Micro-service description';
 	record.enabled = false;
-	record.source = '// APL source code here';
+	record.source = 'function process(req, resp) {\n  resp.result = null;\n}';
+	record.apiDoc = buildApiDoc(record);
 	let form = npaUi.getComponent(EDIT_FORM_ID);
 	form.setData(record);
 	form.setEditMode(true);
+	registerFormChangeListener(form);
 }
 
 saveRecord = function(){
 	let form = npaUi.getComponent(EDIT_FORM_ID);
 	if(form.isValid()){
 		let updatedRecord = form.getData();
-		updateVersion(updatedRecord);
 		let dataManager = npaUi.getComponent(DATA_MANAGER_ID);
 		dataManager.update(updatedRecord).then(function(data){
 			let editor = npaUi.getComponent(JSON_EDITOR_ID);
@@ -92,7 +89,6 @@ saveJson = function(){
 	let editor = npaUi.getComponent(JSON_EDITOR_ID);
 	try{
 		let updatedRecord = JSON.parse(editor.getText());
-		updateVersion(updatedRecord);
 		let dataManager = npaUi.getComponent(DATA_MANAGER_ID);
 		dataManager.update(updatedRecord).then(function(data){
 			editor.setText(JSON.stringify(data,null,'\t'));
@@ -242,6 +238,68 @@ openApiDocWizard = function(event){
 		editor.setValue(JSON.stringify(apiDoc,null,'\t'));
 		modal.hide();
 	});
+}
+
+/*
+ * buildApiDoc — generate an OpenAPI 3.1.0 descriptor from the record fields.
+ * Preserves existing parameters if the current apiDoc already has some.
+ */
+buildApiDoc = function(record, existingApiDoc){
+	var path    = '/apaf-micro-services-api/api/' + encodeURIComponent(record.name||'') + '/' + encodeURIComponent(record.version||'');
+	var method  = (record.method||'GET').toLowerCase();
+	var title   = record.name || 'NewMicroService';
+	var version = record.version || '1.0';
+	var desc    = record.description || '';
+	var operation = { operationId: record.name||'newMicroService', description: desc };
+	if(desc) operation.summary = desc;
+	// preserve requestBody from existing apiDoc if present
+	if(existingApiDoc){
+		try{
+			var existingPath   = Object.keys(existingApiDoc.paths)[0];
+			var existingMethod = Object.keys(existingApiDoc.paths[existingPath])[0];
+			var existingOp     = existingApiDoc.paths[existingPath][existingMethod];
+			if(existingOp.requestBody) operation.requestBody = existingOp.requestBody;
+		}catch(e){}
+	}
+	var pathObj = {};
+	pathObj[method] = operation;
+	var apiDoc = { openapi: '3.1.0', info: { title: title, version: version }, paths: {} };
+	apiDoc.paths[path] = pathObj;
+	return apiDoc;
+}
+
+/*
+ * registerFormChangeListener — listen for changes on name, version, description and
+ * method fields to keep the apiDoc in sync automatically.
+ * Safe to call multiple times: unregisters any previous listener first.
+ */
+var _formChangeListener = null;
+registerFormChangeListener = function(form){
+	if(_formChangeListener){
+		// remove previous listener to avoid duplicates
+		var listeners = form.formEventListeners;
+		if(listeners){
+			var idx = listeners.indexOf(_formChangeListener);
+			if(idx >= 0) listeners.splice(idx, 1);
+		}
+	}
+	_formChangeListener = {
+		onFormEvent: function(event){
+			if(event.type !== 'change') return;
+			if(event.source !== 'name' && event.source !== 'version' && event.source !== 'description' && event.source !== 'method') return;
+			var record = form.getData();
+			if(!record.name || !record.version) return;
+			var apiDocEditor = form.getEditor('apiDoc');
+			var existingApiDoc = null;
+			try{
+				var raw = apiDocEditor ? apiDocEditor.getValue() : null;
+				if(raw && raw.trim().length > 0) existingApiDoc = JSON.parse(raw);
+			}catch(e){}
+			var newApiDoc = buildApiDoc(record, existingApiDoc);
+			if(apiDocEditor) apiDocEditor.setValue(JSON.stringify(newApiDoc, null, '\t'));
+		}
+	};
+	form.registerEventListener(_formChangeListener);
 }
 
 apiDocAddParamRow = function(name,type,required,description){
