@@ -532,12 +532,25 @@ var plugin = new ApafPlugin();
  *                               After execution, the final value of each variable can be
  *                               read back from result.memorySpace['.variableName'].
  */
+plugin.compile = function(source, callback){
+	this.debug('->apaf.apl#compile()');
+	let compilerService = this.getService(COMPILER_SERVICE_NAME);
+	let compileResult = compilerService.compile(source, APL_GRAMMAR);
+	if(!compileResult.eu){
+		this.debug('<-apaf.apl#compile() - failure');
+		callback(null, { success: false, error: compileResult.error });
+	} else {
+		this.debug('<-apaf.apl#compile() - success');
+		callback(null, { success: true, error: null });
+	}
+};
+
 plugin.execute = function(source, builtins, callback, context){
 	this.debug('->apaf.apl#execute()');
 	let compilerService = this.getService(COMPILER_SERVICE_NAME);
-	let eu = compilerService.compile(source, APL_GRAMMAR);
-	if(!eu){
-		this.error('apaf.apl#execute() - compilation failed');
+	let compileResult = compilerService.compile(source, APL_GRAMMAR);
+	if(!compileResult.eu){
+		this.error('apaf.apl#execute() - compilation failed: '+compileResult.error);
 		callback('APL compilation failed', null);
 		return;
 	}
@@ -551,7 +564,7 @@ plugin.execute = function(source, builtins, callback, context){
 		canLog:  function(l){ return self.canLog(l); }
 	};
 	let enginePlugin = new AplExecutionEnginePlugin(logRef);
-	let result = compilerService.execute(eu, builtins, enginePlugin, context);
+	let result = compilerService.execute(compileResult.eu, builtins, enginePlugin, context);
 	if(result.success){
 		this.debug('<-apaf.apl#execute() - success');
 		callback(null, result);

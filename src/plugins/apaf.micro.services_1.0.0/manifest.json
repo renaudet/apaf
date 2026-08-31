@@ -195,6 +195,15 @@
   	},
   	{
   		"point": "npa.http.handler",
+  		"id": "apaf.micro.services.check.handler",
+  		"router": "apaf.micro.services.router",
+  		"method": "POST",
+  		"schema": "/check",
+  		"handler": "checkMicroServiceHandler",
+  		"securityRole": "developer"
+  	},
+  	{
+  		"point": "npa.http.handler",
   		"id": "apaf.micro.services.invoke.get.handler",
   		"router": "apaf.micro.services.router",
   		"method": "GET",

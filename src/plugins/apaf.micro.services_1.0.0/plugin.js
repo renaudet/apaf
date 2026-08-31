@@ -214,6 +214,34 @@ plugin._invokeMicroService = function(req, res, httpMethod) {
 	});
 }
 
+plugin.checkMicroServiceHandler = function(req, res) {
+	plugin.debug('->checkMicroServiceHandler()');
+	res.set('Content-Type', 'application/json');
+	let requiredRole = plugin.getRequiredSecurityRole('apaf.micro.services.check.handler');
+	let securityEngine = plugin.getService(SECURITY_SERVICE_NAME);
+	securityEngine.checkUserAccess(req, requiredRole, function(err, user) {
+		if(err) {
+			plugin.debug('<-checkMicroServiceHandler() - security error');
+			res.json({"status": 500, "message": err, "data": null});
+		} else {
+			let source = req.body && req.body.source ? req.body.source : '';
+			let aplPlugin = plugin.runtime.getPlugin(APL_PLUGIN_ID);
+			aplPlugin.compile(source, function(err, result) {
+				if(err) {
+					plugin.debug('<-checkMicroServiceHandler() - internal error');
+					res.json({"status": 500, "message": err, "data": null});
+				} else if(!result.success) {
+					plugin.debug('<-checkMicroServiceHandler() - compilation failure');
+					res.json({"status": 200, "message": "ok", "data": {"success": false, "error": result.error}});
+				} else {
+					plugin.debug('<-checkMicroServiceHandler() - compilation success');
+					res.json({"status": 200, "message": "ok", "data": {"success": true, "error": null}});
+				}
+			});
+		}
+	});
+}
+
 plugin.invokeMicroServiceGetHandler = function(req, res) {
 	plugin.debug('->invokeMicroServiceGetHandler()');
 	plugin._invokeMicroService(req, res, 'GET');

@@ -25,3 +25,6 @@ apaf.micro.services.apiDoc.wizard.cancel=Cancel
 apaf.micro.services.apiDoc.wizard.required.error=Operation Id and Description are required
 apaf.micro.services.apiDoc.wizard.type=Type
 apaf.micro.services.method=Method
+apaf.micro.services.toolbar.check=Check APL
+apaf.micro.services.check.success=APL source compiled successfully
+apaf.micro.services.check.failed=APL compilation failed

@@ -25,3 +25,6 @@ apaf.micro.services.apiDoc.wizard.cancel=Annuler
 apaf.micro.services.apiDoc.wizard.required.error=L'identifiant d'op&eacute;ration et la description sont obligatoires
 apaf.micro.services.apiDoc.wizard.type=Type
 apaf.micro.services.method=M&eacute;thode
+apaf.micro.services.toolbar.check=V&eacute;rifier APL
+apaf.micro.services.check.success=La source APL a &eacute;t&eacute; compil&eacute;e avec succ&egrave;s
+apaf.micro.services.check.failed=&Eacute;chec de la compilation APL

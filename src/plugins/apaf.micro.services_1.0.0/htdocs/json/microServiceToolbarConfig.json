@@ -1,0 +1,60 @@
+{
+    "id": "editingToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"actions": [
+    		{
+                "label": "@apaf.toolbar.item.edit",
+                "actionId": "edit",
+                "icon": "/uiTools/img/silk/page_white_edit.png",
+                "enabled": false,
+                "enableOnSelection": true
+            },
+    		{
+                "label": "@apaf.toolbar.item.save",
+                "actionId": "save",
+                "icon": "/uiTools/img/silk/disk.png",
+                "enabled": false,
+                "enableOnSelection": false
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "label": "@apaf.toolbar.item.delete",
+                "actionId": "delete",
+                "icon": "/uiTools/img/silk/delete.png",
+                "enabled": false,
+                "enableOnSelection": true
+            },
+    		{
+                "label": "@apaf.toolbar.item.new",
+                "actionId": "insert",
+                "icon": "/uiTools/img/silk/add.png"
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "label": "@apaf.micro.services.toolbar.check",
+                "actionId": "checkSource",
+                "icon": "/uiTools/img/silk/script_lightning.png",
+                "enabled": false,
+                "enableOnSelection": true
+            }
+    	],
+    	"pluggableActionHandlers": [
+    		{
+    			"actionId": "insert",
+    			"handlerExpr": "@.setEnabled('save',true);@.setEnabled('edit',false);@.setEnabled('delete',false);"
+    		},
+    		{
+    			"actionId": "edit",
+    			"handlerExpr": "@.setEnabled('save',true);@.setEnabled('edit',false);$('editForm').setEditMode(true);"
+    		}
+    	]
+    }
+}

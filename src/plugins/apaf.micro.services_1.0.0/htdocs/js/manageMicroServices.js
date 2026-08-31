@@ -24,8 +24,26 @@ initializeUi = function(){
 			npaUi.on('delete',deleteRecord);
 			npaUi.on('saveJson',saveJson);
 			npaUi.on('openApiDocWizard',openApiDocWizard);
+			npaUi.on('checkSource',checkSource);
 			npaUi.render();
 		});
+	});
+}
+
+checkSource = function(){
+	let form = npaUi.getComponent(EDIT_FORM_ID);
+	let record = form.getData();
+	let source = record.source || '';
+	makeRESTCall('POST','/apaf-micro-services-api/check',{"source": source},function(response){
+		if(response && response.data){
+			if(response.data.success){
+				flash('@apaf.micro.services.check.success');
+			}else{
+				showError(response.data.error || '@apaf.micro.services.check.failed');
+			}
+		}else{
+			showError('@apaf.micro.services.check.failed');
+		}
 	});
 }
 
