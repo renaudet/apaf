@@ -411,25 +411,60 @@ showServiceDetail = function(svc){
 	$('#msDetailContent').show();
 }
 
+/*
+ * extractOperation — resolve the first operation from an OpenAPI 3.1.0 apiDoc object.
+ * Returns { summary, description, properties, required } or null if the structure is absent.
+ * properties is a map of { name -> { type, description } }, required is an array of names.
+ */
+extractOperation = function(apiDoc){
+	if(!apiDoc || !apiDoc.paths) return null;
+	try{
+		let pathKey = Object.keys(apiDoc.paths)[0];
+		let methodKey = Object.keys(apiDoc.paths[pathKey])[0];
+		let op = apiDoc.paths[pathKey][methodKey];
+		let properties = {};
+		let required = [];
+		if(op.requestBody){
+			let schema = op.requestBody.content['application/json'].schema;
+			properties = schema.properties || {};
+			required = schema.required || [];
+		}
+		return {
+			summary: op.summary || '',
+			description: op.description || '',
+			properties: properties,
+			required: required
+		};
+	}catch(e){
+		return null;
+	}
+}
+
 renderApiDoc = function(apiDoc){
+	let op = extractOperation(apiDoc);
 	let html = '';
-	if(apiDoc.summary){
-		html += '<div class="mse-apidoc-summary">'+escapeHtml(apiDoc.summary)+'</div>';
-	}
-	if(apiDoc.description && apiDoc.description != apiDoc.summary){
-		html += '<div class="mse-apidoc-summary" style="margin-bottom:6px;">'+escapeHtml(apiDoc.description)+'</div>';
-	}
-	if(apiDoc.parameters && apiDoc.parameters.length > 0){
-		html += '<div style="font-size:0.78rem; font-weight:bold; color:#555; margin-bottom:3px;">'+unescapeI18N('@apaf.micro.service.explorer.apidoc.parameters')+'</div>';
-		for(var i = 0; i < apiDoc.parameters.length; i++){
-			let p = apiDoc.parameters[i];
-			let required = p.required ? '<span class="mse-apidoc-param-required">*</span>' : '';
-			html += '<div class="mse-apidoc-param">'
-				+'<span class="mse-apidoc-param-name">'+escapeHtml(p.name||'')+'</span>'
-				+'<span class="mse-apidoc-param-type">'+escapeHtml(p.type||'any')+'</span>'
-				+required
-				+'<span class="mse-apidoc-param-desc">'+escapeHtml(p.description||'')+'</span>'
-				+'</div>';
+	if(op){
+		if(op.summary){
+			html += '<div class="mse-apidoc-summary">'+escapeHtml(op.summary)+'</div>';
+		}
+		if(op.description && op.description != op.summary){
+			html += '<div class="mse-apidoc-summary" style="margin-bottom:6px;">'+escapeHtml(op.description)+'</div>';
+		}
+		let paramNames = Object.keys(op.properties);
+		if(paramNames.length > 0){
+			html += '<div style="font-size:0.78rem; font-weight:bold; color:#555; margin-bottom:3px;">'+unescapeI18N('@apaf.micro.service.explorer.apidoc.parameters')+'</div>';
+			for(var i = 0; i < paramNames.length; i++){
+				let name = paramNames[i];
+				let def = op.properties[name];
+				let isRequired = op.required.indexOf(name) >= 0;
+				let required = isRequired ? '<span class="mse-apidoc-param-required">*</span>' : '';
+				html += '<div class="mse-apidoc-param">'
+					+'<span class="mse-apidoc-param-name">'+escapeHtml(name)+'</span>'
+					+'<span class="mse-apidoc-param-type">'+escapeHtml(def.type||'any')+'</span>'
+					+required
+					+'<span class="mse-apidoc-param-desc">'+escapeHtml(def.description||'')+'</span>'
+					+'</div>';
+			}
 		}
 	}
 	$('#msApiDocLabel').html('<b>'+npaUi.getLocalizedString('@apaf.micro.service.explorer.apidoc.title')+'</b>');
@@ -437,12 +472,13 @@ renderApiDoc = function(apiDoc){
 }
 
 buildPayloadSample = function(apiDoc){
-	if(!apiDoc || !apiDoc.parameters || apiDoc.parameters.length == 0) return '{\n}';
+	let op = extractOperation(apiDoc);
+	if(!op || Object.keys(op.properties).length == 0) return '{\n}';
 	let sample = {};
-	for(var i = 0; i < apiDoc.parameters.length; i++){
-		let p = apiDoc.parameters[i];
-		let name = p.name || ('param'+i);
-		let type = (p.type||'string').toLowerCase();
+	let paramNames = Object.keys(op.properties);
+	for(var i = 0; i < paramNames.length; i++){
+		let name = paramNames[i];
+		let type = (op.properties[name].type||'string').toLowerCase();
 		if(type == 'number' || type == 'integer') sample[name] = 0;
 		else if(type == 'boolean') sample[name] = false;
 		else if(type == 'array') sample[name] = [];
