@@ -1,0 +1,241 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - APL Developer Guide">
+		<meta name="Author" lang="en" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>APL Developer Guide</title>
+	</head>
+	<body>
+
+		<h1>APL Developer Guide</h1>
+
+		<h2>Overview</h2>
+
+		<b>APL</b> (APAF Programming Language) is a JavaScript-like scripting language embedded
+		in APAF. It is primarily used to write <b>micro-service</b> scripts that are stored in
+		the database and executed on demand for each incoming HTTP request. APL scripts are
+		compiled and run server-side by the <code>apaf.apl</code> plugin.
+
+		<h2>Language syntax</h2>
+
+		APL is intentionally similar to a subset of JavaScript. Developers familiar with JS will
+		feel at home. The following sections describe all supported language constructs.
+
+		<h3>Variables</h3>
+
+		Variables are declared with <code>var</code> (mutable) or <code>const</code> (immutable).
+		A <code>var</code> declaration without an initializer creates an undefined variable.
+
+		<div class="code">
+		var x;<br>
+		var name = "Alice";<br>
+		var count = 0;<br>
+		const PI = 3.14159;<br>
+		var items = [10];  <span style="color:#888;">// array of 10 elements</span>
+		</div>
+
+		<h3>Data types</h3>
+
+		<table>
+			<tr><th>Type</th><th>Example</th></tr>
+			<tr><td>Number (integer or real)</td><td><code>42</code> &nbsp; <code>3.14</code></td></tr>
+			<tr><td>String (double-quoted)</td><td><code>"hello world"</code></td></tr>
+			<tr><td>Boolean</td><td><code>true</code> &nbsp; <code>false</code></td></tr>
+			<tr><td>Null</td><td><code>null</code></td></tr>
+			<tr><td>Array (fixed size)</td><td><code>var a = [5];</code></td></tr>
+			<tr><td>Object (returned by built-ins)</td><td><code>obj.property</code></td></tr>
+		</table>
+
+		<h3>Arithmetic and string operators</h3>
+
+		<div class="code">
+		var sum = a + b;<br>
+		var diff = a - b;<br>
+		var prod = a * b;<br>
+		var quot = a / b;<br>
+		var msg = "Hello, " + name + "!";  <span style="color:#888;">// string concatenation</span>
+		</div>
+
+		<h3>Comparison and logical operators</h3>
+
+		<div class="code">
+		a == b &nbsp; a != b<br>
+		a &lt; b  &nbsp; a &gt; b  &nbsp; a &lt;= b  &nbsp; a &gt;= b<br>
+		a || b  <span style="color:#888;">// logical OR</span><br>
+		a &amp;&amp; b  <span style="color:#888;">// logical AND</span><br>
+		!condition  <span style="color:#888;">// unary NOT</span>
+		</div>
+
+		<h3>Assignment and post-increment / post-decrement</h3>
+
+		<div class="code">
+		x = 10;<br>
+		x++;   <span style="color:#888;">// equivalent to x = x + 1</span><br>
+		x--;   <span style="color:#888;">// equivalent to x = x - 1</span>
+		</div>
+
+		<h3>Arrays</h3>
+
+		Arrays are declared with a fixed size. Individual elements are accessed and assigned by
+		index. The special <code>.length</code> property returns the array size.
+
+		<div class="code">
+		var a = [5];          <span style="color:#888;">// declare array of 5 elements</span><br>
+		a[0] = "first";<br>
+		a[1] = 42;<br>
+		var len = a.length;<br>
+		var first = a[0];
+		</div>
+
+		<h3>Object property access</h3>
+
+		Objects are typically received from built-in functions or from the initial execution
+		context. Properties can be read and written using dot notation.
+
+		<div class="code">
+		var method = request.method;<br>
+		var body   = request.body;<br>
+		response.status = 200;<br>
+		response.data   = body.name;
+		</div>
+
+		<h3>Conditional — if / else</h3>
+
+		<div class="code">
+		if (x &gt; 0) {<br>
+		&nbsp;&nbsp;var sign = "positive";<br>
+		} else {<br>
+		&nbsp;&nbsp;var sign = "negative or zero";<br>
+		}<br>
+		<br>
+		<span style="color:#888;">// if without else is also valid</span><br>
+		if (name == "admin") {<br>
+		&nbsp;&nbsp;print("Welcome, admin!");<br>
+		}
+		</div>
+
+		<h3>For loop</h3>
+
+		The loop variable must be declared before the <code>for</code> statement, and the
+		step expression is an assignment (not a post-increment).
+
+		<div class="code">
+		var i = 0;<br>
+		for (i = 0; i &lt; 10; i + 1) {<br>
+		&nbsp;&nbsp;a[i] = i * 2;<br>
+		}
+		</div>
+
+		<b>Note:</b> the third part of the loop header is a pure expression — the result of
+		<code>i + 1</code> is assigned back to <code>i</code> after each iteration.
+
+		<h3>While loop</h3>
+
+		<div class="code">
+		var n = 1;<br>
+		while (n &lt; 100) {<br>
+		&nbsp;&nbsp;n = n * 2;<br>
+		}
+		</div>
+
+		<h3>Functions</h3>
+
+		Functions are declared with the <code>function</code> keyword. They support parameters,
+		local variables, and a single <code>return</code> statement at the end.
+
+		<div class="code">
+		function add(a, b) {<br>
+		&nbsp;&nbsp;return a + b;<br>
+		}<br>
+		<br>
+		var result = add(3, 7);
+		</div>
+
+		Functions are first-class citizens in the script scope: a function declared anywhere in
+		the program is callable from any subsequent line (including from within other functions).
+
+		<h3>Function calls as statements</h3>
+
+		A function call can be used as a standalone statement (its return value is discarded):
+
+		<div class="code">
+		print("Processing request...");<br>
+		log(request.method, request.params.id);
+		</div>
+
+		<h2>Micro-service script pattern</h2>
+
+		The standard pattern for an APAF micro-service script is to define a function named
+		<code>process(request, response)</code>. The caller (typically <code>apaf.micro.services</code>)
+		appends the call <code>process(request, response);</code> to the stored source before
+		execution, passing a pre-populated <code>request</code> object and an empty
+		<code>response</code> object as context variables. The script fills in
+		<code>response</code>, which the caller reads back after execution.
+
+		<div class="code">
+		<span style="color:#888;">// Minimal micro-service script</span><br>
+		function process(request, response) {<br>
+		&nbsp;&nbsp;var id = request.params.id;<br>
+		&nbsp;&nbsp;response.status = 200;<br>
+		&nbsp;&nbsp;response.message = "ok";<br>
+		&nbsp;&nbsp;response.data = "Processed: " + id;<br>
+		}
+		</div>
+
+		<b>The <code>request</code> object fields:</b>
+		<table>
+			<tr><th>Field</th><th>Description</th></tr>
+			<tr><td><code>request.method</code></td><td>HTTP method: <code>"GET"</code>, <code>"POST"</code>, <code>"PUT"</code>, <code>"DELETE"</code></td></tr>
+			<tr><td><code>request.params</code></td><td>URL path parameters (e.g. <code>request.params.id</code>)</td></tr>
+			<tr><td><code>request.query</code></td><td>URL query-string parameters</td></tr>
+			<tr><td><code>request.body</code></td><td>Parsed JSON request body (for POST / PUT)</td></tr>
+			<tr><td><code>request.headers</code></td><td>HTTP request headers</td></tr>
+		</table>
+
+		The caller reads <code>result.memorySpace['.response']</code> after execution, so the
+		script only needs to populate the <code>response</code> variable it received as a parameter.
+
+		<h2>Built-in functions</h2>
+
+		Built-in functions are provided by the caller at execution time. The set of available
+		built-ins depends on the calling context. In the micro-services context, the following
+		built-in is always available:
+
+		<table>
+			<tr><th>Function</th><th>Arguments</th><th>Description</th></tr>
+			<tr><td><code>print(msg)</code></td><td>string</td><td>Writes a message to the APAF server log at <code>info</code> level, prefixed with the micro-service name.</td></tr>
+		</table>
+
+		When invoking APL from a custom plugin, any JavaScript function can be exposed as a
+		built-in. Refer to the <b>apaf.apl Plugin Reference</b> for the declaration syntax.
+
+		<h2>Scoping rules</h2>
+
+		<ul>
+			<li>Variables declared with <code>var</code> outside any function are <b>global</b> to the script and live in the root namespace for the duration of execution.</li>
+			<li>Variables modified inside a <code>for</code> or <code>while</code> loop body are visible after the loop ends (no loop-level scoping).</li>
+			<li>Function calls create a <b>new scope</b>: parameters and variables declared inside a function are local to that function call and do not interfere with the outer scope.</li>
+			<li>Context variables injected by the caller (e.g. <code>request</code>, <code>response</code>) are available as globals throughout the script.</li>
+		</ul>
+
+		<h2>Limitations</h2>
+
+		<table>
+			<tr><th>Feature</th><th>Status</th></tr>
+			<tr><td>Comments (<code>//</code> or <code>/* */</code>)</td><td>Not supported in v1.0.0</td></tr>
+			<tr><td>Compound assignment (<code>+=</code>, <code>-=</code>)</td><td>Not supported — use <code>x = x + n;</code></td></tr>
+			<tr><td>Early <code>return</code> (mid-function)</td><td>Not supported — <code>return</code> must be the last statement</td></tr>
+			<tr><td>Method calls (<code>obj.method(args)</code>)</td><td>Not supported — only property read/write</td></tr>
+			<tr><td>Single-quoted strings</td><td>Not supported — use double quotes</td></tr>
+			<tr><td>Dynamic arrays (push, pop)</td><td>Not supported — arrays are fixed-size</td></tr>
+		</table>
+
+	</body>
+</html>

@@ -6,7 +6,9 @@
   "requires": [
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
-  	{"type": "plugin","id": "npa.compiler","version": "1.0.0"}
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.compiler","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -18,6 +20,28 @@
   		"point": "npa.core.service",
   		"id": "apaf.apl.service",
   		"service": "apl"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.apl.htdocs",
+  		"path": "/apaf-apl",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.apl.doc",
+  		"label": "apaf.apl - APAF Programming Language",
+  		"category": "APAF Plugins",
+  		"subcategory": "Execution",
+  		"url": "/apaf-apl/docs/apafApl.html"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.apl.doc.dev",
+  		"label": "APL Developer Guide",
+  		"category": "Development",
+  		"subcategory": "APL",
+  		"url": "/apaf-apl/docs/apafAplDev.html"
   	}
   ],
   "provides": [

@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.apl plugin">
+		<meta name="Author" lang="en" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.apl - APAF Programming Language Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.apl &mdash; APAF Programming Language Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.apl</b> plugin provides a ready-to-use execution service for <b>APL</b> (APAF
+		Programming Language), a JavaScript-like scripting language embedded in APAF. It wraps
+		the generic <code>npa.compiler</code> service with the APL grammar and runtime, exposing
+		a simple two-method interface that any APAF plugin can consume.<br>
+		<br>
+		APL is the language used to write <b>micro-service</b> scripts in APAF: each micro-service
+		record stores an APL function named <code>process(request, response)</code> that is compiled
+		and executed on every incoming HTTP call.
+
+		<h2>Service registration</h2>
+
+		<code>apaf.apl</code> registers itself as the <code>apl</code> NPA service. Consumer plugins
+		can retrieve it in two ways.
+
+		<h3>Via the service registry (preferred for plugins that declare a dependency)</h3>
+
+		<div class="code">
+		&nbsp;1.&nbsp;<span style="color:#888;">// manifest.json — add to requires</span><br>
+		&nbsp;2.&nbsp;{ <span style="color:#3469e3;">"type"</span>: <span style="color:#3469e3;">"plugin"</span>, <span style="color:#3469e3;">"id"</span>: <span style="color:#3469e3;">"apaf.apl"</span>, <span style="color:#3469e3;">"version"</span>: <span style="color:#3469e3;">"1.0.0"</span> }
+		</div>
+
+		<div class="code">
+		&nbsp;1.&nbsp;<span style="color:#888;">// plugin.js</span><br>
+		&nbsp;2.&nbsp;let aplService = this.getService(<span style="color:#3469e3;">'apl'</span>);
+		</div>
+
+		<h3>Via the plugin registry (for loose coupling)</h3>
+
+		<div class="code">
+		&nbsp;1.&nbsp;let aplPlugin = this.runtime.getPlugin(<span style="color:#3469e3;">'apaf.apl'</span>);
+		</div>
+
+		<h2>API Reference</h2>
+
+		<h3><code>compile(source, callback)</code></h3>
+
+		Compiles an APL source string without executing it. Useful for syntax-checking a script
+		before saving it. The callback follows the Node.js convention <code>callback(err, result)</code>.
+
+		<table>
+			<tr><th>Callback argument</th><th>Type</th><th>Description</th></tr>
+			<tr><td><code>err</code></td><td>string | null</td><td>Internal error message. <code>null</code> on success.</td></tr>
+			<tr><td><code>result.success</code></td><td>boolean</td><td><code>true</code> if the source compiled successfully.</td></tr>
+			<tr><td><code>result.error</code></td><td>string | null</td><td>Compilation error message. <code>null</code> on success.</td></tr>
+		</table>
+
+		<div class="code">
+		&nbsp;1.&nbsp;aplPlugin.compile(source, function(err, result) {<br>
+		&nbsp;2.&nbsp;&nbsp;&nbsp;if (err) { <span style="color:#888;">/* internal error */</span> return; }<br>
+		&nbsp;3.&nbsp;&nbsp;&nbsp;if (!result.success) {<br>
+		&nbsp;4.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.error(<span style="color:#3469e3;">'Syntax error: '</span> + result.error);<br>
+		&nbsp;5.&nbsp;&nbsp;&nbsp;}<br>
+		&nbsp;6.&nbsp;});
+		</div>
+
+		<h3><code>execute(source, builtins, callback, context)</code></h3>
+
+		Compiles and executes an APL source string in one call.
+
+		<b>Parameters:</b>
+		<table>
+			<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+			<tr><td><code>source</code></td><td>string</td><td>APL source code to compile and execute.</td></tr>
+			<tr><td><code>builtins</code></td><td>object</td><td>Map of native JS functions exposed to the script. Each entry is either a plain <code>function</code> (sync) or <code>{ fn, async: true }</code> (async). The function receives its arguments as an array.</td></tr>
+			<tr><td><code>callback</code></td><td>function</td><td>Node-style <code>callback(err, result)</code>. On success, <code>err</code> is null and <code>result</code> is <code>{ success, error, memorySpace }</code>.</td></tr>
+			<tr><td><code>context</code></td><td>object</td><td><i>Optional.</i> Map of variable name → initial value pre-loaded into the script's memory space before execution. After execution, the final value of each variable is accessible as <code>result.memorySpace['.' + varName]</code>.</td></tr>
+		</table>
+
+		<b>Callback result fields:</b>
+		<table>
+			<tr><th>Field</th><th>Type</th><th>Description</th></tr>
+			<tr><td><code>success</code></td><td>boolean</td><td><code>true</code> if execution completed without error.</td></tr>
+			<tr><td><code>error</code></td><td>string | null</td><td>Runtime error message. <code>null</code> on success.</td></tr>
+			<tr><td><code>memorySpace</code></td><td>object</td><td>Snapshot of all top-level variables after execution. Variable <code>x</code> is stored under the key <code>".x"</code>.</td></tr>
+		</table>
+
+		<div class="code">
+		&nbsp;1.&nbsp;let context = { request: req, response: {} };<br>
+		&nbsp;2.&nbsp;let builtins = {<br>
+		&nbsp;3.&nbsp;&nbsp;&nbsp;print: function(args) { console.log(args[0]); }<br>
+		&nbsp;4.&nbsp;};<br>
+		&nbsp;5.&nbsp;let source = microService.source + <span style="color:#3469e3;">'\nprocess(request, response);'</span>;<br>
+		&nbsp;6.&nbsp;<br>
+		&nbsp;7.&nbsp;aplPlugin.execute(source, builtins, function(err, result) {<br>
+		&nbsp;8.&nbsp;&nbsp;&nbsp;if (err) { <span style="color:#888;">/* compilation or execution error */</span> return; }<br>
+		&nbsp;9.&nbsp;&nbsp;&nbsp;let response = result.memorySpace[<span style="color:#3469e3;">'.response'</span>];<br>
+		10.&nbsp;&nbsp;&nbsp;res.json({ status: 200, data: response });<br>
+		11.&nbsp;}, context);
+		</div>
+
+		<h2>Memory space key convention</h2>
+
+		Variables stored in the script's memory space are prefixed with a dot. A variable declared
+		as <code>var x = 42;</code> is accessible in the caller as
+		<code>result.memorySpace['.x']</code>. This dot-prefix is an internal convention of the
+		APL execution engine and must be accounted for when reading results back.
+
+		<h2>Built-in functions</h2>
+
+		Built-in functions are passed as a plain object where each key is the function name as it
+		will be called from the APL script. The function receives all arguments as a single
+		JavaScript array:
+
+		<div class="code">
+		&nbsp;1.&nbsp;let builtins = {<br>
+		&nbsp;2.&nbsp;&nbsp;&nbsp;<span style="color:#888;">// sync built-in: called as  print("hello");  in APL</span><br>
+		&nbsp;3.&nbsp;&nbsp;&nbsp;print: function(args) { console.log(args[0]); },<br>
+		&nbsp;4.&nbsp;<br>
+		&nbsp;5.&nbsp;&nbsp;&nbsp;<span style="color:#888;">// async built-in: called as  fetchData("url");  in APL</span><br>
+		&nbsp;6.&nbsp;&nbsp;&nbsp;fetchData: {<br>
+		&nbsp;7.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fn: async function(args) {<br>
+		&nbsp;8.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let data = await someAsyncCall(args[0]);<br>
+		&nbsp;9.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return data;<br>
+		10.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+		11.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;async: true<br>
+		12.&nbsp;&nbsp;&nbsp;}<br>
+		13.&nbsp;};
+		</div>
+
+		<h2>Logging</h2>
+
+		All APL compilation and execution traces are routed through the NPA logging service under
+		the <code>apaf.apl</code> log directory. Set the log level to <code>debug</code> in the
+		site configuration to see detailed compilation and runtime output.
+
+		<h2>Related documentation</h2>
+
+		<ul>
+			<li>See <b>APL Developer Guide</b> for the full APL language reference and script authoring patterns.</li>
+			<li>See <b>npa.compiler — Generic Compiler</b> for the underlying compiler and execution engine API.</li>
+		</ul>
+
+	</body>
+</html>
