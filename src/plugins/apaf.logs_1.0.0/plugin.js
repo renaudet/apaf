@@ -67,10 +67,12 @@ plugin.getStandardLogHandler = function(req,res){
 			res.json({"status": 500,"message": err,"data": []});
 		}else{
 			let pluginId = req.params.id;
+			let offset = parseInt(req.query.offset||'0');
+			let limit  = parseInt(req.query.limit||'100');
 			let loggingPlugin = plugin.runtime.getPlugin(NPA_LOGGIN_PLUGIN_ID);
 			loggingPlugin.readStandardLogContent(pluginId,function(lines){
 				res.json({"status": 200,"message": "ok","data": lines});
-			});
+			},offset,limit);
 		}
 	});
 }
@@ -84,10 +86,12 @@ plugin.getErrorLogHandler = function(req,res){
 			res.json({"status": 500,"message": err,"data": []});
 		}else{
 			let pluginId = req.params.id;
+			let offset = parseInt(req.query.offset||'0');
+			let limit  = parseInt(req.query.limit||'100');
 			let loggingPlugin = plugin.runtime.getPlugin(NPA_LOGGIN_PLUGIN_ID);
 			loggingPlugin.readErrorLogContent(pluginId,function(lines){
 				res.json({"status": 200,"message": "ok","data": lines});
-			});
+			},offset,limit);
 		}
 	});
 }

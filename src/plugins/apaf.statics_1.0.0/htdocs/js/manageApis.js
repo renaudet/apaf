@@ -964,12 +964,16 @@ var logsDecorator = {
 }
 
 var selectedPlugin = null;
+var currentLogOffset = 0;
+var currentLogLimit = 100;
+
 var logsEventListener = {
 	onNodeSelected(node){
 		setStatus('');
 		if('plugin'==node.data.type){
 			let pluginObj = node.data;
 			selectedPlugin = pluginObj;
+			currentLogOffset = 0;
 			getPluginLogLevel(node.data.pluginId,function(level){
 				pluginObj.logLevel = level;
 				setStatus('Selected Plugin: '+pluginObj.pluginId+' log level is '+level);
@@ -986,10 +990,15 @@ var logsEventListener = {
 
 displayLogFileContent = function(lines){
 	let tty = $apaf('console');
-	for(var i=0;i<lines.length;i++){
-		let line = lines[i];
-		tty.println(line);
+	tty.clear();
+	if(lines.length==0){
+		tty.println('(no content)');
+	}else{
+		for(var i=0;i<lines.length;i++){
+			tty.println(lines[i]);
+		}
 	}
+	updatePaginationControls();
 }
 
 const formLevelFromLogLevel = {
@@ -1008,12 +1017,33 @@ refreshLogLevelControlArea = function(pluginObj){
 
 refreshLogContent = function(){
 	let form = $apaf('logLevelForm');
-	let tty = $apaf('console');
 	let logType = form.getData().logType;
-	tty.clear();
+	currentLogOffset = 0;
 	getLogFileContent(logType,function(lines){
 		displayLogFileContent(lines);
 	});
+}
+
+logPageNext = function(){
+	let form = $apaf('logLevelForm');
+	let logType = form.getData().logType;
+	currentLogOffset += currentLogLimit;
+	getLogFileContent(logType,function(lines){
+		displayLogFileContent(lines);
+	});
+}
+
+logPagePrev = function(){
+	let form = $apaf('logLevelForm');
+	let logType = form.getData().logType;
+	currentLogOffset = Math.max(0, currentLogOffset - currentLogLimit);
+	getLogFileContent(logType,function(lines){
+		displayLogFileContent(lines);
+	});
+}
+
+updatePaginationControls = function(){
+	$('#logPrevBtn').prop('disabled', currentLogOffset === 0);
 }
 
 getPluginLogLevel = function(pluginId,then){
@@ -1110,18 +1140,22 @@ initLogsBrowser = function(){
 	}
 	let html = '';
 	html += '<div id="logLevelControlArea" class="apaf-logs" data-ref="logLevelForm"></div>';
+	html += '<div style="margin-top:8px;">';
+	html += '<button id="logNextBtn" type="button" class="btn btn-sm btn-outline-secondary" style="margin-right:6px;" onclick="logPageNext()">&laquo; Older</button>';
+	html += '<button id="logPrevBtn" type="button" class="btn btn-sm btn-outline-secondary" onclick="logPagePrev()" disabled>Newer &raquo;</button>';
+	html += '</div>';
 	html += '<div id="consoleArea" class="apaf-logs" data-ref="console"></div>';
 	$('#logLevelArea').html(html);
 	npaUi.registerComponentConfig('logLevelForm',LOG_LEVEL_FORM_CONFIG);
 	npaUi.registerComponentConfig('console',CONSOLE_CONFIG);
 	npaUi.onComponentLoaded = function(){
 		let tty = $apaf('console');
-    	tty.setHeight($('#workArea').height()-300);
+	   	tty.setHeight($('#workArea').height()-300);
 	};
 	npaUi.on('refreshLog',refreshLogContent);
-    npaUi.render('apaf-logs');
-    let form =  $apaf('logLevelForm');
-    form.registerEventListener({"onFormEvent": function(event){ onLogFormValuesChanged(event); }});
+	   npaUi.render('apaf-logs');
+	   let form =  $apaf('logLevelForm');
+	   form.registerEventListener({"onFormEvent": function(event){ onLogFormValuesChanged(event); }});
 }
 
 const logLevelFromFormLevel = {
@@ -1150,8 +1184,7 @@ onLogFormValuesChanged = function(event){
 	}
 	if(event.source=='logType'){
 		let logType = form.getData().logType;
-		let tty = $apaf('console');
-		tty.clear();
+		currentLogOffset = 0;
 		getLogFileContent(logType,function(lines){
 			displayLogFileContent(lines);
 		});
@@ -1173,7 +1206,7 @@ createLogModel = function(list){
 }
 
 getLogFileContent = function(logType,then){
-	let uri = '/apaf-logs/'+logType+'/'+selectedPlugin.pluginId;
+	let uri = '/apaf-logs/'+logType+'/'+selectedPlugin.pluginId+'?offset='+currentLogOffset+'&limit='+currentLogLimit;
 	apaf.call({
 		"method": "GET",
 		"uri": uri,
