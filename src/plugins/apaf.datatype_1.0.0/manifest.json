@@ -6,7 +6,8 @@
   "requires": [
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
-  	{"type": "plugin","id": "npa.couchdb.adapter","version": "1.0.0"}
+  	{"type": "plugin","id": "npa.couchdb.adapter","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"}
   ],
   "extends": [
   	{

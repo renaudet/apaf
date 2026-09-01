@@ -12,7 +12,8 @@
   	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
   	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.workflow","version": "1.0.0"},
-  	{"type": "plugin","id": "npa.mcp","version": "1.0.0"}
+  	{"type": "plugin","id": "npa.mcp","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"}
   ],
   "extends": [
   	{
