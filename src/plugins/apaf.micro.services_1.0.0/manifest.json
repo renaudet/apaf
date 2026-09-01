@@ -11,7 +11,8 @@
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
-  	{"type": "plugin","id": "apaf.apl","version": "1.0.0"}
+  	{"type": "plugin","id": "apaf.apl","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -238,7 +239,16 @@
   		"handler": "invokeMicroServiceDeleteHandler",
   		"securityRole": ""
   	}
-  	 ],
+  	,
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.micro.services.doc",
+  		"label": "apaf.micro.services - APL Micro-Services",
+  		"category": "APAF Framework",
+  		"subcategory": "Execution",
+  		"url": "/apaf-micro-services/docs/apafMicroServices.html"
+  	}
+  ],
   "provides": [
   ]
 }

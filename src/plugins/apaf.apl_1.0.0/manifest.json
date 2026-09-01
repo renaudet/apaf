@@ -31,7 +31,7 @@
   		"point": "npa.documentation.page",
   		"id": "apaf.apl.doc",
   		"label": "apaf.apl - APAF Programming Language",
-  		"category": "APAF Plugins",
+  		"category": "APAF Framework",
   		"subcategory": "Execution",
   		"url": "/apaf-apl/docs/apafApl.html"
   	},

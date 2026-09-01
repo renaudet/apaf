@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.micro.services plugin">
+		<meta name="Author" lang="en" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.micro.services - APL Micro-Services Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.micro.services &mdash; APL Micro-Services Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.micro.services</b> plugin lets developers create, manage and invoke
+		<b>server-side micro-services</b> written in APL (APAF Programming Language). Each
+		micro-service is a named, versioned record stored in CouchDB. It carries an APL script
+		that is compiled and executed on demand for each matching incoming HTTP request.<br>
+		<br>
+		The plugin exposes:
+		<ul>
+			<li>A <b>management UI</b> accessible from the Development menu (role: <code>developer</code>)</li>
+			<li>A <b>management REST API</b> for CRUD operations on micro-service records (role: <code>developer</code>)</li>
+			<li>A <b>public invocation API</b> that routes live HTTP calls to the matching script (no role restriction by default)</li>
+		</ul>
+
+		<h2>Micro-service record structure</h2>
+
+		Each micro-service record is stored in the <code>apaf_micro_services</code> CouchDB database
+		with the following fields:
+
+		<table>
+			<tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+			<tr><td><code>name</code></td><td>string</td><td>yes</td><td>Unique name of the micro-service (used in the invocation URL).</td></tr>
+			<tr><td><code>version</code></td><td>string</td><td>yes</td><td>Version string (used in the invocation URL).</td></tr>
+			<tr><td><code>method</code></td><td>string</td><td>yes</td><td>Expected HTTP method: <code>GET</code>, <code>POST</code>, <code>PUT</code> or <code>DELETE</code>.</td></tr>
+			<tr><td><code>description</code></td><td>string</td><td>no</td><td>Human-readable description.</td></tr>
+			<tr><td><code>enabled</code></td><td>boolean</td><td>no</td><td>When <code>false</code>, invocation returns HTTP 503. Defaults to <code>false</code>.</td></tr>
+			<tr><td><code>restrictedToRole</code></td><td>string</td><td>no</td><td>When set, only authenticated users holding this APAF role can invoke the micro-service. Empty string means no restriction.</td></tr>
+			<tr><td><code>source</code></td><td>string</td><td>yes</td><td>APL source code. Must define a function <code>process(request, response)</code>.</td></tr>
+			<tr><td><code>apiDoc</code></td><td>object</td><td>no</td><td>Optional OpenAPI descriptor object documenting the micro-service interface.</td></tr>
+		</table>
+
+		<h2>Invocation API</h2>
+
+		All four HTTP methods are routed through the same URL pattern. The micro-service is looked
+		up by <code>name</code> and <code>version</code> and its stored <code>method</code> field
+		must match the incoming HTTP method.
+
+		<table>
+			<tr><th>Method</th><th>URL</th><th>Security role</th></tr>
+			<tr><td><code>GET</code></td><td><code>/apaf-micro-services-api/api/:name/:version</code></td><td>none (or <code>restrictedToRole</code>)</td></tr>
+			<tr><td><code>POST</code></td><td><code>/apaf-micro-services-api/api/:name/:version</code></td><td>none (or <code>restrictedToRole</code>)</td></tr>
+			<tr><td><code>PUT</code></td><td><code>/apaf-micro-services-api/api/:name/:version</code></td><td>none (or <code>restrictedToRole</code>)</td></tr>
+			<tr><td><code>DELETE</code></td><td><code>/apaf-micro-services-api/api/:name/:version</code></td><td>none (or <code>restrictedToRole</code>)</td></tr>
+		</table>
+
+		The plugin builds a <code>request</code> context object from the incoming HTTP request and
+		executes the APL script with it. The response object populated by the script is returned
+		as the <code>data</code> field of the JSON response.
+
+		<b>Response format:</b>
+		<div class="code">
+		{ <span style="color:#3469e3;">"status"</span>: 200, <span style="color:#3469e3;">"message"</span>: <span style="color:#3469e3;">"ok"</span>, <span style="color:#3469e3;">"data"</span>: &lt;response object populated by the APL script&gt; }
+		</div>
+
+		<b>Error responses:</b>
+		<table>
+			<tr><th>HTTP status</th><th>Condition</th></tr>
+			<tr><td>404</td><td>No micro-service found with the given name and version.</td></tr>
+			<tr><td>400</td><td>HTTP method does not match the micro-service's declared <code>method</code>.</td></tr>
+			<tr><td>403</td><td>Caller does not hold the required <code>restrictedToRole</code>.</td></tr>
+			<tr><td>503</td><td>Micro-service exists but is disabled (<code>enabled: false</code>).</td></tr>
+			<tr><td>500</td><td>APL compilation or execution error.</td></tr>
+		</table>
+
+		<h2>Request context passed to the APL script</h2>
+
+		The script receives a <code>request</code> object built from the incoming HTTP request
+		and an empty <code>response</code> object. Both are pre-loaded into the APL execution
+		context as global variables.
+
+		<table>
+			<tr><th>Variable</th><th>Field</th><th>Description</th></tr>
+			<tr><td rowspan="5"><code>request</code></td><td><code>request.method</code></td><td>HTTP method string: <code>"GET"</code>, <code>"POST"</code>, etc.</td></tr>
+			<tr><td><code>request.params</code></td><td>URL path parameters object (e.g. <code>request.params.id</code>)</td></tr>
+			<tr><td><code>request.query</code></td><td>URL query-string parameters object</td></tr>
+			<tr><td><code>request.body</code></td><td>Parsed JSON request body (for POST / PUT; empty object for GET / DELETE)</td></tr>
+			<tr><td><code>request.headers</code></td><td>HTTP request headers object</td></tr>
+			<tr><td><code>response</code></td><td><i>(initially empty)</i></td><td>Object populated by the script; its value is returned as <code>data</code> in the HTTP response.</td></tr>
+		</table>
+
+		The caller appends <code>process(request, response);</code> to the stored script source
+		before execution, so every micro-service script must define a function with that exact
+		signature.
+
+		<b>Built-in function available during execution:</b>
+		<table>
+			<tr><th>Function</th><th>Description</th></tr>
+			<tr><td><code>print(msg)</code></td><td>Writes a message to the APAF server log at <code>info</code> level, prefixed with the micro-service name and version.</td></tr>
+		</table>
+
+		<h2>Management REST API</h2>
+
+		All management endpoints are mounted under <code>/apaf-micro-services-api</code> and
+		require the <code>developer</code> security role.
+
+		<table>
+			<tr><th>Method</th><th>URL</th><th>Description</th></tr>
+			<tr><td><code>POST</code></td><td><code>/query</code></td><td>Query micro-service records using a CouchDB Mango selector. Body: <code>{ "selector": { ... } }</code>.</td></tr>
+			<tr><td><code>GET</code></td><td><code>/:id</code></td><td>Retrieve a single micro-service record by its UUID.</td></tr>
+			<tr><td><code>POST</code></td><td><code>/</code></td><td>Create a new micro-service record. Body: full record object.</td></tr>
+			<tr><td><code>PUT</code></td><td><code>/</code></td><td>Update an existing record. Body must include <code>id</code> and <code>_rev</code> fields.</td></tr>
+			<tr><td><code>DELETE</code></td><td><code>/:id</code></td><td>Delete a micro-service record by its UUID.</td></tr>
+			<tr><td><code>POST</code></td><td><code>/check</code></td><td>Syntax-check an APL source string without saving it. Body: <code>{ "source": "..." }</code>. Returns <code>{ "success": true|false, "error": "..." }</code>.</td></tr>
+		</table>
+
+		<h2>Management UI</h2>
+
+		The micro-service management console is accessible from the <b>Development</b> menu
+		(requires the <code>developer</code> role). It provides a form-based editor for creating
+		and editing micro-service records, with an integrated APL syntax checker powered by the
+		<code>/check</code> endpoint.
+
+		<h2>Database</h2>
+
+		Micro-service records are persisted in the <code>apaf_micro_services</code> CouchDB
+		database, which is created automatically by APAF on first startup.
+
+		<h2>Related documentation</h2>
+
+		<ul>
+			<li>See <b>APL Developer Guide</b> for the APL language reference and the <code>process(request, response)</code> script pattern.</li>
+			<li>See <b>apaf.apl — APAF Programming Language</b> for the underlying APL execution service.</li>
+		</ul>
+
+	</body>
+</html>
