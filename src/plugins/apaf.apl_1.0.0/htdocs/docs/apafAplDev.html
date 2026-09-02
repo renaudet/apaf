@@ -173,19 +173,20 @@
 		<h2>Micro-service script pattern</h2>
 
 		The standard pattern for an APAF micro-service script is to define a function named
-		<code>process(request, response)</code>. The caller (typically <code>apaf.micro.services</code>)
+		<code>process(request, response)</code>. The caller (<code>apaf.micro.services</code>)
 		appends the call <code>process(request, response);</code> to the stored source before
 		execution, passing a pre-populated <code>request</code> object and an empty
 		<code>response</code> object as context variables. The script fills in
 		<code>response</code>, which the caller reads back after execution.
 
 		<div class="code">
-		<span style="color:#888;">// Minimal micro-service script</span><br>
+		<span style="color:#888;">// Minimal synchronous micro-service</span><br>
 		function process(request, response) {<br>
 		&nbsp;&nbsp;var id = request.params.id;<br>
 		&nbsp;&nbsp;response.status = 200;<br>
 		&nbsp;&nbsp;response.message = "ok";<br>
 		&nbsp;&nbsp;response.data = "Processed: " + id;<br>
+		&nbsp;&nbsp;return true;<br>
 		}
 		</div>
 
@@ -199,18 +200,69 @@
 			<tr><td><code>request.headers</code></td><td>HTTP request headers</td></tr>
 		</table>
 
-		The caller reads <code>result.memorySpace['.response']</code> after execution, so the
-		script only needs to populate the <code>response</code> variable it received as a parameter.
+		<b>The <code>globalContext</code> object:</b><br>
+		<br>
+		In addition to <code>request</code> and <code>response</code>, the runtime injects a
+		<code>globalContext</code> variable into the script's root scope. It contains the same
+		<code>request</code> and <code>response</code> references and is designed to be used
+		by <b>async callback functions</b> that need to reach the response object but cannot
+		receive it as a parameter (APL does not support closures).
+
+		<div class="code">
+		<span style="color:#888;">// globalContext fields</span><br>
+		globalContext.request   <span style="color:#888;">// same object as the top-level request</span><br>
+		globalContext.response  <span style="color:#888;">// same object as the top-level response</span>
+		</div>
+
+		<h2>Async micro-service pattern</h2>
+
+		When a micro-service needs to call an async built-in (e.g. <code>getUserData</code>),
+		the callback function cannot receive <code>response</code> as a parameter — it is called
+		by the engine with the built-in's own return values. Use <code>globalContext</code> to
+		bridge the gap:
+
+		<div class="code">
+		<span style="color:#888;">// Async micro-service — reads User Datatype records</span><br>
+		function onData(err, data) {<br>
+		&nbsp;&nbsp;var response = globalContext.response;<br>
+		&nbsp;&nbsp;if(err == null) {<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;response.customers = data;<br>
+		&nbsp;&nbsp;} else {<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;response.error = err;<br>
+		&nbsp;&nbsp;}<br>
+		&nbsp;&nbsp;return true;<br>
+		}<br>
+		<br>
+		function process(request, response) {<br>
+		&nbsp;&nbsp;getUserData("customer", null, "onData");<br>
+		&nbsp;&nbsp;return true;<br>
+		}
+		</div>
+
+		<b>Key rules for async scripts:</b>
+		<ul>
+			<li>Declare callback functions <b>before</b> <code>process()</code> in the source.</li>
+			<li>Pass the callback name as a <b>string</b> (last argument of the async built-in).</li>
+			<li>Use <code>globalContext.response</code> inside callbacks to write the result.</li>
+			<li>The HTTP response is only sent <b>after</b> all async callbacks have completed.</li>
+		</ul>
 
 		<h2>Built-in functions</h2>
 
-		Built-in functions are provided by the caller at execution time. The set of available
-		built-ins depends on the calling context. In the micro-services context, the following
-		built-in is always available:
+		Built-in functions are provided by the caller at execution time. In the micro-services
+		context, the following built-ins are always available:
 
 		<table>
-			<tr><th>Function</th><th>Arguments</th><th>Description</th></tr>
-			<tr><td><code>print(msg)</code></td><td>string</td><td>Writes a message to the APAF server log at <code>info</code> level, prefixed with the micro-service name.</td></tr>
+			<tr><th>Function</th><th>Type</th><th>Arguments</th><th>Description</th></tr>
+			<tr>
+				<td><code>print(msg)</code></td><td>sync</td><td>string</td>
+				<td>Writes a message to the APAF server log at <code>info</code> level, prefixed with the micro-service name.</td>
+			</tr>
+			<tr>
+				<td><code>getUserData(datatypeName, filter, callbackName)</code></td><td>async</td>
+				<td>string, null, string</td>
+				<td>Queries all records of a User Datatype. <code>filter</code> is reserved for future use — pass <code>null</code> to return all records. The callback is invoked as <code>callbackName(err, data[])</code> where <code>data</code> is the array of records.</td>
+			</tr>
 		</table>
 
 		When invoking APL from a custom plugin, any JavaScript function can be exposed as a
@@ -222,7 +274,8 @@
 			<li>Variables declared with <code>var</code> outside any function are <b>global</b> to the script and live in the root namespace for the duration of execution.</li>
 			<li>Variables modified inside a <code>for</code> or <code>while</code> loop body are visible after the loop ends (no loop-level scoping).</li>
 			<li>Function calls create a <b>new scope</b>: parameters and variables declared inside a function are local to that function call and do not interfere with the outer scope.</li>
-			<li>Context variables injected by the caller (e.g. <code>request</code>, <code>response</code>) are available as globals throughout the script.</li>
+			<li>Context variables injected by the caller (e.g. <code>request</code>, <code>response</code>, <code>globalContext</code>) are available as globals throughout the script.</li>
+			<li>Callback functions called by async built-ins run in their own scope — they cannot access variables from <code>process()</code> directly. Use <code>globalContext</code> instead.</li>
 		</ul>
 
 		<h2>Limitations</h2>

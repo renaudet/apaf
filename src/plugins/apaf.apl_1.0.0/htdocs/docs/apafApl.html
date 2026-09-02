@@ -75,15 +75,17 @@
 
 		<h3><code>execute(source, builtins, callback, context)</code></h3>
 
-		Compiles and executes an APL source string in one call.
+		Compiles and executes an APL source string in one call. The callback is always invoked
+		asynchronously — it fires after all async built-ins have completed, or immediately
+		for purely synchronous scripts.
 
 		<b>Parameters:</b>
 		<table>
 			<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
 			<tr><td><code>source</code></td><td>string</td><td>APL source code to compile and execute.</td></tr>
-			<tr><td><code>builtins</code></td><td>object</td><td>Map of native JS functions exposed to the script. Each entry is either a plain <code>function</code> (sync) or <code>{ fn, async: true }</code> (async). The function receives its arguments as an array.</td></tr>
-			<tr><td><code>callback</code></td><td>function</td><td>Node-style <code>callback(err, result)</code>. On success, <code>err</code> is null and <code>result</code> is <code>{ success, error, memorySpace }</code>.</td></tr>
-			<tr><td><code>context</code></td><td>object</td><td><i>Optional.</i> Map of variable name → initial value pre-loaded into the script's memory space before execution. After execution, the final value of each variable is accessible as <code>result.memorySpace['.' + varName]</code>.</td></tr>
+			<tr><td><code>builtins</code></td><td>object</td><td>Map of native JS functions exposed to the script. Each entry is either a plain <code>function</code> (sync) or <code>{ fn, async: true }</code> (async). The function receives its arguments as a JavaScript array.</td></tr>
+			<tr><td><code>callback</code></td><td>function</td><td>Node-style <code>callback(err, result)</code>. Invoked once all execution — including async built-ins — has completed.</td></tr>
+			<tr><td><code>context</code></td><td>object</td><td><i>Optional.</i> Map of variable name → initial value pre-loaded into the script's root namespace before execution. After execution, the final value of each variable is accessible as <code>result.memorySpace['.' + varName]</code>.</td></tr>
 		</table>
 
 		<b>Callback result fields:</b>
@@ -91,46 +93,69 @@
 			<tr><th>Field</th><th>Type</th><th>Description</th></tr>
 			<tr><td><code>success</code></td><td>boolean</td><td><code>true</code> if execution completed without error.</td></tr>
 			<tr><td><code>error</code></td><td>string | null</td><td>Runtime error message. <code>null</code> on success.</td></tr>
-			<tr><td><code>memorySpace</code></td><td>object</td><td>Snapshot of all top-level variables after execution. Variable <code>x</code> is stored under the key <code>".x"</code>.</td></tr>
+			<tr><td><code>memorySpace</code></td><td>object</td><td>Snapshot of the root namespace after all execution has finished (including async callbacks). Variable <code>x</code> is stored under the key <code>".x"</code>.</td></tr>
 		</table>
 
 		<div class="code">
-		&nbsp;1.&nbsp;let context = { request: req, response: {} };<br>
-		&nbsp;2.&nbsp;let builtins = {<br>
-		&nbsp;3.&nbsp;&nbsp;&nbsp;print: function(args) { console.log(args[0]); }<br>
-		&nbsp;4.&nbsp;};<br>
-		&nbsp;5.&nbsp;let source = microService.source + <span style="color:#3469e3;">'\nprocess(request, response);'</span>;<br>
-		&nbsp;6.&nbsp;<br>
-		&nbsp;7.&nbsp;aplPlugin.execute(source, builtins, function(err, result) {<br>
-		&nbsp;8.&nbsp;&nbsp;&nbsp;if (err) { <span style="color:#888;">/* compilation or execution error */</span> return; }<br>
-		&nbsp;9.&nbsp;&nbsp;&nbsp;let response = result.memorySpace[<span style="color:#3469e3;">'.response'</span>];<br>
-		10.&nbsp;&nbsp;&nbsp;res.json({ status: 200, data: response });<br>
-		11.&nbsp;}, context);
+		&nbsp;1.&nbsp;let responseObj = {};<br>
+		&nbsp;2.&nbsp;let globalContext = { request: req, response: responseObj };<br>
+		&nbsp;3.&nbsp;let context = { request: req, response: responseObj, globalContext: globalContext };<br>
+		&nbsp;4.&nbsp;let builtins = {<br>
+		&nbsp;5.&nbsp;&nbsp;&nbsp;print: function(args) { console.log(args[0]); }<br>
+		&nbsp;6.&nbsp;};<br>
+		&nbsp;7.&nbsp;let source = microService.source + <span style="color:#3469e3;">'\nprocess(request, response);'</span>;<br>
+		&nbsp;8.&nbsp;<br>
+		&nbsp;9.&nbsp;aplPlugin.execute(source, builtins, function(err, result) {<br>
+		10.&nbsp;&nbsp;&nbsp;if (err) { <span style="color:#888;">/* compilation or execution error */</span> return; }<br>
+		11.&nbsp;&nbsp;&nbsp;let response = result.memorySpace[<span style="color:#3469e3;">'.response'</span>];<br>
+		12.&nbsp;&nbsp;&nbsp;res.json({ status: 200, data: response });<br>
+		13.&nbsp;}, context);
 		</div>
 
 		<h2>Memory space key convention</h2>
 
-		Variables stored in the script's memory space are prefixed with a dot. A variable declared
-		as <code>var x = 42;</code> is accessible in the caller as
+		Variables stored in the script's memory space are prefixed with a dot and the namespace
+		name. Root-level variables (declared outside any function) use just a dot prefix:
 		<code>result.memorySpace['.x']</code>. This dot-prefix is an internal convention of the
-		APL execution engine and must be accounted for when reading results back.
+		APL execution engine and must be accounted for when reading results back.<br>
+		<br>
+		<b>Important:</b> the memory space snapshot is taken <i>after all async callbacks have
+		completed</i>, so it always reflects the final state of the script, including any
+		mutations made by async callbacks (e.g. writing to <code>response</code> via
+		<code>globalContext</code>).
 
 		<h2>Built-in functions</h2>
 
 		Built-in functions are passed as a plain object where each key is the function name as it
 		will be called from the APL script. The function receives all arguments as a single
-		JavaScript array:
+		JavaScript array.
+
+		<b>Synchronous built-in:</b>
+		<div class="code">
+		&nbsp;1.&nbsp;let builtins = {<br>
+		&nbsp;2.&nbsp;&nbsp;&nbsp;<span style="color:#888;">// called as  print("hello");  in APL</span><br>
+		&nbsp;3.&nbsp;&nbsp;&nbsp;print: function(args) { console.log(args[0]); }<br>
+		&nbsp;4.&nbsp;};
+		</div>
+
+		<b>Asynchronous built-in:</b><br>
+		<br>
+		For async built-ins, the APL calling convention is:
+		<code>myBuiltin(arg1, arg2, "callbackFunctionName")</code> — the <b>last argument must
+		always be the callback name as a string</b>. The engine extracts it, builds a native
+		wrapper, and calls <code>engine.cal(callbackName, [results...])</code> when the I/O
+		completes.
 
 		<div class="code">
 		&nbsp;1.&nbsp;let builtins = {<br>
-		&nbsp;2.&nbsp;&nbsp;&nbsp;<span style="color:#888;">// sync built-in: called as  print("hello");  in APL</span><br>
-		&nbsp;3.&nbsp;&nbsp;&nbsp;print: function(args) { console.log(args[0]); },<br>
-		&nbsp;4.&nbsp;<br>
-		&nbsp;5.&nbsp;&nbsp;&nbsp;<span style="color:#888;">// async built-in: called as  fetchData("url");  in APL</span><br>
-		&nbsp;6.&nbsp;&nbsp;&nbsp;fetchData: {<br>
-		&nbsp;7.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fn: async function(args) {<br>
-		&nbsp;8.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let data = await someAsyncCall(args[0]);<br>
-		&nbsp;9.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return data;<br>
+		&nbsp;2.&nbsp;&nbsp;&nbsp;<span style="color:#888;">// called as  fetchData("url", "onResult");  in APL</span><br>
+		&nbsp;3.&nbsp;&nbsp;&nbsp;fetchData: {<br>
+		&nbsp;4.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fn: function(args) {<br>
+		&nbsp;5.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#888;">// args[0] = "url", args[1] = native JS callback</span><br>
+		&nbsp;6.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let nativeCb = args[1];<br>
+		&nbsp;7.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;someAsyncCall(args[0], function(err, data) {<br>
+		&nbsp;8.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nativeCb(err, data);<br>
+		&nbsp;9.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});<br>
 		10.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
 		11.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;async: true<br>
 		12.&nbsp;&nbsp;&nbsp;}<br>

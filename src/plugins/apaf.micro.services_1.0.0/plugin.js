@@ -8,6 +8,7 @@ const DATATYPE_PLUGIN_ID = 'apaf.datatype';
 const APL_PLUGIN_ID = 'apaf.apl';
 const SECURITY_SERVICE_NAME = 'apaf-security';
 const MICRO_SERVICE_DATATYPE = 'microService';
+const USER_DATATYPE_PLUGIN_ID = 'apaf.user.datatype';
 
 var plugin = new ApafPlugin();
 
@@ -185,17 +186,19 @@ plugin._invokeMicroService = function(req, res, httpMethod) {
 								body: (typeof req.body === 'object') ? req.body : {},
 								headers: req.headers
 							};
-							// Initial context: script receives 'request' and writes into 'response'
+							// Initial context: script receives 'request' and writes into 'response'.
+							// 'globalContext' is a shared object pre-loaded with { request, response }
+							// so that async callback functions can access them from the top-level scope.
+							let responseObj = {};
+							let globalContext = { request: requestObj, response: responseObj };
 							let context = {
 								request: requestObj,
-								response: {}
+								response: responseObj,
+								globalContext: globalContext
 							};
 							// Wrap source so that the script's process() function is called
 							let wrappedSource = microService.source + '\nprocess(request, response);';
-							// Built-ins available to the script
-							let builtins = {
-								print: function(args){ plugin.info('[micro-service:' + serviceName + '] ' + args[0]); }
-							};
+							let builtins = plugin._getMicroServiceBuiltins(serviceName);
 							aplPlugin.execute(wrappedSource, builtins, function(err, result) {
 								if(err) {
 									plugin.debug('<-_invokeMicroService() - execution error: ' + err);
@@ -213,6 +216,64 @@ plugin._invokeMicroService = function(req, res, httpMethod) {
 		}
 	});
 }
+
+/*
+ * Build the map of built-in functions available to a Micro-Service APL script.
+ *
+ * Adding a new built-in: implement it here and return it in the map.
+ * Sync built-ins  → plain function:          name: function(args){ ... return value; }
+ * Async built-ins → object with fn + flag:   name: { fn: function(args){ ... }, async: true }
+ *
+ * For async built-ins the APL calling convention is:
+ *   getUserData(<datatypeName>, <filter>, <callbackFunctionName>)
+ * The engine passes the last argument (string) as the callback name; the native wrapper
+ * invokes engine.cal(callbackName, [err, data]) when the I/O completes.
+ *
+ * @param {string} serviceName - used only for log prefixing
+ * @returns {object} builtins map ready to be passed to aplPlugin.execute()
+ */
+plugin._getMicroServiceBuiltins = function(serviceName) {
+	let logPrefix = '[micro-service:' + serviceName + '] ';
+	return {
+		/*
+		 * print(message) — log a message from the script.
+		 */
+		print: function(args) {
+			plugin.info(logPrefix + args[0]);
+		},
+		/*
+		 * getUserData(datatypeName, filter, callbackName) — async
+		 * Queries a User Datatype and invokes callbackName(err, data[]) in APL.
+		 * args[0] = datatypeName  (string)
+		 * args[1] = filter        (object, e.g. { "name": { "$eq": "foo" } })
+		 * args[2] = native JS callback injected by the engine
+		 */
+		getUserData: {
+			fn: function(args) {
+				let datatypeName = args[0];
+				let filter       = (args[1] && typeof args[1] === 'object') ? args[1] : {};
+				let nativeCb     = args[2];
+				plugin.debug('getUserData() built-in called for datatype "' + datatypeName + '"');
+				let userDatatypePlugin = plugin.runtime.getPlugin(USER_DATATYPE_PLUGIN_ID);
+				if(!userDatatypePlugin) {
+					plugin.error('getUserData() - plugin ' + USER_DATATYPE_PLUGIN_ID + ' not found');
+					nativeCb('plugin not available: ' + USER_DATATYPE_PLUGIN_ID, []);
+					return;
+				}
+				userDatatypePlugin.queryUserData(datatypeName, { selector: filter }, function(err, data) {
+					if(err) {
+						plugin.debug('getUserData() - query error: ' + err);
+						nativeCb(err, []);
+					} else {
+						plugin.debug('getUserData() - returned ' + (data ? data.length : 0) + ' record(s)');
+						nativeCb(null, data || []);
+					}
+				});
+			},
+			async: true
+		}
+	};
+};
 
 plugin.checkMicroServiceHandler = function(req, res) {
 	plugin.debug('->checkMicroServiceHandler()');

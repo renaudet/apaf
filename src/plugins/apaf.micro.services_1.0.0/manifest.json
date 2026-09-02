@@ -7,6 +7,7 @@
   	{"type": "plugin","id": "npa.core","version": "1.0.0"},
   	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
   	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.mcp","version": "1.0.0"},
   	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
@@ -150,13 +151,70 @@
   		}
   	},
   	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.micro.services.tool.query",
+  		"apiId": "apaf.micro.services.query.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.micro.services.tool.find",
+  		"apiId": "apaf.micro.services.find.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.micro.services.tool.create",
+  		"apiId": "apaf.micro.services.create.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.micro.services.tool.update",
+  		"apiId": "apaf.micro.services.update.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.micro.services.tool.delete",
+  		"apiId": "apaf.micro.services.delete.handler"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.micro.services.query.handler",
   		"router": "apaf.micro.services.router",
   		"method": "POST",
   		"schema": "/query",
   		"handler": "queryMicroServiceHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+  		"description": "Query the list of registered Micro-Services",
+  		"input": {"selector": {"name": {"$eq": "myService"}}},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Query Micro-Services", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-micro-services-api/query": {
+  					"post": {
+  						"operationId": "queryMicroServices",
+  						"summary": "Query the list of registered Micro-Services",
+  						"description": "Returns a list of Micro-Service records matching the given CouchDB Mango selector. Pass an empty body to retrieve all micro-services.",
+  						"requestBody": {
+  							"required": false,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"properties": {
+  											"selector": {"type": "object", "description": "A CouchDB Mango selector, e.g. {\"name\":{\"$eq\":\"myService\"}}. Omit to return all records."}
+  										}
+  									}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {"description": "Query successful."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -165,7 +223,41 @@
   		"method": "GET",
   		"schema": "/:id",
   		"handler": "findMicroServiceHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+  		"description": "Find a Micro-Service by its UUID",
+  		"input": {"id": "abcd-abcd-abcd-abcd"},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Find Micro-Service", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-micro-services-api/:id": {
+  					"post": {
+  						"operationId": "findMicroService",
+  						"summary": "Find a Micro-Service record by its UUID",
+  						"description": "Returns a single Micro-Service record identified by its UUID.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["id"],
+  										"properties": {
+  											"id": {"type": "string", "description": "UUID of the Micro-Service record to retrieve"}
+  										}
+  									}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {"description": "Record found."},
+  							"404": {"description": "Record not found."},
+  							"500": {"description": "Server error."}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -174,7 +266,46 @@
   		"method": "POST",
   		"schema": "/",
   		"handler": "createMicroServiceHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+  		"description": "Create a new Micro-Service record",
+  		"input": {"name": "myService","version": "1.0.0","method": "GET","description": "","enabled": false,"restrictedToRole": "","source": ""},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Create Micro-Service", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-micro-services-api/": {
+  					"post": {
+  						"operationId": "createMicroService",
+  						"summary": "Create a new Micro-Service record",
+  						"description": "Creates a new APL Micro-Service record. The source field must contain valid APL code defining a process(request, response) function.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["name", "version", "method"],
+  										"properties": {
+  											"name":             {"type": "string", "description": "Name of the micro-service"},
+  											"version":          {"type": "string", "description": "Version string, e.g. 1.0.0"},
+  											"method":           {"type": "string", "enum": ["GET","POST","PUT","DELETE"], "description": "HTTP method this micro-service responds to"},
+  											"description":      {"type": "string", "description": "Optional description"},
+  											"enabled":          {"type": "boolean", "description": "Whether the micro-service is active"},
+  											"restrictedToRole": {"type": "string", "description": "Security role required to invoke this service (empty = no restriction)"},
+  											"source":           {"type": "string", "description": "APL source code — must define a process(request, response) function"}
+  										}
+  									}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {"description": "Micro-service created."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -183,7 +314,48 @@
   		"method": "PUT",
   		"schema": "/",
   		"handler": "updateMicroServiceHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+  		"description": "Update an existing Micro-Service record",
+  		"input": {"id": "abcd-abcd-abcd-abcd","_rev": "1-abcd","name": "myService","version": "1.0.0","method": "GET","description": "","enabled": false,"restrictedToRole": "","source": ""},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Update Micro-Service", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-micro-services-api/": {
+  					"put": {
+  						"operationId": "updateMicroService",
+  						"summary": "Update an existing Micro-Service record",
+  						"description": "Updates an existing APL Micro-Service record. The record must include its id and _rev fields for optimistic concurrency control.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["id", "_rev"],
+  										"properties": {
+  											"id":               {"type": "string", "description": "UUID of the micro-service record to update"},
+  											"_rev":             {"type": "string", "description": "CouchDB revision token for optimistic concurrency"},
+  											"name":             {"type": "string", "description": "Name of the micro-service"},
+  											"version":          {"type": "string", "description": "Version string, e.g. 1.0.0"},
+  											"method":           {"type": "string", "enum": ["GET","POST","PUT","DELETE"], "description": "HTTP method this micro-service responds to"},
+  											"description":      {"type": "string", "description": "Optional description"},
+  											"enabled":          {"type": "boolean", "description": "Whether the micro-service is active"},
+  											"restrictedToRole": {"type": "string", "description": "Security role required to invoke this service (empty = no restriction)"},
+  											"source":           {"type": "string", "description": "APL source code — must define a process(request, response) function"}
+  										}
+  									}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {"description": "Micro-service updated."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",
@@ -192,7 +364,40 @@
   		"method": "DELETE",
   		"schema": "/:id",
   		"handler": "deleteMicroServiceHandler",
-  		"securityRole": "developer"
+  		"securityRole": "developer",
+  		"description": "Delete a Micro-Service record by its UUID",
+  		"input": {"id": "abcd-abcd-abcd-abcd"},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Delete Micro-Service", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-micro-services-api/:id": {
+  					"delete": {
+  						"operationId": "deleteMicroService",
+  						"summary": "Delete a Micro-Service record by its UUID",
+  						"description": "Deletes an existing Micro-Service record. Requires the developer security role.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {
+  										"type": "object",
+  										"required": ["id"],
+  										"properties": {
+  											"id": {"type": "string", "description": "UUID of the micro-service record to delete"}
+  										}
+  									}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {"description": "Micro-service deleted."},
+  							"500": {"description": "Server error."}
+  						}
+  					}
+  				}
+  			}
+  		}
   	},
   	{
   		"point": "npa.http.handler",

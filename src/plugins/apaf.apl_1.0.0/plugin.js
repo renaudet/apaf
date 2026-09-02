@@ -564,15 +564,18 @@ plugin.execute = function(source, builtins, callback, context){
 		canLog:  function(l){ return self.canLog(l); }
 	};
 	let enginePlugin = new AplExecutionEnginePlugin(logRef);
-	let result = compilerService.execute(compileResult.eu, builtins, enginePlugin, context);
-	if(result.success){
-		this.debug('<-apaf.apl#execute() - success');
-		callback(null, result);
-	}else{
-		this.error('apaf.apl#execute() - execution error: '+result.error);
-		this.debug('<-apaf.apl#execute() - failure');
-		callback(result.error, null);
-	}
+	// Always use the async path: pass the node-style callback as the completion callback.
+	// npa.compiler#execute() will invoke it once all built-ins (sync or async) have finished.
+	compilerService.execute(compileResult.eu, builtins, enginePlugin, context, function(err, result){
+		if(err){
+			self.error('apaf.apl#execute() - execution error: '+err);
+			self.debug('<-apaf.apl#execute() - failure');
+			callback(err, null);
+		}else{
+			self.debug('<-apaf.apl#execute() - success');
+			callback(null, result);
+		}
+	});
 };
 
 module.exports = plugin;

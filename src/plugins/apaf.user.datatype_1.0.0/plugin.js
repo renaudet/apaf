@@ -637,4 +637,42 @@ plugin.getUserDataByIdHandler = function(req,res){
 	});
 }
 
+/*
+ * Programmatic query for User Datatype records — no HTTP/security layer.
+ * Intended for server-side callers (e.g. APL Micro-Services built-ins) that
+ * are already running inside an authenticated request context.
+ *
+ * @param {string}   datatypeName - technical name of the User Datatype
+ * @param {object}   query        - CouchDB Mango selector wrapper, e.g. { selector: { ... } }
+ * @param {function} callback     - node-style callback(err, data[])
+ */
+plugin.queryUserData = function(datatypeName, query, callback) {
+	plugin.debug('->queryUserData(' + datatypeName + ')');
+	let datatypePlugin = plugin.runtime.getPlugin(DATATYPE_PLUGIN_ID);
+	datatypePlugin.query(USER_DATATYPE_DATATYPE, {"selector": {"name": {"$eq": datatypeName}}}, function(err, data) {
+		if(err) {
+			plugin.debug('<-queryUserData() - error resolving datatype');
+			callback(err, null);
+		} else {
+			if(data && data.length > 0) {
+				let datatypeRecord = data[0];
+				plugin.debug('<-queryUserData() - datatype resolved, querying records');
+				datatypePlugin.query(datatypeRecord.name, query, function(err, records) {
+					if(err) {
+						plugin.debug('<-queryUserData() - error querying records');
+						callback(err, null);
+					} else {
+						plugin.debug('<-queryUserData() - success, ' + (records ? records.length : 0) + ' record(s)');
+						callback(null, records || []);
+					}
+				});
+			} else {
+				let msg = 'datatype "' + datatypeName + '" not found';
+				plugin.debug('<-queryUserData() - ' + msg);
+				callback(msg, null);
+			}
+		}
+	});
+};
+
 module.exports = plugin;
