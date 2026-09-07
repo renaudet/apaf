@@ -76,18 +76,20 @@
 
 		<h2>MCP Tools</h2>
 
-		The plugin registers eight MCP tools covering the full workspace lifecycle:
+		The plugin registers seven MCP tools covering the full workspace lifecycle:
 		<code>findWorkspaceProjects</code>, <code>createWorkspaceProject</code>,
 		<code>createWorkspaceFolder</code>, <code>readWorkspaceFolderContent</code>,
 		<code>readWorkspaceFile</code>, <code>readWorkspaceBinaryFile</code>,
-		<code>writeWorkspaceFile</code>, and a delete tool.
+		and <code>writeWorkspaceFile</code>.
+		<br><br>
+		<code>readWorkspaceBinaryFile</code> supports both full binary/image downloads and chunked reading via <code>byteOffset</code>/<code>byteLength</code> or <code>tail</code> query parameters.<br>
+		<code>writeWorkspaceFile</code> supports both text (UTF-8) and binary (Base64) formats, as well as an <code>append: true</code> mode.
 
 		<h2>Notes</h2>
 		<ul>
 			<li>The workspace root directory is configured via the <code>npa.workspace</code> NPA plugin
 			    and defaults to a sub-directory of the server process working directory.</li>
-			<li>Binary file upload uses <code>multipart/form-data</code>; text file creation uses a plain
-			    JSON body with a <code>content</code> string field.</li>
+			<li>Binary file upload uses <code>multipart/form-data</code>; file creation and chunked binary upload can also use a JSON body with <code>content</code>, <code>encoding: "base64"</code>, and optional <code>append: true</code>.</li>
 			<li>The <b>Workspace Explorer</b> UI (plugin <code>apaf.workspace.explorer</code>) provides
 			    a graphical interface over these REST APIs.</li>
 		</ul>

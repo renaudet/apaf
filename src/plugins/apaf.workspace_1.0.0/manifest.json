@@ -247,10 +247,14 @@
   				"/apaf-workspace/binaryFile/{encrypted}": {
   					"get": {
   						"operationId": "readWorkspaceBinaryFile",
-  						"summary": "Download a binary file from the APAF server-side workspace",
-  						"description": "Returns the binary content of a file as a base64-encoded MCP resource. The file must be stored in the APAF server-side workspace (a managed file storage area internal to the running APAF instance), not the local developer filesystem. The path parameter must be the Base64 encoding of the relative file path within the workspace (e.g. Base64('myProject/assets/image.png')).",
+  						"summary": "Download or read chunked binary content of a file from the APAF workspace",
+  						"description": "Returns the binary content of a file from the APAF workspace. Supports full download (default, returning MCP image/resource) or chunked reading when byteOffset/byteLength or tail are provided. The path parameter must be the Base64 encoding of the relative file path within the workspace (e.g. Base64('myProject/assets/image.png')).",
   						"parameters": [
-  							{"name": "encrypted", "in": "path", "required": true, "description": "Base64-encoded relative file path (e.g. Base64('myProject/assets/image.png'))", "schema": {"type": "string"}}
+  							{"name": "encrypted", "in": "path", "required": true, "description": "Base64-encoded relative file path (e.g. Base64('myProject/assets/image.png'))", "schema": {"type": "string"}},
+  							{"name": "byteOffset", "in": "query", "required": false, "description": "0-based byte offset for chunked reading", "schema": {"type": "integer"}},
+  							{"name": "byteLength", "in": "query", "required": false, "description": "Number of bytes to read (default: 65536, max: 262144)", "schema": {"type": "integer"}},
+  							{"name": "tail", "in": "query", "required": false, "description": "Number of lines to read from the end of the file", "schema": {"type": "integer"}},
+  							{"name": "encoding", "in": "query", "required": false, "description": "Encoding for chunked reading: 'base64' (default for binary chunking) or 'utf8'", "schema": {"type": "string"}}
   						]
   					}
   				}
@@ -274,8 +278,8 @@
   				"/apaf-workspace/file/{encrypted}": {
   					"put": {
   						"operationId": "writeWorkspaceFile",
-  						"summary": "Create or overwrite a text file in the APAF server-side workspace",
-  						"description": "Creates or overwrites a text file in the APAF server-side workspace. The APAF workspace is a managed file storage area internal to the running APAF instance — it is NOT the local developer filesystem nor the VS Code workspace. The path parameter must be the Base64 encoding of the relative file path (e.g. Base64('myProject/src/app.js')). The request body is the raw text content of the file.",
+  						"summary": "Create, overwrite, or append to a file in the APAF workspace",
+  						"description": "Creates, overwrites, or appends to a file in the APAF workspace. Supports raw text or Base64 binary chunks. The path parameter must be the Base64 encoding of the relative file path (e.g. Base64('myProject/src/app.js')).",
   						"parameters": [
   							{"name": "encrypted", "in": "path", "required": true, "description": "Base64-encoded relative file path (e.g. Base64('myProject/src/app.js'))", "schema": {"type": "string"}}
   						],
@@ -289,7 +293,16 @@
   										"properties": {
   											"content": {
   												"type": "string",
-  												"description": "The full text content to write into the file"
+  												"description": "The text or Base64 content to write"
+  											},
+  											"encoding": {
+  												"type": "string",
+  												"enum": ["utf8", "base64"],
+  												"description": "Encoding: 'utf8' (default) or 'base64'"
+  											},
+  											"append": {
+  												"type": "boolean",
+  												"description": "If true, appends content to the existing file"
   											}
   										}
   									}

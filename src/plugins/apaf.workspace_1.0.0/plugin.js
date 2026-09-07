@@ -214,8 +214,17 @@ plugin.writeFileHandler = function(req,res){
 					}else if(typeof req.body === 'object' && req.body !== null){
 						// JSON sync path (MCP or sharing plugin text files)
 						fileContent = req.body.content;
-						if(req.body.encoding){ writeOptions.encoding = req.body.encoding; }
-						workspaceService.setFileContent(filePath,fileContent,writeOptions);
+						if(req.body.encoding === 'base64'){
+							fileContent = Buffer.from(req.body.content, 'base64');
+							writeOptions.encoding = 'binary';
+						} else if(req.body.encoding){
+							writeOptions.encoding = req.body.encoding;
+						}
+						if(req.body.append === true){
+							workspaceService.appendToFileContent(filePath, fileContent, writeOptions);
+						} else {
+							workspaceService.setFileContent(filePath, fileContent, writeOptions);
+						}
 					}else{
 						// UI path: raw string via bodyParser.text (local user)
 						fileContent = req.body;
@@ -365,10 +374,99 @@ plugin.readBinaryFileContentHandler = function(req,res){
 					let filename = filePath.substring(filePath.lastIndexOf('/')+1);
 					plugin.debug('filename is '+filename);
 					let workspaceService = plugin.getService(WORKSPACE_SERVICE_NAME);
-					let absoluteFilePath = workspaceService.absolutePath(filePath); 
+					let absoluteFilePath = workspaceService.absolutePath(filePath);
 					plugin.debug('absoluteFilePath is '+absoluteFilePath);
+					
+					let fs = require('fs');
+					if (!fs.existsSync(absoluteFilePath)) {
+						plugin.debug('<-readBinaryFileContentHandler() file not found: '+absoluteFilePath);
+						res.json({"status": 404, "message": "File not found", "data": filePath});
+						return;
+					}
+					
+					let stat = fs.statSync(absoluteFilePath);
+					let totalSize = stat.size;
+					let query = req.query || {};
+					
+					// If chunked reading or tail is requested via query parameters
+					if (query.byteOffset !== undefined || query.tail !== undefined) {
+						let encoding = query.encoding || 'base64';
+						
+						// Tail mode
+						if (query.tail !== undefined && parseInt(query.tail, 10) > 0) {
+							let tailCount = parseInt(query.tail, 10);
+							let readChunkSize = Math.min(512 * 1024, totalSize);
+							let startPos = Math.max(0, totalSize - readChunkSize);
+							let tailBuf = Buffer.alloc(totalSize - startPos);
+							let tailFd = fs.openSync(absoluteFilePath, 'r');
+							try {
+								fs.readSync(tailFd, tailBuf, 0, tailBuf.length, startPos);
+								let tailText = tailBuf.toString('utf8');
+								let tailLines = tailText.split('\n');
+								if (startPos > 0 && tailLines.length > 0) {
+									tailLines.shift();
+								}
+								let selectedLines = tailLines.slice(-tailCount);
+								plugin.debug('<-readBinaryFileContentHandler() tail lines returned: '+selectedLines.length);
+								res.json({
+									status: 200,
+									path: filePath,
+									size: totalSize,
+									tail: tailCount,
+									returnedLines: selectedLines.length,
+									content: selectedLines.join('\n')
+								});
+								return;
+							} finally {
+								fs.closeSync(tailFd);
+							}
+						}
+						
+						// Byte chunk mode
+						let byteOffset = parseInt(query.byteOffset, 10) || 0;
+						let maxChunk = 262144; // 256 KB
+						let byteLen = query.byteLength ? Math.min(parseInt(query.byteLength, 10), maxChunk) : 65536;
+						
+						if (byteOffset >= totalSize) {
+							res.json({
+								status: 200,
+								path: filePath,
+								size: totalSize,
+								byteOffset: byteOffset,
+								bytesRead: 0,
+								eof: true,
+								encoding: encoding,
+								content: ''
+							});
+							return;
+						}
+						
+						let toRead = Math.min(byteLen, totalSize - byteOffset);
+						let buf = Buffer.alloc(toRead);
+						let fd = fs.openSync(absoluteFilePath, 'r');
+						try {
+							let nRead = fs.readSync(fd, buf, 0, toRead, byteOffset);
+							let chunkData = (encoding === 'utf8') ? buf.slice(0, nRead).toString('utf8') : buf.slice(0, nRead).toString('base64');
+							plugin.debug('<-readBinaryFileContentHandler() chunk read '+nRead+' bytes from offset '+byteOffset);
+							res.json({
+								status: 200,
+								path: filePath,
+								size: totalSize,
+								byteOffset: byteOffset,
+								bytesRead: nRead,
+								eof: (byteOffset + nRead) >= totalSize,
+								encoding: encoding,
+								content: chunkData
+							});
+							return;
+						} finally {
+							fs.closeSync(fd);
+						}
+					}
+					
+					// Default full file download
 					plugin.debug('<-readBinaryFileContentHandler() sending file '+filePath);
-					res.download(absoluteFilePath, filename); 
+					res.download(absoluteFilePath, filename);
 				}else{
 					plugin.debug('<-readBinaryFileContentHandler() bad request');
 					res.json({"status": 406,"message": "Not acceptable","data": "Invalid path data received!"});
