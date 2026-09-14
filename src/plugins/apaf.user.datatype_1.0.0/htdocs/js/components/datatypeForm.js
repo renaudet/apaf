@@ -1945,66 +1945,6 @@ class ArrayEditorField2 extends LabeledFormField2{
 	}
 }
 
-class DatatypeField2 extends LabeledFormField2{
-	constructor(config,form){
-		super(config,form);
-	}
-	render(parent,then){
-		this.baseId = parent.prop('id');
-		let inputFieldId = this.baseId+'_'+this.config.name;
-		var html = '';
-		let size = 10;
-		if(typeof this.config.size!='undefined'){
-			size = this.config.size;
-		}
-		html += '<div class="row form-row" id="'+inputFieldId+'_row">';
-		html += this.generateLabel();
-		html += '  <div class="col-'+size+'" id="'+this.config.siteId+'">';
-		html += '  </div>';
-		if(size<10){
-			html += '  <div class="col-'+(10-size)+'">&nbsp;</div>';
-		}
-		html += '</div>';
-		parent.append(html);
-		then();
-	}
-	hide(){
-		super.hide();
-		let inputFielRowId = '#'+this.baseId+'_'+this.config.name+'_row';
-		$(inputFielRowId).hide();
-	}
-	show(){
-		let inputFielRowId = '#'+this.baseId+'_'+this.config.name+'_row';
-		$(inputFielRowId).show();
-	}
-	setEnabled(editing){
-		var innerForm = npaUi.getComponent(this.config.formRef);
-		if(innerForm){
-			innerForm.setEditMode(editing);
-		}else{
-			showError('Unresolved reference to Form component '+this.config.formRef);
-		}
-	}
-	setFocus(){
-	}
-	setData(parentObj){
-		var innerForm = npaUi.getComponent(this.config.formRef);
-		if(typeof parentObj[this.config.name]!='undefined'){
-			innerForm.setSelection(parentObj[this.config.name]);
-		}else{
-			innerForm.setSelection({});
-		}
-	}
-	assignData(parentObj){
-		var innerForm = npaUi.getComponent(this.config.formRef);
-		parentObj[this.config.name] = innerForm.getData();
-	}
-	vetoRaised(){
-		var innerForm = npaUi.getComponent(this.config.formRef);
-		return !innerForm.checkFormData();
-	}
-}
-
 const UPLOAD_FIELD_DEPTS_2 = [
 	{"type": "css","uri": "/datatype/css/uploadField.css"}
 ];
@@ -3165,9 +3105,9 @@ apaf.DatatypeForm = class DatatypeForm extends NpaUiComponent{
 		if('array'==config.type){
 			return new ArrayEditorField2(config,this)
 		}
-		/*if('userDatatype'==config.type){
-			return new DatatypeField2(config,this)
-		}*/
+		if('userDatatype'==config.type){
+			return new DatatypeEditorField2(config,this);
+		}
 		if('upload'==config.type){
 			return new UploadField2(config,this)
 		}
@@ -3188,9 +3128,6 @@ apaf.DatatypeForm = class DatatypeForm extends NpaUiComponent{
 		}
 		if('pluggable'==config.type){
 			return new PluggableEditorField2(config,this);
-		}
-		if('userDatatype'==config.type){
-			return new DatatypeEditorField2(config,this);
 		}
 		if('timestamp'==config.type){
 			return new TimestampField2(config,this);

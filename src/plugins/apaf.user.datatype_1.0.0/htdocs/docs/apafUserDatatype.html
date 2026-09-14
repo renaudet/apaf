@@ -18,97 +18,344 @@
 
 		<h2>Overview</h2>
 
-		The <b>apaf.user.datatype</b> plugin allows developers to define custom data schemas
+		<p>The <b>apaf.user.datatype</b> plugin allows developers to define custom data schemas
 		(user datatypes) and store typed records in CouchDB without writing any server-side code.
 		Each user datatype is a JSON schema that describes a set of typed fields; the plugin
 		automatically provisions a CouchDB database and exposes full CRUD REST APIs for
-		both the schema definition and the data records.
+		both the schema definition and the data records.</p>
+
+		<p>On the client side, the <b>DatatypeForm</b> UI component renders an editable form for
+		any user datatype instance. It is implemented in
+		<code>datatypeForm.js</code> and is registered as the <code>apaf.DatatypeForm</code>
+		component. Unlike the generic <code>npaUiCore.Form</code> component (which is
+		APAF-unaware), <code>DatatypeForm</code> loads the datatype definition at runtime and
+		derives the form layout and field types automatically from it.</p>
 
 		<h2>Datatype Definition</h2>
 
-		A user datatype schema contains:
+		<p>A user datatype schema contains:</p>
 		<ul>
-			<li><b>name</b> — technical name (lowercase, no spaces); used in API paths</li>
-			<li><b>label</b> — human-readable display label</li>
-			<li><b>description</b> — optional description</li>
-			<li><b>persistent</b> — <code>true</code> if records are stored in CouchDB</li>
-			<li><b>database</b> — CouchDB database name (required when persistent is true)</li>
-			<li><b>private</b> — <code>true</code> if records are visible only to their creator</li>
-			<li><b>fields</b> — array of field definitions</li>
+			<li><b>name</b> &mdash; technical name (lowercase, no spaces); used in API paths and as the CouchDB database name</li>
+			<li><b>label</b> &mdash; human-readable display label</li>
+			<li><b>description</b> &mdash; optional description</li>
+			<li><b>persistent</b> &mdash; <code>true</code> if records are stored in CouchDB</li>
+			<li><b>database</b> &mdash; CouchDB database name (required when persistent is true)</li>
+			<li><b>private</b> &mdash; <code>true</code> if records are visible only to their creator</li>
+			<li><b>readRole</b> &mdash; security role required to read records (empty string = no restriction)</li>
+			<li><b>writeRole</b> &mdash; security role required to create or update records (empty string = no restriction)</li>
+			<li><b>auditEnabled</b> &mdash; <code>true</code> to record CRUD operations in the audit log</li>
+			<li><b>preProcessingCode</b> &mdash; optional JavaScript code executed server-side before a create or update; may raise a veto by throwing an exception</li>
+			<li><b>postProcessingCode</b> &mdash; optional JavaScript code executed server-side after a successful create (response already sent)</li>
+			<li><b>fields</b> &mdash; array of field definitions (see below)</li>
 		</ul>
+
+		<h2>Field Definition</h2>
+
+		<p>Each field in the <code>fields</code> array supports the following common properties:</p>
+		<table>
+			<thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>name</code></td><td>string</td><td>Technical field name; used as the JSON property key in stored records</td></tr>
+				<tr><td><code>label</code></td><td>string</td><td>Human-readable label; supports i18n references (<code>@key</code>)</td></tr>
+				<tr><td><code>type</code></td><td>string</td><td>Field type (see table below); defaults to <code>text</code> if omitted</td></tr>
+				<tr><td><code>required</code></td><td>boolean</td><td>Whether the field is mandatory for form submission</td></tr>
+				<tr><td><code>isIdField</code></td><td>boolean</td><td>Marks this field as the human-readable identifier; implies <code>required: true</code></td></tr>
+				<tr><td><code>searchField</code></td><td>boolean</td><td>Whether the field appears in search/filter operations</td></tr>
+				<tr><td><code>displayIndex</code></td><td>integer</td><td>Sort order of the field in the rendered form</td></tr>
+				<tr><td><code>size</code></td><td>integer (1&ndash;10)</td><td>Column width in the 10-column Bootstrap grid</td></tr>
+				<tr><td><code>description</code></td><td>string</td><td>Short description shown alongside the field label</td></tr>
+				<tr><td><code>help</code></td><td>string</td><td>Inline help text displayed below the field</td></tr>
+				<tr><td><code>default</code></td><td>any</td><td>Default value pre-filled when the form is shown in create mode</td></tr>
+				<tr><td><code>constraint</code></td><td>string</td><td>JavaScript expression evaluated when a sibling field changes (referenced by <code>constrainedBy</code>); <code>@</code> is the current form data, <code>#</code> is this field's editor</td></tr>
+				<tr><td><code>constrainedBy</code></td><td>string</td><td>Name of the sibling field whose change triggers the <code>constraint</code> expression</td></tr>
+				<tr><td><code>renderer</code></td><td>string</td><td>JavaScript expression used to format the field value in read-only (table cell) mode</td></tr>
+			</tbody>
+		</table>
 
 		<h2>Field Types</h2>
 
+		<p>The following types are supported by the <b>DatatypeForm</b> component
+		(<code>datatypeForm.js</code>). Unless noted, they are also supported by the generic
+		<code>npaUiCore.Form</code> component (<code>form.js</code>).</p>
+
 		<table>
-			<thead><tr><th>Type</th><th>Description</th></tr></thead>
+			<thead><tr><th>Type value</th><th>Class</th><th>Description</th><th>Extra properties</th></tr></thead>
 			<tbody>
-				<tr><td><code>text</code></td><td>Single-line text input</td></tr>
-				<tr><td><code>largeText</code></td><td>Multi-line text area</td></tr>
-				<tr><td><code>integer</code></td><td>Integer numeric input</td></tr>
-				<tr><td><code>boolean</code></td><td>Checkbox (true/false)</td></tr>
-				<tr><td><code>date</code></td><td>Date picker</td></tr>
-				<tr><td><code>select</code></td><td>Dropdown sourced from a rule data set</td></tr>
-				<tr><td><code>json</code></td><td>JSON object editor (CodeMirror)</td></tr>
-				<tr><td><code>password</code></td><td>Masked text input (stored encrypted)</td></tr>
+				<tr>
+					<td><code>text</code></td>
+					<td>TextField</td>
+					<td>Single-line text input. Default type when <code>type</code> is omitted.</td>
+					<td><code>default</code>, <code>size</code>, <code>renderer</code></td>
+				</tr>
+				<tr>
+					<td><code>password</code></td>
+					<td>PasswordField</td>
+					<td>Masked text input. The value is stored as typed; encryption is the responsibility of the pre-processor code if needed.</td>
+					<td>&mdash;</td>
+				</tr>
+				<tr>
+					<td><code>url</code></td>
+					<td>UrlField</td>
+					<td>Text input with an inline hyperlink rendered in read-only mode.</td>
+					<td><code>size</code></td>
+				</tr>
+				<tr>
+					<td><code>integer</code></td>
+					<td>NumericField</td>
+					<td>Numeric integer input. Validates that the entered value is a whole number.</td>
+					<td><code>default</code>, <code>size</code></td>
+				</tr>
+				<tr>
+					<td><code>date</code></td>
+					<td>DateField</td>
+					<td>Date picker backed by <a href="https://flatpickr.js.org/" target="_blank">flatpickr</a>. The display and storage formats are independent.</td>
+					<td><code>displayFormat</code> (default <code>YYYY/MM/DD</code>), <code>storageFormat</code></td>
+				</tr>
+				<tr>
+					<td><code>timestamp</code> <sup>&#x2731;</sup></td>
+					<td>TimestampField2</td>
+					<td>Read-only timestamp display. Formats a stored ISO or moment-compatible timestamp using the configured display format. <em>Only available in DatatypeForm, not in the generic Form component.</em></td>
+					<td><code>displayFormat</code>, <code>storageFormat</code></td>
+				</tr>
+				<tr>
+					<td><code>check</code> / <code>switch</code></td>
+					<td>CheckField</td>
+					<td>Boolean toggle rendered as a checkbox or a Bootstrap switch depending on the type value. Both store a boolean value.</td>
+					<td>&mdash;</td>
+				</tr>
+				<tr>
+					<td><code>radio</code></td>
+					<td>RadioField</td>
+					<td>Mutually exclusive choice from a list of labelled options.</td>
+					<td><code>choices</code>: array of <code>{ "label": "…", "value": "…" }</code> objects</td>
+				</tr>
+				<tr>
+					<td><code>color</code></td>
+					<td>ColorPickerField</td>
+					<td>Color picker that stores a CSS color hex string.</td>
+					<td>&mdash;</td>
+				</tr>
+				<tr>
+					<td><code>range</code></td>
+					<td>RangeSelectorField</td>
+					<td>Horizontal slider that stores a numeric value within a configurable range.</td>
+					<td><code>min</code>, <code>max</code>, <code>step</code>, <code>size</code>, <code>default</code></td>
+				</tr>
+				<tr>
+					<td><code>select</code></td>
+					<td>SelectField</td>
+					<td>Dropdown selector. Values may be defined inline as a static list or loaded from a REST datasource or a rule data set.</td>
+					<td><code>values</code>: inline array of <code>{ "label": "…", "value": "…" }</code>; or <code>datasource</code> + <code>sourceField</code> / <code>labelField</code> for dynamic loading; <code>size</code>, <code>renderer</code></td>
+				</tr>
+				<tr>
+					<td><code>ruleDataReference</code></td>
+					<td>SelectField</td>
+					<td>Dropdown selector whose values are loaded at runtime from a named Rule Data record. Functionally identical to <code>select</code> with a dynamic datasource; stored as the selected string value.</td>
+					<td><code>ruleData</code>: technical name of the Rule Data record; <code>sortStrategy</code>: <code>asc</code> | <code>desc</code> | <code>none</code>; <code>size</code>, <code>renderer</code></td>
+				</tr>
+				<tr>
+					<td><code>json</code></td>
+					<td>SourceEditorField</td>
+					<td>Embedded CodeMirror editor in JSON mode. Stores the value as a parsed JSON object when <code>jsonData: true</code>, or as a raw string otherwise.</td>
+					<td><code>jsonData</code>: boolean (parse/stringify on read/write)</td>
+				</tr>
+				<tr>
+					<td><code>javascript</code></td>
+					<td>SourceEditorField</td>
+					<td>Embedded CodeMirror editor in JavaScript mode. Stores the value as a string.</td>
+					<td>&mdash;</td>
+				</tr>
+				<tr>
+					<td><code>textarea</code></td>
+					<td>TextAreaField</td>
+					<td>Multi-line plain text input.</td>
+					<td><code>rows</code> (default 3, max 30), <code>size</code></td>
+				</tr>
+				<tr>
+					<td><code>richText</code></td>
+					<td>RichTextEditorField</td>
+					<td>WYSIWYG rich text editor backed by <a href="https://quilljs.com/" target="_blank">Quill</a>. Stores HTML content.</td>
+					<td>&mdash;</td>
+				</tr>
+				<tr>
+					<td><code>array</code></td>
+					<td>ArrayEditorField</td>
+					<td>Ordered list editor. Each item may be a primitive scalar (when <code>datatype</code> is a built-in type name) or a nested user datatype record (when <code>datatype</code> is the technical name of another user datatype definition).</td>
+					<td><code>datatype</code>: item type name (e.g. <code>text</code>, <code>integer</code>, or a user datatype name); <code>renderer</code></td>
+				</tr>
+				<tr>
+					<td><code>userDatatype</code> <sup>&#x2731;</sup></td>
+					<td>DatatypeEditorField2</td>
+					<td>Inline embedded sub-form for a single nested user datatype record. The nested form is rendered in-place using the referenced datatype definition. <em>Only available in DatatypeForm, not in the generic Form component.</em></td>
+					<td><code>datatype</code>: technical name of the nested user datatype</td>
+				</tr>
+				<tr>
+					<td><code>reference</code> (single)</td>
+					<td>SingleReferenceEditorField</td>
+					<td>Lookup field that stores the UUID of one record from another datatype. Renders as a searchable dropdown; displays the referenced record's identifier field in read-only mode.</td>
+					<td><code>datatype</code>: technical name of the referenced datatype; <code>renderer</code></td>
+				</tr>
+				<tr>
+					<td><code>reference</code> (multiple)</td>
+					<td>MultipleReferenceEditorField</td>
+					<td>Multi-select lookup that stores an array of UUIDs from another datatype. Set <code>multiple: true</code> to activate. Renders as a tag-based multi-select.</td>
+					<td><code>datatype</code>: technical name of the referenced datatype; <code>multiple: true</code>; <code>renderer</code></td>
+				</tr>
+				<tr>
+					<td><code>relationship</code></td>
+					<td>SelectField</td>
+					<td>Selector backed by a live query against another user datatype. Renders as a dropdown populated from the referenced datatype's records. The selected value is the record's primary key (UUID).</td>
+					<td><code>datatype</code>: technical name of the related datatype; <code>sortOn</code>: field name to sort options by; <code>multiple</code>: boolean; <code>renderer</code></td>
+				</tr>
+				<tr>
+					<td><code>upload</code></td>
+					<td>UploadField</td>
+					<td>File upload field. Uploads the selected file to the APAF workspace and stores the relative path as the field value. Optionally supports drag-and-drop.</td>
+					<td><code>folder</code>: workspace folder path (e.g. <code>Temp</code>); <code>dragEnabled</code>: boolean; <code>height</code>: drop zone height in pixels; <code>size</code></td>
+				</tr>
+				<tr>
+					<td><code>button</code></td>
+					<td>ButtonField</td>
+					<td>Action button that fires a named form event when clicked. Does not store any data.</td>
+					<td><code>buttonType</code>: Bootstrap variant (<code>primary</code>, <code>secondary</code>, <code>danger</code>, …); <code>actionId</code>: event name fired on click</td>
+				</tr>
+				<tr>
+					<td><code>placeholder</code></td>
+					<td>PlaceholderField</td>
+					<td>Non-interactive display-only field. Renders a label and a read-only value. Useful to show computed or injected data without allowing editing.</td>
+					<td>&mdash;</td>
+				</tr>
+				<tr>
+					<td><code>pluggable</code></td>
+					<td>PluggableEditorField</td>
+					<td>Extension point for custom field editors contributed by other plugins. The editor is loaded lazily from a plugin-provided JavaScript module. Not directly selectable from the datatype manager UI; used programmatically.</td>
+					<td><code>editor</code>: path to the editor module; <code>requires</code>: array of JS/CSS dependencies</td>
+				</tr>
 			</tbody>
 		</table>
 
-		<h2>REST API — Datatype Definitions</h2>
+		<p><sup>&#x2731;</sup> These types are exclusive to the <b>DatatypeForm</b> component
+		(<code>datatypeForm.js</code>) and are not supported by the generic
+		<code>npaUiCore.Form</code> component.</p>
 
+		<h2>REST API &mdash; Datatype Definitions</h2>
+
+		<p>All definition endpoints require the <code>developer</code> security role.</p>
 		<table>
-			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
 			<tbody>
-				<tr><td>POST</td><td>/apaf-datatype/datatype/query</td><td>developer</td><td>Query user datatype definitions</td></tr>
-				<tr><td>POST</td><td>/apaf-datatype/datatype</td><td>developer</td><td>Create a new user datatype definition</td></tr>
-				<tr><td>PUT</td><td>/apaf-datatype/datatype</td><td>developer</td><td>Update a user datatype definition</td></tr>
-				<tr><td>DELETE</td><td>/apaf-datatype/datatype/:id</td><td>developer</td><td>Delete a user datatype definition</td></tr>
-				<tr><td>GET</td><td>/apaf-datatype/datatype/:id</td><td>developer</td><td>Get a user datatype definition by UUID</td></tr>
-				<tr><td>GET</td><td>/apaf-datatype/datatype/by-name/:name</td><td>developer</td><td>Get a user datatype definition by technical name</td></tr>
+				<tr><td>POST</td><td>/apaf-datatype/datatype/query</td><td>Query user datatype definitions. Body: CouchDB Mango <code>{ "selector": { … } }</code>; pass an empty body to return all.</td></tr>
+				<tr><td>POST</td><td>/apaf-datatype/datatype</td><td>Create a new user datatype definition. The authenticated user's login is stored in <code>createdBy</code>.</td></tr>
+				<tr><td>PUT</td><td>/apaf-datatype/datatype</td><td>Update an existing user datatype definition. Body must include <code>id</code> and <code>_rev</code>. The authenticated user's login is stored in <code>lastUpdatedBy</code>.</td></tr>
+				<tr><td>DELETE</td><td>/apaf-datatype/datatype/:id</td><td>Delete a user datatype definition by UUID. Does <em>not</em> delete the corresponding CouchDB database or its records.</td></tr>
+				<tr><td>GET</td><td>/apaf-datatype/datatype/:id</td><td>Retrieve a user datatype definition by UUID.</td></tr>
+				<tr><td>GET</td><td>/apaf-datatype/datatype/name?name=:name</td><td>Retrieve a user datatype definition by technical name.</td></tr>
 			</tbody>
 		</table>
 
-		<h2>REST API — User Data Records</h2>
+		<h2>REST API &mdash; User Data Records</h2>
 
+		<p>All data endpoints require the <code>operator</code> role at minimum. Per-datatype
+		<code>readRole</code> and <code>writeRole</code> restrictions are enforced in addition.</p>
 		<table>
-			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
 			<tbody>
-				<tr><td>POST</td><td>/user-data/:datatypeName/query</td><td>operator</td><td>Query records of the named datatype</td></tr>
-				<tr><td>POST</td><td>/user-data/:datatypeName</td><td>operator</td><td>Create a new data record</td></tr>
-				<tr><td>PUT</td><td>/user-data/:datatypeName</td><td>operator</td><td>Update an existing data record</td></tr>
-				<tr><td>DELETE</td><td>/user-data/:datatypeName/:id</td><td>operator</td><td>Delete a data record</td></tr>
-				<tr><td>GET</td><td>/user-data/:datatypeName/:id</td><td>operator</td><td>Get a data record by UUID</td></tr>
+				<tr><td>POST</td><td>/user-data/:datatypeName/query</td><td>Query records of the named datatype. Body: CouchDB Mango <code>{ "selector": { … }, "fields": [ … ] }</code>.</td></tr>
+				<tr><td>POST</td><td>/user-data/:datatypeName</td><td>Create a new data record. Body carries the record fields at root level. <code>createdBy</code> and <code>created</code> are injected automatically.</td></tr>
+				<tr><td>PUT</td><td>/user-data/:datatypeName</td><td>Update an existing data record. Body must include <code>id</code> and <code>_rev</code>. <code>lastUpdatedBy</code> and <code>lastUpdated</code> are injected automatically.</td></tr>
+				<tr><td>DELETE</td><td>/user-data/:datatypeName/:id</td><td>Delete a data record by UUID.</td></tr>
+				<tr><td>GET</td><td>/user-data/:datatypeName/:id</td><td>Retrieve a data record by UUID.</td></tr>
 			</tbody>
 		</table>
 
-		For <code>create</code> and <code>update</code> operations, the HTTP request body carries the
-		record fields directly at the root level. There is no wrapper object such as
-		<code>{ "data": { ... } }</code>. For updates, include both <code>id</code> and <code>_rev</code>
-		in the root body for optimistic concurrency control.
+		<p><b>Create / update body format:</b> the HTTP request body carries the record fields
+		directly at root level &mdash; there is no wrapper object such as
+		<code>{ "data": { … } }</code>. For updates, include both <code>id</code> and
+		<code>_rev</code> at the root level for optimistic concurrency control.</p>
 
-		For <code>query</code> operations, the body may include a CouchDB Mango <code>selector</code>
-		and an optional <code>fields</code> array to project only a subset of attributes in the response.
+		<p><b>Query body format:</b> the body may include a CouchDB Mango <code>selector</code>
+		to filter records, and an optional <code>fields</code> array to project only a subset of
+		attributes in the response. Pass an empty body <code>{}</code> to return all records.</p>
+
+		<h2>Pre- and Post-Processing</h2>
+
+		<p>When a datatype definition includes <code>preProcessingCode</code>, the plugin
+		evaluates that code as a <code>function(ctx, oldRecord, record)</code> before persisting
+		the record on create and update operations. The function receives:</p>
+		<ul>
+			<li><code>ctx.user</code> &mdash; the authenticated APAF user object</li>
+			<li><code>ctx.runtime</code> &mdash; the NPA plugin runtime</li>
+			<li><code>ctx.plugin</code> &mdash; the <code>apaf.user.datatype</code> plugin instance</li>
+			<li><code>ctx.require</code> &mdash; Node.js <code>require</code></li>
+			<li><code>oldRecord</code> &mdash; the previous record value (null on create)</li>
+			<li><code>record</code> &mdash; the incoming record to be persisted (mutable)</li>
+		</ul>
+		<p>Throwing any exception from the pre-processor raises a veto: the record is not
+		persisted and a <code>500</code> response is returned with the exception message as the
+		<code>message</code> field.</p>
+
+		<p>When a datatype definition includes <code>postProcessingCode</code>, the plugin
+		evaluates that code as a <code>function(ctx, record)</code> after a successful create.
+		The HTTP response has already been sent at that point; the post-processor runs
+		asynchronously and its exceptions are logged but do not affect the client response.</p>
+
+		<h2>Private Records</h2>
+
+		<p>When <code>private: true</code>, the query handler filters the CouchDB results
+		server-side and returns only records whose <code>createdBy</code> field matches the
+		authenticated user's login. Administrator users always receive all records regardless of
+		this flag.</p>
 
 		<h2>Telemetry</h2>
 
-		The plugin tracks four telemetry dimensions, one per CRUD operation:
-		<code>datatype.create</code>, <code>datatype.read</code>, <code>datatype.update</code>, <code>datatype.delete</code>.
+		<p>The plugin tracks four telemetry dimensions, one per CRUD operation class. Each
+		dimension receives a data point every 30 seconds containing the cumulative operation
+		count since the last server restart:</p>
+		<ul>
+			<li><code>create.user.datatype.count</code></li>
+			<li><code>read.user.datatype.count</code></li>
+			<li><code>update.user.datatype.count</code></li>
+			<li><code>delete.user.datatype.count</code></li>
+		</ul>
 
 		<h2>MCP Tools</h2>
 
-		The plugin registers MCP tools for both layers:
-		schema tools (<code>queryDatatypes</code>, <code>getDatatypeById</code>, <code>getDatatypeByName</code>,
-		<code>createDatatype</code>, <code>updateDatatype</code>, <code>deleteDatatype</code>)
-		and data tools (<code>queryUserData</code>, <code>getUserDataById</code>,
-		<code>createUserData</code>, <code>updateUserData</code>, <code>deleteUserData</code>).
+		<p>The plugin registers MCP tools for both layers via <code>npa.mcp.tool</code>
+		extension points in its manifest.</p>
+
+		<p><b>Schema tools</b> (operate on datatype definitions):</p>
+		<ul>
+			<li><code>queryDatatypes</code> &mdash; query datatype definitions</li>
+			<li><code>getDatatypeById</code> &mdash; retrieve a definition by UUID</li>
+			<li><code>getDatatypeByName</code> &mdash; retrieve a definition by technical name</li>
+			<li><code>createDatatype</code> &mdash; create a new datatype definition</li>
+			<li><code>updateDatatype</code> &mdash; update an existing datatype definition</li>
+			<li><code>deleteDatatype</code> &mdash; delete a datatype definition</li>
+		</ul>
+
+		<p><b>Data tools</b> (operate on user data records):</p>
+		<ul>
+			<li><code>queryUserData</code> &mdash; query records of a named datatype</li>
+			<li><code>getUserDataById</code> &mdash; retrieve a record by UUID</li>
+			<li><code>createUserData</code> &mdash; create a new data record</li>
+			<li><code>updateUserData</code> &mdash; update an existing data record</li>
+			<li><code>deleteUserData</code> &mdash; delete a data record</li>
+		</ul>
 
 		<h2>Notes</h2>
 		<ul>
-			<li>When <code>private: true</code>, records created by one user are not returned in queries
-			    made by a different user, even if both users hold the <code>operator</code> role.</li>
 			<li>The CouchDB database declared in <code>database</code> is created automatically on the
 			    first request if it does not already exist.</li>
 			<li>Deleting a datatype definition does <em>not</em> delete the corresponding CouchDB database
 			    or any stored records.</li>
+			<li>After a create or update of a datatype definition, the plugin calls
+			    <code>refreshDatatype()</code> on the <code>apaf.datatype</code> plugin to invalidate
+			    the in-memory cache. This ensures that subsequent requests use the updated schema.</li>
+			<li>The <b>DatatypeForm</b> component supports a <code>specializedEditors</code>
+			    extension map: other plugins may register custom field type names at runtime,
+			    backed by a <code>PluggableEditorField</code> loaded from a plugin-provided
+			    JavaScript module. This is the recommended way to add custom field types without
+			    modifying <code>datatypeForm.js</code>.</li>
 		</ul>
 
 	</body>
