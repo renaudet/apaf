@@ -1,0 +1,153 @@
+{
+  "id": "apaf.updater",
+  "name": "APAF built-in update manager",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.rest","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.jobs","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.updater.logger",
+  		"dir": "apaf.updater"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.updater.router",
+  		"path": "/apaf-updater"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.updater.htdocs",
+  		"path": "/apaf-updater-ui",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.updater.locale.provider.enUS",
+  		"path": "i18n/apaf.updater_en_US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.updater.locale.provider.frFR",
+  		"path": "i18n/apaf.updater_fr_FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.updater.locale.provider.en",
+  		"path": "i18n/apaf.updater_en_US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.updater.locale.provider.fr",
+  		"path": "i18n/apaf.updater_fr_FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.updater.installed.handler",
+  		"router": "apaf.updater.router",
+  		"method": "GET",
+  		"schema": "/installed",
+  		"handler": "getInstalledPluginsHandler",
+  		"securityRole": "administrator",
+  		"description": "Get the list of all installed plugins with their version, siteId and dependencies"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.updater.check.handler",
+  		"router": "apaf.updater.router",
+  		"method": "GET",
+  		"schema": "/check",
+  		"handler": "checkForUpdatesHandler",
+  		"securityRole": "administrator",
+  		"description": "Check for available plugin updates from all configured update sites"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.updater.resolve.handler",
+  		"router": "apaf.updater.router",
+  		"method": "POST",
+  		"schema": "/resolve",
+  		"handler": "resolveDependenciesHandler",
+  		"securityRole": "administrator",
+  		"description": "Recursively resolve plugin dependencies against update site catalogs and manifests"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.updater.download.handler",
+  		"router": "apaf.updater.router",
+  		"method": "POST",
+  		"schema": "/download",
+  		"handler": "downloadPluginsHandler",
+  		"securityRole": "administrator",
+  		"description": "Download selected plugin zip archives into a temporary directory using an asynchronous managed job"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.updater.install.handler",
+  		"router": "apaf.updater.router",
+  		"method": "POST",
+  		"schema": "/install",
+  		"handler": "installPluginsHandler",
+  		"securityRole": "administrator",
+  		"description": "Extract and install downloaded plugin archives into their target site locations"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.updater.restart.handler",
+  		"router": "apaf.updater.router",
+  		"method": "POST",
+  		"schema": "/restart",
+  		"handler": "restartServerHandler",
+  		"securityRole": "administrator",
+  		"description": "Request server shutdown / restart"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.updater.checkpoints.handler",
+  		"router": "apaf.updater.router",
+  		"method": "GET",
+  		"schema": "/checkpoints",
+  		"handler": "getCheckpointsHandler",
+  		"securityRole": "administrator",
+  		"description": "List all update checkpoints across installation sites"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.updater.rollback.handler",
+  		"router": "apaf.updater.router",
+  		"method": "POST",
+  		"schema": "/rollback",
+  		"handler": "rollbackHandler",
+  		"securityRole": "administrator",
+  		"description": "Revert plugins updated at a given checkpoint timestamp"
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.updater.menu.item",
+  		"menu": "adminMenuPlaceholder",
+  		"securityRole": "administrator",
+  		"item": {
+			"id": "manageUpdates",
+    		"label": "@apaf.page.updater.title",
+    		"actionId": "redirect",
+    		"icon": "/uiTools/img/silk/arrow_refresh.png",
+    		"uri": "/apaf-updater-ui/html/manageUpdates.html"
+		}
+  	}
+  ],
+  "provides": [
+  ]
+}

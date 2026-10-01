@@ -1,0 +1,21 @@
+{
+    "id": "updaterToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+        "actions": [
+            {
+                "label": "@apaf.updater.action.check.label",
+                "actionId": "checkForUpdates",
+                "icon": "/uiTools/img/silk/arrow_refresh.png",
+                "enabled": true
+            },
+            {
+                "label": "@apaf.updater.action.rollback.label",
+                "actionId": "rollbackUpdates",
+                "icon": "/uiTools/img/silk/arrow_undo.png",
+                "enabled": true
+            }
+        ]
+    }
+}

@@ -1,0 +1,138 @@
+/*
+ * updater.css - styles for the APAF Update Manager page
+ * Copyright 2024 Nicolas Renaudet - All rights reserved
+ */
+
+/* ---------- Layout ---------- */
+
+.upd-left-col {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-right: 1px solid #e5e7eb;
+    padding-right: 6px;
+    box-sizing: border-box;
+}
+
+.upd-right-col {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-left: 10px;
+    box-sizing: border-box;
+}
+
+/* ---------- Tree area ---------- */
+
+.upd-tree-wrapper {
+    flex: 1;
+    overflow: auto;
+    min-height: 0;
+}
+
+/* ---------- Right panel: hint ---------- */
+
+.upd-hint {
+    color: #888;
+    font-style: italic;
+    padding: 20px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ---------- Right panel: plugin detail ---------- */
+
+.upd-detail-panel {
+    padding: 10px 4px;
+}
+
+.upd-detail-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2328;
+    margin-bottom: 4px;
+}
+
+.upd-detail-meta {
+    font-size: 0.82rem;
+    color: #57606a;
+    margin-bottom: 10px;
+}
+
+.upd-detail-meta span {
+    display: inline-block;
+    margin-right: 14px;
+}
+
+.upd-detail-deps {
+    font-size: 0.82rem;
+}
+
+.upd-detail-deps-title {
+    font-weight: 600;
+    color: #1f2328;
+    margin-bottom: 4px;
+}
+
+.upd-dep-row {
+    padding: 2px 0 2px 10px;
+    color: #555;
+}
+
+/* ---------- Update status badges ---------- */
+
+.upd-badge-updated {
+    display: inline-block;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    padding: 0 5px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.upd-badge-added {
+    display: inline-block;
+    background: #d1e7dd;
+    color: #0a5e37;
+    border: 1px solid #198754;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    padding: 0 5px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.upd-badge-removed {
+    display: inline-block;
+    background: #f8d7da;
+    color: #842029;
+    border: 1px solid #dc3545;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    padding: 0 5px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.upd-badge-unknown {
+    display: inline-block;
+    background: #e9ecef;
+    color: #495057;
+    border: 1px solid #adb5bd;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    padding: 0 5px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+/* ---------- Tree node status colours ---------- */
+
+.upd-node-updated  { color: #856404; font-weight: 500; }
+.upd-node-added    { color: #0a5e37; font-weight: 500; }
+.upd-node-removed  { color: #842029; font-weight: 500; text-decoration: line-through; }
+.upd-node-unknown  { color: #495057; }

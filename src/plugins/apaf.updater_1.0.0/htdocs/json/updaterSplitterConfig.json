@@ -1,0 +1,9 @@
+{
+    "id": "updaterSplitter",
+    "version": "1.0.0",
+    "type": "Splitter",
+    "configuration": {
+        "vertical": false,
+        "percentages": [35, 65]
+    }
+}

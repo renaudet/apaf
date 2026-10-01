@@ -29,6 +29,12 @@
   		"path": "/apaf-registry"
   	},
   	{
+  		"point": "npa.http.static",
+  		"id": "apaf.registry.htdocs",
+  		"path": "/repository",
+  		"localDir": "htdocs"
+  	},
+  	{
   		"point": "npa.http.handler",
   		"id": "apaf.registry.publish.handler",
   		"router": "apaf.registry.router",

@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="All-Purpose-Application-Framework Update Manager Page">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2024 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link rel="icon" type="image/png" href="/apaf-branding/img/apaf-logo.png?version=1.0"/>
+		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/css/treeViewer.css" rel="stylesheet">
+		<link href="/uiTools/css/splitter.css" rel="stylesheet">
+		<link href="/apaf-updater-ui/css/updater.css" rel="stylesheet">
+		<title>All Purpose Application Framework</title>
+	</head>
+	<body>
+		<div id="navBar" class="npaUi" data-ref="menu"></div>
+		<div id="card" class="npaUi" data-config="/apaf-updater-ui/json/updaterCardConfig.json">
+			<!-- Splitter: left=plugin tree, right=detail panel -->
+			<div id="updSplitterDiv" class="npaUi" data-config="/apaf-updater-ui/json/updaterSplitterConfig.json" style="height:100%;">
+
+				<!-- Left pane: toolbar + tree -->
+				<div data-splitter-target="first" class="upd-left-col">
+					<div id="updToolbar" class="npaUi" data-config="/apaf-updater-ui/json/updaterToolbarConfig.json"></div>
+					<div class="upd-tree-wrapper">
+						<div id="updTreeArea"></div>
+					</div>
+				</div>
+
+				<!-- Right pane: contextual detail -->
+				<div data-splitter-target="second" class="upd-right-col">
+					<!-- Default hint -->
+					<div id="updHint" class="upd-hint">
+						<img src="/uiTools/img/silk/arrow_refresh.png">
+						<span id="updHintText"></span>
+					</div>
+					<!-- Plugin detail panel -->
+					<div id="updDetailPanel" class="upd-detail-panel" style="display:none;">
+						<div id="updDetailTitle" class="upd-detail-title"></div>
+						<div id="updDetailMeta" class="upd-detail-meta"></div>
+						<div id="updDetailActions" class="upd-detail-actions" style="margin-bottom: 12px; display: none;">
+							<button id="updActionBtn" class="btn btn-sm btn-primary"></button>
+						</div>
+						<div id="updDetailDeps" class="upd-detail-deps">
+							<div id="updDetailDepsTitle" class="upd-detail-deps-title"></div>
+							<div id="updDetailDepsList"></div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- Modal: Confirm / Review Resolution & Dependencies -->
+		<div class="modal fade" id="updConfirmModal" tabindex="-1" aria-labelledby="updConfirmModalTitle" aria-hidden="true" data-bs-backdrop="static">
+			<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="updConfirmModalTitle"></h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body" id="updConfirmModalBody">
+						<p id="updConfirmModalMsg"></p>
+						<div id="updConfirmModalList" class="table-responsive"></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="updConfirmModalCancelBtn"></button>
+						<button type="button" class="btn btn-primary" id="updConfirmModalProceedBtn"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal: Download Progress & Report -->
+		<div class="modal fade" id="updReportModal" tabindex="-1" aria-labelledby="updReportModalTitle" aria-hidden="true" data-bs-backdrop="static">
+			<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="updReportModalTitle"></h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="updReportModalCloseX"></button>
+					</div>
+					<div class="modal-body" id="updReportModalBody">
+						<div class="progress mb-3" style="height: 20px;">
+							<div id="updProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+						</div>
+						<div id="updReportStatusText" class="mb-2 text-muted" style="font-size: 0.85rem;"></div>
+						<div id="updReportDetails" class="table-responsive"></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="updReportModalCloseBtn" disabled>Fermer</button>
+						<button type="button" class="btn btn-success" id="updReportModalInstallBtn" style="display: none;"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal: Restart Server Confirmation -->
+		<div class="modal fade" id="updRestartModal" tabindex="-1" aria-labelledby="updRestartModalTitle" aria-hidden="true" data-bs-backdrop="static">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="updRestartModalTitle"></h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body" id="updRestartModalBody">
+						<p id="updRestartModalMsg"></p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="updRestartModalLaterBtn"></button>
+						<button type="button" class="btn btn-danger" id="updRestartModalConfirmBtn"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal: Rollback Checkpoints -->
+		<div class="modal fade" id="updRollbackModal" tabindex="-1" aria-labelledby="updRollbackModalTitle" aria-hidden="true" data-bs-backdrop="static">
+			<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="updRollbackModalTitle"></h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body" id="updRollbackModalBody">
+						<p id="updRollbackModalIntro"></p>
+						<div id="updRollbackListArea" class="mb-3"></div>
+						<div id="updRollbackDetailArea" class="table-responsive" style="display: none;"></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="updRollbackModalCancelBtn"></button>
+						<button type="button" class="btn btn-danger" id="updRollbackModalProceedBtn" disabled style="display: none;"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="notifier" class="npaUi" data-ref="notifier"></div>
+		<div id="monitor" class="npaUi" data-ref="sessionMonitor"></div>
+		<script src="/js/jquery-3.6.3.min.js"></script>
+		<script src="/js/bootstrap.bundle.min.js"></script>
+		<script src="/js/treeViewer.js"></script>
+		<script src="/uiTools/js/npaUiCore.js"></script>
+		<script src="/resources/js/utils/apafUtils.js"></script>
+		<script src="/apaf-updater-ui/js/manageUpdates.js"></script>
+	</body>
+</html>
