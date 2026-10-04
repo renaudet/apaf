@@ -11,6 +11,7 @@ const TOOLBAR_ID = 'updaterToolbar';
 
 /* ===== State ===== */
 var treeViewer = null;
+var depTreeViewer = null;    // TreeViewer for reverse dependency tree (dependents)
 var installedPlugins = [];   // [{ id, version, name, siteId, requires[] }]
 var updateDiff = null;       // { added[], updated[], removed[] } — null = not yet checked
 
@@ -200,11 +201,93 @@ var pluginEventListener = {
 	}
 };
 
+/* ===== Forward dependency tree (dependencies) visitor, decorator, event listener ===== */
+
+var depTreeVisitor = {
+	getLabel: function(element){
+		return element.plugin.id;
+	},
+	getChildren: function(element){
+		return element.deps || [];
+	},
+	isParent: function(element){
+		return element.deps && element.deps.length > 0;
+	}
+};
+
+var depTreeDecorator = {
+	decorate: function(element, label){
+		let plugin = element.plugin;
+		let status = element.status || { kind: 'ok' };
+		let cssClass = '';
+		let badge = '';
+
+		// Check update status for this plugin
+		if(updateDiff && status.kind === 'ok'){
+			for(let i=0;i<updateDiff.updated.length;i++){
+				if(updateDiff.updated[i].id === plugin.id){
+					status = { kind: 'updated', remoteVersion: updateDiff.updated[i].remoteVersion };
+					break;
+				}
+			}
+			if(status.kind === 'ok'){
+				for(let i=0;i<updateDiff.removed.length;i++){
+					if(updateDiff.removed[i].id === plugin.id){
+						status = { kind: 'removed' };
+						break;
+					}
+				}
+			}
+			if(status.kind === 'ok'){
+				for(let i=0;i<(updateDiff.unknown||[]).length;i++){
+					if(updateDiff.unknown[i].id === plugin.id){
+						status = { kind: 'unknown' };
+						break;
+					}
+				}
+			}
+		}
+
+		if('updated'==status.kind){
+			cssClass = 'upd-node-updated';
+			badge = '<span class="upd-badge-updated">'
+				+ npaUi.getLocalizedString('@apaf.updater.badge.updated')
+				+ ' &rarr; v' + status.remoteVersion + '</span>';
+		} else if('removed'==status.kind){
+			cssClass = 'upd-node-removed';
+			badge = '<span class="upd-badge-removed">'
+				+ npaUi.getLocalizedString('@apaf.updater.badge.removed') + '</span>';
+		} else if('unknown'==status.kind){
+			badge = '<span class="upd-badge-unknown">'
+				+ npaUi.getLocalizedString('@apaf.updater.badge.unknown') + '</span>';
+		}
+
+		let hasDeps = element.deps && element.deps.length > 0;
+		let nodeIcon = hasDeps ? '/uiTools/img/silk/bricks.png' : '/uiTools/img/silk/plugin.png';
+
+		return '<span class="' + cssClass + '">'
+			+ '<img src="' + nodeIcon + '">&nbsp;'
+			+ plugin.id
+			+ ' <small><i>v' + plugin.version + '</i></small>'
+			+ badge
+			+ '</span>';
+	}
+};
+
+var depTreeEventListener = {
+	onNodeSelected: function(node){
+		// Right tree is purely interactive - expand/collapse only
+		// Do NOT rebuild the tree or change the detail panel
+		// The detail panel continues to show the plugin selected in the LEFT tree
+	}
+};
+
 /* ===== Right panel ===== */
 
 showPanel = function(which){
 	$('#updHint').hide();
 	$('#updDetailPanel').hide();
+	$('#updDepTreeWrapper').hide();
 	if(which=='hint')   $('#updHint').show();
 	if(which=='detail') $('#updDetailPanel').show();
 }
@@ -270,21 +353,77 @@ showPluginDetail = function(nodeData){
 		$('#updDetailActions').hide();
 	}
 
-	// Dependencies
-	if(plugin.requires && plugin.requires.length>0){
-		let depsHtml = '';
+	// Show the detail panel FIRST so the tree container is visible
+	showPanel('detail');
+
+	// Build forward dependency tree for the selected plugin
+	buildAndShowDepTree(plugin);
+
+	// Hide legacy direct dependencies list (replaced by tree)
+	$('#updDetailDeps').hide();
+}
+
+/*
+* Builds and displays the forward dependency tree for the given plugin.
+* This shows what the plugin depends on (directly or transitively).
+*/
+buildAndShowDepTree = function(plugin){
+// Build a lookup for installed plugins
+let pluginIndex = {};
+for(let i=0;i<installedPlugins.length;i++){
+	pluginIndex[installedPlugins[i].id] = installedPlugins[i];
+}
+
+// Recursively build the tree from the plugin's requires
+function buildDepTree(plugin, visited){
+	if(!plugin) return null;
+	if(visited.has(plugin.id)) return { plugin: plugin, deps: [{ plugin: plugin, status: { kind: 'dep' }, deps: [] }], circular: true };
+
+	// Create node with the plugin and its direct dependencies
+	let deps = [];
+	if(plugin.requires && plugin.requires.length > 0){
 		for(let i=0;i<plugin.requires.length;i++){
-			let dep = plugin.requires[i];
-			depsHtml += '<div class="upd-dep-row"><img src="/uiTools/img/silk/arrow_right.png">&nbsp;'
-				+ dep.id + ' <i>v' + dep.version + '</i></div>';
+			let depDesc = plugin.requires[i];
+			let depPlugin = pluginIndex[depDesc.id];
+			if(depPlugin){
+				let newVisited = new Set(visited);
+				newVisited.add(plugin.id);
+				// Recursively build the dependency subtree
+				deps.push(buildDepTree(depPlugin, newVisited));
+			}
 		}
-		$('#updDetailDepsList').html(depsHtml);
-		$('#updDetailDeps').show();
-	} else {
-		$('#updDetailDeps').hide();
 	}
 
-	showPanel('detail');
+	let node = {
+		plugin: plugin,
+		deps: deps.filter(Boolean) // Remove any null entries
+	};
+
+	return node;
+}
+
+// Build the root node (the selected plugin)
+let tree = buildDepTree(plugin, new Set());
+
+// Update title - show dependencies title
+$('#updDepTreeTitle').html(npaUi.getLocalizedString('@apaf.updater.detail.deps.title'));
+
+// Initialize or reuse the depTreeViewer
+if(!depTreeViewer){
+	depTreeViewer = new TreeViewer('updaterDepTree', document.getElementById('updDepTreeArea'));
+	depTreeViewer.init();
+	depTreeViewer.setVisitor(depTreeVisitor);
+	depTreeViewer.setDecorator(depTreeDecorator);
+	depTreeViewer.setEventListener(depTreeEventListener);
+}
+depTreeViewer.clear();
+if(tree){
+	depTreeViewer.addRootData(tree);
+}
+depTreeViewer.refreshTree();
+
+// Show the wrapper
+$('#updDepTreeWrapper').show();
 }
 
 /* ===== Check for updates ===== */

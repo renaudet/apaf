@@ -65,6 +65,28 @@
     margin-right: 14px;
 }
 
+/* ---------- Reverse dependency tree (dependents) ---------- */
+
+.upd-dep-tree-wrapper {
+    margin-bottom: 16px;
+}
+
+.upd-dep-tree-title {
+    font-weight: 600;
+    color: #1f2328;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+}
+
+.upd-dep-tree-area {
+    min-height: 150px;
+    max-height: 400px;
+    overflow: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    background: #fafafa;
+}
+
 .upd-detail-deps {
     font-size: 0.82rem;
 }
