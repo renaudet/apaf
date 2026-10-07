@@ -119,8 +119,14 @@
     			"label": "@apaf.page.preferences.workflow.auto.save",
     			"type": "switch",
     			"default": false
+    		},
+    		{
+    			"name": "curvedConnections",
+    			"label": "@apaf.page.preferences.workflow.curved.connections",
+    			"type": "switch",
+    			"default": false
     		}
-  		]
+    ]
   	},
   	{
   		"point": "npa.runtime.property.provider",

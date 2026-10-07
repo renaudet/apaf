@@ -83,6 +83,7 @@ apaf.page.preferences.workflow.delete.confirm=Demander confirmation pour les sup
 apaf.page.preferences.workflow.auto.save=Activer la sauvegarde automatique
 apaf.page.preferences.workflow.global.timeout=Timeout global (sec)
 apaf.page.preferences.workflow.activation.delay=D&eacute;lai d'activation (msec)
+apaf.page.preferences.workflow.curved.connections=Liaisons curvilignes
 apaf.user.password.check=V&eacute;rification
 apaf.profile.button.save=Sauvegarder les modifications
 apaf.profile.password.help=Laisser le champs vide pour conserver la valeur existante

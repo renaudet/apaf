@@ -101,7 +101,7 @@ loadCustomNodes = function(workflowEditor,workflowEngine){
 }
 
 getUserProfile = function(then){
-	preferences = {"backgroundColor": "#ffffff","gridSize": 20,"showGrid": true,"gridColor": "#d0e7f5","confirmDelete": false,"autoSave": false,"globalTimeout": WORKFLOW_TIMEOUT_SEC,"activationDelay": WORKFLOW_NODE_ACTIVATION_DELAY};
+	preferences = {"backgroundColor": "#ffffff","gridSize": 20,"showGrid": true,"gridColor": "#d0e7f5","confirmDelete": false,"autoSave": false,"curvedConnections": false,"globalTimeout": WORKFLOW_TIMEOUT_SEC,"activationDelay": WORKFLOW_NODE_ACTIVATION_DELAY};
 	makeRESTCall('GET','/apaf-admin/profile',{},function(response){
 		if(response.status==200){
 			if(response.data.preferences && response.data.preferences.workflow){

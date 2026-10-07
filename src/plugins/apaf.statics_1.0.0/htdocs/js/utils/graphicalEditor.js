@@ -488,21 +488,34 @@ GraphicNodeConnection.prototype.repaint = function(gc){
 		gc.strokeStyle = '#9c6b3a';
 	}
 	gc.beginPath();
-	const DELTA = 25;
-	if(this.source.x < (this.target.x-DELTA-DELTA)){
-		var midX = (this.source.x+this.target.x)/2;
-	    gc.moveTo(this.source.x,this.source.y);
-	    gc.lineTo(midX,this.source.y);
-	    gc.lineTo(midX,this.target.y);
-	    gc.lineTo(this.target.x,this.target.y);
+	var curved = this.handler && this.handler.curvedConnections;
+	if(curved){
+		var dx = this.target.x - this.source.x;
+		var dy = this.target.y - this.source.y;
+		var tension = Math.max(Math.abs(dx), Math.abs(dy)) * 0.5;
+		gc.moveTo(this.source.x, this.source.y);
+		gc.bezierCurveTo(
+			this.source.x + tension, this.source.y,
+			this.target.x - tension, this.target.y,
+			this.target.x,           this.target.y
+		);
 	}else{
-		var midY = (this.source.y+this.target.y)/2;
-		gc.moveTo(this.source.x,this.source.y);
-		gc.lineTo(this.source.x+DELTA,this.source.y);
-		gc.lineTo(this.source.x+DELTA,midY);
-		gc.lineTo(this.target.x-DELTA,midY);
-		gc.lineTo(this.target.x-DELTA,this.target.y);
-		gc.lineTo(this.target.x,this.target.y);
+		const DELTA = 25;
+		if(this.source.x < (this.target.x-DELTA-DELTA)){
+			var midX = (this.source.x+this.target.x)/2;
+		    gc.moveTo(this.source.x,this.source.y);
+		    gc.lineTo(midX,this.source.y);
+		    gc.lineTo(midX,this.target.y);
+		    gc.lineTo(this.target.x,this.target.y);
+		}else{
+			var midY = (this.source.y+this.target.y)/2;
+			gc.moveTo(this.source.x,this.source.y);
+			gc.lineTo(this.source.x+DELTA,this.source.y);
+			gc.lineTo(this.source.x+DELTA,midY);
+			gc.lineTo(this.target.x-DELTA,midY);
+			gc.lineTo(this.target.x-DELTA,this.target.y);
+			gc.lineTo(this.target.x,this.target.y);
+		}
 	}
     gc.stroke();
 }
@@ -874,6 +887,10 @@ function GraphicalEditor(id,parentId,properties){
 	this.gcManager.confirmDelete = true;
 	if(typeof properties.confirmDelete!='undefined'){
 		this.gcManager.confirmDelete = properties.confirmDelete;
+	}
+	this.gcManager.curvedConnections = false;
+	if(typeof properties.curvedConnections!='undefined'){
+		this.gcManager.curvedConnections = properties.curvedConnections;
 	}
 	
 	this.gcManager.onResized = function(){
