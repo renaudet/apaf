@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.updater plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.updater - Update Manager</title>
+	</head>
+	<body>
+
+		<h1>apaf.updater &mdash; Update Manager</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.updater</b> plugin provides a built-in update management UI and REST API for
+		APAF. It allows an administrator to inspect installed plugins, discover available updates
+		from remote <i>update sites</i>, resolve dependency trees, download plugin archives,
+		install them into their target site, and perform rollbacks if needed.
+		<br><br>
+		All operations require the <code>administrator</code> security role.
+
+		<h2>Update Site Configuration</h2>
+
+		An <i>update site</i> is a remote HTTP/HTTPS server that exposes a plugin repository.
+		The link between a local plugin site and its remote update source is declared in the
+		<b>site configuration file</b> (<code>siteConfig.json</code>, or <code>appConfig.json</code>
+		for Docker deployments) via the optional <code>updateSiteUrl</code> property on each site entry.
+
+		<h3>Site Configuration Format</h3>
+
+		<div class="code">
+		{<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"sites"</span>: [<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#3469e3;">"id"</span>: <span style="color:#e34e00;">"apaf"</span>,<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#3469e3;">"location"</span>: <span style="color:#e34e00;">"/opt/apaf/plugins"</span>,<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#3469e3;">"updateSiteUrl"</span>: <span style="color:#e34e00;">"https://my.update-server.com/repository/pluginMap.json"</span><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#3469e3;">"id"</span>: <span style="color:#e34e00;">"my-site"</span>,<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#3469e3;">"location"</span>: <span style="color:#e34e00;">"/opt/apaf/my-plugins"</span><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+		&nbsp;&nbsp;]<br>
+		}
+		</div>
+
+		<h3>updateSiteUrl semantics</h3>
+
+		<ul>
+			<li>The property value can point directly to the <code>pluginMap.json</code> catalog file
+			    (e.g. <code>https://host/repo/pluginMap.json</code>) <b>or</b> to the base directory URL
+			    (e.g. <code>https://host/repo</code>) — both forms are accepted and normalised internally.</li>
+			<li>Sites that do <b>not</b> declare <code>updateSiteUrl</code> are ignored by the update
+			    checker; their plugins will never appear as <i>removed</i> or <i>unknown</i>.</li>
+			<li>Multiple sites may share the same <code>updateSiteUrl</code>; duplicate URLs are
+			    de-duplicated before catalog fetches are performed.</li>
+		</ul>
+
+		<h3>Update Site Repository Structure</h3>
+
+		The remote server is expected to expose the following layout under its base URL:
+
+		<div class="code">
+		&lt;baseUrl&gt;/<br>
+		&nbsp;&nbsp;pluginMap.json&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#888;">// catalog file</span><br>
+		&nbsp;&nbsp;&lt;pluginId&gt;_&lt;version&gt;/<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;manifest.json&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#888;">// remote plugin manifest</span><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&lt;pluginId&gt;_&lt;version&gt;.zip&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#888;">// downloadable archive</span>
+		</div>
+
+		The catalog file <code>pluginMap.json</code> must have the following structure:
+
+		<div class="code">
+		{<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"plugins"</span>: [<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;{ <span style="color:#3469e3;">"id"</span>: <span style="color:#e34e00;">"apaf.security"</span>, <span style="color:#3469e3;">"version"</span>: <span style="color:#e34e00;">"1.1.0"</span>, <span style="color:#3469e3;">"siteId"</span>: <span style="color:#e34e00;">"apaf"</span> },<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;{ <span style="color:#3469e3;">"id"</span>: <span style="color:#e34e00;">"apaf.admin"</span>, <span style="color:#3469e3;">"version"</span>: <span style="color:#e34e00;">"1.1.0"</span>, <span style="color:#3469e3;">"siteId"</span>: <span style="color:#e34e00;">"apaf"</span> }<br>
+		&nbsp;&nbsp;]<br>
+		}
+		</div>
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr>
+					<td>GET</td><td>/apaf-updater/installed</td><td>administrator</td>
+					<td>List all installed plugins with their version, site ID and dependencies</td>
+				</tr>
+				<tr>
+					<td>GET</td><td>/apaf-updater/check</td><td>administrator</td>
+					<td>Compare installed plugins against remote update site catalogs and return a diff
+					    (<code>added</code>, <code>updated</code>, <code>removed</code>, <code>unknown</code>)</td>
+				</tr>
+				<tr>
+					<td>POST</td><td>/apaf-updater/resolve</td><td>administrator</td>
+					<td>Recursively resolve plugin dependencies against remote catalogs and manifests</td>
+				</tr>
+				<tr>
+					<td>POST</td><td>/apaf-updater/download</td><td>administrator</td>
+					<td>Download selected plugin ZIP archives into a temporary directory via an asynchronous
+					    managed job (<code>npa.jobs</code>)</td>
+				</tr>
+				<tr>
+					<td>POST</td><td>/apaf-updater/install</td><td>administrator</td>
+					<td>Extract and install downloaded plugin archives into their target site locations</td>
+				</tr>
+				<tr>
+					<td>GET</td><td>/apaf-updater/checkpoints</td><td>administrator</td>
+					<td>List all update checkpoints across installation sites</td>
+				</tr>
+				<tr>
+					<td>POST</td><td>/apaf-updater/rollback</td><td>administrator</td>
+					<td>Revert plugins updated at a given checkpoint timestamp (LIFO &mdash; latest checkpoint only)</td>
+				</tr>
+				<tr>
+					<td>POST</td><td>/apaf-updater/restart</td><td>administrator</td>
+					<td>Request a server shutdown / restart</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h2>Update Workflow</h2>
+
+		A typical update session follows five steps:
+
+		<ol>
+			<li><b>Check</b> &mdash; call <code>GET /check</code> to discover which plugins have newer
+			    versions available on the configured update sites.</li>
+			<li><b>Resolve</b> &mdash; call <code>POST /resolve</code> with the selected plugins to
+			    compute the full dependency tree and confirm that all required plugins can be installed.</li>
+			<li><b>Download</b> &mdash; call <code>POST /download</code> to fetch the ZIP archives
+			    asynchronously. A job ID is returned; poll <code>/apaf-jobs/:id</code> to track progress.</li>
+			<li><b>Install</b> &mdash; call <code>POST /install</code> to extract the archives into
+			    their respective site directories. A checkpoint manifest is written automatically.</li>
+			<li><b>Restart</b> &mdash; call <code>POST /restart</code> to apply the newly installed
+			    plugins by restarting the NPA runtime.</li>
+		</ol>
+
+		<h2>Checkpoints and Rollback</h2>
+
+		After each successful install operation, the updater writes an <code>update_&lt;YYYYMMDD_HHmmss&gt;.json</code>
+		manifest file inside each affected site directory. This file records:
+
+		<ul>
+			<li>The timestamp and ISO date of the update</li>
+			<li>The user who performed the install</li>
+			<li>The list of plugins installed or updated, with their previous version and target directory</li>
+		</ul>
+
+		These checkpoint files are used by <code>POST /rollback</code> to revert the most recent update.
+		Only the <b>latest checkpoint</b> can be rolled back at any given time (LIFO rule). On successful
+		rollback, the plugin directories added during that checkpoint are deleted and the checkpoint file
+		is renamed to <code>update_&lt;timestamp&gt;.json.reverted</code>.
+
+		<h2>Dependency Resolution</h2>
+
+		The <code>/resolve</code> endpoint performs a recursive BFS over the dependency tree:
+
+		<ol>
+			<li>It fetches <code>pluginMap.json</code> from the configured update site.</li>
+			<li>For each target plugin, it downloads its remote <code>manifest.json</code> and
+			    inspects the <code>requires</code> array.</li>
+			<li>Each unsatisfied dependency is looked up in the catalog. If the catalog version
+			    meets the version requirement, it is added to the install plan; otherwise it is
+			    reported as a <code>missingDependency</code>.</li>
+		</ol>
+
+		The response indicates whether the full set <code>canInstall</code> and provides
+		the complete <code>toInstall</code> list and any <code>missingDependencies</code>.
+
+		<h2>Notes</h2>
+		<ul>
+			<li>Downloaded archives are stored under the OS temporary directory in a folder named
+			    <code>apaf_updates/</code>. They are not automatically cleaned up.</li>
+			<li>A site entry without <code>updateSiteUrl</code> is treated as a local-only site:
+			    its plugins are listed as installed but never compared against remote catalogs.</li>
+			<li>Version comparison uses a numeric segment-by-segment algorithm
+			    (e.g. <code>1.10.0</code> &gt; <code>1.9.0</code>).</li>
+			<li>The download step uses the <b>apaf.jobs</b> service to track progress
+			    asynchronously. Monitor job status before calling <code>/install</code>.</li>
+			<li>A server restart is required after installation for the new plugins to be
+			    loaded by the NPA runtime.</li>
+		</ul>
+
+	</body>
+</html>

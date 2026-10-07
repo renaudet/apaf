@@ -11,7 +11,8 @@
   	{"type": "plugin","id": "npa.jobs","version": "1.0.0"},
   	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
   	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
-  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"}
   ],
   "extends": [
   	{
@@ -29,6 +30,14 @@
   		"id": "apaf.updater.htdocs",
   		"path": "/apaf-updater-ui",
   		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.updater.doc",
+  		"label": "apaf.updater - Update Manager",
+  		"category": "APAF Framework",
+  		"subcategory": "Administration",
+  		"url": "/apaf-updater-ui/docs/apafUpdater.html"
   	},
   	{
   		"point": "npa.ui.locale.provider",
