@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.workflow plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.workflow - Workflow Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.workflow &mdash; Workflow Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.workflow</b> plugin provides a visual workflow engine for APAF. Workflows are
+		directed graphs composed of <i>nodes</i> connected by <i>transitions</i>. They are stored in
+		CouchDB and executed synchronously on demand (via REST) or asynchronously (via the scheduler
+		or the event broker).
+
+		<h2>Workflow Execution Model</h2>
+
+		Execution follows these steps:
+
+		<ol>
+			<li>A workflow is fetched from CouchDB by name + version (or UUID).</li>
+			<li>An execution <i>context</i> object is initialized from the caller-supplied input data.</li>
+			<li>The engine traverses the node graph, calling each node's handler in turn.</li>
+			<li>Each node can read from and write to the shared context; transitions carry the context
+			    from node to node.</li>
+			<li>Execution ends when a terminal node is reached or the global timeout expires.</li>
+			<li>The final context is returned to the caller.</li>
+		</ol>
+
+		The global timeout is controlled by the runtime property <code>workflow.global.timeout</code>
+		(default: <b>300 000 ms</b>).
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-workflow/query</td><td>developer</td><td>Query workflow definitions</td></tr>
+				<tr><td>POST</td><td>/apaf-workflow/</td><td>developer</td><td>Create a new workflow definition</td></tr>
+				<tr><td>PUT</td><td>/apaf-workflow/</td><td>developer</td><td>Update a workflow definition</td></tr>
+				<tr><td>DELETE</td><td>/apaf-workflow/:id</td><td>developer</td><td>Delete a workflow definition</td></tr>
+				<tr><td>GET</td><td>/apaf-workflow/:name/:version</td><td>developer</td><td>Get a workflow by name and version (includes node graph)</td></tr>
+				<tr><td>POST</td><td>/apaf-workflow/execute/:id</td><td>operator</td><td>Execute a workflow synchronously and return the final context</td></tr>
+				<tr><td>GET</td><td>/apaf-workflow/customNodes</td><td>developer</td><td>List all available custom workflow node types</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Built-in Node Types</h2>
+
+		The workflow engine ships with standard node types covering common operations:
+		<i>start</i>, <i>stop</i>, <i>conditional branch</i>, <i>set context variable</i>,
+		<i>execute snippet</i>, <i>call REST API</i>, <i>read CouchDB record</i>,
+		<i>send mail</i>, and more.
+
+		<h2>Custom Workflow Nodes</h2>
+
+		Any APAF plugin can contribute new node types via the
+		<code>apaf.workflow.node.provider</code> extension point:
+
+		<div class="code">
+		{<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"point"</span>: <span style="color:#3469e3;">"apaf.workflow.node.provider"</span>,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"id"</span>: <span style="color:#3469e3;">"my.plugin.workflow.node"</span>,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"label"</span>: <span style="color:#3469e3;">"My Custom Node"</span>,<br>
+		&nbsp;&nbsp;<span style="color:#3469e3;">"handlerUrl"</span>: <span style="color:#3469e3;">"/myPlugin/workflow/myNode.js"</span><br>
+		}
+		</div>
+
+		The handler URL points to a JavaScript file (served as a static resource) that exports
+		a node implementation function. At runtime, the node receives the current execution context
+		and a <code>next(context)</code> callback.
+
+		<h2>MCP Tools</h2>
+
+		The plugin registers three MCP tools:
+		<code>queryWorkflows</code>, <code>getWorkflowByName</code>, <code>executeWorkflow</code>.
+
+		<h2>Notes</h2>
+		<ul>
+			<li>Workflow definitions are versioned — a name/version pair uniquely identifies a definition.</li>
+			<li>The context object passed to <code>POST /apaf-workflow/execute/:id</code> must include
+			    a <code>status</code> field initialized to <code>"pending"</code>.</li>
+			<li>The <code>_console</code> array in the returned context contains execution log events
+			    useful for debugging.</li>
+		</ul>
+
+	</body>
+</html>

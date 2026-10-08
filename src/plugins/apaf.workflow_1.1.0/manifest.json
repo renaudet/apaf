@@ -1,0 +1,390 @@
+{
+  "id": "apaf.workflow",
+  "name": "Security workflow handler for APAF",
+  "version": "1.1.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.jobs","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.runtime.props","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.admin","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.mcp","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.workflow.logger",
+  		"dir": "apaf.workflow"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.workflow.router",
+  		"path": "/apaf-workflow"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.workflow.htdocs",
+  		"path": "/apaf-workflow-ui",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.workflow.locale.provider.enUS",
+  		"path": "i18n/apaf_workflow_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.workflow.locale.provider.en",
+  		"path": "i18n/apaf_workflow_en-US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.workflow.locale.provider.frFR",
+  		"path": "i18n/apaf_workflow_fr-FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.workflow.locale.provider.fr",
+  		"path": "i18n/apaf_workflow_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.workflow.datatype",
+  		"datatype": {
+  			"id": "workflow",
+  			"name": "Workflow",
+  			"builtIn": true,
+  			"persistent": true,
+  			"database": "apaf_workflows",
+  			"fields": [
+    			{
+    				"name": "name",
+    				"label": "@apaf.workflow.datatype.name",
+    				"required": true,
+    				"size": 4
+    			},
+    			{
+    				"name": "description",
+    				"label": "@apaf.workflow.datatype.description",
+    				"size": 9
+    			},
+    			{
+    				"name": "version",
+    				"label": "@apaf.workflow.datatype.version",
+    				"size": 2
+    			}
+  			]
+  		}
+  	},
+  	{
+  		"point": "apaf.admin.user.preference",
+  		"id": "apaf.workflow.editor.preferences",
+  		"label": "@apaf.page.preferences.workflow.title",
+  		"preference": "workflow",
+  		"fields": [
+    		{
+    			"name": "backgroundColor",
+    			"label": "@apaf.page.preferences.workflow.background.color",
+    			"type": "color",
+    			"default": "#ffffff"
+    		},
+    		{
+    			"name": "gridSize",
+    			"label": "@apaf.page.preferences.workflow.grid.size",
+    			"type": "range",
+    			"default": 10,
+    			"min": 5,
+    			"max": 60,
+    			"step": 5,
+    			"size": 8
+    		},
+    		{
+    			"name": "showGrid",
+    			"label": "@apaf.page.preferences.workflow.grid.show",
+    			"type": "switch",
+    			"default": true
+    		},
+    		{
+    			"name": "gridColor",
+    			"label": "@apaf.page.preferences.workflow.grid.color",
+    			"type": "color",
+    			"default": "#a0a0a0"
+    		},
+    		{
+    			"name": "paletteColor",
+    			"label": "@apaf.page.preferences.workflow.palette.color",
+    			"type": "color",
+    			"default": "#e3d4af"
+    		},
+    		{
+    			"name": "globalTimeout",
+    			"label": "@apaf.page.preferences.workflow.global.timeout",
+    			"type": "integer",
+    			"default": 180
+    		},
+    		{
+    			"name": "activationDelay",
+    			"label": "@apaf.page.preferences.workflow.activation.delay",
+    			"type": "integer",
+    			"default": 1000
+    		},
+    		{
+    			"name": "confirmDelete",
+    			"label": "@apaf.page.preferences.workflow.delete.confirm",
+    			"type": "switch",
+    			"default": true
+    		},
+    		{
+    			"name": "autoSave",
+    			"label": "@apaf.page.preferences.workflow.auto.save",
+    			"type": "switch",
+    			"default": false
+    		},
+    		{
+    			"name": "curvedConnections",
+    			"label": "@apaf.page.preferences.workflow.curved.connections",
+    			"type": "switch",
+    			"default": false
+    		}
+    ]
+  	},
+  	{
+  		"point": "npa.runtime.property.provider",
+  		"id": "apaf.workflow.property.timeout",
+		"name": "workflow.global.timeout",
+		"description": "Global execution timeout for server-side Workflows",
+		"type": "int",
+		"value": 300000,
+		"locked": false
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workflow.tool.queryWorkflows",
+  		"apiId": "apaf.workflow.query.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workflow.tool.getWorkflowByName",
+  		"apiId": "apaf.workflow.get.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.workflow.tool.executeWorkflow",
+  		"apiId": "apaf.workflow.execute.handler"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.query.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "POST",
+  		"schema": "/query",
+  		"handler": "queryWorkflowHandler",
+  		"securityRole": "developer",
+  "description": "Query the list of Workflows",
+  "input": {"selector": {"name": {"$regex": "abcd"}}},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Query Workflows", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-workflow/query": {
+  			"post": {
+  				"operationId": "queryWorkflows",
+  				"summary": "Query the list of APAF Workflows",
+  				"description": "Returns a list of Workflow records matching the given CouchDB Mango selector. Pass an empty body to retrieve all workflows. Each record includes name, version, description and uuid but not the full node graph.",
+  				"requestBody": {
+  					"required": false,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"properties": {
+  									"selector": {"type": "object", "description": "A CouchDB Mango selector, e.g. {\"name\":{\"$regex\":\"temperature\"}}. Omit to return all workflows."}
+  								}
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Query successful."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.create.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "POST",
+  		"schema": "/",
+  		"handler": "createWorkflowHandler",
+  		"securityRole": "developer",
+		"description": "Create a new Workflow definition",
+		"input": {"name": "abcd","version":"1.0.0","description":"abcd","serverSide": false,"data": {"nodes":[],"connections":[]}}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.update.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "PUT",
+  		"schema": "/",
+  		"handler": "updateWorkflowHandler",
+  		"securityRole": "developer",
+		"description": "Update an existing Workflow definition",
+		"input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","version":"1.0.0","description":"abcd","serverSide": false,"data": {"nodes":[],"connections":[]}}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.delete.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "DELETE",
+  		"schema": "/:id",
+  		"handler": "deleteWorkflowHandler",
+  		"securityRole": "developer",
+		"description": "Delete an existing Workflow definition given its uuid"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.get.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "GET",
+  		"schema": "/:workflowName/:workflowVersion",
+  		"handler": "getByNameHandler",
+  		"securityRole": "coreServices",
+  "description": "Get an existing Workflow definition given its name and version",
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Get Workflow by Name", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-workflow/{workflowName}/{workflowVersion}": {
+  			"get": {
+  				"operationId": "getWorkflowByName",
+  				"summary": "Get a Workflow definition by name and version",
+  				"description": "Returns the full definition of a Workflow given its name and version, including the node graph. Useful to retrieve the workflow UUID for use in a Scheduler.",
+  				"parameters": [
+  					{"name": "workflowName", "in": "path", "required": true, "description": "Name of the workflow", "schema": {"type": "string"}},
+  					{"name": "workflowVersion", "in": "path", "required": true, "description": "Version of the workflow, e.g. 1.0.0", "schema": {"type": "string"}}
+  				],
+  				"responses": {
+  					"200": {"description": "Workflow found."},
+  					"404": {"description": "Workflow not found."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
+  	},
+  	{
+  		"point": "apaf.datatype.object.initializer",
+  		"id": "apaf.workflow.role.initializer.coreServices",
+  		"datatype": "role",
+  		"data": {
+  			"name": "coreServices",
+  			"description": "Grant permission to use APAF Core services"
+  		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.workflow.menu.item",
+  		"menu": "developmentMenuPlaceholder",
+  		"securityRole": "",
+  		"item": {
+			"id": "manageWorkflow",
+    		"label": "@apaf.menu.workflow.label",
+    		"actionId": "redirect",
+    		"icon_": "/uiTools/img/silk/chart_organisation.png",
+    		"icon": "/apaf-workflow-ui/img/apaf-workflows.png",
+    		"uri": "/apaf-workflow-ui/html/manageWorkflows.html"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.execute.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "POST",
+  		"schema": "/execute/:id",
+  		"handler": "executeWorkflowHandler",
+  		"securityRole": "coreServices",
+  "description": "Execute an existing Workflow given its definition uuid",
+  "input": {"prop1": "value1"},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Execute Workflow", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-workflow/execute/{id}": {
+  			"post": {
+  				"operationId": "executeWorkflow",
+  				"summary": "Execute an APAF Workflow given its UUID",
+  				"description": "Executes a Workflow synchronously and returns the runtime context after execution. The request body is the initial execution context passed to the workflow. Use {\"status\": \"pending\"} for workflows that need no input. For workflows that require input data, add the expected properties to the context object (e.g. {\"status\": \"pending\", \"argument1\": \"some value\", \"argument2\": false}). The response data contains the final context, including a '_console' array with execution log events. Use _options to control engine behaviour ({\"noTimeout\": true, \"noLogging\": true}).",
+  				"parameters": [
+  					{"name": "id", "in": "path", "required": true, "description": "UUID of the Workflow definition to execute", "schema": {"type": "string"}}
+  				],
+  				"requestBody": {
+  					"required": false,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"description": "The initial execution context passed directly to the workflow. Use {\"status\": \"pending\"} for workflows that need no input. For workflows that require input data, add the expected properties at the root of the body (e.g. {\"status\": \"pending\", \"arg1\": 2, \"arg2\": 3}). Use _options to control engine behaviour ({\"noTimeout\": true, \"noLogging\": true}).",
+  								"properties": {
+  									"status": {"type": "string", "description": "Optional initial workflow status, typically set to 'pending'."},
+  									"_options": {"type": "object", "description": "Optional workflow engine flags such as {\"noTimeout\": true, \"noLogging\": true}."}
+  								},
+  								"additionalProperties": true
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Workflow executed. Response data contains the final runtime context including '_console' log."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.workflow.get.custom.nodes.handler",
+  		"router": "apaf.workflow.router",
+  		"method": "GET",
+  		"schema": "/customNodes",
+  		"handler": "getCustomeNodesHandler",
+  		"securityRole": "coreServices",
+		"description": "Returns user-defined and extension-defined custom nodes",
+		"input": ""
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.workflow.doc.htdocs",
+  		"path": "/apaf-workflow-doc",
+  		"localDir": "htdocs/docs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.workflow.doc",
+  		"label": "apaf.workflow - Workflow Engine",
+  		"category": "APAF Framework",
+  		"subcategory": "Async & Scheduling",
+  		"url": "/apaf-workflow-doc/apafWorkflow.html"
+  	}
+  	 ],
+  	 "provides": [
+  	{"id": "apaf.workflow.node.provider"}
+  ]
+}
