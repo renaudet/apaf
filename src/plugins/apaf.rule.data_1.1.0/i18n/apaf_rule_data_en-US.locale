@@ -1,0 +1,8 @@
+apaf.page.ruledata.menu=Manage Rule Data
+apaf.page.ruledata.title=Manage Rule Data
+apaf.page.ruledata.delete.confirm=Are you sure you really want to delete the Rule Data "{0}"?
+apaf.page.ruledata.delete.flash=Rule Data deleted!
+apaf.page.ruledata.selection.title=Available Rule Data
+apaf.ruledata.form.name=Name
+apaf.ruledata.form.description=Description
+apaf.ruledata.form.values=Values

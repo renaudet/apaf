@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.rule.data plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.rule.data - Rule Data Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.rule.data &mdash; Rule Data Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.rule.data</b> plugin manages named sets of string values called <i>rule data</i>.
+		Rule data records act as server-side lookup tables: they store a list of values under a unique
+		name that can be retrieved at runtime by name and used in workflow logic, servlets, or UI
+		components (e.g. dropdown lists).
+
+		<h2>Data Model</h2>
+
+		Each rule data record contains:
+		<ul>
+			<li><b>name</b> — unique identifier used at runtime to fetch the record</li>
+			<li><b>description</b> — free-text description of the rule's purpose</li>
+			<li><b>values</b> — array of string values</li>
+		</ul>
+
+		Records are stored in the <code>apaf_rule_data</code> CouchDB database.
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-rule-data/query</td><td>developer</td><td>Query rule data records with a CouchDB Mango selector</td></tr>
+				<tr><td>GET</td><td>/apaf-rule-data/rule/:name</td><td>(authenticated)</td><td>Get a rule data record by unique name</td></tr>
+				<tr><td>GET</td><td>/apaf-rule-data/:id</td><td>developer</td><td>Get a rule data record by UUID</td></tr>
+				<tr><td>POST</td><td>/apaf-rule-data/</td><td>developer</td><td>Create a new rule data record</td></tr>
+				<tr><td>PUT</td><td>/apaf-rule-data/</td><td>developer</td><td>Update an existing rule data record</td></tr>
+				<tr><td>DELETE</td><td>/apaf-rule-data/:id</td><td>administrator</td><td>Delete a rule data record</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Workflow Node</h2>
+
+		<b>apaf.rule.data</b> contributes the <b>"Read a RuleData set"</b> workflow node.
+		This node fetches a rule data record by name and writes the <code>values</code> array
+		into the workflow execution context, making it available to subsequent nodes.
+
+		<h2>Usage Example</h2>
+
+		Fetching rule data values from a servlet:
+
+		<div class="code">
+		&nbsp;1.&nbsp;let npaRest = context.runtime.getPlugin(<span style="color:#3469e3;">'npa.rest'</span>);<br>
+		&nbsp;2.&nbsp;npaRest.get(<span style="color:#3469e3;">'/apaf-rule-data/rule/my-rule-name'</span>, {}, function(err, result) {<br>
+		&nbsp;3.&nbsp;&nbsp;&nbsp;if (!err) {<br>
+		&nbsp;4.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let values = result.data.values; // array of strings<br>
+		&nbsp;5.&nbsp;&nbsp;&nbsp;}<br>
+		&nbsp;6.&nbsp;});
+		</div>
+
+		<h2>MCP Tools</h2>
+
+		The plugin registers six MCP tools covering the full lifecycle:
+		<code>queryRuleData</code>, <code>getRuleDataById</code>, <code>getRuleDataByName</code>,
+		<code>createRuleData</code>, <code>updateRuleData</code>, <code>deleteRuleData</code>.
+
+		<h2>Notes</h2>
+		<ul>
+			<li>Rule data names must be unique across the <code>apaf_rule_data</code> database.
+			    Attempting to create a duplicate name returns an error.</li>
+			<li>The <code>/apaf-rule-data/rule/:name</code> endpoint is readable by any authenticated
+			    user — it is designed for runtime consumption by UI components and servlets.</li>
+		</ul>
+
+	</body>
+</html>

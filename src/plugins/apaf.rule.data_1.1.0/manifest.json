@@ -1,0 +1,393 @@
+{
+  "id": "apaf.rule.data",
+  "name": "Rule Data support plugin for APAF",
+  "version": "1.1.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.workflow","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.mcp","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.rule.data.logger",
+  		"dir": "apaf.rule.data"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.rule.data.router",
+  		"path": "/apaf-rule-data"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.rule.data.htdocs",
+  		"path": "/apaf-rule-data-ui",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.rule.data.locale.provider.enUS",
+  		"path": "i18n/apaf_rule_data_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.rule.data.locale.provider.en",
+  		"path": "i18n/apaf_rule_data_en-US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.rule.data.locale.provider.frFR",
+  		"path": "i18n/apaf_rule_data_fr-FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.rule.data.locale.provider.fr",
+  		"path": "i18n/apaf_rule_data_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.rule.data.datatype",
+  		"datatype": {
+  			"id": "ruleData",
+  			"name": "Rule Data",
+  			"builtIn": true,
+  			"persistent": true,
+  			"database": "apaf_rule_data",
+  			"fields": [
+    			{
+    				"name": "name",
+    				"label": "Name",
+    				"required": true,
+    				"size": 4,
+    				"help": "This Rule-data name - used to retrieve the rule-data values"
+    			},
+    			{
+    				"name": "description",
+    				"label": "Description",
+    				"size": 8
+    			},
+    			{
+    				"name": "values",
+    				"label": "Values",
+    				"type": "array",
+    				"datatype": "text",
+    				"rows": 10,
+    				"editable": true
+    			}
+  			]
+  		}
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.rule.data.tool.queryRuleData",
+  		"apiId": "apaf.rule.data.query.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.rule.data.tool.getRuleDataById",
+  		"apiId": "apaf.rule.data.find.by.id.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.rule.data.tool.getRuleDataByName",
+  		"apiId": "apaf.rule.data.find.by.name.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.rule.data.tool.createRuleData",
+  		"apiId": "apaf.rule.data.create.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.rule.data.tool.updateRuleData",
+  		"apiId": "apaf.rule.data.update.handler"
+  	},
+  	{
+  		"point": "npa.mcp.tool",
+  		"id": "apaf.rule.data.tool.deleteRuleData",
+  		"apiId": "apaf.rule.data.delete.handler"
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.rule.data.menu.item",
+  		"menu": "developmentMenuPlaceholder",
+  		"securityRole": "",
+  		"item": {
+			"id": "ruleDataEditor",
+    		"label": "@apaf.page.ruledata.menu",
+    		"actionId": "redirect",
+    		"icon": "/apaf-rule-data-ui/img/ruleDataEditor.png",
+    		"uri": "/apaf-rule-data-ui/html/manageRuleData.html"
+		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.rule.data.query.handler",
+  		"router": "apaf.rule.data.router",
+  		"method": "POST",
+  		"schema": "/query",
+  		"handler": "queryRuleHandler",
+  		"securityRole": "",
+  "description": "Query the list of Rule Data",
+  "input": {"selector": {"name": {"$regex": "abcd"}}},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Rule Data Query", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-rule-data/query": {
+  			"post": {
+  				"operationId": "queryRuleData",
+  				"summary": "Query the list of Rule Data",
+  				"description": "Returns a list of Rule Data records matching the given CouchDB Mango selector. Pass an empty body to retrieve all records.",
+  				"requestBody": {
+  					"required": false,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"properties": {
+  									"selector": {"type": "object", "description": "A CouchDB Mango selector, e.g. {\"name\":{\"$regex\":\"abcd\"}}. Omit to return all records."}
+  								}
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Query successful."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.rule.data.find.by.id.handler",
+  		"router": "apaf.rule.data.router",
+  		"method": "GET",
+  		"schema": "/:id",
+  		"handler": "findRuleByPrimaryKeyHandler",
+  		"securityRole": "developer",
+  "description": "Get a Rule Data record given its uuid",
+  "input": "",
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Get Rule Data by UUID", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-rule-data/{id}": {
+  			"get": {
+  				"operationId": "getRuleDataById",
+  				"summary": "Get a Rule Data record given its UUID",
+  				"description": "Returns a single Rule Data record identified by its UUID.",
+  				"parameters": [
+  					{"name": "id", "in": "path", "required": true, "description": "UUID of the Rule Data record", "schema": {"type": "string"}}
+  				],
+  				"responses": {
+  					"200": {"description": "Rule Data record found."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.rule.data.find.by.name.handler",
+  		"router": "apaf.rule.data.router",
+  		"method": "GET",
+  		"schema": "/rule/:name",
+  		"handler": "getRuleByNameHandler",
+  		"securityRole": "",
+  "description": "Get a Rule Data record given its rule's name",
+  "input": "",
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Get Rule Data by Name", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-rule-data/rule/{name}": {
+  			"get": {
+  				"operationId": "getRuleDataByName",
+  				"summary": "Get a Rule Data record given its rule name",
+  				"description": "Retrieves a Rule Data record by its unique rule name. Used to resolve rule values at runtime.",
+  				"parameters": [
+  					{"name": "name", "in": "path", "required": true, "description": "The rule's unique name", "schema": {"type": "string"}}
+  				],
+  				"responses": {
+  					"200": {"description": "Rule Data record found."},
+  					"404": {"description": "Rule Data not found."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.rule.data.create.handler",
+  		"router": "apaf.rule.data.router",
+  		"method": "POST",
+  		"schema": "/",
+  		"handler": "createRuleHandler",
+  		"securityRole": "developer",
+  "description": "Create a new Rule Data record",
+  "input": {"name": "abcd","description": "abcd","values": ["abcd","efgh"]},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Create Rule Data", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-rule-data/": {
+  			"post": {
+  				"operationId": "createRuleData",
+  				"summary": "Create a new Rule Data record",
+  				"description": "Creates a new Rule Data record in the apaf_rule_data database.",
+  				"requestBody": {
+  					"required": true,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"required": ["name"],
+  								"properties": {
+  									"name": {"type": "string", "description": "Unique rule name, used to retrieve the rule-data values"},
+  									"description": {"type": "string", "description": "Optional description of the rule"},
+  									"values": {"type": "array", "items": {"type": "string"}, "description": "List of string values for this rule"}
+  								}
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Rule Data record created successfully."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.rule.data.update.handler",
+  		"router": "apaf.rule.data.router",
+  		"method": "PUT",
+  		"schema": "/",
+  		"handler": "updateRuleHandler",
+  		"securityRole": "developer",
+  "description": "Update an existing Rule Data record",
+  "input": {"id": "abcd-abcd-abcd-abcd","name": "abcd","description": "abcd","values": ["abcd","efgh"]},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Update Rule Data", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-rule-data/": {
+  			"put": {
+  				"operationId": "updateRuleData",
+  				"summary": "Update an existing Rule Data record",
+  				"description": "Updates an existing Rule Data record. The record must include its id and _rev fields for optimistic concurrency control.",
+  				"requestBody": {
+  					"required": true,
+  					"content": {
+  						"application/json": {
+  							"schema": {
+  								"type": "object",
+  								"required": ["id"],
+  								"properties": {
+  									"id": {"type": "string", "description": "UUID of the Rule Data record to update"},
+  									"_rev": {"type": "string", "description": "CouchDB revision token for optimistic concurrency"},
+  									"name": {"type": "string", "description": "Unique rule name"},
+  									"description": {"type": "string", "description": "Optional description of the rule"},
+  									"values": {"type": "array", "items": {"type": "string"}, "description": "List of string values for this rule"}
+  								}
+  							}
+  						}
+  					}
+  				},
+  				"responses": {
+  					"200": {"description": "Rule Data record updated successfully."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.rule.data.delete.handler",
+  		"router": "apaf.rule.data.router",
+  		"method": "DELETE",
+  		"schema": "/:id",
+  		"handler": "deleteRuleHandler",
+  		"securityRole": "administrator",
+  "description": "Delete an existing Rule Data record",
+  "input": {},
+  "apidoc": {
+  	"openapi": "3.1.0",
+  	"info": {"title": "Delete Rule Data", "version": "1.0.0"},
+  	"paths": {
+  		"/apaf-rule-data/{id}": {
+  			"delete": {
+  				"operationId": "deleteRuleData",
+  				"summary": "Delete a Rule Data record given its UUID",
+  				"description": "Deletes an existing Rule Data record. Requires the administrator security role.",
+  				"parameters": [
+  					{"name": "id", "in": "path", "required": true, "description": "UUID of the Rule Data record to delete", "schema": {"type": "string"}}
+  				],
+  				"responses": {
+  					"200": {"description": "Rule Data record deleted successfully."},
+  					"500": {"description": "Server or database error."}
+  				}
+  			}
+  		}
+  	}
+  }
+  	},
+  	{
+  		"point": "npa.ui.tools.core.editor",
+  		"id": "apaf.rule.data.reference.editor",
+  		"datatype": "ruleDataReference",
+  		"libraries": [
+  			{"type": "js","uri": "/apaf-rule-data-ui/js/editors/ruleDataReferenceEditor.js"}
+  		],
+  		"editor": "apafUi.RuleDataReferenceEditor"
+  	},
+  	{
+  		"point": "apaf.workflow.node.provider",
+  		"id": "apaf.rule.data.read.node.provider",
+  		"name": "Read a RuleData set",
+  		"resourcePath": "/workflow/readRuleDataNode.js"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.rule.data.doc.htdocs",
+  		"path": "/apaf-rule-data-doc",
+  		"localDir": "htdocs/docs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.rule.data.doc",
+  		"label": "apaf.rule.data - Rule Data Sets",
+  		"category": "APAF Framework",
+  		"subcategory": "Persistence",
+  		"url": "/apaf-rule-data-doc/apafRuleData.html"
+  	}
+  	 ],
+  	 "provides": [
+  ]
+}

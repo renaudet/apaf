@@ -1,0 +1,8 @@
+apaf.page.ruledata.menu=G&eacute;rer les donn&eacute;es r&eacute;glementaires
+apaf.page.ruledata.title=Gestion des donn&eacute;es r&eacute;glementaires
+apaf.page.ruledata.delete.confirm=Voulez-vous vraiment supprimer la fiche r&eacute;glementaire "{0}" ?
+apaf.page.ruledata.delete.flash=Fiche r&eacute;glementaire supprim&eacute; !
+apaf.page.ruledata.selection.title=Liste des fiches r&eacute;glementaires
+apaf.ruledata.form.name=Nom
+apaf.ruledata.form.description=Description
+apaf.ruledata.form.values=Valeurs
