@@ -1,0 +1,57 @@
+const NODE_TYPE = 'LongRunning';
+
+helper.palette.contribute = function(editor){
+  var loader = new ImageLoader();
+  loader.addImage('backgroundIcon','/resources/img/workflows/mediumNodeIcon.png');
+  loader.addImage('foregroundIcon','/uiTools/img/silk/clock_link.png');
+  loader.load();
+  loader.onReadyState = function(){
+    factory = new GraphicNodeFactory(NODE_TYPE,loader.getImage('backgroundIcon'));
+    factory.instanceCount = 0;
+    factory.createNode = function(){
+      var nodeId = NODE_TYPE+'_'+(this.instanceCount++);
+      var node = new GraphicNode(nodeId,NODE_TYPE);
+      node.backgroundIcon = loader.getImage('backgroundIcon');
+      node.foregroundIcon = loader.getImage('foregroundIcon');
+      var input01 = new GraphicNodeTerminal('input');
+      var output01 = new GraphicNodeTerminal('output');
+      var output02 = new GraphicNodeTerminal('error');
+      node.addInputTerminal(input01);
+      node.addOutputTerminal(output01);
+      node.addOutputTerminal(output02);
+      node.addProperty('delay1','First delay','int',false,2000);
+      node.addProperty('delay2','Second delay','int',false,4000);
+      return node;
+    }
+    editor.getPalette().addFactory(factory);
+    factory.close();
+    editor.refresh();
+  }
+}
+
+helper.engine.addCustomNode = function(engine){
+   let nodeHandler = function(node,inputTerminalName,executionContext){
+      if('input'==inputTerminalName){
+         let jobService = executionContext._engine.plugin.getService('jobs');
+         let job = jobService.createJob(executionContext._engine.owner.login,'Node '+node.id()+' activation');
+         node.log('Starting Node '+node.id()+' execution');
+         let delay1 = node.getProperty('delay1');
+         let delay2 = node.getProperty('delay2');
+            
+         setTimeout(function(){
+           node.log('Node activated since '+delay1+' msec.');
+           job.progress = 33;
+           jobService.updateJob(job);
+           setTimeout(function(){
+             node.log('Node activated since '+(delay1+delay2)+' msec.');
+             job.progress = 100;
+             jobService.updateJob(job);
+             node.fire('output',executionContext);
+           },delay2);
+         },delay1);
+      }else{
+         node.error('Invalid input terminal "'+inputTerminalName+'" for '+NODE_TYPE+' node #'+node.id());
+      }
+   }
+   engine.registerNodeType(NODE_TYPE,nodeHandler);
+}

@@ -1,0 +1,25 @@
+const MAIN_CARD_ID = 'genericApplicationsCard';
+const UPLOAD_MANAGER_CONFIG = {
+    "id":"uploadManager",
+    "version": "1.0.0",
+    "type": "apaf.UploadManager",
+    "configuration": {
+    	"allowMultiple": false,
+    	"targetPath": "Tests"
+    }
+}
+
+main = function(){
+	let card = $apaf(MAIN_CARD_ID);
+	let html = '';
+	html += '<div class="row" style="margin-top: 50px;">';
+	html += '   <div class="col-2 text-right" style="font-weight: bold;">My Documents</div>';
+	html += '   <div class="col-5">';
+	html += '      <div id="uploadManagerDiv" class="user-app" data-ref="uploadManager"></div>';
+	html += '   </div>';
+	html += '   <div class="col-7">&nbsp;</div>';
+	html += '</div>';
+	card.setContent(html);
+	npaUi.registerComponentConfig('uploadManager',UPLOAD_MANAGER_CONFIG);
+	npaUi.render('user-app');
+}
