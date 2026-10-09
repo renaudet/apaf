@@ -1,0 +1,29 @@
+{
+    "id":"itemSelectionList",
+    "version": "1.0.0",
+    "type": "SelectionList",
+    "configuration": {
+    	"header": {
+    		"title": "@apaf.page.datatypes.selection.title",
+    		"showFilter": true
+    	},
+    	"datasource": {
+            "type": "managed",
+            "manager": "datatypeManager"
+        },
+        "renderer": {
+        	"type": "FieldItemRenderer",
+        	"processor": "'<span><img src=\"/uiTools/img/silk/table.png\">&nbsp;'+@.label+'&nbsp;<small>('+@.name+')</small></span><span>'+(@.persistent?'<img src=\"/uiTools/img/silk/database.png\" title=\"persistent on database '+@.database+'\">':(@.private?'<img src=\"/uiTools/img/silk/lock.png\" title=\"Private\">':''))+'</span>'"
+        },
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "label",
+        	"ascending": false
+        },
+        "constraints": {
+        	"height": {
+        		"processor": "$('#workArea').height()-40"
+        	}
+        } 
+    }
+}

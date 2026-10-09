@@ -1,0 +1,139 @@
+{
+    "id":"editForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.datatypes.form.title",
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.user.datatype.name",
+    			"required": true,
+    			"size": 3,
+    			"help": "@apaf.user.datatype.name.help"
+    		},
+    		{
+    			"name": "label",
+    			"label": "@apaf.user.datatype.label",
+    			"required": true,
+    			"size": 3,
+    			"help": "@apaf.user.datatype.label.help"
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.user.datatype.description",
+    			"required": false,
+    			"size": 9
+    		},
+    		{
+    			"name": "private",
+    			"label": "@apaf.user.datatype.private",
+    			"type": "check",
+    			"help": "@apaf.user.datatype.private.help"
+    		},
+    		{
+    			"name": "persistent",
+    			"label": "@apaf.user.datatype.persistent",
+    			"type": "check",
+    			"help": "@apaf.user.datatype.persistent.help"
+    		},
+    		{
+    			"name": "auditEnabled",
+    			"label": "@apaf.user.datatype.auditEnabled",
+    			"type": "check",
+    			"help": "@apaf.user.datatype.auditEnabled.help"
+    		},
+    		{
+    			"name": "database",
+    			"label": "@apaf.user.datatype.database",
+    			"required": false,
+    			"size": 4,
+    			"help": "@apaf.user.datatype.database.help",
+    			"constraint": "if(!@.persistent){#.val('');#.setEditMode(false);}else{#.setEditMode(true);}"
+    		},
+    		{
+    			"name": "readRole",
+    			"label": "@apaf.user.datatype.read.role",
+    			"type": "select",
+    			"multiple": false,
+    			"required": false,
+    			"size": 4,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "roleManager"
+		        },
+		        "renderer": {
+		        	"label": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.name"
+		        	}
+		        }
+    		},
+    		{
+    			"name": "writeRole",
+    			"label": "@apaf.user.datatype.update.role",
+    			"type": "select",
+    			"multiple": false,
+    			"required": false,
+    			"size": 4,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "roleManager"
+		        },
+		        "renderer": {
+		        	"label": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.name"
+		        	}
+		        }
+    		},
+    		{
+    			"name": "deleteRole",
+    			"label": "@apaf.user.datatype.delete.role",
+    			"type": "select",
+    			"multiple": false,
+    			"required": false,
+    			"size": 4,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "roleManager"
+		        },
+		        "renderer": {
+		        	"label": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.name"
+		        	}
+		        }
+    		},
+    		{
+    			"name": "addFieldBtn",
+    			"label": "@apaf.user.datatype.add.field",
+    			"type": "button",
+    			"buttonType": "primary",
+    			"actionId": "addField"
+    		},
+    		{
+    			"name": "testBtn",
+    			"label": "@apaf.user.datatype.test.field",
+    			"type": "button",
+    			"buttonType": "success",
+    			"actionId": "testForm"
+    		}
+    	]
+    }
+}

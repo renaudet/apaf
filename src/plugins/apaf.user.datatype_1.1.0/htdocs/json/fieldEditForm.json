@@ -1,0 +1,336 @@
+{
+    "id":"fieldEditForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.datatypes.field.form.title",
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "datatypeFieldsTable",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.user.datatype.field.name.label",
+    			"required": true,
+    			"size": 4
+    		},
+    		{
+    			"name": "label",
+    			"label": "@apaf.user.datatype.field.label.label",
+    			"required": true,
+    			"size": 5,
+    			"help": "@apaf.user.datatype.field.label.help"
+    		},
+    		{
+    			"name": "displayIndex",
+    			"label": "@apaf.user.datatype.field.displayIndex.label",
+    			"required": true,
+    			"size": 2,
+    			"type": "integer",
+    			"default": 1,
+    			"help": "@apaf.user.datatype.field.displayIndex.help"
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.user.datatype.field.description.label",
+    			"required": false,
+    			"size": 9
+    		},
+    		{
+    			"name": "help",
+    			"label": "@apaf.user.datatype.field.help.label",
+    			"required": false,
+    			"size": 9
+    		},
+    		{
+    			"name": "type",
+    			"label": "@apaf.user.datatype.field.type.label",
+    			"type": "select",
+    			"size": "5",
+    			"values": [
+    				{"label": "@apaf.user.datatype.field.type.text", "value": "text"},
+    				{"label": "@apaf.user.datatype.field.type.password", "value": "password"},
+    				{"label": "@apaf.user.datatype.field.type.url", "value": "url"},
+    				{"label": "@apaf.user.datatype.field.type.integer", "value": "integer"},
+    				{"label": "@apaf.user.datatype.field.type.date", "value": "date"},
+    				{"label": "@apaf.user.datatype.field.type.check", "value": "check"},
+    				{"label": "@apaf.user.datatype.field.type.switch", "value": "switch"},
+    				{"label": "@apaf.user.datatype.field.type.radio", "value": "radio"},
+    				{"label": "@apaf.user.datatype.field.type.color", "value": "color"},
+    				{"label": "@apaf.user.datatype.field.type.range", "value": "range"},
+    				{"label": "@apaf.user.datatype.field.type.select", "value": "select"},
+    				{"label": "@apaf.user.datatype.field.type.json", "value": "json"},
+    				{"label": "@apaf.user.datatype.field.type.javascript", "value": "javascript"},
+    				{"label": "@apaf.user.datatype.field.type.textarea", "value": "textarea"},
+    				{"label": "@apaf.user.datatype.field.type.array", "value": "array"},
+    				{"label": "@apaf.user.datatype.field.type.upload", "value": "upload"},
+    				{"label": "@apaf.user.datatype.field.type.button", "value": "button"},
+    				{"label": "@apaf.user.datatype.field.type.placeholder", "value": "placeholder"},
+    				{"label": "@apaf.user.datatype.field.type.richText", "value": "richText"},
+    				{"label": "@apaf.user.datatype.field.type.datatype", "value": "userDatatype"},
+    				{"label": "@apaf.user.datatype.field.type.reference", "value": "reference"},
+    				{"label": "@apaf.user.datatype.field.type.relationship", "value": "relationship"},
+    				{"label": "@apaf.user.datatype.field.type.ruleDataRef", "value": "ruleDataReference"},
+    				{"label": "@apaf.user.datatype.field.type.timestamp", "value": "timestamp"}
+    			]
+    		},
+    		{
+    			"name": "isIdField",
+    			"label": "@apaf.user.datatype.field.idfield.label",
+    			"type": "switch"
+    		},
+    		{
+    			"name": "required",
+    			"label": "@apaf.user.datatype.field.required.label",
+    			"type": "switch",
+				"constraint": "if(@.isIdField){#.val(true);}",
+				"constrainedBy": "isIdField"
+    		},
+    		{
+    			"name": "searchField",
+    			"label": "@apaf.user.datatype.field.search.label",
+    			"type": "switch",
+    			"default": true
+    		},
+    		{
+    			"name": "jsonData",
+    			"label": "@apaf.user.datatype.field.json.data.label",
+    			"type": "switch",
+    			"default": false,
+				"constraint": "if(@.type=='json'){#.show();}else{#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "multiple",
+    			"label": "@apaf.user.datatype.field.multiple.label",
+    			"type": "switch",
+				"constraint": "if(@.type=='reference' || @.type=='relationship'){#.show();#.setEditMode(true)}else{#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "dragEnabled",
+    			"label": "@apaf.user.datatype.field.dragEnabled.label",
+    			"type": "switch",
+    			"value": true,
+				"constraint": "if(@.type=='upload'){#.show();#.setEditMode(true)}else{#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "size",
+    			"label": "@apaf.user.datatype.field.size.label",
+    			"required": false,
+    			"type": "range",
+    			"size": 7,
+    			"min": 1,
+    			"max": 10,
+    			"step": 1,
+    			"help": "@apaf.user.datatype.field.size.help",
+				"constraint": "if(@.type=='text'||@.type=='password'||@.type=='integer'||@.type=='date'||@.type=='range'||@.type=='select'||@.type=='url'||@.type=='textarea'||@.type=='upload'||@.type=='relationship'||@.type=='ruleDataReference'){#.setEditMode(true)}else{#.val(5);#.setEditMode(false);}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "rows",
+    			"label": "@apaf.user.datatype.field.rows.label",
+    			"required": false,
+    			"type": "range",
+    			"size": 7,
+    			"min": 1,
+    			"max": 30,
+    			"step": 1,
+    			"value": 3,
+    			"help": "@apaf.user.datatype.field.rows.help",
+				"constraint": "if(@.type=='textarea'){#.show();#.setEditMode(true)}else{#.val(5);#.setEditMode(false);#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "constraint",
+    			"label": "@apaf.user.datatype.field.constraint.label",
+    			"type": "text",
+    			"required": false,
+    			"size": 9
+    		},
+    		{
+    			"name": "constrainedBy",
+    			"label": "@apaf.user.datatype.field.constrainedBy.label",
+    			"type": "text",
+    			"required": false,
+    			"size": 3,
+    			"help": "@apaf.user.datatype.field.constrainedBy.help",
+				"constraint": "if(@.constraint.length>0){#.show();#.setEditMode(true);}else{#.val('');#.setEditMode(false);#.hide();}",
+				"constrainedBy": "constraint"
+    		},
+    		{
+    			"name": "renderer",
+    			"label": "@apaf.user.datatype.field.renderer.label",
+    			"type": "text",
+    			"required": false,
+    			"size": 9,
+    			"help": "@apaf.user.datatype.field.renderer.help",
+    			"constraint": "if(@.type=='text'||@.type=='password'||@.type=='select'||@.type=='url'||@.type=='array'||@.type=='relationship'||@.type=='ruleDataReference'||@.type=='userDatatype'){#.show();#.setEditMode(true)}else{#.val('');#.setEditMode(false);#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "default",
+    			"label": "@apaf.user.datatype.field.default.label",
+    			"type": "text",
+				"size": 5,
+    			"required": false,
+				"default": "",
+				"constraint_": "if(@.type=='text'||@.type=='integer'||@.type=='range'){#.setEditMode(true);}else{#.val('');#.setEditMode(false);}",
+				"constraint": "if(@.type=='text'||@.type=='integer'||@.type=='range'){#.show();#.setEditMode(true);}else{#.val('');#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "min",
+    			"label": "@apaf.user.datatype.field.min.label",
+    			"type": "integer",
+    			"required": false,
+				"default": 0,
+				"constraint": "if(@.type=='range'){#.show();#.setEditMode(true);}else{#.val(0);#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "max",
+    			"label": "@apaf.user.datatype.field.max.label",
+    			"type": "integer",
+    			"required": false,
+				"default": 10,
+				"constraint": "if(@.type=='range'){#.show();#.setEditMode(true);}else{#.val(0);#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "step",
+    			"label": "@apaf.user.datatype.field.step.label",
+    			"type": "integer",
+    			"required": false,
+				"default": 1,
+				"constraint": "if(@.type=='range'){#.show();#.setEditMode(true);}else{#.val(0);#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "datatype",
+    			"label": "@apaf.user.datatype.field.datatype.label",
+    			"type": "text",
+    			"size": 3,
+    			"required": true,
+				"default": "datatype",
+				"constraint": "if(@.type=='array' || @.type=='relationship' || @.type=='userDatatype'){#.show();#.setEditMode(true);}else{#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "ruleData",
+    			"label": "@apaf.user.datatype.field.ruleData.label",
+    			"type": "text",
+    			"size": 4,
+    			"required": true,
+				"default": "ruleDataTable",
+				"constraint": "if(@.type=='ruleDataReference'){#.show();#.setEditMode(true);}else{#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "sortOn",
+    			"label": "@apaf.user.datatype.field.sortOn.label",
+    			"type": "text",
+    			"size": 5,
+    			"required": false,
+				"constraint": "if(@.type=='relationship'){#.show();#.setEditMode(true);}else{#.val('');#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "sortStrategy",
+    			"label": "@apaf.user.datatype.field.sortStrategy.label",
+    			"type": "select",
+    			"size": 3,
+    			"values": [
+    				{"label": "Ascending", "value": "asc"},
+    				{"label": "Descending", "value": "desc"},
+    				{"label": "None", "value": "none"}
+    			],
+    			"required": false,
+				"constraint": "if(@.type=='ruleDataReference'){#.show();#.setEditMode(true);}else{#.val('');#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "choices",
+    			"label": "@apaf.user.datatype.field.choice.label",
+    			"type": "array",
+				"datatype": "object",
+    			"required": false,
+				"constraint": "if(@.type=='radio'){#.show();#.setEditMode(true);}else{#.val([]);#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "buttonType",
+    			"label": "@apaf.user.datatype.field.buttonType.label",
+    			"type": "select",
+    			"size": 3,
+    			"required": true,
+				"default": "primary",
+				"values": [
+    				{"label": "Primary", "value": "primary"},
+    				{"label": "Secondary", "value": "secondary"},
+    				{"label": "Success", "value": "success"},
+    				{"label": "Danger", "value": "danger"},
+    				{"label": "Warning", "value": "warning"},
+    				{"label": "Info", "value": "info"},
+    				{"label": "Light", "value": "light"},
+    				{"label": "Dark", "value": "dark"}
+    			],
+				"constraint": "if(@.type=='button'){#.show();#.setEditMode(true);}else{#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "actionId",
+    			"label": "@apaf.user.datatype.field.actionId.label",
+    			"type": "text",
+    			"required": false,
+    			"size": 3,
+				"constraint": "if(@.type=='button'){#.show();#.setEditMode(true);}else{#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "displayFormat",
+    			"label": "@apaf.user.datatype.field.displayFormat.label",
+    			"required": false,
+    			"type": "text",
+    			"size": 3,
+    			"value": "YYYY/MM/DD",
+    			"help": "Y = 'Year', M = 'Month', D = 'Day'",
+				"constraint": "if(@.type=='date' || @.type=='timestamp'){#.setEditMode(true);#.show();}else{#.val('');#.setEditMode(false);#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "storageFormat",
+    			"label": "@apaf.user.datatype.field.storageFormat.label",
+    			"required": false,
+    			"type": "text",
+    			"size": 3,
+    			"value": "YYYY/MM/DD",
+    			"help": "Y = 'Year', M = 'Month', D = 'Day'",
+				"constraint": "if(@.type=='date' || @.type=='timestamp'){#.setEditMode(true);#.show();}else{#.val('');#.setEditMode(false);#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "folder",
+    			"label": "@apaf.user.datatype.field.remoteFolder.label",
+    			"required": true,
+    			"type": "text",
+    			"size": 5,
+    			"value": "Temp",
+    			"help": "The Workspace folder path where to store the uploaded file",
+				"constraint": "if(@.type=='upload'){#.setEditMode(true);#.show();}else{#.val('');#.setEditMode(false);#.hide();}",
+				"constrainedBy": "type"
+    		},
+    		{
+    			"name": "height",
+    			"label": "@apaf.user.datatype.field.height.label",
+    			"required": false,
+    			"size": 2,
+    			"type": "integer",
+    			"default": 200,
+    			"constraint": "if(@.type=='upload'){#.setEditMode(true);#.show();}else{#.val(0);#.setEditMode(false);#.hide();}",
+				"constrainedBy": "type"
+    		}
+    	]
+    }
+}
