@@ -1,0 +1,14 @@
+apaf.debug.traces.menu.label=G&eacute;rer les niveaux de trace
+apaf.debug.traces.page.title=G&eacute;rer les niveaux de trace
+apaf.debug.traces.tree.root=Runtime APAF
+apaf.debug.traces.form.title=Configuration du niveau de trace
+apaf.debug.traces.form.level=Niveau
+apaf.debug.traces.form.logfile=Fichier de log
+apaf.debug.traces.form.logfile.std=Log standard
+apaf.debug.traces.form.logfile.err=Log d&apos;erreur standard
+apaf.debug.traces.form.refresh=Rafra&icirc;chir
+apaf.debug.traces.btn.older=Plus ancien
+apaf.debug.traces.btn.newer=Plus r&eacute;cent
+apaf.debug.traces.status.selected=Plugin s&eacute;lectionn&eacute; :
+apaf.debug.traces.status.level=niveau :
+apaf.debug.traces.flash.updated=Niveau de trace mis &agrave; jour pour

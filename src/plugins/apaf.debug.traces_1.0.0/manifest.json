@@ -1,0 +1,66 @@
+{
+  "id": "apaf.debug.traces",
+  "name": "Debug Trace Level manager for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "requires": [
+    {"type": "plugin","id": "npa.core","version": "1.0.0"},
+    {"type": "plugin","id": "npa.logging","version": "1.0.0"},
+    {"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+    {"type": "plugin","id": "npa.http","version": "1.0.0"},
+    {"type": "plugin","id": "apaf.logs","version": "1.0.0"},
+    {"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+    {
+      "point": "npa.log.provider",
+      "id": "apaf.debug.traces.logger",
+      "dir": "apaf.debug.traces"
+    },
+    {
+      "point": "npa.http.static",
+      "id": "apaf.debug.traces.htdocs",
+      "path": "/apaf-debug-traces",
+      "localDir": "htdocs"
+    },
+    {
+      "point": "npa.ui.locale.provider",
+      "id": "apaf.debug.traces.locale.provider.enUS",
+      "path": "i18n/apaf_debug_traces_en-US.locale",
+      "locale": "en-US"
+    },
+    {
+      "point": "npa.ui.locale.provider",
+      "id": "apaf.debug.traces.locale.provider.en",
+      "path": "i18n/apaf_debug_traces_en-US.locale",
+      "locale": "en"
+    },
+    {
+      "point": "npa.ui.locale.provider",
+      "id": "apaf.debug.traces.locale.provider.frFR",
+      "path": "i18n/apaf_debug_traces_fr-FR.locale",
+      "locale": "fr-FR"
+    },
+    {
+      "point": "npa.ui.locale.provider",
+      "id": "apaf.debug.traces.locale.provider.fr",
+      "path": "i18n/apaf_debug_traces_fr-FR.locale",
+      "locale": "fr"
+    },
+    {
+      "point": "apaf.menu.item.provider",
+      "id": "apaf.debug.traces.menu.item",
+      "menu": "adminMenuPlaceholder",
+      "securityRole": "administrator",
+      "item": {
+        "id": "manageTraces",
+        "label": "@apaf.debug.traces.menu.label",
+        "actionId": "redirect",
+        "icon": "/uiTools/img/silk/transmit_blue.png",
+        "uri": "/apaf-debug-traces/html/manageTraces.html"
+      }
+    }
+  ],
+  "provides": [
+  ]
+}
