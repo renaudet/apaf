@@ -1,0 +1,9 @@
+{
+    "id": "wexSplitter",
+    "version": "1.0.0",
+    "type": "Splitter",
+    "configuration": {
+        "vertical": false,
+        "percentages": [33, 67]
+    }
+}

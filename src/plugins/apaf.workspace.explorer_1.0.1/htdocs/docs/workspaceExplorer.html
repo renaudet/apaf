@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.workspace.explorer plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>apaf.workspace.explorer - Workspace Explorer</title>
+	</head>
+	<body>
+
+		<h1>apaf.workspace.explorer &mdash; Workspace Explorer</h1>
+
+		<h2>Overview</h2>
+
+		<p>The <b>apaf.workspace.explorer</b> plugin provides the <b>My Workspace</b> page, a browser-based
+		explorer for the APAF server-side workspace. The workspace itself (projects, folders and files stored
+		on the server hosting APAF) is managed by the <b>apaf.workspace</b> plugin; the explorer is a pure
+		UI client of the <code>/apaf-workspace</code> REST APIs.</p>
+
+		<p>The page is available from the built-in applications menu (<i>My Workspace</i>) and requires the
+		<code>coreServices</code> security role. Its URL is
+		<code>/apaf-workspace-explorer/html/workspaceExplorer.html</code>.</p>
+
+		<h2>Page Layout</h2>
+
+		<p>The page is split into two resizable panes:</p>
+		<ul>
+			<li><b>Left pane</b> &mdash; a toolbar and a tree showing the projects visible to the current user,
+			with their folders and files. Folder contents are loaded lazily, the first time a project or a
+			folder is selected.</li>
+			<li><b>Right pane</b> &mdash; the content of the selected file (text editor, image viewer or
+			download panel, see <a href="#content">Content Display</a>). When no file is selected, a hint is displayed.</li>
+		</ul>
+
+		<h2>Toolbar Actions</h2>
+
+		<table>
+			<thead><tr><th>Action</th><th>Enabled when</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>New project</td><td>always</td><td>Prompts for a name and creates a <b>personal</b> project (type <code>general</code>) owned by the current user</td></tr>
+				<tr><td>New shared project</td><td>always</td><td>Prompts for a name and creates a <b>shared</b> project (type <code>shared</code>), see <a href="#shared">Shared Projects</a></td></tr>
+				<tr><td>New folder</td><td>a project or folder is selected</td><td>Creates a sub-folder in the selected container</td></tr>
+				<tr><td>New file</td><td>a project or folder is selected</td><td>Creates an empty file in the selected container</td></tr>
+				<tr><td>Upload</td><td>a project or folder is selected</td><td>Opens a dialog to upload a local file into the selected container</td></tr>
+				<tr><td>Download</td><td>a file is selected</td><td>Downloads the selected file</td></tr>
+				<tr><td>Delete</td><td>any element is selected</td><td>Deletes the selected file, or the selected folder / project <b>with all its contents</b>, after confirmation</td></tr>
+			</tbody>
+		</table>
+
+		<p>Files can also be uploaded by <b>drag &amp; drop</b>: select a project or folder, then drop a file
+		on the tree area. Only the first dropped file is uploaded.</p>
+
+		<h2 id="shared">Personal and Shared Projects</h2>
+
+		<p>The project type is chosen at creation time and is stored in the project <code>.project</code> descriptor:</p>
+		<ul>
+			<li><b>Personal projects</b> (type <code>general</code>) are owned by their creator
+			(<code>createdBy</code> = user login). They are visible and modifiable only by their owner and by
+			administrators. They are displayed with the <img src="/uiTools/img/silk/book.png"> icon.</li>
+			<li><b>Shared projects</b> (type <code>shared</code>) are owned by the <code>system</code> account,
+			whoever created them. They are visible and modifiable by <b>all users</b>. They are displayed with the
+			<img src="/uiTools/img/silk/book_link.png"> icon.</li>
+		</ul>
+
+		<p>When the <b>apaf.ext.workspace.sharing</b> extension is installed, shared projects are also the only
+		projects replicated between linked APAF instances.</p>
+
+		<h2 id="content">Content Display</h2>
+
+		<p>When a file is selected, the right pane adapts to its extension:</p>
+		<table>
+			<thead><tr><th>Kind</th><th>Extensions</th><th>Display</th></tr></thead>
+			<tbody>
+				<tr>
+					<td>Text</td>
+					<td><code>txt log json js html htm css csv java py sh bat cmd jtp xml md yaml yml project</code></td>
+					<td>The <b>whole file</b> is loaded into a read-only text editor. Click <b>Edit</b> to modify it,
+					then <b>Save</b> to write it back to the server</td>
+				</tr>
+				<tr>
+					<td>Image</td>
+					<td><code>png jpg jpeg gif bmp tiff tif</code></td>
+					<td>Image viewer showing the file name, size and dimensions (in pixels). The image is <b>scaled down
+					to fit</b> the pane, keeping its aspect ratio, and is never enlarged beyond its natural size</td>
+				</tr>
+				<tr>
+					<td>Other</td>
+					<td>any other extension (<code>pdf zip docx xlsx pptx db</code>, &hellip;)</td>
+					<td>File name and size, with a <b>Download</b> button. The content is not displayed</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<p>Sizes are displayed in bytes (o), kilobytes (Ko) or megabytes (Mo).</p>
+
+		<h2>Partial Content Reading</h2>
+
+		<p>The explorer page always loads text files entirely. For large files (logs, exports&hellip;), the
+		<b>apaf.workspace</b> binary file API supports partial reading through query parameters on
+		<code>GET /apaf-workspace/binaryFile/:encrypted</code> (the path parameter is the Base64 encoding of
+		<code>&lt;project&gt;/&lt;file path&gt;</code>):</p>
+		<table>
+			<thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>tail</code></td><td>Returns the last <i>N</i> lines of the file (read from at most the last 512&nbsp;KB)</td></tr>
+				<tr><td><code>byteOffset</code></td><td>0-based byte offset of a chunk to read</td></tr>
+				<tr><td><code>byteLength</code></td><td>Chunk length in bytes (default 64&nbsp;KB, maximum 256&nbsp;KB)</td></tr>
+				<tr><td><code>encoding</code></td><td><code>base64</code> (default) or <code>utf8</code> for the returned chunk</td></tr>
+			</tbody>
+		</table>
+		<p>Without any of these parameters, the whole file is downloaded. The same options are exposed to AI
+		agents by the <code>readWorkspaceBinaryFile</code> MCP tool.</p>
+
+		<h2>Security</h2>
+
+		<ul>
+			<li>Access to the page requires the <code>coreServices</code> role.</li>
+			<li>Every operation is checked server-side by <b>apaf.workspace</b>: non-administrator users can only
+			see and modify their own projects and the shared projects.</li>
+		</ul>
+
+		<h2>Internationalization</h2>
+
+		<p>All labels are provided by the plugin locale files
+		(<code>i18n/apaf_workspace_explorer_en-US.locale</code> and <code>_fr-FR.locale</code>), with keys
+		prefixed by <code>apaf.workspace.explorer.</code>.</p>
+
+	</body>
+</html>
