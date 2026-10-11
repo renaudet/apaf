@@ -1,0 +1,49 @@
+{
+    "id":"sessionTable",
+    "version": "1.0.0",
+    "type": "Datatable",
+    "configuration": {
+        "datasource": {
+            "type": "manual"
+        },
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "created",
+        	"ascending": true
+        },
+    	"maxHeight": 800,
+        "columns": [
+            {
+                "label": "@apaf.page.stats.sessions.table.id.label",
+                "field": "sessionid"
+            },
+            {
+                "label": "@apaf.page.stats.sessions.table.user.label",
+                "field": "user"
+            },
+            {
+                "label": "@apaf.page.stats.sessions.table.created.label",
+                "field": "created"
+            },
+            {
+                "label": "@apaf.page.stats.sessions.table.lastAccessed.label",
+                "field": "lastAccessed"
+            },
+            {
+                "label": "@apaf.page.stats.sessions.table.lastRequestUri.label",
+                "field": "lastRequestUri"
+            },
+            {
+                "label": "@apaf.page.stats.sessions.table.actions.label",
+                "type": "rowActions",
+                "actions": [
+                    {
+                        "label": "@apaf.page.stats.sessions.table.action.inspect.label",
+                        "actionId": "inspect",
+                        "icon": "/uiTools/img/silk/zoom.png"
+                    }
+                ]
+            }
+        ]
+    }
+}
