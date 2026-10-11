@@ -1,0 +1,142 @@
+{
+  "id": "apaf.apis",
+  "name": "Apis management for APAF",
+  "version": "1.1.0",
+  "plugin": "plugin.js",
+  "requires": [
+    {"type": "plugin","id": "npa.core","version": "1.0.0"},
+    {"type": "plugin","id": "npa.logging","version": "1.0.0"},
+    {"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+    {"type": "plugin","id": "npa.http","version": "1.0.0"},
+    {"type": "plugin","id": "npa.jobs","version": "1.0.0"},
+    {"type": "plugin","id": "npa.mcp","version": "1.0.0"},
+    {"type": "plugin","id": "apaf.menu","version": "1.0.0"}
+  ],
+  "extends": [
+    {
+      "point": "npa.log.provider",
+      "id": "apaf.apis.logger",
+      "dir": "apaf.apis"
+    },
+    {
+      "point": "npa.http.router",
+      "id": "apaf.apis.router",
+      "path": "/apaf-api-management"
+    },
+    {
+      "point": "npa.http.static",
+      "id": "apaf.apis.htdocs",
+      "path": "/apaf-apis-ui",
+      "localDir": "htdocs"
+    },
+    {
+      "point": "npa.ui.locale.provider",
+      "id": "apaf.apis.locale.provider.enUS",
+      "path": "i18n/apaf_apis_en-US.locale",
+      "locale": "en-US"
+    },
+    {
+      "point": "npa.ui.locale.provider",
+      "id": "apaf.apis.locale.provider.en",
+      "path": "i18n/apaf_apis_en-US.locale",
+      "locale": "en"
+    },
+    {
+      "point": "npa.ui.locale.provider",
+      "id": "apaf.apis.locale.provider.frFR",
+      "path": "i18n/apaf_apis_fr-FR.locale",
+      "locale": "fr-FR"
+    },
+    {
+      "point": "npa.ui.locale.provider",
+      "id": "apaf.apis.locale.provider.fr",
+      "path": "i18n/apaf_apis_fr-FR.locale",
+      "locale": "fr"
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.apis.query.handler",
+      "router": "apaf.apis.router",
+      "method": "GET",
+      "schema": "/find",
+      "handler": "getApisHandler",
+      "securityRole": "operator",
+      "description": "Get the list of discovered APAF APIs - can be filtered by 'plugin' or description using a regex as 'descriptionRegex'",
+      "input": "",
+      "apidoc": {
+        "openapi": "3.1.0",
+        "info": {"title": "Get APAF APIs", "version": "1.0.0"},
+        "paths": {
+          "/apaf-api-management/find": {
+            "get": {
+              "operationId": "getApafApis",
+              "summary": "Get the list of discovered APAF APIs",
+              "description": "Returns the list of all registered APAF HTTP handlers. Can be filtered by plugin ID using the 'plugin' query parameter, or by description using a regex as 'descriptionRegex'.",
+              "parameters": [
+                {"name": "plugin", "in": "query", "required": false, "description": "Filter by plugin ID", "schema": {"type": "string"}},
+                {"name": "descriptionRegex", "in": "query", "required": false, "description": "Filter by description (regex)", "schema": {"type": "string"}}
+              ],
+              "responses": {
+                "200": {"description": "API list returned successfully."},
+                "500": {"description": "Server error."}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.apis.jobs.handler",
+      "router": "apaf.apis.router",
+      "method": "GET",
+      "schema": "/jobs",
+      "handler": "getJobsHandler",
+      "securityRole": "operator",
+      "description": "Get the list of managed server-side jobs",
+      "input": "",
+      "apidoc": {
+        "openapi": "3.1.0",
+        "info": {"title": "Get Server Jobs", "version": "1.0.0"},
+        "paths": {
+          "/apaf-api-management/jobs": {
+            "get": {
+              "operationId": "getServerJobs",
+              "summary": "Get the list of managed server-side jobs",
+              "description": "Returns all currently registered NPA jobs with their current status.",
+              "responses": {
+                "200": {"description": "Job list returned successfully."},
+                "500": {"description": "Server error."}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "point": "npa.mcp.tool",
+      "id": "apaf.apis.tool.getApafApis",
+      "apiId": "apaf.apis.query.handler"
+    },
+    {
+      "point": "npa.mcp.tool",
+      "id": "apaf.apis.tool.getServerJobs",
+      "apiId": "apaf.apis.jobs.handler"
+    },
+    {
+      "point": "apaf.menu.item.provider",
+      "id": "apaf.apis.menu.item",
+      "menu": "adminMenuPlaceholder",
+      "securityRole": "administrator",
+      "item": {
+        "id": "manageApis",
+        "label": "@apaf.page.apis.title",
+        "actionId": "redirect",
+        "icon": "/uiTools/img/silk/plugin.png",
+        "uri": "/apaf-apis-ui/html/manageApis.html"
+      }
+    }
+  ],
+  "provides": [
+  ]
+}
