@@ -517,7 +517,7 @@ initApiBrowser = function(){
 		setTimeout(resizeColumns, 50);
 	});
 
-	$('#selectApiHint').text(npaUi.getLocalizedString('@apaf.api.explorer.select.hint'));
+	$('#selectApiHint').html(npaUi.getLocalizedString('@apaf.api.explorer.select.hint'));
 
 	$('#copyResultBtn').on('click', function(){
 		let text = $('#testRestCallResult').text().replace(/\u00a0/g,' ');
