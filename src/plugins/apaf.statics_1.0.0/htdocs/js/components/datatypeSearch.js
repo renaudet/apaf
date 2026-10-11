@@ -15,14 +15,15 @@ apaf.DatatypeSearch = class DatatypeSearch extends NpaUiComponent{
 	render(then){
 		console.log('render()');
 		if(this.parentDiv().data('loaded')!='true'){
-			this.modalDialog = apaf.createModalDialog({"size": "XXL","title": "Datatype instance search"});
+			this.modalDialog = apaf.createModalDialog({"size": "XXL","title": "@apaf.datatype.search.dialog.title"});
 			let component = this;
 			this.modalDialog.setOnCloseCallback(function(){
 				component.onClose();
 			});
-			this.createDialogBody();
+			this.createDialogBody(then);
+		}else{
+			then();
 		}
-		then();
 	}
 	loadDatatype(then){
 		console.log('loadDatatype()');
@@ -52,14 +53,14 @@ apaf.DatatypeSearch = class DatatypeSearch extends NpaUiComponent{
 			showError(errorMsg);
 		});
 	}
-	createDialogBody(){
+	createDialogBody(then){
 		console.log('createDialogBody()');
 		//let config = this.getConfiguration();
 		let html = '';
 		html += '<div id="'+this.datatype.name+'_searchForm_parent"></div>';
 		this.modalDialog.setBody(html);
 		let formId = this.datatype.name+'_searchForm';
-		let formTitle = 'Search for instance(s) of type \''+this.datatype.name+'\'';
+		let formTitle = npaUi.getLocalizedString('@apaf.datatype.search.form.title',[this.datatype.name]);
 		let searchFormConfig = {"id": formId,"version": "1.0.0","type": "Form","configuration": {"title": formTitle,"class": "form-frame-noborder","fields": []}};
 		for(var i=0;i<this.datatype.fields.length;i++){
 			let field = this.datatype.fields[i];
@@ -67,7 +68,7 @@ apaf.DatatypeSearch = class DatatypeSearch extends NpaUiComponent{
 				searchFormConfig.configuration.fields.push(field);
 			}
 		}
-		npaUi.renderSingleComponent(formId+'_parent',searchFormConfig,function(){});
+		npaUi.renderSingleComponent(formId+'_parent',searchFormConfig,then);
 	}
 	open(callback){
 		console.log('open()');

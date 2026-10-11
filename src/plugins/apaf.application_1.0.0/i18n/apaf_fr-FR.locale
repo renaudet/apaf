@@ -451,3 +451,5 @@ apaf.page.stats.sessions.table.lastRequestUri.label=Derni&eacute;re URI acc&eacu
 apaf.page.stats.sessions.table.actions.label=Actions
 apaf.page.stats.sessions.table.action.inspect.label=Inspecter
 apaf.page.stats.sessions.dialog.title=Inspecter une session utilisateur
+apaf.datatype.search.dialog.title=Recherche d'instances de Datatype
+apaf.datatype.search.form.title=Rechercher des instances de type '{0}'
