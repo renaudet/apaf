@@ -1,0 +1,19 @@
+let payload = {
+  "from": string,
+  "to": string,
+  "subject": string,
+  "content": string,
+  "asText": (optional)boolean
+}
+apaf.call({
+	"method": "POST",
+	"uri": "/apaf-mail/send",
+	"payload": payload
+}).then(function(data){
+	let html = '<div style="font-family: lucida console;">';
+	html += JSON.stringify(data,null,'\t').replace(/\n/g,'<br>').replace(/\t/g,'&nbsp;&nbsp;&nbsp;');
+	html += '</div>';
+	showInfo(html);
+}).onError(function(msg){
+	showError(msg);
+});

@@ -1,0 +1,6 @@
+let html = '';
+html += '<div class="row">';
+html += '  <div class="col-3">&nbsp;</div>';
+html += '  <div class="col-9">&nbsp;</div>';
+html += '</div>';
+$('#workArea").html(html);

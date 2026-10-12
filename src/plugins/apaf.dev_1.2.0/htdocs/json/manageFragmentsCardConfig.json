@@ -1,0 +1,11 @@
+{
+    "id":"manageFragmentsCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/apaf-dev-ui/img/apaf-fragments.png",
+        "label": "@apaf.page.fragments.title",
+        "headerClass": "bg-secondary bg-gradient bg-opacity-10",
+        "stylesheet": "/apaf-branding/css/apafCard.css"
+    }
+}

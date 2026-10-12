@@ -1,0 +1,314 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation Page">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2024 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/dev/css/apafDocumentation.css" rel="stylesheet">
+		<title>APAF Development Guide v1.0</title>
+	</head>
+	<body>
+		<h1>APAF Development Guide v1.0</h1>
+		
+		<h2>Introduction</h2>
+		
+		Out-of-the box, the <b>A</b>ll <b>P</b>urpose <b>A</b>pplication <b>F</b>ramework is a web application with little value. It does nothing at all.<br>
+		But through custom extensions and very little effort, it offers a wide range of features that compose today's applications.<br>
+		This guide will walk you through the necessary steps to implement secured, reliable web applications using APAF within minutes.
+		
+		<h2>Developing APAF Applications</h2>
+		
+		<h3>The APAF Fragment concept</h3>
+		
+		The core of APAF customizations are <i>fragments</i>. Fragments are small units of javascript code that executes either on the browser or server-side.
+		These lines of code are stored in the APAF CoudhDB database and dynamically loaded at runtime to extend the framework or implement application logic.<br>
+		APAF supports fragments to:<br>
+		<ul>
+			<li>Create applications</li>
+			<li>Implement server-side APIs (known as <i>Servlets</i>)</li>
+			<li>Extends the built-in editors by providing custom editors for specific purpose</li>
+			<li>Extends the Workflow Engine by providing custom Nodes</li>
+			<li>Implement server-side scheduled tasks</li>
+		</ul>
+		
+		<h3>Create an application fragment</h3>
+		
+		From the Development menu, select the <i>Manage Fragments of Code</i> sub-menu.<br>
+		On the right side of the page, click on the green 'plus' icon to create a new Fragment:<br>
+		
+		<center>
+		<img src="/dev/img/screenshot_02.png" title="Fragments management toolbar">
+		</center>
+		
+		Enter a name and a description for this new Fragment. The minor version number will be automaticaly incremented each time the Fragment is saved.<br>
+		Select <i>snippet</i> for the Fragment's type:<br>
+		
+		<center>
+		<img src="/dev/img/screenshot_03.png" title="Create a new Fragment">
+		</center>
+		
+		Now, open the <i>snippet Library</i> by clicking on the wand icon above the code editor:<br>
+		
+		<center>
+		<img src="/dev/img/screenshot_04.png" title="Open the snippet Library">
+		</center>
+		
+		This opens the following Dialog:
+		
+		<center>
+		<img src="/dev/img/screenshot_05.png" title="Snippet selection">
+		</center>
+		
+		Open the Selection List and select <i>Main endpoint for an APAF application</i>:
+		
+		<center>
+		<img src="/dev/img/screenshot_06.png" title="The most basic application">
+		</center>
+		
+		Click on the <i>Close</i> button. The select code snippet is added to the code editor at the current carret position (first character by default).<br>
+		Remove the <i>// some source code here</i> comment and save your fragment by clicking the floppy icon on the management toolbar.<br>
+		
+		A new Fragment of code <i>My Fragment</i> of type <i>snippet</i> is added to the <i>Available Code Fragments</i> List.<br>
+		
+		<center>
+		<img src="/dev/img/screenshot_07.png" title="A new fragment got created">
+		</center>
+		
+		Any APAF application is made at least from one fragment. This fragment <b>must</b> be of type <i>snippet</i> and implement a <i><code>main()</code></i> function.<br>
+		The following example shows how to implement a basic APAF application using a fragment:<br>
+		
+		<div class="code">
+		main = function(){<br>
+		&nbsp;&nbsp;let card = $apaf(<span style="color: #3469e3;">'genericApplicationsCard'</span>);<br>
+		&nbsp;&nbsp;card.setContent(<span style="color: #3469e3;">'Hello, World!'</span>);<br>
+		}<br>
+		</div>
+		
+		The <i><code>main()</code></i> function is a zero argument function called by the framework once the outer card <span style="color: #3469e3;">'genericApplicationsCard'</span> has been rendered.<br>
+		The purpose of the application is to provide html content to this card's content.<br><br>
+		Optionaly, the application can use the card's <i><code>status()</code></i> function to write arbitrary messages to the card's bottom line.
+		
+		<div class="code">
+		let card = $apaf(<span style="color: #3469e3;">'genericApplicationsCard'</span>);<br>
+		card.setStatus(<span style="color: #3469e3;">'some message'</span>);
+		</div>
+		
+		<h3>Make a Fragment into an APAF Application</h3>
+		
+		From the <i>Development</i> menu, now select the <i>Manage Applications</i> sub-menu. Using the green <i>plus</i> icon, create a new APAF Application. Choose <i>My Hello World Application</i> as a name
+		and add an optional description, then select your <i>My Fragment</i> fragment from the list of available fragments and add it to the application by clicking the right-side <i>plus</i> icon:
+		
+		<center>
+		<img src="/dev/img/screenshot_08.png" title="Add a fragment to a newly created application">
+		</center>
+		
+		Save the application by clicking the floppy icon in the management toolbar:
+		
+		<center>
+		<img src="/dev/img/screenshot_09.png" title="Saving the new application configuration">
+		</center>
+		
+		The new application is added to the <i>Available Applications</i> list. Select the newly added application in the list so that the management toolbar is refreshed.<br>
+		A new <i>Execute</i> icon appears:
+		
+		<center>
+		<img src="/dev/img/screenshot_10.png" title="Executing an application from the Application workbench">
+		</center>
+		
+		Click on this <i>Execute</i> button. A new browser tab is opened and shows the application running:
+		
+		<center>
+		<img src="/dev/img/screenshot_11.png" title="Hello World in APAF">
+		</center>
+		
+		That's it! You implemented <i>Hello, World!</i> using APAF!<br>
+		
+		<h3>APAF UI APIs</h3>
+		
+		To ease the development of UI interfaces for applications, APAF uses the <i>npa-ui-tools</i> framework.<br>
+		This framework provides high-level UI components that can be reused and customized through a JSON configuration file.<br>
+		The <span style="color: #3469e3;">'genericApplicationsCard'</span> <b>Card</b> component is one of these high-level components provided by <i>npa-ui-tools</i>.<br>
+		<br>
+		The following example shows how to declare and register an <i>npa-ui-tools</i> component and ask the framework to render its UI interface on screen:<br>
+		
+		<div class="code">
+		&nbsp;1.&nbsp;const TOOLBAR_CONFIG = {<br>
+    	&nbsp;2.&nbsp;&nbsp;&nbsp;"id":"myToolbar",<br>
+	    &nbsp;3.&nbsp;&nbsp;&nbsp;"version": "1.0.0",<br>
+	    &nbsp;4.&nbsp;&nbsp;&nbsp;"type": "Toolbar",<br>
+	    &nbsp;5.&nbsp;&nbsp;&nbsp;"configuration": {<br>
+	    &nbsp;6.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"selectionListener": true,<br>
+	    &nbsp;7.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"selectionProvider": "datatypeSelectionList",<br>
+	    &nbsp;8.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"actions": [<br>
+	    &nbsp;9.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+	    10.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"label": "@apaf.toolbar.item.edit",<br>
+	    11.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"actionId": "edit",<br>
+	    12.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"icon": "/uiTools/img/silk/page_white_edit.png",<br>
+	    13.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"enabled": true,<br>
+	    14.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	    15.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+	    16.&nbsp;&nbsp;&nbsp;}<br>
+		17.&nbsp;}<br>
+		18.&nbsp;<br>
+		19.&nbsp;main = function(){<br>
+		20.&nbsp;&nbsp;&nbsp;let card = $apaf(<span style="color: #3469e3;">'genericApplicationsCard'</span>);<br>
+		21.&nbsp;&nbsp;&nbsp;let html = <span style="color: #3469e3;">'&lt;div id="toolbarDiv" class="user-app" data-ref="myToolbarRef"&gt;&lt;/div&gt;'</span>;<br>
+		22.&nbsp;&nbsp;&nbsp;card.setContent(html);<br>
+		23.&nbsp;&nbsp;&nbsp;npaUi.registerComponentConfig(<span style="color: #3469e3;">'myToolbarRef'</span>,TOOLBAR_CONFIG);<br>
+		24.&nbsp;&nbsp;&nbsp;npaUi.on(<span style="color: #3469e3;">'edit'</span>,editAction);<br>
+		25.&nbsp;&nbsp;&nbsp;npaUi.render('user-app');<br>
+		26.&nbsp;}<br>
+		27.&nbsp;<br>
+		28.&nbsp;editAction = function(){<br>
+		29.&nbsp;&nbsp;&nbsp;alert(<span style="color: #3469e3;">'editAction was called!'</span>);<br>
+		30.&nbsp;}
+		</div>
+		
+		<u>Explanation:</u><br>
+		<br>
+		The <b>TOOLBAR_CONFIG</b> constant declares a JSON object with an <i>id</i>, <i>version</i>, <i>type</i> and <i>configuration</i>.<br>
+		The type is <b>Toolbar</b> which figures a rectangular container for action buttons and other components usually seen on the top of a window.<br>
+		The <i>configuration</i> section is specific to the component's <i>type</i>, and here provides a single action button with an icon, pop-over label and action ID.<br>
+		<br>
+		In the <i><code>main()</code></i> function, the application code provides a simple html <i>div</i> to the Card's UI with class <i>user-app</i> and a data-ref attribute of <i>myToolbarRef</i> (line 21 and 22).<br>
+		Line 23, the <i>TOOLBAR_CONFIG</i> component configuration is registered to the framework and associated with the reference <i>myToolbarRef</i>.<br>
+		Line 24, an <i>action handler</i> is registered to the framework for action events of type <i>edit</i>.<br>
+		<br>
+		At last, the <i>npaUi#render()</i> method is invoked on the <i>user-app</i> namespace so that the other standard components on the page are not unintentionaly refreshed.<br>
+		<br>
+		Here is the rendering for this application:<br>
+		<center>
+		<img src="/dev/img/screenshot_01.png" title="The toolbar component rendering">
+		</center>
+		
+		<h3>APAF Application Patterns</h3>
+		
+		APAF applications are mainly executing on the Browser. This is a key difference in concept compared to tradtional applications like J2EE applications where the server-side code renders the UI using some template mechanism (JSP pages in J2EE, EJS templates in Express...).<br>
+		The APAF services are provided through APIs and can be invoked using the <i>apaf</i> facility:<br>
+		<div class="code">
+		apaf.call(<span style="color: #3469e3;">{<br>
+        &nbsp;&nbsp;"method": "&lt;HTTP-method&gt;",<br>
+        &nbsp;&nbsp;"uri": "&lt;APAF-API-uri&gt;",<br>
+        &nbsp;&nbsp;"payload": &lt;optional payload for this call&gt;<br>
+        }</span>).then(function(data){<br>
+        &nbsp;&nbsp;// uses data here<br>
+        }).onError(function(msg){<br>
+        &nbsp;&nbsp;showError(msg);<br>
+        });<br>
+		</div>
+		
+		This design has a very low footprint on the server. The drawback of the design is that frequent calls to the same API appears to be very costly as it involves each time a network interaction.<br>
+		To cope with such situation, APAF supports server-side extensions as <i>servlets</i>.<br>
+		<i>Servlets</i> are specialized fragments of code that execute server-side and exposed as REST services.<br>
+		<br>
+		Here is a sample implementation for such a <i>servlet</i>:<br>
+		
+		<div class="code">
+		myFunction = function(params,ctx,then){<br>
+		&nbsp;&nbsp;const os = ctx.require(<span style="color: #3469e3;">'os'</span>);<br>
+		&nbsp;&nbsp;if(params && params.who){<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;then(null,<span style="color: #3469e3;">'Hello, '</span>+params.who+<span style="color: #3469e3;">'!'</span>);<br>
+		&nbsp;&nbsp;}else{<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;then(null,<span style="color: #3469e3;">'Hello, '</span>+ctx.user.login+<span style="color: #3469e3;">', from '</span>+os.hostname()+<span style="color: #3469e3;">'!'</span>);<br>
+		&nbsp;&nbsp;}<br>
+		}<br>
+		<br>
+		servlet.endpoint = myFunction;<br>
+		</div>
+		
+		The <i>servlet</i> fragment is configured with a specific attribute <i>alias</i> which precises the path for this Servlet.<br>
+		<br>
+		The browser code can now invoke this server-side extension like this:<br>
+		<div class="code">
+		apaf.call(<span style="color: #3469e3;">{<br>
+        &nbsp;&nbsp;"method": "POST",<br>
+        &nbsp;&nbsp;"uri": "/apaf-api/servlet/&lt;alias&gt;",<br>
+        &nbsp;&nbsp;"payload": {"who": "John Doe"}<br>
+        }</span>).then(function(servletResponse){<br>
+        &nbsp;&nbsp;// uses servletResponse here<br>
+        }).onError(function(msg){<br>
+        &nbsp;&nbsp;showError(msg);<br>
+        });<br>
+		</div>
+		
+		<h2>Advanced concepts</h2>
+		
+		<h3>Workflows</h3>
+		
+		APAF and more generaly Javascript manage I/O an asynchronous way. This means that each time an I/O function is called, the result is delegated to a callback function
+		as the flow of control is immediately given to the next instruction.<br>
+		<br>
+		Consider the following code sample:<br>
+		
+		<div class="code">
+		console.log(<span style="color: #3469e3;">'<b>Step 1</b>'</span>);<br>
+		apaf.call(<span style="color: #3469e3;">{<br>
+        &nbsp;&nbsp;"method": "GET",<br>
+        &nbsp;&nbsp;"uri": "/apaf-session/all",<br>
+        &nbsp;&nbsp;"payload": {}<br>
+        }</span>).then(function(sessionData){<br>
+        &nbsp;&nbsp;console.log(<span style="color: #3469e3;">'<b>Step 2</b>'</span>);<br>
+        }).onError(function(msg){<br>
+        &nbsp;&nbsp;showError(msg);<br>
+        });<br>
+        console.log(<span style="color: #3469e3;">'<b>Step 3</b>'</span>);<br>
+		</div>
+		
+		We may expect this code to write the following in the console:<br>
+		
+		<div class="code">
+		Step 1<br>
+		Step 2<br>
+		Step 3<br>
+		</div>
+		
+		But in reality it will always print:<br>
+		
+		<div class="code">
+		Step 1<br>
+		Step <b>3</b><br>
+		Step 2<br>
+		</div>
+		
+		As the code printing <i>Step 2</i> is in a callback and needs the <i>apaf.call()</i> function to return its result before getting executed.<br>
+		<br>
+		When the application's logic is simple and and relies on a small number of client/server interactions, there is probably no problem in using callbacks,
+		but what about a case where multiple calls to the server are needed to fullfill the code logic requirements? In this case the callbacks stack within each other as russian puppets:<br>
+		
+		<div class="code">
+		apaf.call(<span style="color: #3469e3;">{<br>
+        &nbsp;&nbsp;"method": "GET",<br>
+        &nbsp;&nbsp;"uri": "/apaf-session/all",<br>
+        &nbsp;&nbsp;"payload": {}<br>
+        }</span>).then(function(sessionData){<br>
+        &nbsp;&nbsp;apaf.call(<span style="color: #3469e3;">{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;"method": "GET",<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;"uri": "/apaf-api-management/jobs",<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;"payload": {}<br>
+        &nbsp;&nbsp;}</span>).then(function(jobsData){<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;// use here sessionData and jobData...<br>
+        &nbsp;&nbsp;}).onError(function(msg){<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;showError(msg);<br>
+        &nbsp;&nbsp;});<br>
+        }).onError(function(msg){<br>
+        &nbsp;&nbsp;showError(msg);<br>
+        });<br>
+		</div>
+		
+		As you can see, with each new imbricated asynchronous call the code becomes harder to read.<br>
+		
+		
+		<h3>Long running operations and the Job API</h3>
+		
+		<h3>Data Managers</h3>
+		
+		
+		<h2>Best Practices</h2>
+		
+	</body>
+</html>
