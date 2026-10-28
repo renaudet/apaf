@@ -1,0 +1,51 @@
+{
+    "id":"featureForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.registry.client.form.title",
+    	"class": "form-frame-noborder",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.registry.client.form.name",
+    			"required": true,
+    			"size": 6,
+    			"default": "MyFeature"
+    		},
+    		{
+    			"name": "version",
+    			"label": "@apaf.registry.client.form.version",
+    			"required": true,
+    			"size": 2,
+    			"default": "1.0.0"
+    		},
+    		{
+    			"name": "copyright",
+    			"label": "@apaf.registry.client.form.copyright",
+    			"required": false,
+    			"size": 6
+    		},
+    		{
+    			"name": "category",
+    			"label": "@apaf.registry.client.form.category",
+    			"type": "select",
+    			"size": 3,
+    			"values": ["Tool","Application","Game"]
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.registry.client.form.description",
+    			"type": "richText",
+    			"required": false,
+    			"height": 200
+    		},
+    		{
+    			"name": "icon",
+    			"label": "@apaf.registry.client.form.icon",
+    			"required": false,
+    			"size": 8
+    		}
+    	]
+    }
+}

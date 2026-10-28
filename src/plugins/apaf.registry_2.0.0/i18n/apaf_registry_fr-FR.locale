@@ -1,0 +1,10 @@
+apaf.registry.page.title=Extensions publi&eacute;es
+apaf.registry.page.selection.title=Extensions publi&eacute;es
+apaf.registry.page.delete.confirm=Voulez-vous vraiment supprimer l'extension "{0}" ?
+apaf.registry.page.delete.flash=Extension supprim&eacute;e !
+apaf.registry.form.name=Nom
+apaf.registry.form.version=Version
+apaf.registry.form.copyright=Copyright
+apaf.registry.form.category=Cat&eacute;gorie
+apaf.registry.form.description=Description
+apaf.registry.form.icon=Icone (URL)

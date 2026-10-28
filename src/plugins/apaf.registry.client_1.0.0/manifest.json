@@ -1,0 +1,221 @@
+{
+  "id": "apaf.registry.client",
+  "name": "Registry client support plugin for APAF",
+  "version": "1.0.0",
+  "plugin": "plugin.js",
+  "registry": {
+  	"host": "$REGISTRY_HOST,twinxeon.online",
+  	"port": "$REGISTRY_PORT,5008",
+  	"secured": "$REGISTRY_SSL_ENABLED,true"
+  },
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.rest","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.registry.client.logger",
+  		"dir": "apaf.registry.client"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.registry.client.router",
+  		"path": "/apaf-registry"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.registry.client.htdocs",
+  		"path": "/apaf-registry-client-ui",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.registry.client.locale.provider.enUS",
+  		"path": "i18n/apaf_registry_client_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.registry.client.locale.provider.en",
+  		"path": "i18n/apaf_registry_client_en-US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.registry.client.locale.provider.frFR",
+  		"path": "i18n/apaf_registry_client_fr-FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.registry.client.locale.provider.fr",
+  		"path": "i18n/apaf_registry_client_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.client.publish.handler",
+  		"router": "apaf.registry.client.router",
+  		"method": "POST",
+  		"schema": "/publish",
+  		"handler": "publishFeatureHandler",
+  		"securityRole": "administrator",
+  		"description": "Publish the given feature to the configured Registry",
+  		"input": {"name": "New Feature","version": "1.0.0","category": "Tool","roles": [],"datatypes": [],"workflows": [],"fragments": [],"applications": [],"ruleData": []},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Publish a Feature", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-registry/publish": {
+  					"post": {
+  						"operationId": "publishFeature",
+  						"summary": "Publish the given feature to the configured Registry",
+  						"description": "Forwards the given feature definition to the Registry configured for this APAF instance. Requires the administrator security role.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {"application/json": {"schema": {"type": "object", "required": ["name","version"]}}}
+  						},
+  						"responses": {
+  							"200": {"description": "Feature published."},
+  							"500": {"description": "Security or Registry communication error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.client.getCatalog.handler",
+  		"router": "apaf.registry.client.router",
+  		"method": "GET",
+  		"schema": "/catalog",
+  		"handler": "getCatalogHandler",
+  		"securityRole": "",
+  		"description": "Get the catalog of published features from the configured Registry",
+  		"input": "category=someCategory&name=featureName&summary=true",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Get the Registry catalog", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-registry/catalog": {
+  					"get": {
+  						"operationId": "getRegistryCatalog",
+  						"summary": "Get the catalog of published features",
+  						"description": "Queries the configured Registry for published features, optionally filtered by category and/or name.",
+  						"parameters": [
+  							{"name": "category", "in": "query", "required": false, "schema": {"type": "string"}},
+  							{"name": "name", "in": "query", "required": false, "schema": {"type": "string"}},
+  							{"name": "summary", "in": "query", "required": false, "description": "'true' to retrieve a summary only", "schema": {"type": "string"}}
+  						],
+  						"responses": {
+  							"200": {"description": "Catalog retrieved."},
+  							"500": {"description": "Security or Registry communication error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.client.getFeature.handler",
+  		"router": "apaf.registry.client.router",
+  		"method": "GET",
+  		"schema": "/feature/:id",
+  		"handler": "getFeatureHandler",
+  		"securityRole": "",
+  		"description": "Get a feature given its unique ID from the configured Registry",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Get a Registry Feature", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-registry/feature/{id}": {
+  					"get": {
+  						"operationId": "getRegistryFeature",
+  						"summary": "Get a feature given its unique ID",
+  						"description": "Retrieves the full feature definition from the configured Registry.",
+  						"parameters": [
+  							{"name": "id", "in": "path", "required": true, "description": "UUID of the feature", "schema": {"type": "string"}}
+  						],
+  						"responses": {
+  							"200": {"description": "Feature retrieved."},
+  							"500": {"description": "Security or Registry communication error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.client.install.handler",
+  		"router": "apaf.registry.client.router",
+  		"method": "PUT",
+  		"schema": "/install",
+  		"handler": "installFeatureHandler",
+  		"securityRole": "administrator",
+  		"description": "Install a given feature on the current APAF instance",
+  		"input": {"name": "Feature Name","version": "1.0.0","category": "Tool","roles": [],"datatypes": [],"workflows": [],"fragments": [],"applications": [],"ruleData": []},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Install a Feature", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-registry/install": {
+  					"put": {
+  						"operationId": "installFeature",
+  						"summary": "Install a given feature on the current APAF instance",
+  						"description": "Installs the roles, datatypes, workflows, fragments, applications and rule-data tables of the given feature. Already defined resources are left untouched. Requires the administrator security role.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {"application/json": {"schema": {"type": "object", "required": ["name","version"]}}}
+  						},
+  						"responses": {
+  							"200": {"description": "Feature installed."},
+  							"500": {"description": "Security or installation error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "apaf.menu.item.provider",
+  		"id": "apaf.registry.client.menu.item",
+  		"menu": "adminMenuPlaceholder",
+  		"securityRole": "administrator",
+  		"item": {
+  			"id": "manageFeatures",
+  			"label": "@apaf.registry.client.page.title",
+  			"actionId": "redirect",
+  			"icon": "/uiTools/img/silk/brick.png",
+  			"uri": "/apaf-registry-client-ui/html/manageFeatures.html"
+  		}
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.registry.client.doc.htdocs",
+  		"path": "/apaf-registry-client-doc",
+  		"localDir": "htdocs/docs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.registry.client.doc",
+  		"label": "apaf.registry.client - Registry Client",
+  		"category": "APAF Framework",
+  		"subcategory": "Extensibility",
+  		"url": "/apaf-registry-client-doc/apafRegistryClient.html"
+  	}
+  ],
+  "provides": [
+  ]
+}

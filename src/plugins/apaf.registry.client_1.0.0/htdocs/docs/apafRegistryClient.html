@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.registry.client plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/npa-documentation/css/npaDocumentation.css" rel="stylesheet">
+		<title>apaf.registry.client - Registry Client Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.registry.client &mdash; Registry Client Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.registry.client</b> plugin lets an APAF instance exchange <i>features</i> with a remote
+		APAF Registry (an APAF instance started with <code>--application registry</code>, see the
+		<b>apaf.registry</b> plugin). A feature is a set of roles, datatypes, workflows, code fragments,
+		applications and rule-data tables packaged under a name and a version.
+
+		<h2>Manage Features page</h2>
+
+		The plugin adds a <b>Manage APAF Features</b> entry to the Administration menu (administrator role).
+		The page offers two functions:
+		<ul>
+			<li><b>Export Feature</b> &mdash; select the resources of this instance, describe the feature and publish it to the Registry</li>
+			<li><b>Import Feature</b> &mdash; search the Registry catalog by name and/or category and install a feature on this instance</li>
+		</ul>
+
+		Installation is idempotent: resources that are already defined (same name, and same version when applicable) are left untouched.
+
+		<h2>Configuration</h2>
+
+		The Registry location is read from the plugin manifest, and can be overridden with environment variables:
+
+		<table>
+			<thead><tr><th>Environment variable</th><th>Default</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>REGISTRY_HOST</td><td>twinxeon.online</td><td>Registry host name</td></tr>
+				<tr><td>REGISTRY_PORT</td><td>5008</td><td>Registry TCP port</td></tr>
+				<tr><td>REGISTRY_SSL_ENABLED</td><td>true</td><td>Use HTTPS to reach the Registry</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/apaf-registry/publish</td><td>administrator</td><td>Publish a feature to the Registry</td></tr>
+				<tr><td>GET</td><td>/apaf-registry/catalog</td><td>(authenticated)</td><td>Search the Registry catalog (<code>category</code>, <code>name</code>, <code>summary</code> query parameters)</td></tr>
+				<tr><td>GET</td><td>/apaf-registry/feature/:id</td><td>(authenticated)</td><td>Get a full feature definition from the Registry</td></tr>
+				<tr><td>PUT</td><td>/apaf-registry/install</td><td>administrator</td><td>Install a feature on this instance</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Relationship with other plugins</h2>
+
+		This plugin is a standalone replacement for the client side of <b>apaf.registry</b> 1.0.0 and for the
+		<code>manageFeatures</code> page formerly served by <b>apaf.statics</b>. It serves its own static resources
+		under <code>/apaf-registry-client-ui</code>.
+		It must not be deployed together with <b>apaf.registry</b> 1.0.0, since both declare the <code>/apaf-registry</code> router.
+
+	</body>
+</html>

@@ -1,0 +1,310 @@
+{
+  "id": "apaf.registry",
+  "name": "APAF Registry",
+  "version": "2.0.0",
+  "plugin": "plugin.js",
+  "registry": {
+  	"port": "$REGISTRY_PORT,5008"
+  },
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.runtime.props","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.menu","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.registry.logger",
+  		"dir": "apaf.registry"
+  	},
+  	{
+  		"point": "npa.core.application",
+  		"id": "apaf.registry.application",
+  		"name": "registry"
+  	},
+  	{
+  		"point": "npa.http.home",
+  		"id": "apaf.registry.home",
+  		"application": "registry",
+  		"uri": "/apaf-registry-ui/html/manageFeatures.html"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.registry.htdocs",
+  		"path": "/repository",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.registry.ui.htdocs",
+  		"path": "/apaf-registry-ui",
+  		"localDir": "ui"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.registry.locale.provider.enUS",
+  		"path": "i18n/apaf_registry_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.registry.locale.provider.en",
+  		"path": "i18n/apaf_registry_en-US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.registry.locale.provider.frFR",
+  		"path": "i18n/apaf_registry_fr-FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.registry.locale.provider.fr",
+  		"path": "i18n/apaf_registry_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.registry.datatype",
+  		"datatype": {
+  			"id": "feature",
+  			"name": "Feature",
+  			"builtIn": true,
+  			"persistent": true,
+  			"database": "apaf_features",
+  			"fields": [
+	    		{
+	    			"name": "name",
+	    			"label": "@apaf.registry.form.name",
+	    			"required": true,
+	    			"size": 6,
+	    			"default": "MyFeature"
+	    		},
+	    		{
+	    			"name": "version",
+	    			"label": "@apaf.registry.form.version",
+	    			"required": true,
+	    			"size": 2,
+	    			"default": "1.0.0"
+	    		},
+	    		{
+	    			"name": "copyright",
+	    			"label": "@apaf.registry.form.copyright",
+	    			"required": false,
+	    			"size": 6
+	    		},
+	    		{
+	    			"name": "category",
+	    			"label": "@apaf.registry.form.category",
+	    			"type": "select",
+	    			"size": 3,
+	    			"values": ["Tool","Application","Game"]
+	    		},
+	    		{
+	    			"name": "description",
+	    			"label": "@apaf.registry.form.description",
+	    			"type": "richText",
+	    			"required": false
+	    		},
+	    		{
+	    			"name": "icon",
+	    			"label": "@apaf.registry.form.icon",
+	    			"required": false,
+	    			"size": 8
+	    		}
+  			]
+  		}
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.registry.application.router",
+  		"path": "/catalog"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.application.publish.handler",
+  		"router": "apaf.registry.application.router",
+  		"method": "POST",
+  		"schema": "/v1",
+  		"handler": "storeFeatureHandler",
+		"description": "Register and store a feature within the Registry (Registry Application only)",
+		"input": {"name": "New Feature","version": "1.0.0","category": "Tool","roles": [],"datatypes": [],"workflows": [],"fragments": [],"applications": [],"ruleData": []}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.application.search.handler",
+  		"router": "apaf.registry.application.router",
+  		"method": "GET",
+  		"schema": "/v1",
+  		"handler": "searchFeatureHandler",
+		"description": "Get a list of features filtered by name and/or category - a summary only can be requested (Registry Application only)",
+		"input": "category=abcd&name=abcd&summary=false"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.application.getById.handler",
+  		"router": "apaf.registry.application.router",
+  		"method": "GET",
+  		"schema": "/feature/:id",
+  		"handler": "getFeatureByIdHandler",
+		"description": "Get a feature by its unique ID (Registry Application only)"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.registry.features.router",
+  		"path": "/apaf-registry-features"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.features.query.handler",
+  		"router": "apaf.registry.features.router",
+  		"method": "POST",
+  		"schema": "/query",
+  		"handler": "queryFeaturesHandler",
+  		"securityRole": "administrator",
+  		"description": "Query the features stored in the Registry (Registry Application only)",
+  		"input": {"selector": {"name": {"$regex": "abcd"}}},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Query Registry Features", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-registry-features/query": {
+  					"post": {
+  						"operationId": "queryRegistryFeatures",
+  						"summary": "Query the features stored in the Registry",
+  						"description": "Returns the features matching the given CouchDB Mango selector. Pass an empty body to retrieve all features. Only available when APAF runs as the Registry application.",
+  						"requestBody": {
+  							"required": false,
+  							"content": {"application/json": {"schema": {"type": "object", "properties": {"selector": {"type": "object"}}}}}
+  						},
+  						"responses": {
+  							"200": {"description": "Query successful."},
+  							"418": {"description": "Not running as the Registry application."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.features.find.handler",
+  		"router": "apaf.registry.features.router",
+  		"method": "GET",
+  		"schema": "/:id",
+  		"handler": "findFeatureHandler",
+  		"securityRole": "administrator",
+  		"description": "Get a feature stored in the Registry given its uuid (Registry Application only)",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Get a Registry Feature by UUID", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-registry-features/{id}": {
+  					"get": {
+  						"operationId": "findRegistryFeature",
+  						"summary": "Get a Registry feature given its UUID",
+  						"parameters": [
+  							{"name": "id", "in": "path", "required": true, "description": "UUID of the feature", "schema": {"type": "string"}}
+  						],
+  						"responses": {
+  							"200": {"description": "Feature found."},
+  							"404": {"description": "Feature not found."},
+  							"418": {"description": "Not running as the Registry application."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.features.update.handler",
+  		"router": "apaf.registry.features.router",
+  		"method": "PUT",
+  		"schema": "/",
+  		"handler": "updateFeatureHandler",
+  		"securityRole": "administrator",
+  		"description": "Update a feature stored in the Registry (Registry Application only)",
+  		"input": {"id": "abcd-abcd-abcd-abcd","_rev": "1-abcd","name": "abcd","version": "1.0.0","category": "Tool"},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Update a Registry Feature", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-registry-features/": {
+  					"put": {
+  						"operationId": "updateRegistryFeature",
+  						"summary": "Update a feature stored in the Registry",
+  						"description": "The record must include its id and _rev fields for optimistic concurrency control.",
+  						"requestBody": {
+  							"required": true,
+  							"content": {"application/json": {"schema": {"type": "object", "required": ["id"]}}}
+  						},
+  						"responses": {
+  							"200": {"description": "Feature updated."},
+  							"418": {"description": "Not running as the Registry application."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.registry.features.delete.handler",
+  		"router": "apaf.registry.features.router",
+  		"method": "DELETE",
+  		"schema": "/:id",
+  		"handler": "deleteFeatureHandler",
+  		"securityRole": "administrator",
+  		"description": "Delete a feature stored in the Registry (Registry Application only)",
+  		"input": {},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {"title": "Delete a Registry Feature", "version": "1.0.0"},
+  			"paths": {
+  				"/apaf-registry-features/{id}": {
+  					"delete": {
+  						"operationId": "deleteRegistryFeature",
+  						"summary": "Delete a feature stored in the Registry",
+  						"parameters": [
+  							{"name": "id", "in": "path", "required": true, "description": "UUID of the feature to delete", "schema": {"type": "string"}}
+  						],
+  						"responses": {
+  							"200": {"description": "Feature deleted."},
+  							"418": {"description": "Not running as the Registry application."},
+  							"500": {"description": "Server or database error."}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.registry.doc.htdocs",
+  		"path": "/apaf-registry-doc",
+  		"localDir": "ui/docs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.registry.doc",
+  		"label": "apaf.registry - Registry",
+  		"category": "APAF Framework",
+  		"subcategory": "Extensibility",
+  		"url": "/apaf-registry-doc/apafRegistry.html"
+  	}
+  ],
+  "provides": [
+  ]
+}

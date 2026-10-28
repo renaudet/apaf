@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.registry plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/npa-documentation/css/npaDocumentation.css" rel="stylesheet">
+		<title>apaf.registry - Registry Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.registry &mdash; Registry Plugin</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.registry</b> plugin turns an APAF instance into a <i>Registry</i>: a catalog of published
+		<i>features</i> (roles, datatypes, workflows, code fragments, applications and rule-data tables) that
+		other APAF instances can search and install through the <b>apaf.registry.client</b> plugin.
+		The Registry is started with <code>node app.js --application registry</code>.
+
+		<h2>Registry mode</h2>
+
+		All the Registry specific resources of this plugin are only operational when APAF runs as the
+		<b>registry</b> application. In any other mode, the Registry REST services answer
+		with an HTTP status 418.
+		When started as the Registry, the plugin:
+		<ul>
+			<li>locks the <code>npa.application.name</code> runtime property to <code>registry</code></li>
+			<li>redirects the home page to the Registry features page</li>
+			<li>adds the <b>Registry Features</b> entry to the Administration menu (administrator role)</li>
+			<li>starts the HTTP listener on the port given by <code>REGISTRY_PORT</code> (default 5008)</li>
+		</ul>
+
+		<h2>Registry features page</h2>
+
+		The page, available to administrators, lists the features stored in the Registry. A feature can be
+		edited (form or raw JSON) or deleted.
+		Features are stored in the <code>apaf_features</code> CouchDB database.
+
+		<h2>REST API</h2>
+
+		<table>
+			<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>POST</td><td>/catalog/v1</td><td>(none)</td><td>Store a published feature</td></tr>
+				<tr><td>GET</td><td>/catalog/v1</td><td>(none)</td><td>Search features (<code>category</code>, <code>name</code>, <code>summary</code> query parameters)</td></tr>
+				<tr><td>GET</td><td>/catalog/feature/:id</td><td>(none)</td><td>Get a full feature definition</td></tr>
+				<tr><td>POST</td><td>/apaf-registry-features/query</td><td>administrator</td><td>Query features with a CouchDB Mango selector</td></tr>
+				<tr><td>GET</td><td>/apaf-registry-features/:id</td><td>administrator</td><td>Get a feature by UUID</td></tr>
+				<tr><td>PUT</td><td>/apaf-registry-features/</td><td>administrator</td><td>Update a feature</td></tr>
+				<tr><td>DELETE</td><td>/apaf-registry-features/:id</td><td>administrator</td><td>Delete a feature</td></tr>
+			</tbody>
+		</table>
+
+		<h2>Update site</h2>
+
+		The <code>htdocs</code> folder of the plugin is served on <code>/repository</code> and is the update site
+		catalog consumed by the <b>apaf.updater</b> plugin.
+
+		<h2>Relationship with other plugins</h2>
+
+		Version 2.0.0 no longer contains the client side (publish, catalog, install, Manage Features page),
+		now provided by <b>apaf.registry.client</b>.
+
+	</body>
+</html>

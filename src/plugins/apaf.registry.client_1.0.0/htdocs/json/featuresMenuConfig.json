@@ -1,0 +1,18 @@
+{
+    "id":"featuresMenu",
+    "version": "1.0.0",
+    "type": "VerticalMenu",
+    "configuration": {
+    	"expandsTo": "workArea",
+    	"items": [
+    		{
+    			"id": "export",
+    			"label": "@apaf.registry.client.menu.export"
+    		},
+    		{
+    			"id": "import",
+    			"label": "@apaf.registry.client.menu.import"
+    		}
+    	]
+    }
+}

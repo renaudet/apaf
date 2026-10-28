@@ -1,0 +1,10 @@
+apaf.registry.page.title=Registry Features
+apaf.registry.page.selection.title=Published features
+apaf.registry.page.delete.confirm=Do you really want to delete the feature "{0}" ?
+apaf.registry.page.delete.flash=Feature deleted!
+apaf.registry.form.name=Name
+apaf.registry.form.version=Version
+apaf.registry.form.copyright=Copyright
+apaf.registry.form.category=Category
+apaf.registry.form.description=Description
+apaf.registry.form.icon=Icon URL
