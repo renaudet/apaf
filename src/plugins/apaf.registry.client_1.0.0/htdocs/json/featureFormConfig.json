@@ -44,7 +44,10 @@
     			"name": "icon",
     			"label": "@apaf.registry.client.form.icon",
     			"required": false,
-    			"size": 8
+    			"size": 8,
+				"type": "icon",
+				"placeholder": "@npa.ui.icon.picker.placeholder",
+				"previewSize": 16
     		}
     	]
     }
