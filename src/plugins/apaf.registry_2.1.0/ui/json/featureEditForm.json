@@ -1,0 +1,59 @@
+{
+    "id":"editForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.registry.form.name",
+    			"required": true,
+    			"size": 6
+    		},
+    		{
+    			"name": "version",
+    			"label": "@apaf.registry.form.version",
+    			"required": true,
+    			"size": 2
+    		},
+    		{
+    			"name": "copyright",
+    			"label": "@apaf.registry.form.copyright",
+    			"required": false,
+    			"size": 6
+    		},
+    		{
+    			"name": "category",
+    			"label": "@apaf.registry.form.category",
+    			"type": "select",
+    			"size": 3,
+    			"values": ["Tool","Application","Game"]
+    		},
+    		{
+    			"name": "prerequisite",
+    			"label": "@apaf.registry.form.prerequisite",
+    			"required": false,
+    			"size": 3
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.registry.form.description",
+    			"type": "richText",
+    			"required": false,
+    			"height": 200
+    		},
+    		{
+    			"name": "icon",
+    			"label": "@apaf.registry.form.icon",
+    			"required": false,
+    			"size": 8,
+				"type": "icon",
+				"placeholder": "@npa.ui.icon.picker.placeholder",
+				"previewSize": 24
+    		}
+    	]
+    }
+}

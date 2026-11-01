@@ -1,0 +1,35 @@
+{
+    "id": "featureManager",
+    "version": "1.0.0",
+    "type": "DataManager",
+    "configuration": {
+        "query": {
+            "type": "local",
+            "uri": "/apaf-registry-features/query",
+            "payload": {"selector": {}},
+            "method": "POST",
+            "adapter": "@.data"
+        },
+        "update": {
+            "type": "local",
+            "uri": "/apaf-registry-features/",
+            "method": "PUT",
+            "payload": "@",
+            "adapter": "@.data"
+        },
+        "delete": {
+            "type": "local",
+            "uri": "/apaf-registry-features/@.id",
+            "method": "DELETE",
+            "payload": "{}",
+            "adapter": "@.data"
+        },
+        "findByPrimaryKey": {
+            "type": "local",
+            "uri": "/apaf-registry-features/@.id",
+            "method": "GET",
+            "payload": "{}",
+            "adapter": "@.data"
+        }
+    }
+}

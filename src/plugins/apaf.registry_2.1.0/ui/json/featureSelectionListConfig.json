@@ -1,0 +1,29 @@
+{
+    "id":"itemSelectionList",
+    "version": "1.0.0",
+    "type": "SelectionList",
+    "configuration": {
+    	"header": {
+    		"title": "@apaf.registry.page.selection.title",
+    		"showFilter": true
+    	},
+    	"datasource": {
+            "type": "managed",
+            "manager": "featureManager"
+        },
+        "renderer": {
+        	"type": "FieldItemRenderer",
+        	"processor": "'<span><img src=\"/uiTools/img/silk/brick.png\">&nbsp;'+@.name+'&nbsp;<small>v<i>'+@.version+'</i></small></span>'"
+        },
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "name",
+        	"ascending": true
+        },
+        "constraints": {
+        	"height": {
+        		"processor": "$('#workArea').height()-40"
+        	}
+        } 
+    }
+}
