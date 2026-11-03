@@ -1,0 +1,11 @@
+apaf.ui.history.menu.label=Interaction History
+apaf.ui.history.page.title=User Interaction History
+apaf.ui.history.component.label=History Input
+apaf.ui.history.component.placeholder=Type or select a value...
+apaf.ui.history.component.tooltip=Click the arrow to recall a previous value
+apaf.ui.history.component.no.history=No history available yet
+apaf.ui.history.component.clear.title=Clear history for this context
+apaf.ui.history.component.clear.confirm=Clear all history entries for context "{0}"?
+apaf.ui.history.component.saved=Entry saved to history
+apaf.ui.history.component.error.load=Unable to load history: {0}
+apaf.ui.history.component.error.save=Unable to save history entry: {0}

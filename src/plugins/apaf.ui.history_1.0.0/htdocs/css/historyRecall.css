@@ -1,0 +1,85 @@
+/*
+ * historyRecall.css - HistoryRecall decorator component styles
+ * Copyright 2025 Nicolas Renaudet - All rights reserved
+ *
+ * The recall button is injected as a Bootstrap input-group-text sibling of the target <input>.
+ * Bootstrap's input-group already has position:relative and handles border-radius for children,
+ * so we only need to style the button appearance and the dropdown overlay.
+ */
+
+/* Recall ▼ button — styled to look like a plain input-group-text addon */
+.apaf-recall-btn {
+    cursor: pointer;
+    padding: 0 6px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    /* Visual match for Bootstrap input-group-text-sm */
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-left: none;
+    color: #495057;
+    transition: background-color 0.12s;
+}
+
+.apaf-recall-btn:hover {
+    background-color: #dde8f8;
+    border-color: #86b7fe;
+}
+
+/* Dropdown panel — absolutely positioned below the input-group */
+.apaf-recall-dropdown {
+    position: absolute;
+    /* left/top are set so the dropdown aligns with the input's left edge */
+    top: 100%;
+    left: 0;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    margin-top: 2px;
+    list-style: none;
+    padding: 4px 0;
+    min-width: 160px;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.apaf-recall-item {
+    padding: 5px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #333;
+}
+
+.apaf-recall-item:hover {
+    background: #eaf1fb;
+    color: #1a56a0;
+}
+
+.apaf-recall-item.apaf-recall-empty {
+    color: #999;
+    font-style: italic;
+    cursor: default;
+}
+
+.apaf-recall-item.apaf-recall-empty:hover {
+    background: transparent;
+}
+
+/* Fallback wrapper (when no input-group parent is found) */
+.apaf-recall-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: stretch;
+}
+
+.apaf-recall-wrap input {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-right: none !important;
+}

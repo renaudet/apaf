@@ -1,0 +1,130 @@
+/*
+ * historyInput.css - HistoryInput component styles
+ * Copyright 2025 Nicolas Renaudet - All rights reserved
+ */
+
+.apaf-history-root {
+    padding: 8px 4px;
+}
+
+.apaf-history-field-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+.apaf-history-label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 3px;
+    color: #444;
+}
+
+.apaf-history-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.apaf-history-input {
+    flex: 1 1 auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 13px;
+    height: 30px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.apaf-history-input:focus {
+    border-color: #3b82d4;
+    box-shadow: 0 0 0 2px rgba(59,130,212,0.15);
+}
+
+.apaf-history-input-wrap.has-dropdown .apaf-history-input {
+    border-right: none;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.apaf-history-drop-btn {
+    height: 30px;
+    padding: 0 6px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-left: none;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background 0.12s;
+    flex-shrink: 0;
+}
+
+.apaf-history-drop-btn:hover {
+    background: #dde8f8;
+}
+
+.apaf-history-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    margin-top: 2px;
+    list-style: none;
+    padding: 4px 0;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.apaf-history-item {
+    padding: 5px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #333;
+}
+
+.apaf-history-item:hover {
+    background: #eaf1fb;
+    color: #1a56a0;
+}
+
+.apaf-history-item.apaf-history-empty {
+    color: #999;
+    font-style: italic;
+    cursor: default;
+}
+
+.apaf-history-item.apaf-history-empty:hover {
+    background: transparent;
+    color: #999;
+}
+
+.apaf-history-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+}
+
+.apaf-history-submit {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.apaf-history-error {
+    color: #c00;
+    font-size: 12px;
+    padding: 4px;
+}

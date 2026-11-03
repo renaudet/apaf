@@ -1,0 +1,11 @@
+apaf.ui.history.menu.label=Historique des interactions
+apaf.ui.history.page.title=Historique des interactions utilisateur
+apaf.ui.history.component.label=Saisie avec historique
+apaf.ui.history.component.placeholder=Saisissez ou s&eacute;lectionnez une valeur...
+apaf.ui.history.component.tooltip=Cliquez sur la fl&egrave;che pour rappeler une valeur pr&eacute;c&eacute;dente
+apaf.ui.history.component.no.history=Aucun historique disponible pour le moment
+apaf.ui.history.component.clear.title=Effacer l&apos;historique de ce contexte
+apaf.ui.history.component.clear.confirm=Effacer toutes les entr&eacute;es de l&apos;historique pour le contexte &laquo;&nbsp;{0}&nbsp;&raquo;&nbsp;?
+apaf.ui.history.component.saved=Entr&eacute;e sauvegard&eacute;e dans l&apos;historique
+apaf.ui.history.component.error.load=Impossible de charger l&apos;historique&nbsp;: {0}
+apaf.ui.history.component.error.save=Impossible de sauvegarder l&apos;entr&eacute;e d&apos;historique&nbsp;: {0}
