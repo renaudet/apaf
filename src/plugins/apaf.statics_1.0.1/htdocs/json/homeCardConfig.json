@@ -1,0 +1,11 @@
+{
+    "id":"homeCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/apaf-branding/img/apaf-logo.png",
+        "label": "@apaf.page.home.title",
+        "headerClass": "bg-secondary bg-gradient bg-opacity-10",
+        "stylesheet": "/apaf-branding/css/apafCard.css"
+    }
+}

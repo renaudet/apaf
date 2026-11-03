@@ -1,0 +1,40 @@
+{
+    "id":"workspaceFileEditor",
+    "version": "1.0.0",
+    "type": "Editor",
+    "configuration": {
+        "height": 800,
+        "toolbar": {
+        	"position": "top",
+        	"actions": [
+        		{
+                    "label": "@apaf.workspace.editor.toolbar.action.edit",
+                    "actionId": "editFile",
+                    "icon": "/uiTools/img/silk/page_white_edit.png",
+	                "enabled": false,
+	                "enableOnSelection": true
+                },
+	    		{
+	                "type": "separator"
+	            },
+        		{
+                    "label": "@apaf.workspace.editor.toolbar.action.save",
+                    "actionId": "saveFile",
+                    "icon": "/uiTools/img/silk/disk.png",
+	                "enabled": false,
+	                "enableOnSelection": false
+                }
+        	],
+	    	"pluggableActionHandlers": [
+	    		{
+	    			"actionId": "editFile",
+	    			"handlerExpr": "@.setReadonly(false);@.setEnabled('saveFile',true);@.setEnabled('editFile',false);"
+	    		},
+	    		{
+	    			"actionId": "saveFile",
+	    			"handlerExpr": "@.setReadonly(true);@.setEnabled('saveFile',false);@.setEnabled('editFile',true);"
+	    		}
+	    	]
+        }
+    }
+}

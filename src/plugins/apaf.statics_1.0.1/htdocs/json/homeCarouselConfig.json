@@ -1,0 +1,11 @@
+{
+    "id":"homeCarousel",
+    "version": "1.0.0",
+    "type": "Carousel",
+    "configuration": {
+    	"expandsTo": "workArea",
+    	"transitionStyle": "fade",
+    	"stylesheet": "/apaf-branding/css/homeCarousel.css",
+    	"autoPlay": true
+    }
+}

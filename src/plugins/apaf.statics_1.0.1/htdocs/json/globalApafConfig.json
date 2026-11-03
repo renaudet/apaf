@@ -1,0 +1,677 @@
+{
+	"components": {
+		"menu": {
+		    "id":"apafGeneralNavBar",
+		    "version": "1.0.0",
+		    "type": "NavBar",
+		    "configuration": {
+		        "icon": "/apaf-branding/img/apaf-logo.png",
+		        "stylesheet": "/apaf-branding/css/navBar.css",
+		        "applicationName": "@apaf.application.title",
+		        "homeRef": "/resources/html/home.html",
+		        "providerUrl": "/apaf-menu/global",
+		        "menus": [
+		        	{
+		        		"id": "helpMenu",
+		        		"label": "@apaf.menu.help.label",
+		        		"items": [
+		        			{
+		        				"id": "aboutMenu",
+				        		"label": "@apaf.menu.help.about.label",
+				        		"actionId": "redirect",
+				        		"uri": "/resources/html/about.html",
+				        		"icon": "/uiTools/img/silk/help.png"
+		        			},
+		        			{
+		        				"id": "openNewMenu",
+				        		"label": "@apaf.menu.help.window.label",
+				        		"actionId": "redirect",
+				        		"uri": "/resources/html/home.html",
+				        		"newWindow": true,
+				        		"icon": "/uiTools/img/silk/application_form_add.png"
+		        			},
+		        			{
+		        				"type": "placeholder",
+		        				"id": "helpMenuPlaceholder"
+		        			},
+		        			{
+		        				"type": "separator"
+		        			},
+		        			{
+		        				"id": "logoffMenu",
+				        		"label": "@apaf.menu.help.logoff.label",
+				        		"actionId": "redirect",
+		        				"tooltip": "@apaf.menu.help.logoff.tooltip",
+				        		"uri": "/apaf-logout",
+				        		"icon": "/uiTools/img/silk/door_out.png"
+		        			}
+		        		]
+		        	}
+		        ]
+		    }
+		},
+		"notifier": {
+		    "id":"apafNotifier",
+		    "version": "1.0.0",
+		    "type": "Notifier",
+		    "configuration": {
+		    }
+		},
+		"userDataManager": {
+		    "id":"userManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+		    	"query": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/user/query",
+		    		"payload": {"selector": {}},
+		    		"method": "POST",
+		            "adapter": "@.data"
+		    	},
+		    	"create": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/user",
+		    		"method": "POST",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"update": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/user",
+		    		"method": "PUT",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"delete": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/user/@.id",
+		    		"method": "DELETE",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	},
+		    	"findByPrimaryKey": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/user/@.id",
+		    		"method": "GET",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	}
+		    }
+		},
+		"groupDataManager": {
+		    "id":"groupManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+		    	"query": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/group/query",
+		    		"payload": {"selector": {}},
+		    		"method": "POST",
+		            "adapter": "@.data"
+		    	},
+		    	"create": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/group",
+		    		"method": "POST",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"update": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/group",
+		    		"method": "PUT",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"delete": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/group/@.id",
+		    		"method": "DELETE",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	},
+		    	"findByPrimaryKey": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/group/@.id",
+		    		"method": "GET",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	}
+		    }
+		},
+		"roleDataManager": {
+		    "id":"roleManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+		    	"query": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/role/query",
+		    		"payload": {"selector": {}},
+		    		"method": "POST",
+		            "adapter": "@.data"
+		    	},
+		    	"create": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/role",
+		    		"method": "POST",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"update": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/role",
+		    		"method": "PUT",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"delete": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/role/@.id",
+		    		"method": "DELETE",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	},
+		    	"findByPrimaryKey": {
+		    		"type": "local",
+		    		"uri": "/apaf-admin/role/@.id",
+		    		"method": "GET",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	}
+		    }
+		},
+		"fragmentDataManager": {
+		    "id":"fragmentManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+		    	"query": {
+		    		"type": "local",
+		    		"uri": "/apaf-dev/fragment/query",
+		    		"payload": {"selector": {}},
+		    		"method": "POST",
+		            "adapter": "@.data"
+		    	},
+		    	"create": {
+		    		"type": "local",
+		    		"uri": "/apaf-dev/fragment",
+		    		"method": "POST",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"update": {
+		    		"type": "local",
+		    		"uri": "/apaf-dev/fragment",
+		    		"method": "PUT",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"delete": {
+		    		"type": "local",
+		    		"uri": "/apaf-dev/fragment/@.id",
+		    		"method": "DELETE",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	},
+		    	"findByPrimaryKey": {
+		    		"type": "local",
+		    		"uri": "/apaf-dev/fragment/@.id",
+		    		"method": "GET",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	}
+		    }
+		},
+		"applicationDataManager": {
+		    "id":"applicationManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+		    	"query": {
+		    		"type": "local",
+		    		"uri": "/apaf-dev/application/query",
+		    		"payload": {"selector": {}},
+		    		"method": "POST",
+		            "adapter": "@.data"
+		    	},
+		    	"create": {
+		    		"type": "local",
+		    		"uri": "/apaf-dev/application",
+		    		"method": "POST",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"update": {
+		    		"type": "local",
+		    		"uri": "/apaf-dev/application",
+		    		"method": "PUT",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"delete": {
+		    		"type": "local",
+		    		"uri": "/apaf-dev/application/@.id",
+		    		"method": "DELETE",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	},
+		    	"findByPrimaryKey": {
+		    		"type": "local",
+		    		"uri": "/apaf-dev/application/@.id",
+		    		"method": "GET",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	}
+		    }
+		},
+		"datatypeDataManager": {
+		    "id":"datatypeManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+		    	"query": {
+		    		"type": "local",
+		    		"uri": "/apaf-datatype/datatype/query",
+		    		"payload": {"selector": {}},
+		    		"method": "POST",
+		            "adapter": "@.data"
+		    	},
+		    	"create": {
+		    		"type": "local",
+		    		"uri": "/apaf-datatype/datatype",
+		    		"method": "POST",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"update": {
+		    		"type": "local",
+		    		"uri": "/apaf-datatype/datatype",
+		    		"method": "PUT",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"delete": {
+		    		"type": "local",
+		    		"uri": "/apaf-datatype/datatype/@.id",
+		    		"method": "DELETE",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	},
+		    	"findByPrimaryKey": {
+		    		"type": "local",
+		    		"uri": "/apaf-datatype/datatype/@.id",
+		    		"method": "GET",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	}
+		    }
+		},
+		"workflowDataManager": {
+		    "id":"workflowManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+				"query": {
+					"type": "local",
+					"uri": "/apaf-workflow/query",
+					"payload": {"selector": {}},
+					"method": "POST",
+			        "adapter": "@.data"
+				},
+				"create": {
+					"type": "local",
+					"uri": "/apaf-workflow",
+					"method": "POST",
+					"payload": "@",
+			        "adapter": "@.data"
+				},
+				"update": {
+					"type": "local",
+					"uri": "/apaf-workflow",
+					"method": "PUT",
+					"payload": "@",
+			        "adapter": "@.data"
+				},
+				"delete": {
+					"type": "local",
+					"uri": "/apaf-workflow/@.id",
+					"method": "DELETE",
+					"payload": "{}",
+			        "adapter": "@.data"
+				},
+				"findByPrimaryKey": {
+					"type": "local",
+					"uri": "/apaf-workflow/@.name",
+					"method": "GET",
+					"payload": "{}",
+			        "adapter": "@.data"
+				}
+			}
+		},
+		"schedulerDataManager": {
+		    "id":"schedulerManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+				"query": {
+					"type": "local",
+					"uri": "/apaf-scheduler/query",
+					"payload": {"selector": {}},
+					"method": "POST",
+			        "adapter": "@.data"
+				},
+				"create": {
+					"type": "local",
+					"uri": "/apaf-scheduler",
+					"method": "POST",
+					"payload": "@",
+			        "adapter": "@.data"
+				},
+				"update": {
+					"type": "local",
+					"uri": "/apaf-scheduler",
+					"method": "PUT",
+					"payload": "@",
+			        "adapter": "@.data"
+				},
+				"delete": {
+					"type": "local",
+					"uri": "/apaf-scheduler/@.id",
+					"method": "DELETE",
+					"payload": "{}",
+			        "adapter": "@.data"
+				}
+			}
+		},
+		"genericDataManager": {
+		    "id":"genericManager",
+		    "version": "1.0.0",
+		    "type": "ReactiveDataManager",
+		    "configuration": {
+		    }
+		},
+		"ruleDataDataManager": {
+		    "id":"ruleDataManager",
+		    "version": "1.0.0",
+		    "type": "DataManager",
+		    "configuration": {
+		    	"query": {
+		    		"type": "local",
+		    		"uri": "/apaf-rule-data/query",
+		    		"payload": {"selector": {}},
+		    		"method": "POST",
+		            "adapter": "@.data"
+		    	},
+		    	"create": {
+		    		"type": "local",
+		    		"uri": "/apaf-rule-data",
+		    		"method": "POST",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"update": {
+		    		"type": "local",
+		    		"uri": "/apaf-rule-data",
+		    		"method": "PUT",
+		    		"payload": "@",
+		            "adapter": "@.data"
+		    	},
+		    	"delete": {
+		    		"type": "local",
+		    		"uri": "/apaf-rule-data/@.id",
+		    		"method": "DELETE",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	},
+		    	"findByPrimaryKey": {
+		    		"type": "local",
+		    		"uri": "/apaf-rule-data/@.id",
+		    		"method": "GET",
+		    		"payload": "{}",
+		            "adapter": "@.data"
+		    	}
+		    }
+		},
+		"editingToolbar": {
+		    "id":"editingToolbar",
+		    "version": "1.0.0",
+		    "type": "Toolbar",
+		    "configuration": {
+		    	"selectionListener": true,
+		    	"selectionProvider": "itemSelectionList",
+		    	"actions": [
+		    		{
+		                "label": "@apaf.toolbar.item.edit",
+		                "actionId": "edit",
+		                "icon_": "/uiTools/img/silk/table_edit.png",
+		                "icon": "/uiTools/img/silk/page_white_edit.png",
+		                "enabled": false,
+		                "enableOnSelection": true
+		            },
+		    		{
+		                "label": "@apaf.toolbar.item.save",
+		                "actionId": "save",
+		                "icon": "/uiTools/img/silk/disk.png",
+		                "enabled": false,
+		                "enableOnSelection": false
+		            },
+		    		{
+		                "type": "separator"
+		            },
+		    		{
+		                "label": "@apaf.toolbar.item.delete",
+		                "actionId": "delete",
+		                "icon_": "/uiTools/img/silk/table_row_delete.png",
+		                "icon": "/uiTools/img/silk/delete.png",
+		                "enabled": false,
+		                "enableOnSelection": true
+		            },
+		    		{
+		                "label": "@apaf.toolbar.item.new",
+		                "actionId": "insert",
+		                "icon_": "/uiTools/img/silk/table_row_insert.png",
+		                "icon": "/uiTools/img/silk/add.png"
+		            },
+		    		{
+		                "label": "generic action 1",
+		                "type": "conditional",
+		                "actionId": "generic1",
+		                "icon": "/uiTools/img/silk/page_white_lightning.png"
+		            },
+		    		{
+		                "label": "generic action 2",
+		                "type": "conditional",
+		                "actionId": "generic2",
+		                "icon": "/uiTools/img/silk/page_white_lightning.png"
+		            }
+		    	],
+		    	"pluggableActionHandlers": [
+		    		{
+		    			"actionId": "insert",
+		    			"handlerExpr": "@.setEnabled('save',true);@.setEnabled('edit',false);@.setEnabled('delete',false);"
+		    		},
+		    		{
+		    			"actionId": "edit",
+		    			"handlerExpr": "@.setEnabled('save',true);@.setEnabled('edit',false);$('editForm').setEditMode(true);"
+		    		}
+		    	]
+		    }
+		},
+		"editorTabPane": {
+		    "id":"editorTabPane",
+		    "version": "1.0.0",
+		    "type": "TabPane",
+		    "configuration": {
+		        "tabs": [
+		            {
+		                "id": "form",
+		                "label": "@apaf.editorTabPane.tab1.label"
+		            },
+		            {
+		                "id": "json",
+		                "label": "@apaf.editorTabPane.tab2.label"
+		            }
+		        ],
+		        "parentId": "workArea"
+		    }
+		},
+		"jsonEditor": {
+		    "id":"jsonEditor",
+		    "version": "1.0.0",
+		    "type": "Editor",
+		    "configuration": {
+		        "height": 650,
+		    	"selectionListener": true,
+		    	"selectionProvider": "itemSelectionList",
+		        "toolbar": {
+		        	"position": "top",
+		        	"actions": [
+		        		{
+		                    "label": "@apaf.json.editor.edit.label",
+		                    "actionId": "editJson",
+		                    "icon": "/uiTools/img/silk/page_edit.png",
+			                "enabled": false,
+			                "enableOnSelection": true
+		                },
+			    		{
+			                "type": "separator"
+			            },
+		        		{
+		                    "label": "@apaf.json.editor.save.label",
+		                    "actionId": "saveJson",
+		                    "icon": "/uiTools/img/silk/disk.png",
+			                "enabled": false,
+			                "enableOnSelection": false
+		                }
+		        	],
+			    	"pluggableActionHandlers": [
+			    		{
+			    			"actionId": "editJson",
+			    			"handlerExpr": "@.setReadonly(false);@.setEnabled('saveJson',true);@.setEnabled('editJson',false);"
+			    		},
+			    		{
+			    			"actionId": "saveJson",
+			    			"handlerExpr": "@.setReadonly(true);@.setEnabled('saveJson',false);@.setEnabled('editJson',true);"
+			    		}
+			    	]
+		        }
+		    }
+		},
+		"dialog": {
+		    "id":"simpleDialog",
+		    "version": "1.0.0",
+		    "type": "ModalDialog",
+		    "configuration": {
+		    	"title": "@apaf.simple.dialog.default.title",
+		    	"size": "XXL",
+		    	"buttons": [
+		    		{
+		    			"label": "@apaf.simple.dialog.cancel.label",
+		    			"action": "cancel"
+		    		},
+		    		{
+		    			"label": "@apaf.simple.dialog.close.label",
+		    			"action": "close"
+		    		}
+		    	]
+		    }
+		},
+		"emptyDialog": {
+		    "id":"emptyDialog",
+		    "version": "1.0.0",
+		    "type": "ModalDialog",
+		    "configuration": {
+		    	"title": "@apaf.simple.dialog.default.title",
+		    	"size": "XXL",
+		    	"buttons": [
+		    		{
+		    			"label": "@apaf.empty.dialog.cancel.label",
+		    			"action": "cancel"
+		    		},
+		    		{
+		    			"label": "@apaf.empty.dialog.close.label",
+		    			"action": "close"
+		    		}
+		    	]
+		    }
+		},
+		"propertyDialog": {
+		    "id":"propertyDialog",
+		    "version": "1.0.0",
+		    "type": "ModalDialog",
+		    "configuration": {
+		    	"title": "@apaf.page.apis.property.form.title",
+		    	"size": "XXL",
+		    	"buttons": [
+		    		{
+		    			"label": "@apaf.simple.dialog.cancel.label",
+		    			"action": "cancel"
+		    		},
+		    		{
+		    			"label": "@apaf.simple.dialog.close.label",
+		    			"action": "close"
+		    		}
+		    	]
+		    }
+		},
+		"dataToolbar": {
+		    "id":"dataToolbar",
+		    "version": "1.0.0",
+		    "type": "Toolbar",
+		    "configuration": {
+		    	"selectionListener": true,
+		    	"selectionProvider": "itemSelectionList",
+		    	"actions": [
+		    		{
+		                "label": "@data.toolbar.print.label",
+		                "actionId": "print",
+		                "icon": "/uiTools/img/silk/printer.png",
+		                "enabled": false,
+		                "enableOnSelection": false
+		            },
+		    		{
+		                "type": "separator"
+		            },
+		    		{
+		                "label": "@data.toolbar.import.label",
+		                "actionId": "import",
+		                "icon": "/uiTools/img/silk/cart_put.png",
+		                "enabled": false,
+		                "enableOnSelection": true
+		            },
+		    		{
+		                "type": "separator"
+		            },
+		    		{
+		                "label": "@data.toolbar.add.label",
+		                "actionId": "add",
+		                "icon": "/uiTools/img/silk/add.png",
+		                "enabled": false,
+		                "enableOnSelection": true
+		            },
+		    		{
+		                "type": "separator"
+		            },
+		    		{
+		                "type": "control",
+		                "kind": "filter",
+		                "actionId": "filter",
+		                "label": "@data.toolbar.filter.label",
+		                "width": 300
+		            }
+		    	]
+		    }
+		},
+		"sessionMonitor": { 
+			"id":"sessionMonitor",
+		    "version": "1.0.0",
+		    "type": "apaf.SessionMonitor",
+		    "configuration": {
+		    	"monitoringInterval": 30
+		    }
+		}
+	}
+}

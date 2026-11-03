@@ -1,0 +1,12 @@
+{
+    "id":"manageStatsCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon_": "/resources/img/apaf-stats.png",
+        "icon": "/uiTools/img/silk/chart_line.png",
+        "label": "@apaf.page.stats.title",
+        "headerClass": "bg-secondary bg-gradient bg-opacity-10",
+        "stylesheet": "/apaf-branding/css/apafCard.css"
+    }
+}

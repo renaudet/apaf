@@ -1,0 +1,16 @@
+{
+    "id":"jobTableToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+    	"actions": [
+    		{
+                "label": "Refresh",
+                "actionId": "refreshJobs",
+                "icon": "/uiTools/img/silk/arrow_refresh.png",
+                "enabled": true,
+                "enableOnSelection": true
+            }
+    	]
+    }
+}

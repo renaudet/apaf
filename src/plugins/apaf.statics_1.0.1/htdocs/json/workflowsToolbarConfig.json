@@ -1,0 +1,26 @@
+{
+    "id":"workflowTableToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+    	"actions": [
+    		{
+                "label": "@apaf.workflow.toolbar.action.create",
+                "actionId": "addWorkflow",
+                "icon": "/uiTools/img/silk/add.png",
+                "enabled": true,
+                "enableOnSelection": true
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "type": "control",
+                "kind": "filter",
+                "actionId": "filter",
+                "label": "@data.toolbar.filter.label",
+                "width": 300
+            }
+    	]
+    }
+}

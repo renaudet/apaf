@@ -1,0 +1,14 @@
+/***
+ * workflowEditor.css - CSS file for the APAF Workflow Editor
+ * Copyright 2024 Nicolas Renaudet - All rights reserved
+ *
+ ***/
+ 
+.workflow-console {
+	padding: 5px;
+	background-color: #eeeeee;
+	height: 700px;
+	overflow: auto;
+	font-size: 0.9rem;
+	font-family: courier;
+}

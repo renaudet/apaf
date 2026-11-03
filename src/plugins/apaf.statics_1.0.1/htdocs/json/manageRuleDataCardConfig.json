@@ -1,0 +1,11 @@
+{
+    "id":"manageRuleDataCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/resources/img/ruleDataEditor.png",
+        "label": "@apaf.page.ruledata.title",
+        "headerClass": "bg-secondary bg-gradient bg-opacity-10",
+        "stylesheet": "/apaf-branding/css/apafCard.css"
+    }
+}

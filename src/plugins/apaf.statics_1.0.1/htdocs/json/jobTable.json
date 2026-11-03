@@ -1,0 +1,48 @@
+{
+    "id":"jobTable",
+    "version": "1.0.0",
+    "type": "Datatable",
+    "configuration": {
+    	"contentAdapter": "@.fields",
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "startTime",
+        	"ascending": true
+        },
+        "maxHeight": 800,
+        "columns": [
+            {
+                "label": "Description",
+                "field": "description"
+            },
+            {
+                "label": "Owner",
+                "field": "owner"
+            },
+            {
+                "label": "Progress",
+                "field": "progress",
+                "type": "progress",
+                "width": "45%",
+                "processor": "(@.status=='ongoing'||@.status=='pending'||@.status=='completed')?'bg-success':(@.status=='setRollbackOnly'?'bg-warning':'bg-danger')"
+            },
+            {
+                "label": "Status",
+                "field": "status",
+                "renderer": "(@.status=='ongoing'||@.status=='pending'||@.status=='completed')?'<img src=\"/uiTools/img/silk/tick.png\" title=\"'+@.status+'\">':(@.status=='setRollbackOnly'?'<img src=\"/uiTools/img/silk/exclamation.png\" title=\"Force terminate\">':'<img src=\"/uiTools/img/silk/cross.png\" title=\"Terminated\">')"
+            },
+            {
+                "label": "Actions",
+                "type": "rowActions",
+                "actions": [
+                    {
+                        "label": "Force terminate",
+                        "actionId": "terminate",
+                        "icon": "/uiTools/img/silk/cancel.png",
+                        "enabler": "@.status=='ongoing'||@.status=='pending'"
+                    }
+                ]
+            }
+        ]
+    }
+}

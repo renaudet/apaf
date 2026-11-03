@@ -1,0 +1,36 @@
+/***
+ * apafGenericCard.css - CSS file for generic APAF applications
+ * Copyright 2024 Nicolas Renaudet - All rights reserved
+ *
+ ***/
+ 
+.npa-card-header {
+	background-color: #4b93db;
+	color: #ffffff;
+}
+
+.card-scrollable {
+	overflow: auto;
+}
+
+.npa-card-footer {
+	font-size: 0.8rem;
+}
+
+.card-working-area {
+	background-color: #ffffff;
+}
+
+.panel {
+	border: 1px solid #c3c3c3;
+	border-radius: 0.2rem;
+	box-shadow: 1px 1px 3px #a0a0a0;
+	background-color: #fafafa;
+	margin-bottom: 5px;
+}
+
+.form-row-label {
+	font-weight: bold;
+	text-align: right;
+	padding-top: 5px;
+}

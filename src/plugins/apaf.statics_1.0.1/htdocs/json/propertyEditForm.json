@@ -1,0 +1,33 @@
+{
+    "id":"propertyEditForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title_": "@apaf.page.apis.property.form.title",
+    	"class": "form-frame-noborder",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.page.apis.property.form.name",
+    			"required": true,
+    			"size": 10,
+				"constraint": "#.setEditMode(false);",
+				"constrainedBy": "value"
+    		},
+    		{
+    			"name": "type",
+    			"label": "@apaf.page.apis.property.form.type",
+    			"required": true,
+    			"size": 5,
+				"constraint": "#.setEditMode(false);",
+				"constrainedBy": "value"
+    		},
+    		{
+    			"name": "value",
+    			"label": "@apaf.page.apis.property.form.value",
+    			"required": true,
+    			"size": 8
+    		}
+    	]
+    }
+}

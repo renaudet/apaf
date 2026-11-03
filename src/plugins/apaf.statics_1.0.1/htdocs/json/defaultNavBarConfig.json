@@ -1,0 +1,26 @@
+{
+    "id":"apafDefaultNavBar",
+    "version": "1.0.0",
+    "type": "NavBar",
+    "configuration": {
+        "icon": "/apaf-branding/img/apaf-logo.png",
+		"stylesheet": "/apaf-branding/css/navBar.css",
+        "applicationName": "@apaf.application.title",
+        "homeRef": "/resources/html/home.html",
+        "menus": [
+        	{
+        		"id": "helpMenu",
+        		"label": "@apaf.menu.help.label",
+        		"items": [
+        			{
+        				"id": "aboutMenu",
+		        		"label": "@apaf.menu.help.about.label",
+		        		"actionId": "redirect",
+		        		"uri": "/resources/html/about.html",
+		        		"icon": "/uiTools/img/silk/help.png"
+        			}
+        		]
+        	}
+        ]
+    }
+}

@@ -1,0 +1,85 @@
+{
+  "id": "apaf.statics",
+  "name": "Static resources for APAF",
+  "version": "1.0.1",
+  "requires": [
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.statics.htdocs",
+  		"path": "/resources",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.statics.locale.provider.enUS",
+  		"path": "i18n/apaf.statics_en_US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.statics.locale.provider.en",
+  		"path": "i18n/apaf.statics_en_US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.statics.locale.provider.frFR",
+  		"path": "i18n/apaf.statics_fr_FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.statics.locale.provider.fr",
+  		"path": "i18n/apaf.statics_fr_FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.statics.components.session.monitor",
+  		"namespace": "apaf",
+  		"name": "SessionMonitor",
+  		"version": "1.0.0",
+  		"dependency": "/resources/js/components/sessionMonitor.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.component.dataTable",
+  		"namespace": "apaf",
+  		"name": "Datatable",
+  		"version": "1.0.0",
+  		"dependency": "/resources/js/components/apafDatatable.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.component.dataTable.v2",
+  		"namespace": "apaf",
+  		"name": "DatatableV2",
+  		"version": "1.0.0",
+  		"dependency": "/resources/js/components/apafDatatable2.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.component.datatype.search",
+  		"namespace": "apaf",
+  		"name": "DatatypeSearch",
+  		"version": "1.0.0",
+  		"dependency": "/resources/js/components/datatypeSearch.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.editor",
+  		"id": "apaf.editors.generated.field.editor",
+  		"datatype": "generatedField",
+  		"libraries": [
+         	{"type": "js", "uri": "/resources/js/editors/generatedFieldEditor.js"}
+         ],
+  		"editor": "apafEditors.GeneratedFieldEditor"
+  	}
+  ],
+  "provides": [
+  ]
+}

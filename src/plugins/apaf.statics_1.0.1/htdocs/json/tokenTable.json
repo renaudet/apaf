@@ -1,0 +1,47 @@
+{
+    "id":"tokenTable",
+    "version": "1.0.0",
+    "type": "Datatable",
+    "configuration": {
+        "datasource": {
+            "type": "managed",
+            "manager": "tokenManager"
+        },
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "login",
+        	"ascending": true
+        },
+    	"maxHeight": 800,
+        "columns": [
+            {
+                "label": "@apaf.token.datatype.login",
+                "field": "login"
+            },
+            {
+                "label": "@apaf.token.datatype.uri",
+                "field": "uri"
+            },
+            {
+                "label": "@apaf.token.datatype.created",
+                "field": "created"
+            },
+            {
+                "label": "@apaf.token.datatype.token",
+                "field": "token",
+                "renderer_": "typeof @.type=='undefined'?'text':@.type"
+            },
+            {
+                "label": "@apaf.token.table.action.column",
+                "type": "rowActions",
+                "actions": [
+                    {
+                        "label": "@apaf.token.table.action.delete.label",
+                        "actionId": "deleteToken",
+                        "icon": "/uiTools/img/silk/key_delete.png"
+                    }
+                ]
+            }
+        ]
+    }
+}
