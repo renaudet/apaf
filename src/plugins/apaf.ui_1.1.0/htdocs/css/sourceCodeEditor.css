@@ -1,0 +1,10 @@
+/***
+ * sourceCodeEditor.css - CSS file for the SourceCodeEditor component from APAF UI
+ * Copyright 2026 Nicolas Renaudet - All rights reserved
+ *
+ ***/
+ 
+.open-editor-button {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}

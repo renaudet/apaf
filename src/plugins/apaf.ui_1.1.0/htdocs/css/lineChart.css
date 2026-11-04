@@ -1,0 +1,22 @@
+.apaf-linechart {
+	position: relative;
+	width: 100%;
+}
+
+.apaf-linechart-nodata {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	align-items: center;
+	justify-content: center;
+	color: #6c757d;
+	font-style: italic;
+	pointer-events: none;
+}
+
+.apaf-linechart-empty .apaf-linechart-nodata {
+	display: flex;
+}
