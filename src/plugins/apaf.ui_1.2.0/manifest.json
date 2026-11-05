@@ -1,0 +1,155 @@
+{
+  "id": "apaf.ui",
+  "name": "Advanced UI plugin for APAF",
+  "version": "1.2.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.ui.logger",
+  		"dir": "apaf.ui"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.ui.router",
+  		"path": "/apaf-ui-support"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.ui.htdocs",
+  		"path": "/apaf-ui",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.ui.locale.provider.enUS",
+  		"path": "i18n/apaf_ui_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.ui.locale.provider.en",
+  		"path": "i18n/apaf_ui_en-US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.ui.locale.provider.frFR",
+  		"path": "i18n/apaf_ui_fr-FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.ui.locale.provider.fr",
+  		"path": "i18n/apaf_ui_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.ui.components.sourceCodeEditor",
+  		"namespace": "apafUi",
+  		"name": "SourceCodeEditor",
+  		"version": "1.0.0",
+  		"dependency": "/apaf-ui/js/sourceCodeEditor.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.ui.components.lineChart",
+  		"namespace": "apafUi",
+  		"name": "LineChart",
+  		"version": "1.0.0",
+  		"dependency": "/apaf-ui/js/lineChart.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.ui.components.barChart",
+  		"namespace": "apafUi",
+  		"name": "BarChart",
+  		"version": "1.0.0",
+  		"dependency": "/apaf-ui/js/charts.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.ui.components.pieChart",
+  		"namespace": "apafUi",
+  		"name": "PieChart",
+  		"version": "1.0.0",
+  		"dependency": "/apaf-ui/js/charts.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.ui.components.doughnutChart",
+  		"namespace": "apafUi",
+  		"name": "DoughnutChart",
+  		"version": "1.0.0",
+  		"dependency": "/apaf-ui/js/charts.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.ui.components.radarChart",
+  		"namespace": "apafUi",
+  		"name": "RadarChart",
+  		"version": "1.0.0",
+  		"dependency": "/apaf-ui/js/charts.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.ui.components.polarAreaChart",
+  		"namespace": "apafUi",
+  		"name": "PolarAreaChart",
+  		"version": "1.0.0",
+  		"dependency": "/apaf-ui/js/charts.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.ui.components.scatterChart",
+  		"namespace": "apafUi",
+  		"name": "ScatterChart",
+  		"version": "1.0.0",
+  		"dependency": "/apaf-ui/js/charts.js"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.ui.components.sourceCodeEditor.snippets.handler",
+  		"router": "apaf.ui.router",
+  		"method": "GET",
+  		"schema": "/codeEditor/snippets",
+  		"handler": "getSuitableSnippetsList",
+  		"securityRole": "developer",
+		"description": "Returns a list of suitable code snippets for this editor",
+		"input": {}
+  	},
+  	{
+  		"point": "apaf.ui.code.editor.snippet.provider",
+  		"id": "apaf.ui.code.editor.snippet.1",
+  		"label": "Base implementation for a Datatype pre-processor",
+  		"location": "/apaf-ui/snippets/basicPreProcessorImpl.txt",
+  		"category": "API"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.ui.doc.htdocs",
+  		"path": "/apaf-ui-doc",
+  		"localDir": "htdocs/docs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.ui.doc",
+  		"label": "apaf.ui - Advanced UI Components",
+  		"category": "APAF Framework",
+  		"subcategory": "User Interface",
+  		"url": "/apaf-ui-doc/apafUi.html"
+  	}
+  ],
+  "provides": [
+  	{"id": "apaf.ui.code.editor.snippet.provider"}
+  ]
+}

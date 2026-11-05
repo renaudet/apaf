@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.ui plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2026 Nicolas Renaudet - All rights reserved">
+		<meta charset="UTF-8">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/npa-documentation/css/npaDocumentation.css" rel="stylesheet">
+		<title>apaf.ui - Advanced UI Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.ui &mdash; Advanced UI Plugin</h1>
+
+		<h2>Overview</h2>
+
+		<p>The <b>apaf.ui</b> plugin contributes APAF-specific UI components to the NPA UI framework
+		(<code>npa.ui.tools.core</code>). Components live in the <code>apafUi</code> namespace and are
+		referenced in a component JSON configuration as <code>apafUi.&lt;Name&gt;</code>.</p>
+
+		<p>Since version 1.1.0 the plugin also serves the <b>Chart.js</b> library (v4.4.7, UMD build) from
+		<code>/apaf-ui/lib/chart.umd.js</code>, and provides the <b>LineChart</b> component.</p>
+
+		<p>Version 1.2.0 adds a family of statistical chart components sharing the same conventions as
+		<b>LineChart</b>: <b>BarChart</b>, <b>PieChart</b> (camembert), <b>DoughnutChart</b>, <b>RadarChart</b> (star),
+		<b>PolarAreaChart</b> and <b>ScatterChart</b>.</p>
+
+		<h2>Components</h2>
+		<table>
+			<thead><tr><th>Component</th><th>Type</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td>SourceCodeEditor</td><td><code>apafUi.SourceCodeEditor</code></td><td>Button opening a modal source code editor with a snippet library</td></tr>
+				<tr><td>LineChart</td><td><code>apafUi.LineChart</code></td><td>Line chart based on Chart.js; the canvas is managed by the component</td></tr>
+				<tr><td>BarChart</td><td><code>apafUi.BarChart</code></td><td>Vertical or horizontal bars, grouped or stacked (since 1.2.0)</td></tr>
+				<tr><td>PieChart</td><td><code>apafUi.PieChart</code></td><td>Pie chart ("camembert"): share of each row in a whole (since 1.2.0)</td></tr>
+				<tr><td>DoughnutChart</td><td><code>apafUi.DoughnutChart</code></td><td>Pie chart with a hole in the middle (since 1.2.0)</td></tr>
+				<tr><td>RadarChart</td><td><code>apafUi.RadarChart</code></td><td>Radar ("star" / spider) chart, one polygon per series (since 1.2.0)</td></tr>
+				<tr><td>PolarAreaChart</td><td><code>apafUi.PolarAreaChart</code></td><td>Slices of equal angle whose radius depends on the value (since 1.2.0)</td></tr>
+				<tr><td>ScatterChart</td><td><code>apafUi.ScatterChart</code></td><td>Scatter plot: points positioned with a numeric X and Y value (since 1.2.0)</td></tr>
+			</tbody>
+		</table>
+
+		<h2>LineChart component</h2>
+
+		<p>The developer only declares a placeholder <code>&lt;div&gt;</code> and a JSON configuration. The component
+		creates and sizes the <code>&lt;canvas&gt;</code>, loads Chart.js on demand (only if the
+		<code>Chart</code> global is not already defined), builds, updates and destroys the chart instance.
+		The chart is responsive and fits the width of its parent <code>&lt;div&gt;</code>.</p>
+
+		<h3>Usage</h3>
+<pre>&lt;div id="salesChartDiv" class="npaUi" data-config="/my-plugin/json/salesChart.json"&gt;&lt;/div&gt;</pre>
+
+<pre>{
+  "id": "salesChart",
+  "type": "apafUi.LineChart",
+  "version": "1.0.0",
+  "configuration": {
+    "title": "@my.plugin.sales.title",
+    "height": 300,
+    "labelField": "month",
+    "series": [
+      {"field": "revenue","label": "@my.plugin.sales.revenue"},
+      {"field": "cost","label": "@my.plugin.sales.cost","color": "#e5484d","fill": true}
+    ],
+    "yAxisLabel": "EUR",
+    "datasource": {
+      "type": "local",
+      "uri": "/my-plugin-api/sales",
+      "adapter": "@.data"
+    }
+  }
+}</pre>
+
+		<h3>Configuration</h3>
+		<table>
+			<thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>title</code></td><td>string</td><td>Optional chart title; supports i18n references (<code>@key</code>)</td></tr>
+				<tr><td><code>height</code></td><td>integer</td><td>Chart height in pixels (default 300)</td></tr>
+				<tr><td><code>labelField</code></td><td>string</td><td>Row attribute used for the X axis labels</td></tr>
+				<tr><td><code>series</code></td><td>array</td><td>One entry per curve: <code>field</code> (row attribute holding the Y value), optional <code>label</code>, <code>color</code> and <code>fill</code></td></tr>
+				<tr><td><code>xAxisLabel</code> / <code>yAxisLabel</code></td><td>string</td><td>Optional axis titles; support i18n references</td></tr>
+				<tr><td><code>legend</code></td><td>boolean</td><td>Display the legend (default <code>true</code>)</td></tr>
+				<tr><td><code>smooth</code></td><td>boolean</td><td>Smooth the curves (default <code>true</code>)</td></tr>
+				<tr><td><code>beginAtZero</code></td><td>boolean</td><td>Force the Y axis to start at 0 (default <code>false</code>)</td></tr>
+				<tr><td><code>datasource</code></td><td>object</td><td>Data source, same conventions as the Datatable component (see below)</td></tr>
+				<tr><td><code>selectionListener</code> / <code>selectionProvider</code></td><td>boolean / string</td><td>When set, the chart is refilled when the given component fires a <code>select</code> event</td></tr>
+				<tr><td><code>selectionAdapter</code></td><td>string</td><td>Expression returning the rows array from the selected item (<code>@</code> represents the item); the item itself is used if omitted</td></tr>
+			</tbody>
+		</table>
+
+		<h3>Datasource</h3>
+		<table>
+			<thead><tr><th>Type</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>local</code> (default)</td><td>REST call on <code>uri</code> (<code>method</code>, <code>payload</code> optional). The rows are read from the <code>data</code> attribute of the response, or from the result of the <code>adapter</code> expression (<code>@</code> represents the response)</td></tr>
+				<tr><td><code>managed</code></td><td>Rows returned by <code>query(payload)</code> of the DataManager component identified by <code>manager</code></td></tr>
+				<tr><td><code>manual</code> (or no datasource)</td><td>Rows provided by the application through <code>setData(rows)</code></td></tr>
+			</tbody>
+		</table>
+
+		<h3>Methods</h3>
+		<table>
+			<thead><tr><th>Method</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>setData(rows)</code></td><td>Replace the displayed rows and update the chart</td></tr>
+				<tr><td><code>refresh()</code></td><td>Reload the data from the datasource</td></tr>
+				<tr><td><code>onItemSelected(item)</code></td><td>Selection listener callback</td></tr>
+			</tbody>
+		</table>
+
+		<h3>Events</h3>
+		<p>Clicking a point fires the <code>select</code> event with <code>{"source": &lt;component id&gt;, "item": &lt;the row&gt;}</code>,
+		so other components can listen to it with <code>selectionProvider</code>.</p>
+
+		<h2>Statistical charts (since 1.2.0)</h2>
+
+		<p>The six components below are implemented in <code>/apaf-ui/js/charts.js</code> on top of a common base class,
+		and share the behaviour of <b>LineChart</b>: the developer declares a placeholder <code>&lt;div&gt;</code> and a JSON
+		configuration; the component creates the canvas, loads Chart.js on demand, is responsive, shows a localized
+		&laquo;&nbsp;no data&nbsp;&raquo; message when empty, and supports the same <code>datasource</code>,
+		<code>selectionListener</code> / <code>selectionProvider</code> / <code>selectionAdapter</code> settings, the
+		<code>setData(rows)</code> / <code>refresh()</code> / <code>onItemSelected(item)</code> methods and the
+		<code>select</code> event (fired when an element of the chart is clicked, carrying the underlying row).</p>
+
+		<h3>Common configuration</h3>
+		<table>
+			<thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>title</code></td><td>string</td><td>Optional chart title; supports i18n references (<code>@key</code>)</td></tr>
+				<tr><td><code>height</code></td><td>integer</td><td>Chart height in pixels (default 300)</td></tr>
+				<tr><td><code>legend</code></td><td>boolean</td><td>Display the legend (default <code>true</code>)</td></tr>
+				<tr><td><code>legendPosition</code></td><td>string</td><td><code>top</code> (default), <code>bottom</code>, <code>left</code> or <code>right</code></td></tr>
+				<tr><td><code>datasource</code></td><td>object</td><td>Same as <b>LineChart</b> (<code>local</code>, <code>managed</code> or <code>manual</code>)</td></tr>
+				<tr><td><code>selectionListener</code> / <code>selectionProvider</code> / <code>selectionAdapter</code></td><td>boolean / string / string</td><td>Same as <b>LineChart</b></td></tr>
+			</tbody>
+		</table>
+
+		<h3>BarChart and RadarChart</h3>
+		<p>One value per series for each row; the row attribute <code>labelField</code> provides the category label.</p>
+<pre>{
+  "id": "regionBars",
+  "type": "apafUi.BarChart",
+  "version": "1.0.0",
+  "configuration": {
+    "title": "@my.plugin.sales.title",
+    "labelField": "region",
+    "series": [
+      {"field": "q1","label": "Q1"},
+      {"field": "q2","label": "Q2","color": "#e5484d"}
+    ],
+    "horizontal": false,
+    "stacked": false,
+    "yAxisLabel": "Units"
+  }
+}</pre>
+		<table>
+			<thead><tr><th>Property</th><th>Applies to</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>labelField</code></td><td>both</td><td>Row attribute holding the category label</td></tr>
+				<tr><td><code>series</code></td><td>both</td><td>Array of <code>{"field","label","color"}</code>; RadarChart series also accept <code>"fill"</code> (default <code>true</code>)</td></tr>
+				<tr><td><code>horizontal</code></td><td>BarChart</td><td>Draw horizontal bars (default <code>false</code>)</td></tr>
+				<tr><td><code>stacked</code></td><td>BarChart</td><td>Stack the series instead of grouping them (default <code>false</code>)</td></tr>
+				<tr><td><code>xAxisLabel</code> / <code>yAxisLabel</code></td><td>BarChart</td><td>Optional axis titles; support i18n references</td></tr>
+				<tr><td><code>beginAtZero</code></td><td>both</td><td>Force the value axis to start at 0 (default <code>true</code>)</td></tr>
+			</tbody>
+		</table>
+
+		<h3>PieChart, DoughnutChart and PolarAreaChart</h3>
+		<p>One value per row; each row is a slice.</p>
+<pre>{
+  "id": "shareChart",
+  "type": "apafUi.PieChart",
+  "version": "1.0.0",
+  "configuration": {
+    "title": "Market share",
+    "labelField": "browser",
+    "valueField": "share",
+    "valueLabel": "Share (%)",
+    "showPercentage": true,
+    "legendPosition": "right"
+  }
+}</pre>
+		<table>
+			<thead><tr><th>Property</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>labelField</code></td><td>Row attribute holding the slice label</td></tr>
+				<tr><td><code>valueField</code></td><td>Row attribute holding the numeric value</td></tr>
+				<tr><td><code>valueLabel</code></td><td>Optional dataset label shown in the tooltip; defaults to <code>valueField</code></td></tr>
+				<tr><td><code>colors</code></td><td>Optional array of CSS colors used cyclically for the slices (default palette otherwise)</td></tr>
+				<tr><td><code>showPercentage</code></td><td>Append the percentage of the total to the tooltip (default <code>false</code>)</td></tr>
+				<tr><td><code>cutout</code></td><td>DoughnutChart only: size of the hole, in pixels or percentage string (default <code>"50%"</code>)</td></tr>
+			</tbody>
+		</table>
+
+		<h3>ScatterChart</h3>
+		<p>Each series draws one point per row, positioned with two numeric row attributes.</p>
+<pre>{
+  "id": "correlation",
+  "type": "apafUi.ScatterChart",
+  "version": "1.0.0",
+  "configuration": {
+    "series": [
+      {"xField": "height","yField": "weight","label": "Group A","radius": 5}
+    ],
+    "xAxisLabel": "Height (cm)",
+    "yAxisLabel": "Weight (kg)"
+  }
+}</pre>
+		<table>
+			<thead><tr><th>Property</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>series</code></td><td>Array of <code>{"xField","yField","label","color","radius"}</code></td></tr>
+				<tr><td><code>xAxisLabel</code> / <code>yAxisLabel</code></td><td>Optional axis titles; support i18n references</td></tr>
+				<tr><td><code>beginAtZero</code></td><td>Force both axes to start at 0 (default <code>false</code>)</td></tr>
+			</tbody>
+		</table>
+
+		<h3>Example</h3>
+		<p>The <b>Charts Demo</b> user application (APAF user applications) shows each component in its own tab of a
+		<code>TabPane</code>.</p>
+
+		<h2>Chart.js library</h2>
+
+		<p>The library is served as a static resource of this plugin. Any other page can use it directly:</p>
+<pre>&lt;script src="/apaf-ui/lib/chart.umd.js"&gt;&lt;/script&gt;</pre>
+
+		<h2>Extension points</h2>
+		<ul>
+			<li><code>apaf.ui.code.editor.snippet.provider</code> &mdash; contribute snippets to the SourceCodeEditor library</li>
+		</ul>
+
+		<h2>Version history</h2>
+		<ul>
+			<li><b>1.2.0</b> &mdash; New <code>BarChart</code>, <code>PieChart</code>, <code>DoughnutChart</code>, <code>RadarChart</code>, <code>PolarAreaChart</code> and <code>ScatterChart</code> components (<code>charts.js</code>)</li>
+			<li><b>1.1.0</b> &mdash; Chart.js 4.4.7 served by the plugin, new <code>LineChart</code> component, i18n and documentation</li>
+			<li><b>1.0.0</b> &mdash; <code>SourceCodeEditor</code> component</li>
+		</ul>
+
+	</body>
+</html>
