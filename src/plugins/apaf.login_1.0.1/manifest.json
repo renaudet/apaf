@@ -1,0 +1,63 @@
+{
+  "id": "apaf.login",
+  "name": "Session login handler for APAF",
+  "version": "1.0.1",
+  "plugin": "plugin.js",
+  "requires": [
+    {
+      "type": "plugin",
+      "id": "npa.core",
+      "version": "1.0.0"
+    },
+    {
+      "type": "plugin",
+      "id": "npa.logging",
+      "version": "1.0.0"
+    },
+    {
+      "type": "plugin",
+      "id": "npa.http",
+      "version": "1.0.0"
+    },
+    {
+      "type": "plugin",
+      "id": "apaf.datatype",
+      "version": "1.0.0"
+    },
+    {
+      "type": "plugin",
+      "id": "apaf.security",
+      "version": "1.0.0"
+    }
+  ],
+  "extends": [
+    {
+      "point": "npa.log.provider",
+      "id": "apaf.login.logger",
+      "dir": "apaf.login"
+    },
+    {
+      "point": "npa.http.router",
+      "id": "apaf.login.router",
+      "path": "/apaf-login"
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.login.login.handler",
+      "router": "apaf.login.router",
+      "method": "POST",
+      "schema": "/login",
+      "handler": "loginHandler",
+      "description": "Login to APAF and create a User session",
+      "input": {
+        "userid": "abcd",
+        "passwd": "xxx"
+      }
+    }
+  ],
+  "provides": [],
+  "npmDependencies": {
+    "md5": "^2.3.0",
+    "moment": "^2.29.4"
+  }
+}

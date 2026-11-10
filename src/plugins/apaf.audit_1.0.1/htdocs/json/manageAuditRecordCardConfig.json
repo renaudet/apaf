@@ -1,0 +1,11 @@
+{
+    "id":"manageAuditRecordCard",
+    "version": "1.0.0",
+    "type": "Card",
+    "configuration": {
+        "icon": "/audit/img/auditIcon.png",
+        "label": "@apaf.page.audit.title",
+        "headerClass": "bg-secondary bg-gradient bg-opacity-10",
+        "stylesheet": "/apaf-branding/css/apafCard.css"
+    }
+}

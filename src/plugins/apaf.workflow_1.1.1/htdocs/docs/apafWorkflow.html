@@ -1,0 +1,294 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.workflow plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/npa-documentation/css/npaDocumentation.css" rel="stylesheet">
+		<title>apaf.workflow - Workflow Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.workflow &mdash; Workflow Plugin</h1>
+
+		<h2>Overview</h2>
+
+		<p>The <b>apaf.workflow</b> plugin provides a visual, graph-based workflow engine for APAF. 
+		Workflows represent automated processing pipelines represented as directed acyclic or cyclic graphs of <i>nodes</i> connected by <i>transitions</i>. 
+		Definitions are stored in CouchDB (<code>apaf_workflows</code> database) and can be executed synchronously on demand via REST, or asynchronously triggered by the APAF Scheduler (<code>apaf.scheduler</code>) or Event Broker (<code>apaf.event.broker</code>).</p>
+
+		<h2>Workflow Execution Model</h2>
+
+		<p>When a workflow is triggered, execution progresses as follows:</p>
+
+		<ol>
+			<li><b>Definition Resolution:</b> The workflow document is retrieved from CouchDB using its unique UUID or name + version pair.</li>
+			<li><b>Context Initialization:</b> A shared JSON <i>runtime context</i> object is initialized with the payload provided by the caller.</li>
+			<li><b>Graph Traversal:</b> The engine identifies the initial <code>Start</code> node and starts evaluating nodes along connected transitions.</li>
+			<li><b>Node Processing:</b> Each node executes its associated logic, reads or writes properties in the shared context, and returns control to the engine via a <code>next(context)</code> callback.</li>
+			<li><b>Transitions:</b> Conditional or direct transitions determine the next nodes to execute based on boolean expressions evaluated against the context.</li>
+			<li><b>Completion:</b> Execution terminates when a terminal node (<code>Stop</code> or <code>End</code>) is reached, or when the global execution timeout is exceeded.</li>
+			<li><b>Context Return:</b> The final state of the context object (including execution logs in <code>_console</code>) is returned to the caller.</li>
+		</ol>
+
+		<p>The global execution timeout is configured via the runtime property <code>workflow.global.timeout</code> (default: <b>300 000 ms</b> / 5 minutes).</p>
+
+		<h2>Runtime Context &amp; Execution Options</h2>
+
+		<p>The context object passed to the workflow engine contains input data and can carry special execution flags in the <code>_options</code> property:</p>
+
+		<pre class="code">{
+  <span style="color:#3469e3;">"status"</span>: <span style="color:#008800;">"pending"</span>,
+  <span style="color:#3469e3;">"customerId"</span>: <span style="color:#008800;">"CUST-84920"</span>,
+  <span style="color:#3469e3;">"_options"</span>: {
+    <span style="color:#3469e3;">"noTimeout"</span>: <span style="color:#0000ff;">true</span>,
+    <span style="color:#3469e3;">"noLogging"</span>: <span style="color:#0000ff;">false</span>
+  }
+}</pre>
+
+		<p>During execution, the engine appends diagnostic trace events into the <code>_console</code> array of the context:</p>
+		<ul>
+			<li><code>event.type</code> &mdash; <code>log</code>, <code>debug</code>, <code>warning</code>, <code>error</code>, <code>stop</code></li>
+			<li><code>event.source</code> &mdash; Identifier of the emitting node</li>
+			<li><code>event.timestamp</code> &mdash; Timestamp of the log entry</li>
+			<li><code>event.data</code> &mdash; Formatted message or error stack</li>
+		</ul>
+
+		<h2>Built-in Node Types</h2>
+
+		<p>The <b>apaf.workflow</b> engine includes 19 standard built-in node types:</p>
+
+		<table>
+			<thead>
+				<tr>
+					<th>Category</th>
+					<th>Node Type</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td rowspan="7"><b>Control Flow</b></td>
+					<td><code>Start</code></td>
+					<td>Entry point of the workflow graph. Initiates execution with the provided initial context.</td>
+				</tr>
+				<tr>
+					<td><code>Stop</code></td>
+					<td>Terminal node marking successful completion of the workflow execution.</td>
+				</tr>
+				<tr>
+					<td><code>End</code></td>
+					<td>Alternative termination node.</td>
+				</tr>
+				<tr>
+					<td><code>If</code></td>
+					<td>Conditional branch evaluator. Evaluates a JavaScript boolean expression and branches to the corresponding transition.</td>
+				</tr>
+				<tr>
+					<td><code>Or</code></td>
+					<td>Multiplexing node continuing execution when any inbound transition is satisfied.</td>
+				</tr>
+				<tr>
+					<td><code>Fork</code></td>
+					<td>Splits execution into multiple concurrent branches evaluated in parallel.</td>
+				</tr>
+				<tr>
+					<td><code>Join</code></td>
+					<td>Rendezvous node synchronizing multiple parallel branches before proceeding.</td>
+				</tr>
+				<tr>
+					<td rowspan="2"><b>Iteration &amp; Timing</b></td>
+					<td><code>For</code></td>
+					<td>Iterates over an array or numeric range from the context, executing downstream loop bodies.</td>
+				</tr>
+				<tr>
+					<td><code>Delay</code></td>
+					<td>Pauses workflow execution for a specified duration in milliseconds.</td>
+				</tr>
+				<tr>
+					<td rowspan="5"><b>Scripting &amp; Logic</b></td>
+					<td><code>Script</code></td>
+					<td>Executes custom inline JavaScript code with access to the runtime <code>context</code> object.</td>
+				</tr>
+				<tr>
+					<td><code>Snippet</code></td>
+					<td>Executes a reusable code snippet fragment defined in the APAF fragment repository.</td>
+				</tr>
+				<tr>
+					<td><code>SetProperty</code></td>
+					<td>Sets or computes a specific property value directly in the execution context.</td>
+				</tr>
+				<tr>
+					<td><code>Debug</code></td>
+					<td>Emits a formatted trace message to the engine console and logger.</td>
+				</tr>
+				<tr>
+					<td><code>Trash</code></td>
+					<td>Deletes specific transient or sensitive variables from the runtime context.</td>
+				</tr>
+				<tr>
+					<td rowspan="2"><b>Integration</b></td>
+					<td><code>RestCall</code></td>
+					<td>Performs an HTTP/REST request (GET, POST, PUT, DELETE) to an external API endpoint via <code>npa.rest</code>.</td>
+				</tr>
+				<tr>
+					<td><code>Mail</code></td>
+					<td>Dispatches an email notification using configured APAF mail providers via <code>npa.mail</code>.</td>
+				</tr>
+				<tr>
+					<td rowspan="4"><b>Data Persistence</b></td>
+					<td><code>DB_Query</code></td>
+					<td>Executes a CouchDB Mango query or view against a specified database.</td>
+				</tr>
+				<tr>
+					<td><code>DB_Create</code></td>
+					<td>Inserts a new document record into a CouchDB database.</td>
+				</tr>
+				<tr>
+					<td><code>DB_Update</code></td>
+					<td>Updates an existing document in CouchDB with optimistic concurrency control.</td>
+				</tr>
+				<tr>
+					<td><code>DB_Delete</code></td>
+					<td>Deletes a document from a CouchDB database by its identifier and revision.</td>
+				</tr>
+				<tr>
+					<td><b>Sub-Workflow</b></td>
+					<td><code>Workflow</code></td>
+					<td>Invokes another workflow definition synchronously as a nested sub-process.</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h2>Custom Workflow Nodes</h2>
+
+		<p>Developers can extend the workflow engine by contributing custom node types through two mechanisms:</p>
+
+		<h3>1. Contribution via Plugin Manifest</h3>
+		<p>Plugins can declare custom nodes in their <code>manifest.json</code> using the <code>apaf.workflow.node.provider</code> extension point:</p>
+
+		<pre class="code">{
+  <span style="color:#3469e3;">"point"</span>: <span style="color:#3469e3;">"apaf.workflow.node.provider"</span>,
+  <span style="color:#3469e3;">"id"</span>: <span style="color:#3469e3;">"my.plugin.custom.node"</span>,
+  <span style="color:#3469e3;">"name"</span>: <span style="color:#3469e3;">"CustomProcessor"</span>,
+  <span style="color:#3469e3;">"resourcePath"</span>: <span style="color:#3469e3;">"workflow/nodes/customProcessor.js"</span>
+}</pre>
+
+		<h3>2. Contribution via CouchDB Code Fragments</h3>
+		<p>Custom nodes can also be authored dynamically in APAF as code fragments of type <code>workflowNode</code>:</p>
+
+		<pre class="code"><span style="color:#0000ff;">function</span> <span style="color:#795e26;">process</span>(context, next) {
+    <span style="color:#008000;">// Access or mutate context properties</span>
+    context.processedAt = <span style="color:#0000ff;">new</span> Date().toISOString();
+    context.computedTotal = context.quantity * context.unitPrice;
+    
+    <span style="color:#008000;">// Resume workflow execution</span>
+    next(context);
+}</pre>
+
+		<h2>REST API Endpoints</h2>
+
+		<table>
+			<thead>
+				<tr>
+					<th>Method</th>
+					<th>Path</th>
+					<th>Role</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><code>POST</code></td>
+					<td><code>/apaf-workflow/query</code></td>
+					<td>developer</td>
+					<td>Query workflow definitions matching a CouchDB Mango selector.</td>
+				</tr>
+				<tr>
+					<td><code>POST</code></td>
+					<td><code>/apaf-workflow/</code></td>
+					<td>developer</td>
+					<td>Create a new workflow definition document.</td>
+				</tr>
+				<tr>
+					<td><code>PUT</code></td>
+					<td><code>/apaf-workflow/</code></td>
+					<td>developer</td>
+					<td>Update an existing workflow definition (requires <code>id</code> and <code>_rev</code>).</td>
+				</tr>
+				<tr>
+					<td><code>DELETE</code></td>
+					<td><code>/apaf-workflow/:id</code></td>
+					<td>developer</td>
+					<td>Delete a workflow definition by its unique identifier.</td>
+				</tr>
+				<tr>
+					<td><code>GET</code></td>
+					<td><code>/apaf-workflow/:name/:version</code></td>
+					<td>developer</td>
+					<td>Retrieve a complete workflow definition including node graph and transitions.</td>
+				</tr>
+				<tr>
+					<td><code>POST</code></td>
+					<td><code>/apaf-workflow/execute/:id</code></td>
+					<td>operator</td>
+					<td>Execute a workflow synchronously given its UUID and return the output context.</td>
+				</tr>
+				<tr>
+					<td><code>GET</code></td>
+					<td><code>/apaf-workflow/customNodes</code></td>
+					<td>developer</td>
+					<td>List all available custom node types (manifest contributions + fragment definitions).</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h2>MCP Tools</h2>
+
+		<p>The <b>apaf.workflow</b> plugin exposes Model Context Protocol (MCP) tools for AI agents and integrations:</p>
+
+		<ul>
+			<li><b><code>queryWorkflows</code></b> &mdash; Search and list workflow definitions matching criteria.</li>
+			<li><b><code>getWorkflowByName</code></b> &mdash; Retrieve the full graph structure and parameters of a named workflow.</li>
+			<li><b><code>executeWorkflow</code></b> &mdash; Execute a workflow synchronously with custom input context and options.</li>
+		</ul>
+
+		<h2>Visual Workflow Editor</h2>
+
+		<p>The visual designer is available in the APAF Web UI at <code>/apaf-workflow-ui/html/manageWorkflows.html</code> and provides:</p>
+		<ul>
+			<li>Drag-and-drop canvas for placing and arranging workflow nodes.</li>
+			<li>Interactive transition drawing with conditional branch configuration.</li>
+			<li>Dedicated property editors for each built-in and custom node type.</li>
+			<li>Integrated test runner with real-time visual progress highlighting and <code>_console</code> log inspection.</li>
+			<li>JSON import and export for workflow definition backups and sharing.</li>
+		</ul>
+
+		<h2>Configuration &amp; Runtime Properties</h2>
+
+		<table>
+			<thead>
+				<tr>
+					<th>Property Name</th>
+					<th>Type</th>
+					<th>Default</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><code>workflow.global.timeout</code></td>
+					<td>integer</td>
+					<td><code>300000</code> (5 min)</td>
+					<td>Maximum execution duration (in milliseconds) before an in-flight workflow is automatically aborted.</td>
+				</tr>
+			</tbody>
+		</table>
+
+	</body>
+</html>

@@ -1,0 +1,124 @@
+{
+  "id": "apaf.npm.manager",
+  "name": "APAF NPM Package Manager",
+  "version": "1.0.0",
+  "description": "Administration interface for managing and reconciling server-side Node.js npm dependencies",
+  "plugin": "plugin.js",
+  "requires": [
+    { "type": "plugin", "id": "npa.core", "version": "1.0.0" },
+    { "type": "plugin", "id": "npa.logging", "version": "1.0.0" },
+    { "type": "plugin", "id": "npa.http", "version": "1.0.0" },
+    { "type": "plugin", "id": "apaf.security", "version": "1.0.0" },
+    { "type": "plugin", "id": "apaf.updater", "version": "1.2.2" },
+    { "type": "plugin", "id": "apaf.menu", "version": "1.0.0" },
+    { "type": "plugin", "id": "npa.ui.locale", "version": "1.0.0" },
+    { "type": "plugin", "id": "npa.documentation", "version": "1.0.0" }
+  ],
+  "extends": [
+    {
+      "point": "npa.log.provider",
+      "id": "apaf.npm.manager.logger",
+      "dir": "apaf.npm.manager"
+    },
+    {
+      "point": "npa.http.router",
+      "id": "apaf.npm.manager.router",
+      "path": "/apaf-npm"
+    },
+    {
+      "point": "npa.http.static",
+      "id": "apaf.npm.manager.htdocs",
+      "path": "/apaf-npm-ui",
+      "localDir": "htdocs"
+    },
+    {
+      "point": "npa.documentation.page",
+      "id": "apaf.npm.manager.doc",
+      "label": "apaf.npm.manager - NPM Package Manager",
+      "category": "APAF Framework",
+      "subcategory": "Administration",
+      "url": "/apaf-npm-ui/docs/apafNpmManager.html"
+    },
+    {
+      "point": "npa.ui.locale.provider",
+      "id": "apaf.npm.manager.locale.provider.enUS",
+      "path": "i18n/apaf.npm.manager_en_US.locale",
+      "locale": "en-US"
+    },
+    {
+      "point": "npa.ui.locale.provider",
+      "id": "apaf.npm.manager.locale.provider.frFR",
+      "path": "i18n/apaf.npm.manager_fr_FR.locale",
+      "locale": "fr-FR"
+    },
+    {
+      "point": "npa.ui.locale.provider",
+      "id": "apaf.npm.manager.locale.provider.en",
+      "path": "i18n/apaf.npm.manager_en_US.locale",
+      "locale": "en"
+    },
+    {
+      "point": "npa.ui.locale.provider",
+      "id": "apaf.npm.manager.locale.provider.fr",
+      "path": "i18n/apaf.npm.manager_fr_FR.locale",
+      "locale": "fr"
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.npm.manager.packages.handler",
+      "router": "apaf.npm.manager.router",
+      "method": "GET",
+      "schema": "/packages",
+      "handler": "getPackagesHandler",
+      "securityRole": "administrator",
+      "description": "List all installed and required NPM packages with their source and consumers"
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.npm.manager.install.handler",
+      "router": "apaf.npm.manager.router",
+      "method": "POST",
+      "schema": "/install",
+      "handler": "installPackageHandler",
+      "securityRole": "administrator",
+      "description": "Add or update a user-defined NPM package dependency and trigger reconciliation",
+      "input": { "name": "lodash", "version": "^4.17.21" }
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.npm.manager.uninstall.handler",
+      "router": "apaf.npm.manager.router",
+      "method": "POST",
+      "schema": "/uninstall",
+      "handler": "uninstallPackageHandler",
+      "securityRole": "administrator",
+      "description": "Remove a user-defined NPM package dependency and reconcile package.json",
+      "input": { "name": "lodash" }
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.npm.manager.reconcile.handler",
+      "router": "apaf.npm.manager.router",
+      "method": "POST",
+      "schema": "/reconcile",
+      "handler": "reconcileHandler",
+      "securityRole": "administrator",
+      "description": "Reconcile package.json with all active plugin manifests and user dependencies, then run npm install"
+    },
+    {
+      "point": "apaf.menu.item.provider",
+      "id": "apaf.npm.manager.menu.item",
+      "menu": "adminMenuPlaceholder",
+      "securityRole": "administrator",
+      "item": {
+        "id": "manageNpmPackages",
+        "label": "@apaf.npm.manager.menu.label",
+        "actionId": "redirect",
+        "icon": "/uiTools/img/silk/package.png",
+        "uri": "/apaf-npm-ui/html/npmManager.html"
+      }
+    }
+  ],
+  "provides": [],
+  "npmDependencies": {}
+}

@@ -1,0 +1,86 @@
+.npm-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 4px 4px 0 0;
+    gap: 12px;
+}
+
+.npm-stats {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.npm-stats .badge {
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 6px 10px;
+}
+
+.npm-table-wrapper {
+    padding: 12px 14px;
+    overflow-y: auto;
+    max-height: calc(100vh - 220px);
+}
+
+.npm-table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.npm-table th {
+    background-color: #f1f3f5;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #495057;
+}
+
+.npm-table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.pkg-name {
+    font-weight: 600;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    color: #2b3035;
+}
+
+.pkg-version {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.85rem;
+}
+
+.pkg-consumers {
+    font-size: 0.82rem;
+    color: #6c757d;
+}
+
+.pkg-consumers span {
+    display: inline-block;
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin: 2px 4px 2px 0;
+}
+
+.terminal-output {
+    background-color: #1e1e1e;
+    color: #4af626;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    max-height: 350px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+}

@@ -1,0 +1,549 @@
+{
+  "id": "apaf.workspace",
+  "name": "Security workspace handler for APAF",
+  "version": "1.0.1",
+  "plugin": "plugin.js",
+  "requires": [
+    {
+      "type": "plugin",
+      "id": "npa.core",
+      "version": "1.0.0"
+    },
+    {
+      "type": "plugin",
+      "id": "npa.logging",
+      "version": "1.0.0"
+    },
+    {
+      "type": "plugin",
+      "id": "npa.http",
+      "version": "1.0.0"
+    },
+    {
+      "type": "plugin",
+      "id": "npa.mcp",
+      "version": "1.0.0"
+    },
+    {
+      "type": "plugin",
+      "id": "npa.workspace",
+      "version": "1.0.0"
+    },
+    {
+      "type": "plugin",
+      "id": "apaf.menu",
+      "version": "1.0.0"
+    },
+    {
+      "type": "plugin",
+      "id": "npa.ui.tools.core",
+      "version": "1.0.0"
+    },
+    {
+      "type": "plugin",
+      "id": "npa.documentation",
+      "version": "1.0.0"
+    }
+  ],
+  "extends": [
+    {
+      "point": "npa.log.provider",
+      "id": "apaf.workspace.logger",
+      "dir": "apaf.workspace"
+    },
+    {
+      "point": "npa.http.router",
+      "id": "apaf.workspace.router",
+      "path": "/apaf-workspace"
+    },
+    {
+      "point": "npa.mcp.tool",
+      "id": "apaf.workspace.tool.findProject",
+      "apiId": "apaf.workspace.project.find.handler"
+    },
+    {
+      "point": "npa.mcp.tool",
+      "id": "apaf.workspace.tool.createProject",
+      "apiId": "apaf.workspace.project.create.handler"
+    },
+    {
+      "point": "npa.mcp.tool",
+      "id": "apaf.workspace.tool.createFolder",
+      "apiId": "apaf.workspace.folder.create.handler"
+    },
+    {
+      "point": "npa.mcp.tool",
+      "id": "apaf.workspace.tool.readFolderContent",
+      "apiId": "apaf.workspace.folder.read.handler"
+    },
+    {
+      "point": "npa.mcp.tool",
+      "id": "apaf.workspace.tool.readFile",
+      "apiId": "apaf.workspace.file.read.handler"
+    },
+    {
+      "point": "npa.mcp.tool",
+      "id": "apaf.workspace.tool.writeFile",
+      "apiId": "apaf.workspace.file.write.handler"
+    },
+    {
+      "point": "npa.mcp.tool",
+      "id": "apaf.workspace.tool.readBinaryFile",
+      "apiId": "apaf.workspace.file.read.binary.handler"
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.workspace.project.create.handler",
+      "router": "apaf.workspace.router",
+      "method": "POST",
+      "schema": "/project",
+      "handler": "createProjectHandler",
+      "securityRole": "coreServices",
+      "description": "Create a new Project within the Workspace",
+      "input": {
+        "name": "abcd",
+        "displayName": "abcd",
+        "type": "general"
+      },
+      "apidoc": {
+        "openapi": "3.1.0",
+        "info": {
+          "title": "Workspace Create Project",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/apaf-workspace/project": {
+            "post": {
+              "operationId": "createWorkspaceProject",
+              "summary": "Create a new project in the APAF server-side workspace",
+              "description": "Creates a new project folder in the APAF server-side workspace. The APAF workspace is a managed file storage area internal to the running APAF instance, stored on the server that hosts APAF. It is entirely distinct from the local developer filesystem and from the VS Code workspace.",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "required": [
+                        "name"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Technical name of the project (used as folder name)"
+                        },
+                        "displayName": {
+                          "type": "string",
+                          "description": "Human-readable display name of the project"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Project type (e.g. 'general')"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.workspace.project.find.handler",
+      "router": "apaf.workspace.router",
+      "method": "POST",
+      "schema": "/project/find",
+      "handler": "findProjectHandler",
+      "securityRole": "coreServices",
+      "description": "Find Projects within the Workspace",
+      "input": {
+        "name": "abcd",
+        "type": "abcd"
+      },
+      "apidoc": {
+        "openapi": "3.1.0",
+        "info": {
+          "title": "Workspace Find Projects",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/apaf-workspace/project/find": {
+            "post": {
+              "operationId": "findWorkspaceProjects",
+              "summary": "List projects in the APAF server-side workspace",
+              "description": "Returns the list of projects stored in the APAF server-side workspace matching the optional filter. The APAF workspace is a managed file storage area internal to the running APAF instance, stored on the server that hosts APAF. It is entirely distinct from the local developer filesystem and from the VS Code workspace. Use readLocalFile / readLocalDirectory to access the local server filesystem instead.",
+              "requestBody": {
+                "required": false,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Filter by project name (optional)"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Filter by project type (optional)"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.workspace.folder.create.handler",
+      "router": "apaf.workspace.router",
+      "method": "POST",
+      "schema": "/folder",
+      "handler": "createFolderHandler",
+      "securityRole": "coreServices",
+      "description": "Create a Folder within an existing Project in the Workspace",
+      "input": {
+        "project": "abcd",
+        "folder": "abcd"
+      },
+      "apidoc": {
+        "openapi": "3.1.0",
+        "info": {
+          "title": "Workspace Create Folder",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/apaf-workspace/folder": {
+            "post": {
+              "operationId": "createWorkspaceFolder",
+              "summary": "Create a folder inside a project in the APAF server-side workspace",
+              "description": "Creates a new folder inside an existing project in the APAF server-side workspace. The APAF workspace is a managed file storage area internal to the running APAF instance, distinct from the local developer filesystem and from the VS Code workspace.",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "required": [
+                        "project",
+                        "folder"
+                      ],
+                      "properties": {
+                        "project": {
+                          "type": "string",
+                          "description": "Name of the target project"
+                        },
+                        "folder": {
+                          "type": "string",
+                          "description": "Relative path of the folder to create (e.g. 'src/utils')"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.workspace.folder.read.handler",
+      "router": "apaf.workspace.router",
+      "method": "GET",
+      "schema": "/folder",
+      "handler": "readFolderContentHandler",
+      "securityRole": "coreServices",
+      "description": "Get the content of an existing Folder within the Workspace",
+      "input": "project=abcd&folder=abcd&hidden=true",
+      "apidoc": {
+        "openapi": "3.1.0",
+        "info": {
+          "title": "Workspace Read Folder",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/apaf-workspace/folder": {
+            "get": {
+              "operationId": "readWorkspaceFolderContent",
+              "summary": "List the content of a folder in the APAF server-side workspace",
+              "description": "Returns the list of files and sub-folders in a given project folder stored in the APAF server-side workspace. The APAF workspace is a managed file storage area internal to the running APAF instance, distinct from the local developer filesystem and from the VS Code workspace. Use readLocalDirectory to browse the local server filesystem instead.",
+              "parameters": [
+                {
+                  "name": "project",
+                  "in": "query",
+                  "required": true,
+                  "description": "Name of the project",
+                  "schema": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "name": "folder",
+                  "in": "query",
+                  "required": false,
+                  "description": "Relative sub-folder path within the project (omit for project root)",
+                  "schema": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "name": "hidden",
+                  "in": "query",
+                  "required": false,
+                  "description": "Include hidden files when true",
+                  "schema": {
+                    "type": "boolean"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.workspace.file.read.handler",
+      "router": "apaf.workspace.router",
+      "method": "GET",
+      "schema": "/file/:encrypted",
+      "handler": "readFileContentHandler",
+      "securityRole": "coreServices",
+      "description": "Get the content of an existing file within the Workspace given its Base64-encoded relative Path",
+      "apidoc": {
+        "openapi": "3.1.0",
+        "info": {
+          "title": "Workspace Read File",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/apaf-workspace/file/{encrypted}": {
+            "get": {
+              "operationId": "readWorkspaceFile",
+              "summary": "Read the content of a file stored in the APAF server-side workspace",
+              "description": "Returns the text content of a file stored in the APAF server-side workspace. The APAF workspace is a managed file storage area internal to the running APAF instance — it is NOT the local developer filesystem nor the VS Code workspace. Use readLocalFile to read files from the local server filesystem instead. The path parameter must be the Base64 encoding of the relative file path within the workspace (e.g. Base64('myProject/src/app.js')).",
+              "parameters": [
+                {
+                  "name": "encrypted",
+                  "in": "path",
+                  "required": true,
+                  "description": "Base64-encoded relative file path (e.g. Base64('myProject/src/app.js'))",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.workspace.file.read.binary.handler",
+      "router": "apaf.workspace.router",
+      "method": "GET",
+      "schema": "/binaryFile/:encrypted",
+      "handler": "readBinaryFileContentHandler",
+      "securityRole": "coreServices",
+      "description": "Get the content of a File within the Workspace as binary data",
+      "apidoc": {
+        "openapi": "3.1.0",
+        "info": {
+          "title": "Read A Binary File From APAF Workspace",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/apaf-workspace/binaryFile/{encrypted}": {
+            "get": {
+              "operationId": "readWorkspaceBinaryFile",
+              "summary": "Download or read chunked binary content of a file from the APAF workspace",
+              "description": "Returns the binary content of a file from the APAF workspace. Supports full download (default, returning MCP image/resource) or chunked reading when byteOffset/byteLength or tail are provided. The path parameter must be the Base64 encoding of the relative file path within the workspace (e.g. Base64('myProject/assets/image.png')).",
+              "parameters": [
+                {
+                  "name": "encrypted",
+                  "in": "path",
+                  "required": true,
+                  "description": "Base64-encoded relative file path (e.g. Base64('myProject/assets/image.png'))",
+                  "schema": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "name": "byteOffset",
+                  "in": "query",
+                  "required": false,
+                  "description": "0-based byte offset for chunked reading",
+                  "schema": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "name": "byteLength",
+                  "in": "query",
+                  "required": false,
+                  "description": "Number of bytes to read (default: 65536, max: 262144)",
+                  "schema": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "name": "tail",
+                  "in": "query",
+                  "required": false,
+                  "description": "Number of lines to read from the end of the file",
+                  "schema": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "name": "encoding",
+                  "in": "query",
+                  "required": false,
+                  "description": "Encoding for chunked reading: 'base64' (default for binary chunking) or 'utf8'",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.workspace.file.write.handler",
+      "router": "apaf.workspace.router",
+      "method": "PUT",
+      "schema": "/file/:encrypted",
+      "handler": "writeFileHandler",
+      "securityRole": "coreServices",
+      "description": "Update the content of a File within the Workspace",
+      "input": "some file content...",
+      "apidoc": {
+        "openapi": "3.1.0",
+        "info": {
+          "title": "Workspace Write File",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/apaf-workspace/file/{encrypted}": {
+            "put": {
+              "operationId": "writeWorkspaceFile",
+              "summary": "Create, overwrite, or append to a file in the APAF workspace",
+              "description": "Creates, overwrites, or appends to a file in the APAF workspace. Supports raw text or Base64 binary chunks. The path parameter must be the Base64 encoding of the relative file path (e.g. Base64('myProject/src/app.js')).",
+              "parameters": [
+                {
+                  "name": "encrypted",
+                  "in": "path",
+                  "required": true,
+                  "description": "Base64-encoded relative file path (e.g. Base64('myProject/src/app.js'))",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "required": [
+                        "content"
+                      ],
+                      "properties": {
+                        "content": {
+                          "type": "string",
+                          "description": "The text or Base64 content to write"
+                        },
+                        "encoding": {
+                          "type": "string",
+                          "enum": [
+                            "utf8",
+                            "base64"
+                          ],
+                          "description": "Encoding: 'utf8' (default) or 'base64'"
+                        },
+                        "append": {
+                          "type": "boolean",
+                          "description": "If true, appends content to the existing file"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.workspace.delete.handler",
+      "router": "apaf.workspace.router",
+      "method": "DELETE",
+      "schema": "/:encrypted",
+      "handler": "deleteResourceHandler",
+      "securityRole": "coreServices",
+      "description": "Delete an existing File / Folder / Project from the Workspace"
+    },
+    {
+      "point": "npa.http.handler",
+      "id": "apaf.workspace.file.upload.handler",
+      "router": "apaf.workspace.router",
+      "method": "POST",
+      "schema": "/file/:encrypted",
+      "handler": "uploadFileHandler",
+      "securityRole": "coreServices",
+      "description": "Upload a file to the Workspace as binary data (encrypted as multipart/form-data)",
+      "input": "some file content..."
+    },
+    {
+      "point": "apaf.datatype.object.initializer",
+      "id": "apaf.workspace.role.initializer.coreServices",
+      "datatype": "role",
+      "data": {
+        "name": "coreServices",
+        "description": "Grant permission to use APAF Core services"
+      }
+    },
+    {
+      "point": "npa.ui.tools.core.component",
+      "id": "apaf.workspace.component.upload.manager",
+      "namespace": "apaf",
+      "name": "UploadManager",
+      "version": "1.0.0",
+      "dependency": "/resources/js/components/uploadManager.js"
+    },
+    {
+      "point": "npa.http.static",
+      "id": "apaf.workspace.htdocs",
+      "path": "/apaf-workspace-doc",
+      "localDir": "htdocs"
+    },
+    {
+      "point": "npa.documentation.page",
+      "id": "apaf.workspace.doc",
+      "label": "apaf.workspace - Server-side Workspace",
+      "category": "APAF Framework",
+      "subcategory": "Filesystem",
+      "url": "/apaf-workspace-doc/docs/apafWorkspace.html"
+    }
+  ],
+  "provides": [],
+  "npmDependencies": {
+    "formidable": "2.1.2",
+    "moment": "^2.29.4"
+  }
+}

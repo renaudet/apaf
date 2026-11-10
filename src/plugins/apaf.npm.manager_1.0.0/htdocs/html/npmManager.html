@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="All-Purpose-Application-Framework NPM Package Manager Page">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2026 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link rel="icon" type="image/png" href="/apaf-branding/img/apaf-logo.png?version=1.0"/>
+		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/resources/css/apaf.css" rel="stylesheet">
+		<link href="/apaf-npm-ui/css/npmManager.css" rel="stylesheet">
+		<title>All Purpose Application Framework - NPM Package Manager</title>
+	</head>
+	<body>
+		<div id="navBar" class="npaUi" data-ref="menu"></div>
+		<div id="card" class="npaUi" data-config="/apaf-npm-ui/json/npmManagerCardConfig.json">
+			<div id="npmContentArea" style="height: 100%; display: flex; flex-direction: column;">
+				<div class="npm-toolbar">
+					<div class="d-flex align-items-center gap-2">
+						<button id="btnAddPackage" class="btn btn-sm btn-primary">
+							<img src="/uiTools/img/silk/add.png" style="vertical-align:-2px; margin-right:4px;">
+							<span id="lblBtnAdd"></span>
+						</button>
+						<button id="btnReconcile" class="btn btn-sm btn-success">
+							<img src="/uiTools/img/silk/arrow_refresh.png" style="vertical-align:-2px; margin-right:4px;">
+							<span id="lblBtnReconcile"></span>
+						</button>
+						<button id="btnRefresh" class="btn btn-sm btn-outline-secondary">
+							<img src="/uiTools/img/silk/arrow_rotate_clockwise.png" style="vertical-align:-2px; margin-right:4px;">
+							<span id="lblBtnRefresh"></span>
+						</button>
+					</div>
+					<div class="d-flex align-items-center gap-3">
+						<div class="npm-stats">
+							<span id="badgeTotal" class="badge bg-secondary"></span>
+							<span id="badgeRuntime" class="badge bg-dark"></span>
+							<span id="badgePlugins" class="badge bg-info text-dark"></span>
+							<span id="badgeUser" class="badge bg-primary"></span>
+						</div>
+						<div style="min-width: 240px;">
+							<input type="text" id="txtFilter" class="form-control form-control-sm" placeholder="">
+						</div>
+					</div>
+				</div>
+
+				<div class="npm-table-wrapper">
+					<table class="table table-hover table-striped npm-table">
+						<thead>
+							<tr>
+								<th id="thName" style="width: 20%;"></th>
+								<th id="thInstalled" style="width: 15%;"></th>
+								<th id="thTarget" style="width: 15%;"></th>
+								<th id="thType" style="width: 15%;"></th>
+								<th id="thConsumers" style="width: 25%;"></th>
+								<th id="thActions" style="width: 10%; text-align: center;"></th>
+							</tr>
+						</thead>
+						<tbody id="tblPackagesBody">
+							<!-- Content loaded dynamically -->
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal: Add / Declare NPM Package -->
+		<div class="modal fade" id="modalAddPackage" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="lblModalAddTitle"></h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="mb-3">
+							<label for="inpPkgName" class="form-label" id="lblModalAddName"></label>
+							<input type="text" class="form-control" id="inpPkgName" placeholder="lodash">
+						</div>
+						<div class="mb-3">
+							<label for="inpPkgVersion" class="form-label" id="lblModalAddVersion"></label>
+							<input type="text" class="form-control" id="inpPkgVersion" placeholder="^4.17.21 or latest">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnModalAddCancel"></button>
+						<button type="button" class="btn btn-primary" id="btnModalAddSubmit"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal: Confirm Uninstall User Package -->
+		<div class="modal fade" id="modalUninstallPackage" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="lblModalUninstallTitle"></h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p id="lblModalUninstallMsg"></p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnModalUninstallCancel"></button>
+						<button type="button" class="btn btn-danger" id="btnModalUninstallConfirm"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal: Reconciliation / npm install log output -->
+		<div class="modal fade" id="modalOutput" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+			<div class="modal-dialog modal-dialog-centered modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="lblModalOutputTitle"></h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div id="outputContainer" class="terminal-output"></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnModalOutputClose"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="notifier" class="npaUi" data-ref="notifier"></div>
+		<div id="monitor" class="npaUi" data-ref="sessionMonitor"></div>
+		<script src="/js/jquery-3.6.3.min.js"></script>
+		<script src="/js/bootstrap.bundle.min.js"></script>
+		<script src="/uiTools/js/npaUiCore.js"></script>
+		<script src="/resources/js/utils/apafUtils.js"></script>
+		<script src="/apaf-npm-ui/js/npmManager.js"></script>
+	</body>
+</html>

@@ -1,0 +1,52 @@
+{
+    "id":"auditRecordForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title_": "@apaf.page.fragments.form.title",
+    	"class": "form-frame-noborder",
+    	"fields": [
+    		{
+    			"name": "timestamp",
+    			"label": "@apaf.audit.datatype.timestamp",
+    			"size": 6
+    		},
+    		{
+    			"name": "datatypeid",
+    			"label": "@apaf.audit.datatype.datatypeid",
+    			"required": true,
+    			"size": 5,
+    			"help": "@apaf.audit.datatype.datatypeid.help"
+    		},
+    		{
+    			"name": "entityid",
+    			"label": "@apaf.audit.datatype.entityid",
+    			"required": true,
+    			"size": 5,
+    			"help": "@apaf.audit.datatype.entityid.help"
+    		},
+    		{
+    			"name": "event",
+    			"label": "@apaf.audit.datatype.event",
+    			"required": true,
+    			"type": "select",
+    			"size": 4,
+    			"values": ["created","updated","deleted"]
+    		},
+    		{
+    			"name": "byUser",
+    			"label": "@apaf.audit.datatype.user",
+    			"required": true,
+    			"size": 5,
+    			"help": "@apaf.audit.datatype.user.help"
+    		},
+    		{
+    			"name": "data",
+    			"label": "@apaf.audit.datatype.value",
+    			"required": false,
+    			"type": "json",
+				"height": 500
+    		}
+    	]
+    }
+}

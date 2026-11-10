@@ -1,0 +1,66 @@
+{
+    "id":"datatypeFieldsTable",
+    "version": "1.0.0",
+    "type": "Datatable",
+    "configuration": {
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"contentAdapter": "@.fields",
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "displayIndex",
+        	"ascending": true
+        },
+        "maxHeight": 300,
+        "columns": [
+            {
+                "label": "&num;",
+                "field": "displayIndex"
+            },
+            {
+                "label": "@apaf.page.datatypes.table.field.name.label",
+                "field": "name"
+            },
+            {
+                "label": "@apaf.page.datatypes.table.field.label.label",
+                "field": "label"
+            },
+            {
+                "label": "@apaf.page.datatypes.table.field.type.label",
+                "field": "type",
+                "renderer": "typeof @.type=='undefined'?'text':@.type"
+            },
+            {
+                "label": "@apaf.page.datatypes.table.field.id.label",
+                "field": "isIdField",
+                "type": "boolean"
+            },
+            {
+                "label": "@apaf.page.datatypes.table.field.required.label",
+                "field": "required",
+                "type": "boolean"
+            },
+            {
+                "label": "@apaf.page.datatypes.table.field.search.label",
+                "field": "searchField",
+                "type": "boolean"
+            },
+            {
+                "label": "@apaf.page.datatypes.table.field.action.label",
+                "type": "rowActions",
+                "actions": [
+                    {
+                        "label": "@datatype.fields.table.column.edit.label",
+                        "actionId": "editField",
+                        "icon": "/uiTools/img/silk/brick_edit.png"
+                    },
+                    {
+                        "label": "@datatype.fields.table.column.delete.label",
+                        "actionId": "deleteField",
+                        "icon": "/uiTools/img/silk/brick_delete.png"
+                    }
+                ]
+            }
+        ]
+    }
+}

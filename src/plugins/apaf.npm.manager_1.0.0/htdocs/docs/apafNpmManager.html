@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.npm.manager plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2026 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	    <meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/npa-documentation/css/npaDocumentation.css" rel="stylesheet">
+		<title>apaf.npm.manager - NPM Package Manager</title>
+	</head>
+	<body>
+
+		<h1>apaf.npm.manager &mdash; NPM Package Manager</h1>
+
+		<h2>Overview</h2>
+
+		The <b>apaf.npm.manager</b> plugin provides an administration interface and REST API for managing
+		server-side Node.js npm package dependencies in APAF.
+		<br><br>
+		It works in conjunction with <b>apaf.updater</b> to ensure that all explicit npm dependencies required
+		by active plugins (declared via <code>npmDependencies</code> in their <code>manifest.json</code>) as well as
+		user-declared dependencies (for custom fragments, servlets, and workflows) are automatically reconciled in
+		the runtime's <code>package.json</code> and installed via <code>npm install</code>.
+		<br><br>
+		All operations require the <code>administrator</code> security role.
+
+		<h2>Features</h2>
+
+		<ul>
+			<li><b>Consolidated Inventory:</b> Real-time overview of all installed and declared npm packages, classified by origin (Runtime base, Plugin dependency, User declared).</li>
+			<li><b>Consumer Tracking:</b> View which plugins require each specific npm package.</li>
+			<li><b>User Package Declaration:</b> Allows administrators and developers to add npm packages directly from the web browser for use in custom fragments and workflows.</li>
+			<li><b>Automatic Reconciliation:</b> Rebuilds <code>package.json</code> and runs <code>npm install --no-audit --no-fund</code> safely in the background.</li>
+		</ul>
+
+		<h2>REST Handlers</h2>
+
+		<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+			<tr style="background-color: #f2f2f2;">
+				<th>Method</th>
+				<th>Route</th>
+				<th>Security Role</th>
+				<th>Description</th>
+			</tr>
+			<tr>
+				<td><code>GET</code></td>
+				<td><code>/apaf-npm/packages</code></td>
+				<td><code>administrator</code></td>
+				<td>Returns the full inventory of npm dependencies, target versions, and consumer plugins.</td>
+			</tr>
+			<tr>
+				<td><code>POST</code></td>
+				<td><code>/apaf-npm/install</code></td>
+				<td><code>administrator</code></td>
+				<td>Adds a user-declared npm package and triggers reconciliation + npm install. Payload: <code>{"name": "lodash", "version": "^4.17.21"}</code></td>
+			</tr>
+			<tr>
+				<td><code>POST</code></td>
+				<td><code>/apaf-npm/uninstall</code></td>
+				<td><code>administrator</code></td>
+				<td>Removes a user-declared npm package and reconciles dependencies. Payload: <code>{"name": "lodash"}</code></td>
+			</tr>
+			<tr>
+				<td><code>POST</code></td>
+				<td><code>/apaf-npm/reconcile</code></td>
+				<td><code>administrator</code></td>
+				<td>Forces a full reconciliation of <code>package.json</code> against active plugins and runs <code>npm install</code>.</td>
+			</tr>
+		</table>
+
+	</body>
+</html>
