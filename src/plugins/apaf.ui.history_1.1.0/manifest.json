@@ -1,0 +1,237 @@
+{
+  "id": "apaf.ui.history",
+  "name": "APAF User Interaction History plugin",
+  "version": "1.1.0",
+  "plugin": "plugin.js",
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.tools.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.security","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.ui.history.logger",
+  		"dir": "apaf.ui.history"
+  	},
+  	{
+  		"point": "apaf.datatype.base.datatype",
+  		"id": "apaf.ui.history.datatype",
+  		"datatype": {
+  			"id": "history",
+  			"name": "History",
+  			"builtIn": true,
+  			"persistent": true,
+  			"database": "apaf_history",
+  			"fields": [
+  				{
+  					"name": "userId",
+  					"label": "@apaf.ui.history.datatype.userId",
+  					"required": true,
+  					"size": 4
+  				},
+  				{
+  					"name": "context",
+  					"label": "@apaf.ui.history.datatype.context",
+  					"required": true,
+  					"size": 4
+  				},
+  				{
+  					"name": "maxSize",
+  					"label": "@apaf.ui.history.datatype.maxSize",
+  					"type": "integer",
+  					"size": 4
+  				},
+  				{
+  					"name": "entries",
+  					"label": "@apaf.ui.history.datatype.entries",
+  					"type": "json",
+  					"height": 300
+  				}
+  			]
+  		}
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.ui.history.router",
+  		"path": "/apaf-history"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.ui.history.htdocs",
+  		"path": "/apaf-ui-history",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.ui.history.get.handler",
+  		"router": "apaf.ui.history.router",
+  		"method": "GET",
+  		"schema": "/:context",
+  		"handler": "getHistoryHandler",
+  		"securityRole": "",
+  		"description": "Return the history entries for the given named context and the authenticated user",
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {
+  				"title": "Get User History",
+  				"version": "1.0.0",
+  				"description": "Returns the history entries stored for the given named context and the currently authenticated user"
+  			},
+  			"paths": {
+  				"/apaf-history/{context}": {
+  					"get": {
+  						"summary": "Get history for a named context",
+  						"parameters": [
+  							{
+  								"name": "context",
+  								"in": "path",
+  								"required": true,
+  								"schema": {"type": "string"}
+  							}
+  						],
+  						"responses": {
+  							"200": {
+  								"description": "Array of history entry objects",
+  								"content": {
+  									"application/json": {
+  										"schema": {
+  											"type": "object",
+  											"properties": {
+  												"status": {"type": "integer"},
+  												"message": {"type": "string"},
+  												"data": {"type": "array"}
+  											}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.http.handler",
+  		"id": "apaf.ui.history.push.handler",
+  		"router": "apaf.ui.history.router",
+  		"method": "POST",
+  		"schema": "/:context",
+  		"handler": "pushHistoryHandler",
+  		"securityRole": "",
+  		"description": "Push a new entry into the history for the given named context and the authenticated user",
+  		"input": {"host": "192.168.1.10","port": 22,"login": "admin"},
+  		"apidoc": {
+  			"openapi": "3.1.0",
+  			"info": {
+  				"title": "Push User History Entry",
+  				"version": "1.0.0",
+  				"description": "Appends a new entry to the history for the given named context. Sensitive fields (marked 'sensitive':true in the component configuration) are stripped before storage. The oldest entries are evicted when the configured maxSize is reached."
+  			},
+  			"paths": {
+  				"/apaf-history/{context}": {
+  					"post": {
+  						"summary": "Push a history entry",
+  						"parameters": [
+  							{
+  								"name": "context",
+  								"in": "path",
+  								"required": true,
+  								"schema": {"type": "string"}
+  							}
+  						],
+  						"requestBody": {
+  							"required": true,
+  							"content": {
+  								"application/json": {
+  									"schema": {"type": "object"}
+  								}
+  							}
+  						},
+  						"responses": {
+  							"200": {
+  								"description": "Updated history document",
+  								"content": {
+  									"application/json": {
+  										"schema": {
+  											"type": "object",
+  											"properties": {
+  												"status": {"type": "integer"},
+  												"message": {"type": "string"},
+  												"data": {"type": "object"}
+  											}
+  										}
+  									}
+  								}
+  							}
+  						}
+  					}
+  				}
+  			}
+  		}
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.ui.history.locale.provider.enUS",
+  		"path": "i18n/apaf_ui_history_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.ui.history.locale.provider.en",
+  		"path": "i18n/apaf_ui_history_en-US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.ui.history.locale.provider.frFR",
+  		"path": "i18n/apaf_ui_history_fr-FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.ui.history.locale.provider.fr",
+  		"path": "i18n/apaf_ui_history_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.ui.history.component.history.manager",
+  		"namespace": "apafHistory",
+  		"name": "HistoryManager",
+  		"version": "1.0.0",
+  		"dependency": "/apaf-ui-history/js/components/historyManager.js"
+  	},
+  	{
+  		"point": "npa.ui.tools.core.component",
+  		"id": "apaf.ui.history.component.history.recall",
+  		"namespace": "apafHistory",
+  		"name": "HistoryRecall",
+  		"version": "1.0.0",
+  		"dependency": "/apaf-ui-history/js/components/historyRecall.js"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.ui.history.doc.htdocs",
+  		"path": "/apaf-ui-history-doc",
+  		"localDir": "htdocs/docs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.ui.history.doc",
+  		"label": "apaf.ui.history - User Interaction History",
+  		"category": "APAF Framework",
+  		"subcategory": "UI",
+  		"url": "/apaf-ui-history-doc/apafUiHistory.html"
+  	}
+  ],
+  "provides": [
+  	{"id": "apaf.ui.history.context"}
+  ]
+}

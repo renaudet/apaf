@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="description" content="APAF Documentation - apaf.ui.history plugin">
+		<meta name="Author" lang="fr" content="Nicolas Renaudet">
+		<meta name="Copyright" content="2025 Nicolas Renaudet - All rights reserved">
+		<meta charset="ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; ISO-8859-1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+		<meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href="/npa-documentation/css/npaDocumentation.css" rel="stylesheet">
+		<title>apaf.ui.history - User Interaction History Plugin</title>
+	</head>
+	<body>
+
+		<h1>apaf.ui.history &mdash; User Interaction History Plugin</h1>
+
+		<h2>Overview</h2>
+
+		<p>The <b>apaf.ui.history</b> plugin provides a generic, per-user, per-context interaction
+		history service for APAF applications. It is conceptually similar to the browser's
+		address-bar autocomplete: each named <em>context</em> maintains a ordered list of the last
+		N entries submitted by the authenticated user.</p>
+
+		<p>Key design decisions:</p>
+		<ul>
+			<li><b>Dedicated database</b> &mdash; history is stored in its own CouchDB database
+			(<code>apaf_history</code>), completely separate from the <code>apaf_users</code> and
+			application-data databases. Since version 1.1.0, the database is managed through the
+			built-in <code>history</code> datatype registered with <code>apaf.datatype</code>: the
+			CouchDB connection settings (<code>APAF_COUCH_DB_*</code> environment variables) are those
+			of <code>apaf.datatype</code>, and the database is created automatically if missing.</li>
+			<li><b>Sensitive-field exclusion</b> &mdash; fields marked <code>"sensitive": true</code>
+			in the component configuration are <em>never</em> sent to the server and therefore never
+			stored. Passwords, API keys and similar secrets remain local to the browser session only.</li>
+			<li><b>Automatic de-duplication</b> &mdash; when the same entry is submitted twice, the
+			existing copy is removed and the entry is prepended, so it always appears at the top of
+			the history list.</li>
+			<li><b>Configurable size</b> &mdash; the maximum number of retained entries is controlled
+			per-context via the <code>maxSize</code> configuration property (default&nbsp;10).</li>
+		</ul>
+
+		<p>The plugin ships a client-side UI component (<code>apafHistory.HistoryInput</code>) that
+		wraps a set of input fields into a form with dropdown recall buttons. Any consuming APAF
+		application or snippet can drop this component into its layout to immediately gain history
+		recall without any additional server-side code.</p>
+
+		<h2>Plugin Dependencies</h2>
+
+		<table>
+			<thead><tr><th>Plugin ID</th><th>Purpose</th></tr></thead>
+			<tbody>
+				<tr><td><code>apaf.datatype</code></td><td>Registration of the built-in <code>history</code> datatype and access to the <code>apaf_history</code> CouchDB database</td></tr>
+				<tr><td><code>apaf.security</code></td><td>User authentication and session resolution</td></tr>
+				<tr><td><code>npa.ui.tools.core</code></td><td>UI component registration (HistoryInput component)</td></tr>
+				<tr><td><code>npa.ui.locale</code></td><td>i18n support</td></tr>
+				<tr><td><code>npa.documentation</code></td><td>This documentation page</td></tr>
+			</tbody>
+		</table>
+
+		<h2>REST API</h2>
+
+		<p>All handlers are mounted on the router path <code>/apaf-history</code> and require
+		the user to be authenticated (no specific role is needed by default).
+
+		<h3>GET /apaf-history/:context</h3>
+		<p>Returns the list of stored history entries for the authenticated user and the given
+		named context.</p>
+		<table>
+			<thead><tr><th>Parameter</th><th>Where</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>context</code></td><td>path</td><td>Named history context, e.g. <code>ssh.terminal</code></td></tr>
+			</tbody>
+		</table>
+		<p><b>Response:</b></p>
+		<pre>{ "status": 200, "message": "ok", "data": [ { ... }, ... ] }</pre>
+		<p>An empty array is returned when no history exists yet for this user &times; context pair.
+		Entries are ordered most-recent first.</p>
+
+		<h3>POST /apaf-history/:context</h3>
+		<p>Pushes a new entry into the history for the authenticated user and the given named
+		context. The entry is prepended (most-recent first). Identical entries are de-duplicated.
+		Entries beyond <code>maxSize</code> are silently evicted.</p>
+		<table>
+			<thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>entry</code></td><td>object</td><td><b>Required.</b> Key/value map of the values to store. Sensitive fields must have been stripped by the caller <em>before</em> this call.</td></tr>
+				<tr><td><code>maxSize</code></td><td>number</td><td>Optional. Maximum entries to keep for this context (default&nbsp;10).</td></tr>
+			</tbody>
+		</table>
+		<p><b>Response:</b></p>
+		<pre>{ "status": 200, "message": "created|updated", "data": { /* updated CouchDB document */ } }</pre>
+
+		<h2>CouchDB Document Structure</h2>
+
+		<p>One CouchDB document per <em>user &times; context</em> pair is stored in
+		<code>apaf_history</code> (datatype <code>history</code>, fields <code>userId</code>,
+		<code>context</code>, <code>maxSize</code> and <code>entries</code> of type <code>json</code>).
+		The document id is deterministic and supplied by the plugin:</p>
+		<pre>{
+  "id":      "&lt;userId&gt;.&lt;context&gt;",   // deterministic key
+  "userId":  "alice",
+  "context": "ssh.terminal",
+  "entries": [
+    { "host": "192.168.1.10", "port": 22, "username": "admin" },
+    { "host": "10.0.0.5",     "port": 22, "username": "root"  }
+  ],
+  "maxSize": 10
+}</pre>
+
+		<h2>UI Component: apafHistory.HistoryInput</h2>
+
+		<p>The <code>HistoryInput</code> component is registered in the <code>apafHistory</code>
+		namespace (type string: <code>"apafHistory.HistoryInput"</code>). It renders a set of
+		labelled input fields, each equipped with a dropdown recall button (except sensitive
+		fields). A configurable submit button collects all field values and invokes a callback.</p>
+
+		<h3>Configuration Properties</h3>
+
+		<table>
+			<thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>context</code></td><td>string</td><td>&mdash;</td><td><b>Required.</b> Named history context (e.g. <code>"ssh.terminal"</code>). Must be unique per feature.</td></tr>
+				<tr><td><code>fields</code></td><td>array</td><td>&mdash;</td><td><b>Required.</b> Array of field descriptors (see below).</td></tr>
+				<tr><td><code>maxSize</code></td><td>number</td><td>10</td><td>Maximum number of history entries to retain per user.</td></tr>
+				<tr><td><code>submitLabel</code></td><td>string</td><td>"OK"</td><td>Label on the submit button. Supports i18n <code>@key</code> references.</td></tr>
+				<tr><td><code>submitIcon</code></td><td>string</td><td>/uiTools/img/silk/accept.png</td><td>Icon path for the submit button.</td></tr>
+				<tr><td><code>onSubmit</code></td><td>string</td><td>&mdash;</td><td>Name of a global JS function to call when the submit button is clicked. Receives the values object as its argument.</td></tr>
+			</tbody>
+		</table>
+
+		<h3>Field Descriptor Properties</h3>
+
+		<table>
+			<thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>name</code></td><td>string</td><td>&mdash;</td><td><b>Required.</b> Logical field name; used as the property key in the values object and in stored history entries.</td></tr>
+				<tr><td><code>label</code></td><td>string</td><td>field name</td><td>Human-readable label. Supports i18n <code>@key</code> references.</td></tr>
+				<tr><td><code>type</code></td><td>string</td><td>"text"</td><td>HTML input type: <code>text</code>, <code>password</code>, <code>number</code>.</td></tr>
+				<tr><td><code>sensitive</code></td><td>boolean</td><td>false</td><td>When <code>true</code>, the field value is <b>never</b> stored in history and no recall dropdown is shown. Use for passwords and secrets.</td></tr>
+				<tr><td><code>placeholder</code></td><td>string</td><td>&mdash;</td><td>Input placeholder text. Supports i18n <code>@key</code> references.</td></tr>
+			</tbody>
+		</table>
+
+		<h3>Public JavaScript API</h3>
+
+		<p>Once rendered, a <code>HistoryInput</code> instance is accessible via
+		<code>npaUi.getComponent('&lt;id&gt;')</code> and exposes the following methods:</p>
+
+		<table>
+			<thead><tr><th>Method</th><th>Returns</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>getValues()</code></td><td>object</td><td>Returns the current field values as a plain object: <code>{ fieldName: value, ... }</code>.</td></tr>
+				<tr><td><code>setValues(obj)</code></td><td>void</td><td>Fills the form fields from the given object. Fields absent from <code>obj</code> are left unchanged.</td></tr>
+				<tr><td><code>loadHistory()</code></td><td>void</td><td>Re-fetches history entries from the server and refreshes the dropdowns. Called automatically on first render.</td></tr>
+				<tr><td><code>saveHistory(values)</code></td><td>void</td><td>Strips sensitive fields from <code>values</code> and posts the entry to the server. Call this after a successful operation to persist the entry.</td></tr>
+			</tbody>
+		</table>
+
+		<h3>DOM Event</h3>
+
+		<p>In addition to the <code>onSubmit</code> global callback, the component dispatches a
+		custom DOM event <code>apafHistory:submit</code> that bubbles up from the component's root
+		element. The <code>event.detail</code> object contains:</p>
+		<table>
+			<thead><tr><th>Property</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>component</code></td><td>The HistoryInput component instance</td></tr>
+				<tr><td><code>values</code></td><td>Current field values (including sensitive fields)</td></tr>
+				<tr><td><code>context</code></td><td>The configured context name</td></tr>
+			</tbody>
+		</table>
+
+		<h3>Minimal Usage Example (JSON configuration)</h3>
+		<pre>{
+  "id": "mySshForm",
+  "type": "apafHistory.HistoryInput",
+  "version": "1.0.0",
+  "configuration": {
+    "context": "ssh.terminal",
+    "maxSize": 10,
+    "submitLabel": "Connect",
+    "submitIcon": "/uiTools/img/silk/connect.png",
+    "onSubmit": "onConnectClicked",
+    "fields": [
+      { "name": "host",     "label": "Host",     "type": "text",     "sensitive": false },
+      { "name": "port",     "label": "Port",     "type": "number",   "sensitive": false },
+      { "name": "username", "label": "Username", "type": "text",     "sensitive": false },
+      { "name": "password", "label": "Password", "type": "password", "sensitive": true  }
+    ]
+  }
+}</pre>
+
+		<h3>Minimal Usage Example (JavaScript onSubmit handler)</h3>
+		<pre>function onConnectClicked(values){
+  // values.host, values.port, values.username are available
+  // values.password is available in memory but was NOT stored
+  myApi.connect(values, function(err){
+    if(!err){
+      // Only persist the entry on success
+      let comp = npaUi.getComponent('mySshForm');
+      comp.saveHistory(values);  // password is stripped automatically
+    }
+  });
+}</pre>
+
+		<h2>Integration with Existing Plugins</h2>
+
+		<p>To add history recall to an existing APAF view (e.g. the SSH terminal from
+		<code>apaf.ext.ssh</code>), replace the plain input elements with a
+		<code>HistoryInput</code> component host <code>&lt;div&gt;</code>, register the
+		component configuration, call <code>npaUi.render('user-app')</code>, and update
+		the submit handler to call <code>saveHistory(values)</code> on success.</p>
+
+		<p>No server-side changes are needed in the consuming plugin. The only dependency to
+		add in its <code>manifest.json</code> is:</p>
+		<pre>{ "type": "plugin", "id": "apaf.ui.history", "version": "1.0.0" }</pre>
+
+		<h2>i18n Keys</h2>
+
+		<table>
+			<thead><tr><th>Key</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr><td><code>apaf.ui.history.component.placeholder</code></td><td>Default input placeholder</td></tr>
+				<tr><td><code>apaf.ui.history.component.tooltip</code></td><td>Tooltip on the dropdown recall button</td></tr>
+				<tr><td><code>apaf.ui.history.component.no.history</code></td><td>Empty-state message in the dropdown</td></tr>
+				<tr><td><code>apaf.ui.history.component.error.load</code></td><td>Console warning when history loading fails</td></tr>
+				<tr><td><code>apaf.ui.history.component.error.save</code></td><td>Console warning when history saving fails</td></tr>
+			</tbody>
+		</table>
+
+	</body>
+</html>

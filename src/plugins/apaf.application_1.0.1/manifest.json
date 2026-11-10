@@ -1,0 +1,82 @@
+{
+  "id": "apaf.application",
+  "name": "The All Purpose Application Framework",
+  "version": "1.0.1",
+  "plugin": "plugin.js",
+  "application": {
+  	"name": "$APPLICATION_NAME,All Purpose Application Framework",
+  	"port": "$APPLICATION_PORT"
+  },
+  "requires": [
+  	{"type": "plugin","id": "npa.core","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.logging","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.http","version": "1.0.0"},
+  	{"type": "plugin","id": "apaf.datatype","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.ui.locale","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.runtime.props","version": "1.0.0"},
+  	{"type": "plugin","id": "npa.documentation","version": "1.0.0"}
+  ],
+  "extends": [
+  	{
+  		"point": "npa.log.provider",
+  		"id": "apaf.application.logger",
+  		"dir": "apaf.application"
+  	},
+  	{
+  		"point": "npa.core.application",
+  		"id": "apaf.application.application",
+  		"name": "apaf"
+  	},
+  	{
+  		"point": "npa.http.router",
+  		"id": "apaf.application.router",
+  		"path": "/apaf"
+  	},
+  	{
+  		"point": "npa.http.home",
+  		"id": "apaf.application.home",
+  		"application": "apaf",
+  		"uri": "/resources/html/home.html"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.locale.provider.enUS",
+  		"path": "i18n/apaf_en-US.locale",
+  		"locale": "en-US"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.locale.provider.en",
+  		"path": "i18n/apaf_en-US.locale",
+  		"locale": "en"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.locale.provider.frFR",
+  		"path": "i18n/apaf_fr-FR.locale",
+  		"locale": "fr-FR"
+  	},
+  	{
+  		"point": "npa.ui.locale.provider",
+  		"id": "apaf.application.locale.provider.fr",
+  		"path": "i18n/apaf_fr-FR.locale",
+  		"locale": "fr"
+  	},
+  	{
+  		"point": "npa.http.static",
+  		"id": "apaf.application.htdocs",
+  		"path": "/apaf-application",
+  		"localDir": "htdocs"
+  	},
+  	{
+  		"point": "npa.documentation.page",
+  		"id": "apaf.application.doc",
+  		"label": "apaf.application - Application Framework",
+  		"category": "APAF Framework",
+  		"subcategory": "Architecture",
+  		"url": "/apaf-application/docs/apafApplication.html"
+  	}
+  	 ],
+  	 "provides": [
+  ]
+}
