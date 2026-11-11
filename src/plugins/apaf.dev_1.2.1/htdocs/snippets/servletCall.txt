@@ -1,0 +1,11 @@
+callServlet = function(servletAlias,payload,then){
+	let uri = '/apaf-api/servlet/'+servletAlias;
+	apaf.call({
+		"method": "POST",
+		"uri": uri,
+		"payload": payload
+	}).then(then)
+	.onError(function(msg){
+		showError(msg);
+	});
+}
