@@ -1,0 +1,18 @@
+{
+    "id": "workflowsTabPane",
+    "version": "1.0.0",
+    "type": "TabPane",
+    "configuration": {
+        "tabs": [
+            {
+                "id": "workflowsTab",
+                "label": "@apaf.workflow.tab.workflows"
+            },
+            {
+                "id": "executionsTab",
+                "label": "@apaf.workflow.tab.executions"
+            }
+        ],
+        "parentId": "workArea"
+    }
+}

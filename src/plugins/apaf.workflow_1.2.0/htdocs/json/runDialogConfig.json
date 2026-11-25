@@ -1,0 +1,19 @@
+{
+    "id": "runWorkflowDialog",
+    "version": "1.0.0",
+    "type": "ModalDialog",
+    "configuration": {
+    	"title": "@apaf.workflow.run.dialog.default.title",
+    	"size": "XXL",
+    	"buttons": [
+    		{
+    			"label": "@apaf.workflow.run.dialog.cancel.button",
+    			"action": "cancel"
+    		},
+    		{
+    			"label": "@apaf.workflow.run.dialog.run.button",
+    			"action": "close"
+    		}
+    	]
+    }
+}

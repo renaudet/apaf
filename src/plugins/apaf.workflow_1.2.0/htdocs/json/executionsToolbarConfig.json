@@ -1,0 +1,25 @@
+{
+    "id": "executionsToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+    	"actions": [
+    		{
+                "label": "@apaf.workflow.executions.toolbar.refresh",
+                "actionId": "refreshExecutions",
+                "icon": "/uiTools/img/silk/arrow_refresh.png",
+                "enabled": true
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "type": "control",
+                "kind": "filter",
+                "actionId": "filterExecutions",
+                "label": "@data.toolbar.filter.label",
+                "width": 300
+            }
+    	]
+    }
+}

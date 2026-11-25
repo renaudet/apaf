@@ -1,0 +1,9 @@
+{
+    "id": "executionResultEditor",
+    "version": "1.0.0",
+    "type": "Editor",
+    "configuration": {
+        "height": 450,
+        "readonly": true
+    }
+}

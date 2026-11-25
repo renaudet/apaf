@@ -1,0 +1,55 @@
+{
+    "id": "executionsTable",
+    "version": "1.0.0",
+    "type": "Datatable",
+    "configuration": {
+        "datasource": {
+            "type": "local",
+            "uri": "/apaf-workflow/executions/query",
+            "method": "POST",
+            "payload": {
+                "selector": {},
+                "fields": ["id","workflowId","workflowName","workflowVersion","startedBy","startedAt","endedAt","status","durationMs","message"]
+            },
+            "adapter": "@.data"
+        },
+        "sorter": {
+        	"type": "FieldItemSorter",
+        	"field": "startedAt",
+        	"ascending": true
+        },
+    	"maxHeight": 800,
+        "columns": [
+            {
+                "label": "@apaf.workflow.datatype.name",
+                "field": "workflowName"
+            },
+            {
+                "label": "@apaf.workflow.datatype.version",
+                "field": "workflowVersion"
+            },
+            {
+                "label": "@apaf.workflow.execution.datatype.started.by",
+                "field": "startedBy"
+            },
+            {
+                "label": "@apaf.workflow.execution.datatype.started.at",
+                "field": "startedAt"
+            },
+            {
+                "label": "@apaf.workflow.execution.datatype.ended.at",
+                "field": "endedAt"
+            },
+            {
+                "label": "@apaf.workflow.execution.datatype.status",
+                "field": "status",
+                "renderer": "'<img src=\"/uiTools/img/silk/'+(@.status=='running'?'hourglass':(@.status=='completed'?'accept':(@.status=='failed'?'cross':'exclamation')))+'.png\"> '+@.status"
+            },
+            {
+                "label": "@apaf.workflow.table.action.column",
+                "field": "id",
+                "renderer": "'<img src=\"/uiTools/img/silk/page_white_magnify.png\" class=\"executionAction\" style=\"cursor: pointer;\" title=\"'+npaUi.getLocalizedString(String.fromCharCode(64)+'apaf.workflow.executions.action.view')+'\" data-id=\"'+@.id+'\" data-action=\"viewExecution\">&nbsp;'+(@.status!='running'?'<img src=\"/uiTools/img/silk/delete.png\" class=\"executionAction\" style=\"cursor: pointer;\" title=\"'+npaUi.getLocalizedString(String.fromCharCode(64)+'apaf.workflow.executions.action.delete')+'\" data-id=\"'+@.id+'\" data-action=\"deleteExecution\">':'')"
+            }
+        ]
+    }
+}

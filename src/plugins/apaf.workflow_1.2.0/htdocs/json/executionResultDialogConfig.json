@@ -1,0 +1,15 @@
+{
+    "id": "executionResultDialog",
+    "version": "1.0.0",
+    "type": "ModalDialog",
+    "configuration": {
+    	"title": "@apaf.workflow.executions.result.dialog.title",
+    	"size": "XXL",
+    	"buttons": [
+    		{
+    			"label": "@apaf.workflow.executions.result.dialog.close",
+    			"action": "close"
+    		}
+    	]
+    }
+}

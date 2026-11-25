@@ -1,0 +1,9 @@
+{
+    "id": "runContextEditor",
+    "version": "1.0.0",
+    "type": "Editor",
+    "configuration": {
+        "height": 300,
+        "readonly": false
+    }
+}

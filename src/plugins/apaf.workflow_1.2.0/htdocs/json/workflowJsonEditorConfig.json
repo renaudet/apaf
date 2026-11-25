@@ -1,0 +1,8 @@
+{
+    "id":"jsonEditor",
+    "version": "1.0.0",
+    "type": "Editor",
+    "configuration": {
+        "height": 650
+    }
+}
