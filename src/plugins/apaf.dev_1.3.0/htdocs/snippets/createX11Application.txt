@@ -1,0 +1,13 @@
+const MY_APPLICATION_NAME = '<put here the name of the APAF fragment>';
+const MY_APPLICATION_TITLE = 'MyX11Application';
+
+class MyX11Application extends XApplication{
+  constructor(){
+    super(MY_APPLICATION_TITLE,'/x11r7-resources/img/xlogo.png');
+  }
+  createWindow(){
+    let myWindow = this.getClient().createWindow(this.getName(),10,10,640,480,{"resizable": false,"iconUrl": this.getIconUrl()});
+  }
+}
+
+registerX11Application(MY_APPLICATION_NAME,MyX11Application);

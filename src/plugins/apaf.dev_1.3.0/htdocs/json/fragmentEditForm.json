@@ -1,0 +1,112 @@
+{
+    "id":"editForm",
+    "version": "1.0.0",
+    "type": "Form",
+    "configuration": {
+    	"title": "@apaf.page.fragments.form.title",
+    	"class": "form-frame-noborder",
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"fields": [
+    		{
+    			"name": "name",
+    			"label": "@apaf.fragment.name",
+    			"required": true,
+    			"size": 6
+    		},
+    		{
+    			"name": "version",
+    			"label": "@apaf.fragment.version",
+    			"required": true,
+    			"size": 2
+    		},
+    		{
+    			"name": "description",
+    			"label": "@apaf.fragment.description",
+    			"required": false,
+    			"size": 10
+    		},
+    		{
+    			"name": "type",
+    			"label": "@apaf.fragment.type",
+    			"required": true,
+    			"type": "select",
+    			"size": 3,
+    			"values": ["snippet","library","servlet","workflowNode","X11","mcpTool"]
+    		},
+    		{
+    			"name": "alias",
+    			"label": "@apaf.fragment.alias",
+    			"required": false,
+    			"size": 4,
+    			"help": "@apaf.fragment.alias.help",
+    			"constraint": "if('servlet'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+    		},
+    		{
+    			"name": "enabled",
+    			"label": "@apaf.fragment.enabled",
+    			"type": "check",
+    			"help": "@apaf.fragment.enabled.help",
+    			"default": false,
+    			"constraint": "if('servlet'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+    		},
+    		{
+    			"name": "restrictedToRole",
+    			"label": "@apaf.application.restrictedToRole",
+    			"type": "select",
+    			"multiple": false,
+    			"required": false,
+    			"size": 4,
+		    	"datasource": {
+		            "type": "managed",
+		            "manager": "roleManager"
+		        },
+		        "renderer": {
+		        	"label": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.description"
+		        	},
+		        	"value": {
+			        	"type": "FieldItemRenderer",
+			        	"processor": "@.name"
+		        	}
+		        },
+    			"constraint": "if('mcpTool'==@.type){#.show();#.setEditMode(true);}else{#.hide();}"
+    		},
+    		{
+    			"name": "source",
+    			"label": "@apaf.fragment.source",
+    			"type": "javascript",
+    			"height": 600,
+    			"expandParent": "workArea",
+    			"buttons": [
+    				{
+    					"label": "Snippets Library",
+    					"icon": "/uiTools/img/silk/folder_page_white.png",
+    					"actionId": "openSnippetLibrary"
+    				},
+    				{
+    					"label": "Expand / Collapse editor",
+    					"icon": "/uiTools/img/silk/arrow_out.png",
+    					"actionId": "expandCollapse"
+    				}
+    			]
+    		},
+    		{
+    			"name": "apiDoc",
+    			"label": "@apaf.fragment.apiDoc",
+    			"type": "json",
+    			"jsonData": true,
+    			"height": 300,
+    			"constraint": "if('mcpTool'==@.type){#.show();#.setEditMode(true);}else{#.hide();}",
+    			"buttons": [
+    				{
+    					"label": "@apaf.fragment.apiDoc.wizard",
+    					"icon": "/uiTools/img/silk/wand.png",
+    					"actionId": "openApiDocWizard"
+    				}
+    			]
+    		}
+    	]
+    }
+}

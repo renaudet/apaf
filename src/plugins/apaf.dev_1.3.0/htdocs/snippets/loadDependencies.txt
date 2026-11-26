@@ -1,0 +1,8 @@
+// supported types are css (=stylesheet), json, js (=javascript, =library)
+const RESOURCE_DEPS = [
+	{"type": "js","uri": "/<some-path>/myLibrary.js"}
+]
+
+loadDeps(RESOURCE_DEPS,function(){
+	//then...
+});

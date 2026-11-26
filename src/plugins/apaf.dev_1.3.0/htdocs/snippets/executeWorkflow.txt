@@ -1,0 +1,13 @@
+executeWorkflow = function(workflowName,workflowVersion,executionContext,onceDoneCb){
+  apaf.executeWorkflow(workflowName,workflowVersion,executionContext,function(err,output){
+    if(err){
+      showError(err);
+    }else{
+      let html = '<div style="font-family: lucida console;">';
+      html += JSON.stringify(output,null,'\t').replace(/\n/g,'<br>').replace(/\t/g,'   ');
+      html += '</div>';
+      showInfo(html);
+    }
+    onceDoneCb();
+  });
+}
