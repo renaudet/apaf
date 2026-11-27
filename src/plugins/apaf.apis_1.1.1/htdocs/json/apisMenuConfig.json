@@ -1,0 +1,30 @@
+{
+    "id": "apisMenu",
+    "version": "1.0.0",
+    "type": "VerticalMenu",
+    "configuration": {
+    	"expandsTo": "workArea",
+    	"items": [
+    		{
+    			"id": "apis",
+    			"label": "@apaf.apis.menu.apis"
+    		},
+    		{
+    			"id": "securityTokens",
+    			"label": "@apaf.apis.menu.tokens"
+    		},
+    		{
+    			"id": "workspace",
+    			"label": "@apaf.apis.menu.workspace"
+    		},
+    		{
+    			"id": "jobs",
+    			"label": "@apaf.apis.menu.jobs"
+    		},
+    		{
+    			"id": "properties",
+    			"label": "@apaf.apis.menu.properties"
+    		}
+    	]
+    }
+}
