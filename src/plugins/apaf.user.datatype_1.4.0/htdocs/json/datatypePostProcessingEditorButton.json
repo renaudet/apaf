@@ -1,0 +1,14 @@
+{
+    "id":"postProcessingSourceCodeEditor",
+    "version": "1.0.0",
+    "type": "apafUi.SourceCodeEditor",
+    "configuration": {
+        "label": "Open the source code editor",
+        "listen": {
+        	"source": "itemSelectionList",
+        	"type": "select",
+        	"adapter": "@.postProcessingCode"
+        },
+        "defaultSource": "// implement here the body for function postProcess(ctx,record)\n// you can inject server-side code here - record is the last-known database release for the data\n// ctx is a JSON structure giving access to \"user\", \"runtime\", \"plugin\" and the \"require\" function\n"
+    }
+}

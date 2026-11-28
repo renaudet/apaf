@@ -1,0 +1,33 @@
+/***
+ * userDatatable.css - CSS file for the apaf.UserDatatable component
+ * Copyright 2025 Nicolas Renaudet - All rights reserved
+ ***/
+
+/* single-line cells: overflowing text is truncated with an ellipsis */
+.userDatatableCell {
+	max-width: 20em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* sortable column headers */
+.userDatatableSortable {
+	cursor: pointer;
+	user-select: none;
+	white-space: nowrap;
+}
+
+.userDatatableSortable:hover {
+	text-decoration: underline;
+}
+
+.userDatatableSortable.userDatatableSortAsc::after {
+	content: ' \25B2';
+	font-size: 0.7em;
+}
+
+.userDatatableSortable.userDatatableSortDesc::after {
+	content: ' \25BC';
+	font-size: 0.7em;
+}

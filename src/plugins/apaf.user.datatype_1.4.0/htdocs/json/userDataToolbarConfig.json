@@ -1,0 +1,58 @@
+{
+    "id":"userDataToolbar",
+    "version": "1.0.0",
+    "type": "Toolbar",
+    "configuration": {
+    	"selectionListener": true,
+    	"selectionProvider": "itemSelectionList",
+    	"actions": [
+    		{
+                "label": "@data.toolbar.print.label",
+                "actionId": "print",
+                "icon": "/uiTools/img/silk/printer.png",
+                "enabled": false,
+                "enableOnSelection": false
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "label": "@data.toolbar.import.label",
+                "actionId": "import",
+                "icon": "/uiTools/img/silk/cart_put.png",
+                "enabled": false,
+                "enableOnSelection": true
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "label": "@data.toolbar.add.label",
+                "actionId": "add",
+                "icon": "/uiTools/img/silk/add.png",
+                "enabled": false,
+                "enableOnSelection": true
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "label": "@data.toolbar.search.label",
+                "actionId": "search",
+                "icon": "/uiTools/img/silk/magnifier.png",
+                "enabled": false,
+                "enableOnSelection": true
+            },
+    		{
+                "type": "separator"
+            },
+    		{
+                "type": "control",
+                "kind": "filter",
+                "actionId": "filter",
+                "label": "@data.toolbar.filter.label",
+                "width": 300
+            }
+    	]
+    }
+}

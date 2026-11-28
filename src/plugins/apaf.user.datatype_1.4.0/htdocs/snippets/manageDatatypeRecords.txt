@@ -1,0 +1,70 @@
+const MAIN_CARD_ID = 'genericApplicationsCard';
+const DATATYPE = 'bookmark';
+const UI_CONFIG = {
+	"datatypeManager": {
+		"id":"datatypeManager",
+	    "version": "1.0.0",
+	    "type": "DatatypeManager",
+	    "configuration": {
+	    	"datatype": DATATYPE,
+	    	"queryFilter": {}
+	    }
+	}
+}
+var datatype = null;
+
+main = function(){
+   let card = $apaf(MAIN_CARD_ID);
+   let html = '';
+   html += '<div id="datatypeManagerPlaceholder" class="npaUi" data-ref="datatypeManager"></div>';
+   html += '<div id="toolbar" class="npaUi" data-ref="dataToolbar"></div>';
+   html += '<div id="dataTablePlaceholder"></div>';
+   html += '<div id="modalPlaceholder" class="npaUi" data-ref="emptyDialog"></div>';
+   card.setContent(html);
+   npaUi.registerComponentConfig('datatypeManager',UI_CONFIG.datatypeManager);
+   npaUi.onComponentLoaded = createTable;
+   //npaUi.on('createRecord',createUserRecord);
+   npaUi.render();
+}
+
+createTable = function(){
+	let datatableId = DATATYPE+'_table';
+	let maxHeight = $('#workArea').height()-50;
+	let datatableConfig = {"id": datatableId,"version": "1.0.0","type": "Datatable","configuration": {"maxHeight": maxHeight,"columns": []}};
+	datatableConfig.configuration.datasource = {
+		"type": "managed",
+		"manager": "datatypeManager"
+	};
+	apaf.call({
+		"method": "POST",
+		"uri": "/apaf-datatype/datatype/query",
+		"payload": {"selector": {"name": {"$eq": DATATYPE }}}
+	}).then(function(resultSet){
+		if(resultSet && resultSet.length>0){
+			datatype = resultSet[0];
+			let fields = sortOn(datatype.fields,'displayIndex');
+			for(var i=0;i<fields.length && i<10;i++){
+				let field = fields[i];
+				let column = {"label": field.label,"field": field.name};
+				if(typeof field.type!='undefined'){
+					column.type = field.type;
+				}
+				if(typeof field.renderer!='undefined'){
+					column.renderer = field.renderer;
+				}
+				datatableConfig.configuration.columns.push(column);
+			}
+			let actionColumn = {"label": "Actions","type": "rowActions","actions": []};
+			actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.edit.label","actionId": "editRecord","icon": "/uiTools/img/silk/page_edit.png"});
+			actionColumn.actions.push({"label": "@apaf.page.user.data.table.generic.delete.label","actionId": "deleteRecord","icon": "/uiTools/img/silk/page_delete.png"});
+			datatableConfig.configuration.columns.push(actionColumn);
+			npaUi.renderSingleComponent('dataTablePlaceholder',datatableConfig,function(){
+				//then();
+			});
+		}else{
+			showError('Invalid Datatype '+DATATYPE);
+		}
+    }).onError(function(msg){
+		showError(msg);
+	});
+}
